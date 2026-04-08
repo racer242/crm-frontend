@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx *)"
+      "Bash(npx *)",
+      "Bash(xcopy *)",
+      "Bash(rmdir *)",
+      "Bash(npm install *)",
+      "Bash(git commit *)",
+      "Bash(npm uninstall *)",
+      "Bash(node *)",
+      "Bash(set *)",
+      "Bash(timeout *)"
     ]
   }
 }

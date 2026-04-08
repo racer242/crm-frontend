@@ -12,3 +12,35 @@ body {
     Cantarell, sans-serif;
   min-height: 100vh;
 }
+
+/* Grid gutter for PrimeFlex */
+.grid {
+  gap: 1rem;
+  padding: 0;
+}
+
+/* Card content text */
+.p-card-content p {
+  margin: 0;
+}
+
+/* DataTable container */
+.p-datatable-wrapper {
+  border-radius: 6px;
+}
+
+/* Timeline compact */
+.p-timeline-event-opposite {
+  display: none;
+}
+
+/* Steps active color */
+.p-steps .p-steps-item.p-highlight .p-menuitem-link {
+  background: var(--primary-color, #6366f1);
+  border-color: var(--primary-color, #6366f1);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}

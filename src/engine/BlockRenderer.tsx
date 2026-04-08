@@ -9,7 +9,7 @@ import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
 
 export function BlockRenderer({ block }: { block: Block }) {
-  const { wrapper, components, className, style } = block;
+  const { wrapper, components, className, style, blockType } = block;
 
   const content = (
     <div className="flex flex-column gap-3">
@@ -59,7 +59,9 @@ export function BlockRenderer({ block }: { block: Block }) {
             className={`${className || ""} p-2`}
             style={style}
             start={
-              <div className="flex align-items-center gap-2">{content}</div>
+              <div className="flex align-items-center gap-2 flex-wrap">
+                {content}
+              </div>
             }
           />
         );

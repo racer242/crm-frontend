@@ -67,9 +67,8 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row",
-            "justifyContent": "between"
+            "type": "grid",
+            "columns": 4
           },
           "blocks": [
             {
@@ -85,7 +84,7 @@
               },
               "components": [
                 {
-                  "id": "statValue1",
+                  "id": "sv1",
                   "type": "component",
                   "componentType": "Text",
                   "props": {
@@ -95,7 +94,7 @@
                   "state": {}
                 },
                 {
-                  "id": "statBadge1",
+                  "id": "sb1",
                   "type": "component",
                   "componentType": "Tag",
                   "props": {
@@ -119,7 +118,7 @@
               },
               "components": [
                 {
-                  "id": "statValue2",
+                  "id": "sv2",
                   "type": "component",
                   "componentType": "Text",
                   "props": {
@@ -129,7 +128,7 @@
                   "state": {}
                 },
                 {
-                  "id": "statBadge2",
+                  "id": "sb2",
                   "type": "component",
                   "componentType": "Tag",
                   "props": {
@@ -153,7 +152,7 @@
               },
               "components": [
                 {
-                  "id": "statValue3",
+                  "id": "sv3",
                   "type": "component",
                   "componentType": "Text",
                   "props": {
@@ -163,7 +162,7 @@
                   "state": {}
                 },
                 {
-                  "id": "statBadge3",
+                  "id": "sb3",
                   "type": "component",
                   "componentType": "Tag",
                   "props": {
@@ -187,7 +186,7 @@
               },
               "components": [
                 {
-                  "id": "statValue4",
+                  "id": "sv4",
                   "type": "component",
                   "componentType": "Text",
                   "props": {
@@ -197,11 +196,11 @@
                   "state": {}
                 },
                 {
-                  "id": "statBadge4",
+                  "id": "sb4",
                   "type": "component",
                   "componentType": "Tag",
                   "props": {
-                    "value": "5 due today",
+                    "value": "5 due",
                     "severity": "warning"
                   },
                   "state": {}
@@ -211,18 +210,19 @@
           ]
         },
         {
-          "id": "quickActions",
+          "id": "toolbarRow",
           "type": "section",
           "state": {
             "visible": true
           },
           "layout": {
             "type": "flex",
-            "direction": "row"
+            "direction": "row",
+            "justifyContent": "between"
           },
           "blocks": [
             {
-              "id": "actionsBlock",
+              "id": "toolbarBlock",
               "type": "block",
               "blockType": "custom",
               "state": {},
@@ -273,8 +273,8 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 3
           },
           "blocks": [
             {
@@ -354,7 +354,8 @@
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 lg:col-8"
             },
             {
               "id": "activityFeed",
@@ -396,7 +397,8 @@
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 lg:col-4"
             }
           ]
         }
@@ -415,7 +417,7 @@
       },
       "sections": [
         {
-          "id": "usersToolbar",
+          "id": "usersHeader",
           "type": "section",
           "state": {
             "visible": true
@@ -488,14 +490,14 @@
           },
           "blocks": [
             {
-              "id": "filtersBlock",
+              "id": "searchBlock",
               "type": "block",
               "blockType": "form",
               "state": {},
               "wrapper": {
-                "component": "Panel",
+                "component": "Card",
                 "props": {
-                  "header": "Filters"
+                  "header": "Search & Filter"
                 }
               },
               "components": [
@@ -566,6 +568,12 @@
               "type": "block",
               "blockType": "table",
               "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Users"
+                }
+              },
               "components": [
                 {
                   "id": "usersTable",
@@ -579,7 +587,6 @@
                         "email": "alice@example.com",
                         "role": "Admin",
                         "status": "Active",
-                        "avatar": "👩‍💼",
                         "joined": "2023-06-15"
                       },
                       {
@@ -588,7 +595,6 @@
                         "email": "bob@example.com",
                         "role": "Manager",
                         "status": "Active",
-                        "avatar": "👨‍💼",
                         "joined": "2023-07-20"
                       },
                       {
@@ -597,7 +603,6 @@
                         "email": "carol@example.com",
                         "role": "User",
                         "status": "Inactive",
-                        "avatar": "👩‍🎓",
                         "joined": "2023-08-10"
                       },
                       {
@@ -606,7 +611,6 @@
                         "email": "dave@example.com",
                         "role": "User",
                         "status": "Active",
-                        "avatar": "👨‍🔧",
                         "joined": "2023-09-05"
                       },
                       {
@@ -615,15 +619,10 @@
                         "email": "eve@example.com",
                         "role": "Manager",
                         "status": "Active",
-                        "avatar": "👩‍🔬",
                         "joined": "2023-10-12"
                       }
                     ],
                     "columns": [
-                      {
-                        "field": "avatar",
-                        "header": ""
-                      },
                       {
                         "field": "name",
                         "header": "Name"
@@ -652,114 +651,6 @@
                     },
                     "selectionMode": "multiple",
                     "dataKey": "id"
-                  },
-                  "state": {}
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "userDetailSection",
-          "type": "section",
-          "state": {
-            "visible": true
-          },
-          "layout": {
-            "type": "flex",
-            "direction": "row"
-          },
-          "blocks": [
-            {
-              "id": "userProfile",
-              "type": "block",
-              "blockType": "custom",
-              "state": {},
-              "wrapper": {
-                "component": "Card",
-                "props": {
-                  "header": "User Profile"
-                }
-              },
-              "components": [
-                {
-                  "id": "userAvatar",
-                  "type": "component",
-                  "componentType": "Avatar",
-                  "props": {
-                    "label": "AJ",
-                    "shape": "circle",
-                    "size": "xlarge",
-                    "style": {
-                      "backgroundColor": "#6366f1"
-                    }
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "userName",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Alice Johnson",
-                    "level": 2
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "userEmail",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "alice@example.com"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "userRoleBadge",
-                  "type": "component",
-                  "componentType": "Badge",
-                  "props": {
-                    "value": "Admin",
-                    "severity": "success"
-                  },
-                  "state": {}
-                }
-              ]
-            },
-            {
-              "id": "userStats",
-              "type": "block",
-              "blockType": "custom",
-              "state": {},
-              "wrapper": {
-                "component": "Card",
-                "props": {
-                  "header": "Statistics"
-                }
-              },
-              "components": [
-                {
-                  "id": "userProgress",
-                  "type": "component",
-                  "componentType": "ProgressBar",
-                  "props": {
-                    "value": 75
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "userSpinner",
-                  "type": "component",
-                  "componentType": "ProgressSpinner",
-                  "props": {
-                    "style": {
-                      "width": "50px",
-                      "height": "50px"
-                    },
-                    "strokeWidth": "4",
-                    "fill": "var(--surface-800)",
-                    "animationDuration": ".5s"
                   },
                   "state": {}
                 }
@@ -852,20 +743,6 @@
                               "total": 2100,
                               "status": "Shipped",
                               "date": "2024-01-13"
-                            },
-                            {
-                              "id": "ORD-004",
-                              "customer": "Dave Brown",
-                              "total": 450,
-                              "status": "Cancelled",
-                              "date": "2024-01-12"
-                            },
-                            {
-                              "id": "ORD-005",
-                              "customer": "Eve Davis",
-                              "total": 3200,
-                              "status": "Completed",
-                              "date": "2024-01-11"
                             }
                           ],
                           "columns": [
@@ -934,12 +811,6 @@
                               "customer": "Alice Johnson",
                               "total": 1250,
                               "date": "2024-01-15"
-                            },
-                            {
-                              "id": "ORD-005",
-                              "customer": "Eve Davis",
-                              "total": 3200,
-                              "date": "2024-01-11"
                             }
                           ],
                           "columns": [
@@ -971,14 +842,14 @@
           ]
         },
         {
-          "id": "orderDetailSection",
+          "id": "orderFormSection",
           "type": "section",
           "state": {
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 3
           },
           "blocks": [
             {
@@ -989,9 +860,9 @@
                 "formData": {}
               },
               "wrapper": {
-                "component": "Fieldset",
+                "component": "Card",
                 "props": {
-                  "legend": "New Order"
+                  "header": "New Order"
                 }
               },
               "components": [
@@ -1004,9 +875,7 @@
                     "suggestions": [
                       "Alice Johnson",
                       "Bob Smith",
-                      "Carol White",
-                      "Dave Brown",
-                      "Eve Davis"
+                      "Carol White"
                     ]
                   },
                   "state": {
@@ -1091,31 +960,22 @@
                     "icon": "pi pi-check",
                     "severity": "success"
                   },
-                  "state": {},
-                  "events": [
-                    {
-                      "event": "onClick",
-                      "commands": [
-                        {
-                          "id": "orderToast",
-                          "type": "showToast",
-                          "params": {
-                            "severity": "success",
-                            "summary": "Order Created",
-                            "detail": "Order has been submitted successfully"
-                          }
-                        }
-                      ]
-                    }
-                  ]
+                  "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 lg:col-8"
             },
             {
               "id": "orderMessages",
               "type": "block",
               "blockType": "custom",
               "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Info"
+                }
+              },
               "components": [
                 {
                   "id": "infoMsg",
@@ -1123,7 +983,7 @@
                   "componentType": "Message",
                   "props": {
                     "severity": "info",
-                    "text": "Orders are processed within 24 hours"
+                    "text": "Orders processed within 24 hours"
                   },
                   "state": {}
                 },
@@ -1133,11 +993,12 @@
                   "componentType": "Message",
                   "props": {
                     "severity": "warn",
-                    "text": "Weekend orders processed on Monday"
+                    "text": "Weekend orders processed Monday"
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 lg:col-4"
             }
           ]
         }
@@ -1311,62 +1172,146 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 4
           },
           "blocks": [
             {
-              "id": "productsCards",
+              "id": "prodCard1",
               "type": "block",
               "blockType": "card-grid",
               "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Widget A",
+                  "subheader": "$29.99"
+                }
+              },
               "components": [
                 {
-                  "id": "prodCard1",
+                  "id": "desc1",
                   "type": "component",
-                  "componentType": "Card",
+                  "componentType": "Text",
                   "props": {
-                    "header": "Widget A",
-                    "subheader": "$29.99"
+                    "value": "High-quality widget"
                   },
-                  "state": {
-                    "data": "High-quality widget for everyday use. Rating: ⭐⭐⭐⭐"
-                  }
+                  "state": {}
                 },
                 {
-                  "id": "prodCard2",
+                  "id": "rate1",
                   "type": "component",
-                  "componentType": "Card",
+                  "componentType": "Rating",
                   "props": {
-                    "header": "Widget B",
-                    "subheader": "$49.99"
+                    "stars": 5
                   },
                   "state": {
-                    "data": "Premium widget with extra features. Rating: ⭐⭐⭐⭐⭐"
+                    "value": 4
                   }
+                }
+              ]
+            },
+            {
+              "id": "prodCard2",
+              "type": "block",
+              "blockType": "card-grid",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Widget B",
+                  "subheader": "$49.99"
+                }
+              },
+              "components": [
+                {
+                  "id": "desc2",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Premium widget"
+                  },
+                  "state": {}
                 },
                 {
-                  "id": "prodCard3",
+                  "id": "rate2",
                   "type": "component",
-                  "componentType": "Card",
+                  "componentType": "Rating",
                   "props": {
-                    "header": "Gadget C",
-                    "subheader": "$99.99"
+                    "stars": 5
                   },
                   "state": {
-                    "data": "All-in-one gadget solution. Rating: ⭐⭐⭐⭐"
+                    "value": 5
                   }
+                }
+              ]
+            },
+            {
+              "id": "prodCard3",
+              "type": "block",
+              "blockType": "card-grid",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Gadget C",
+                  "subheader": "$99.99"
+                }
+              },
+              "components": [
+                {
+                  "id": "desc3",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "All-in-one gadget"
+                  },
+                  "state": {}
                 },
                 {
-                  "id": "prodCard4",
+                  "id": "rate3",
                   "type": "component",
-                  "componentType": "Card",
+                  "componentType": "Rating",
                   "props": {
-                    "header": "Tool D",
-                    "subheader": "$19.99"
+                    "stars": 5
                   },
                   "state": {
-                    "data": "Essential tool for professionals. Rating: ⭐⭐⭐"
+                    "value": 4
+                  }
+                }
+              ]
+            },
+            {
+              "id": "prodCard4",
+              "type": "block",
+              "blockType": "card-grid",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Tool D",
+                  "subheader": "$19.99"
+                }
+              },
+              "components": [
+                {
+                  "id": "desc4",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Essential tool"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "rate4",
+                  "type": "component",
+                  "componentType": "Rating",
+                  "props": {
+                    "stars": 5
+                  },
+                  "state": {
+                    "value": 3
                   }
                 }
               ]
@@ -1486,200 +1431,6 @@
               ]
             }
           ]
-        },
-        {
-          "id": "productEditSection",
-          "type": "section",
-          "state": {
-            "visible": true
-          },
-          "layout": {
-            "type": "flex",
-            "direction": "row"
-          },
-          "blocks": [
-            {
-              "id": "productEditForm",
-              "type": "block",
-              "blockType": "form",
-              "state": {
-                "formData": {}
-              },
-              "wrapper": {
-                "component": "Card",
-                "props": {
-                  "header": "Edit Product"
-                }
-              },
-              "components": [
-                {
-                  "id": "editName",
-                  "type": "component",
-                  "componentType": "InputText",
-                  "props": {
-                    "placeholder": "Product name"
-                  },
-                  "state": {
-                    "value": "Widget A"
-                  }
-                },
-                {
-                  "id": "editDesc",
-                  "type": "component",
-                  "componentType": "InputTextarea",
-                  "props": {
-                    "placeholder": "Description",
-                    "rows": 4
-                  },
-                  "state": {
-                    "value": "High-quality widget"
-                  }
-                },
-                {
-                  "id": "editPrice",
-                  "type": "component",
-                  "componentType": "InputNumber",
-                  "props": {
-                    "placeholder": "Price",
-                    "min": 0,
-                    "mode": "currency",
-                    "currency": "USD"
-                  },
-                  "state": {
-                    "value": 29.99
-                  }
-                },
-                {
-                  "id": "editCategory",
-                  "type": "component",
-                  "componentType": "Dropdown",
-                  "props": {
-                    "options": [
-                      {
-                        "label": "Electronics",
-                        "value": "electronics"
-                      },
-                      {
-                        "label": "Clothing",
-                        "value": "clothing"
-                      },
-                      {
-                        "label": "Home & Garden",
-                        "value": "home"
-                      },
-                      {
-                        "label": "Sports",
-                        "value": "sports"
-                      }
-                    ]
-                  },
-                  "state": {
-                    "value": "electronics"
-                  }
-                },
-                {
-                  "id": "editStock",
-                  "type": "component",
-                  "componentType": "InputNumber",
-                  "props": {
-                    "placeholder": "Stock",
-                    "min": 0
-                  },
-                  "state": {
-                    "value": 150
-                  }
-                },
-                {
-                  "id": "editRating",
-                  "type": "component",
-                  "componentType": "Rating",
-                  "props": {
-                    "stars": 5
-                  },
-                  "state": {
-                    "value": 4
-                  }
-                },
-                {
-                  "id": "editColor",
-                  "type": "component",
-                  "componentType": "ColorPicker",
-                  "props": {},
-                  "state": {
-                    "value": "#6366f1"
-                  }
-                },
-                {
-                  "id": "editImage",
-                  "type": "component",
-                  "componentType": "FileUpload",
-                  "props": {
-                    "mode": "basic",
-                    "chooseLabel": "Upload Image",
-                    "auto": true,
-                    "severity": "secondary"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "editActive",
-                  "type": "component",
-                  "componentType": "InputSwitch",
-                  "props": {
-                    "label": "Active"
-                  },
-                  "state": {
-                    "value": true
-                  }
-                },
-                {
-                  "id": "editRadio",
-                  "type": "component",
-                  "componentType": "RadioButton",
-                  "props": {
-                    "name": "priority",
-                    "label": "High Priority",
-                    "value": "high"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "editPassword",
-                  "type": "component",
-                  "componentType": "Password",
-                  "props": {
-                    "placeholder": "Product PIN (optional)",
-                    "feedback": false
-                  },
-                  "state": {
-                    "value": ""
-                  }
-                },
-                {
-                  "id": "saveProduct",
-                  "type": "component",
-                  "componentType": "Button",
-                  "props": {
-                    "label": "Save Changes",
-                    "icon": "pi pi-save",
-                    "severity": "success"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "cancelEdit",
-                  "type": "component",
-                  "componentType": "Button",
-                  "props": {
-                    "label": "Cancel",
-                    "icon": "pi pi-times",
-                    "severity": "danger"
-                  },
-                  "state": {}
-                }
-              ]
-            }
-          ]
         }
       ]
     },
@@ -1739,7 +1490,7 @@
               "blockType": "form",
               "state": {},
               "wrapper": {
-                "component": "Panel",
+                "component": "Card",
                 "props": {
                   "header": "Date Range"
                 }
@@ -1795,30 +1546,7 @@
                     "label": "Generate",
                     "icon": "pi pi-chart-bar"
                   },
-                  "state": {},
-                  "events": [
-                    {
-                      "event": "onClick",
-                      "commands": [
-                        {
-                          "id": "genDelay",
-                          "type": "delay",
-                          "params": {
-                            "duration": 1000
-                          }
-                        },
-                        {
-                          "id": "genToast",
-                          "type": "showToast",
-                          "params": {
-                            "severity": "info",
-                            "summary": "Generating",
-                            "detail": "Report is being generated..."
-                          }
-                        }
-                      ]
-                    }
-                  ]
+                  "state": {}
                 }
               ]
             }
@@ -1831,8 +1559,8 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 2
           },
           "blocks": [
             {
@@ -1894,7 +1622,8 @@
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 md:col-6"
             },
             {
               "id": "pieChart",
@@ -1941,7 +1670,8 @@
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 md:col-6"
             }
           ]
         },
@@ -1952,97 +1682,77 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 3
           },
           "blocks": [
             {
-              "id": "summaryCards",
-              "type": "block",
-              "blockType": "custom",
-              "state": {},
-              "components": [
-                {
-                  "id": "summaryCard1",
-                  "type": "component",
-                  "componentType": "Card",
-                  "props": {
-                    "header": "Total Sales"
-                  },
-                  "state": {
-                    "data": "$45,200 (+15%)"
-                  }
-                },
-                {
-                  "id": "summaryCard2",
-                  "type": "component",
-                  "componentType": "Card",
-                  "props": {
-                    "header": "Total Orders"
-                  },
-                  "state": {
-                    "data": "1,234 (+8%)"
-                  }
-                },
-                {
-                  "id": "summaryCard3",
-                  "type": "component",
-                  "componentType": "Card",
-                  "props": {
-                    "header": "Avg. Order Value"
-                  },
-                  "state": {
-                    "data": "$36.63 (+2%)"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "carouselSection",
-          "type": "section",
-          "state": {
-            "visible": true
-          },
-          "blocks": [
-            {
-              "id": "carouselBlock",
+              "id": "summaryCard1",
               "type": "block",
               "blockType": "custom",
               "state": {},
               "wrapper": {
                 "component": "Card",
                 "props": {
-                  "header": "Top Products"
+                  "header": "Total Sales"
                 }
               },
               "components": [
                 {
-                  "id": "productCarousel",
+                  "id": "sv1",
                   "type": "component",
-                  "componentType": "Carousel",
+                  "componentType": "Text",
                   "props": {
-                    "value": [
-                      {
-                        "name": "Widget A",
-                        "sales": 1250
-                      },
-                      {
-                        "name": "Widget B",
-                        "sales": 980
-                      },
-                      {
-                        "name": "Gadget C",
-                        "sales": 756
-                      },
-                      {
-                        "name": "Tool D",
-                        "sales": 543
-                      }
-                    ],
-                    "numVisible": 3,
-                    "numScroll": 1
+                    "value": "$45,200 (+15%)",
+                    "level": 2
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "summaryCard2",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Total Orders"
+                }
+              },
+              "components": [
+                {
+                  "id": "sv2",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "1,234 (+8%)",
+                    "level": 2
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "summaryCard3",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Avg. Order Value"
+                }
+              },
+              "components": [
+                {
+                  "id": "sv3",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "$36.63 (+2%)",
+                    "level": 2
                   },
                   "state": {}
                 }
@@ -2193,8 +1903,8 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 2
           },
           "blocks": [
             {
@@ -2279,7 +1989,8 @@
                   },
                   "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 md:col-6"
             },
             {
               "id": "notificationSettings",
@@ -2350,7 +2061,8 @@
                     "value": "instant"
                   }
                 }
-              ]
+              ],
+              "className": "col-12 md:col-6"
             }
           ]
         },
@@ -2361,8 +2073,8 @@
             "visible": true
           },
           "layout": {
-            "type": "flex",
-            "direction": "row"
+            "type": "grid",
+            "columns": 2
           },
           "blocks": [
             {
@@ -2420,7 +2132,7 @@
                   "type": "component",
                   "componentType": "InputNumber",
                   "props": {
-                    "placeholder": "Session timeout (minutes)",
+                    "placeholder": "Session timeout (min)",
                     "min": 5,
                     "max": 1440
                   },
@@ -2437,96 +2149,118 @@
                     "icon": "pi pi-lock",
                     "severity": "warning"
                   },
-                  "state": {},
-                  "events": [
-                    {
-                      "event": "onClick",
-                      "commands": [
-                        {
-                          "id": "confirmChange",
-                          "type": "confirm",
-                          "params": {
-                            "message": "Are you sure you want to change your password?",
-                            "acceptLabel": "Yes",
-                            "rejectLabel": "No"
-                          }
-                        },
-                        {
-                          "id": "successToast",
-                          "type": "showToast",
-                          "params": {
-                            "severity": "success",
-                            "summary": "Password Changed",
-                            "detail": "Your password has been updated"
-                          }
-                        }
-                      ]
-                    }
-                  ]
+                  "state": {}
                 }
-              ]
+              ],
+              "className": "col-12 md:col-6"
+            },
+            {
+              "id": "integrations",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Integrations"
+                }
+              },
+              "components": [
+                {
+                  "id": "apiToggle",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Enable API access"
+                  },
+                  "state": {
+                    "value": true
+                  }
+                },
+                {
+                  "id": "apiKey",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "API Key",
+                    "disabled": true
+                  },
+                  "state": {
+                    "value": "sk-xxxx-xxxx-xxxx-xxxx"
+                  }
+                },
+                {
+                  "id": "webhookUrl",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Webhook URL"
+                  },
+                  "state": {
+                    "value": "https://hooks.example.com/crm"
+                  }
+                },
+                {
+                  "id": "regenerateKey",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Regenerate API Key",
+                    "icon": "pi pi-refresh",
+                    "severity": "danger"
+                  },
+                  "state": {}
+                }
+              ],
+              "className": "col-12 md:col-6"
             }
           ]
         },
         {
-          "id": "integrations",
-          "type": "block",
-          "blockType": "custom",
-          "state": {},
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Integrations"
-            }
+          "id": "accordionSection",
+          "type": "section",
+          "state": {
+            "visible": true
           },
-          "components": [
+          "blocks": [
             {
-              "id": "apiToggle",
-              "type": "component",
-              "componentType": "InputSwitch",
-              "props": {
-                "label": "Enable API access"
+              "id": "accordionBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "FAQ"
+                }
               },
-              "state": {
-                "value": true
-              }
-            },
-            {
-              "id": "apiKey",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "API Key",
-                "disabled": true
-              },
-              "state": {
-                "value": "sk-xxxx-xxxx-xxxx-xxxx"
-              }
-            },
-            {
-              "id": "webhookUrl",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Webhook URL"
-              },
-              "state": {
-                "value": "https://hooks.example.com/crm"
-              }
-            },
-            {
-              "id": "regenerateKey",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Regenerate API Key",
-                "icon": "pi pi-refresh",
-                "severity": "danger"
-              },
-              "state": {}
+              "components": [
+                {
+                  "id": "faqAccordion",
+                  "type": "component",
+                  "componentType": "Accordion",
+                  "props": {
+                    "activeIndex": 0,
+                    "tabs": [
+                      {
+                        "header": "How to reset my settings?",
+                        "content": "Go to Profile > Reset Settings. All changes will be reverted to defaults."
+                      },
+                      {
+                        "header": "How to export my data?",
+                        "content": "Use the Export button in the toolbar to download your data as CSV or JSON."
+                      },
+                      {
+                        "header": "How to enable dark mode?",
+                        "content": "Dark mode is enabled by default. Light mode coming soon."
+                      }
+                    ]
+                  },
+                  "state": {}
+                }
+              ]
             }
-          ],
-          "blocks": []
+          ]
         }
       ]
     }
