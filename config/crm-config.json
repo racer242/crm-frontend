@@ -16,6 +16,21 @@
         "route": "/users"
       },
       {
+        "label": "Orders",
+        "icon": "pi pi-shopping-cart",
+        "route": "/orders"
+      },
+      {
+        "label": "Products",
+        "icon": "pi pi-box",
+        "route": "/products"
+      },
+      {
+        "label": "Reports",
+        "icon": "pi pi-chart-bar",
+        "route": "/reports"
+      },
+      {
         "label": "Settings",
         "icon": "pi pi-cog",
         "route": "/settings"
@@ -29,15 +44,24 @@
       "route": "/",
       "state": {
         "loading": false,
-        "initialized": false
+        "initialized": true
       },
       "meta": {
-        "title": "Dashboard - CRM Platform",
-        "description": "Main dashboard view"
+        "title": "Dashboard — CRM Platform"
       },
+      "onLoad": [
+        {
+          "id": "loadStats",
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "Dashboard loaded"
+          }
+        }
+      ],
       "sections": [
         {
-          "id": "header",
+          "id": "statsRow",
           "type": "section",
           "state": {
             "visible": true
@@ -45,23 +69,140 @@
           "layout": {
             "type": "flex",
             "direction": "row",
-            "alignItems": "center",
             "justifyContent": "between"
           },
           "blocks": [
             {
-              "id": "headerContent",
+              "id": "statCard1",
               "type": "block",
-              "blockType": "header",
+              "blockType": "stats",
               "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Total Users"
+                }
+              },
               "components": [
                 {
-                  "id": "title",
+                  "id": "statValue1",
                   "type": "component",
                   "componentType": "Text",
                   "props": {
-                    "value": "CRM Dashboard",
+                    "value": "1,250",
                     "level": 1
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "statBadge1",
+                  "type": "component",
+                  "componentType": "Tag",
+                  "props": {
+                    "value": "+12%",
+                    "severity": "success"
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "statCard2",
+              "type": "block",
+              "blockType": "stats",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Revenue"
+                }
+              },
+              "components": [
+                {
+                  "id": "statValue2",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "$95,400",
+                    "level": 1
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "statBadge2",
+                  "type": "component",
+                  "componentType": "Tag",
+                  "props": {
+                    "value": "+8%",
+                    "severity": "success"
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "statCard3",
+              "type": "block",
+              "blockType": "stats",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Pending Orders"
+                }
+              },
+              "components": [
+                {
+                  "id": "statValue3",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "42",
+                    "level": 1
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "statBadge3",
+                  "type": "component",
+                  "componentType": "Tag",
+                  "props": {
+                    "value": "-3%",
+                    "severity": "danger"
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "statCard4",
+              "type": "block",
+              "blockType": "stats",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Active Tasks"
+                }
+              },
+              "components": [
+                {
+                  "id": "statValue4",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "17",
+                    "level": 1
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "statBadge4",
+                  "type": "component",
+                  "componentType": "Tag",
+                  "props": {
+                    "value": "5 due today",
+                    "severity": "warning"
                   },
                   "state": {}
                 }
@@ -70,80 +211,190 @@
           ]
         },
         {
-          "id": "mainContent",
+          "id": "quickActions",
           "type": "section",
           "state": {
             "visible": true
           },
           "layout": {
-            "type": "grid",
-            "columns": 2,
-            "gap": "1rem"
+            "type": "flex",
+            "direction": "row"
           },
           "blocks": [
             {
-              "id": "statsCard",
+              "id": "actionsBlock",
               "type": "block",
-              "blockType": "stats",
-              "state": {
-                "data": null,
-                "loading": false
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Toolbar",
+                "props": {}
               },
+              "components": [
+                {
+                  "id": "btnNewUser",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "New User",
+                    "icon": "pi pi-plus",
+                    "severity": "success"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "btnNewOrder",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "New Order",
+                    "icon": "pi pi-shopping-cart"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "btnExport",
+                  "type": "component",
+                  "componentType": "SplitButton",
+                  "props": {
+                    "label": "Export",
+                    "icon": "pi pi-download"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mainGrid",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "recentOrders",
+              "type": "block",
+              "blockType": "table",
+              "state": {},
               "wrapper": {
                 "component": "Card",
                 "props": {
-                  "header": "Statistics"
+                  "header": "Recent Orders"
                 }
               },
               "components": [
                 {
-                  "id": "statsTable",
+                  "id": "ordersTable",
                   "type": "component",
                   "componentType": "DataTable",
                   "props": {
                     "value": [
                       {
-                        "name": "Total Users",
-                        "value": 1250,
-                        "change": "+12%"
+                        "id": "ORD-001",
+                        "customer": "Alice Johnson",
+                        "amount": 1250,
+                        "status": "Completed",
+                        "date": "2024-01-15"
                       },
-                      { "name": "Active Leads", "value": 430, "change": "+8%" },
-                      { "name": "Revenue", "value": "$95K", "change": "+15%" }
+                      {
+                        "id": "ORD-002",
+                        "customer": "Bob Smith",
+                        "amount": 890,
+                        "status": "Pending",
+                        "date": "2024-01-14"
+                      },
+                      {
+                        "id": "ORD-003",
+                        "customer": "Carol White",
+                        "amount": 2100,
+                        "status": "Shipped",
+                        "date": "2024-01-13"
+                      },
+                      {
+                        "id": "ORD-004",
+                        "customer": "Dave Brown",
+                        "amount": 450,
+                        "status": "Cancelled",
+                        "date": "2024-01-12"
+                      }
                     ],
                     "columns": [
-                      { "field": "name", "header": "Metric" },
-                      { "field": "value", "header": "Value" },
-                      { "field": "change", "header": "Change" }
-                    ]
+                      {
+                        "field": "id",
+                        "header": "Order ID"
+                      },
+                      {
+                        "field": "customer",
+                        "header": "Customer"
+                      },
+                      {
+                        "field": "amount",
+                        "header": "Amount"
+                      },
+                      {
+                        "field": "status",
+                        "header": "Status"
+                      },
+                      {
+                        "field": "date",
+                        "header": "Date"
+                      }
+                    ],
+                    "paginator": true,
+                    "rows": 5,
+                    "tableStyle": {
+                      "minWidth": "50rem"
+                    }
                   },
                   "state": {}
                 }
               ]
             },
             {
-              "id": "actionForm",
+              "id": "activityFeed",
               "type": "block",
-              "blockType": "form",
-              "state": {
-                "formData": {}
-              },
+              "blockType": "custom",
+              "state": {},
               "wrapper": {
                 "component": "Card",
                 "props": {
-                  "header": "Quick Action"
+                  "header": "Activity Feed"
                 }
               },
               "components": [
                 {
-                  "id": "actionInput",
+                  "id": "timeline",
                   "type": "component",
-                  "componentType": "InputText",
+                  "componentType": "Timeline",
                   "props": {
-                    "placeholder": "Enter value..."
+                    "value": [
+                      {
+                        "status": "Order placed",
+                        "date": "10 min ago",
+                        "icon": "pi pi-shopping-cart",
+                        "color": "#6366f1"
+                      },
+                      {
+                        "status": "Payment received",
+                        "date": "5 min ago",
+                        "icon": "pi pi-credit-card",
+                        "color": "#22c55e"
+                      },
+                      {
+                        "status": "Shipping",
+                        "date": "Just now",
+                        "icon": "pi pi-truck",
+                        "color": "#f59e0b"
+                      }
+                    ]
                   },
-                  "state": {
-                    "value": ""
-                  }
+                  "state": {}
                 }
               ]
             }
@@ -157,18 +408,22 @@
       "route": "/users",
       "state": {
         "loading": false,
-        "initialized": false
+        "initialized": true
       },
       "meta": {
-        "title": "Users - CRM Platform",
-        "description": "User management page"
+        "title": "Users — CRM Platform"
       },
       "sections": [
         {
-          "id": "usersHeader",
+          "id": "usersToolbar",
           "type": "section",
           "state": {
             "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row",
+            "justifyContent": "between"
           },
           "blocks": [
             {
@@ -188,6 +443,1664 @@
                   "state": {}
                 }
               ]
+            },
+            {
+              "id": "usersActions",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "btnAddUser",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Add User",
+                    "icon": "pi pi-plus",
+                    "severity": "success"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "btnDeleteUsers",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Delete Selected",
+                    "icon": "pi pi-trash",
+                    "severity": "danger"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "usersFilters",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "filtersBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Panel",
+                "props": {
+                  "header": "Filters"
+                }
+              },
+              "components": [
+                {
+                  "id": "searchInput",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Search users...",
+                    "icon": "pi pi-search"
+                  },
+                  "state": {
+                    "value": ""
+                  }
+                },
+                {
+                  "id": "roleFilter",
+                  "type": "component",
+                  "componentType": "Dropdown",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "All Roles",
+                        "value": null
+                      },
+                      {
+                        "label": "Admin",
+                        "value": "admin"
+                      },
+                      {
+                        "label": "Manager",
+                        "value": "manager"
+                      },
+                      {
+                        "label": "User",
+                        "value": "user"
+                      }
+                    ],
+                    "placeholder": "Filter by role",
+                    "showClear": true
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "activeFilter",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Active only"
+                  },
+                  "state": {
+                    "value": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "usersTableSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "usersTableBlock",
+              "type": "block",
+              "blockType": "table",
+              "state": {},
+              "components": [
+                {
+                  "id": "usersTable",
+                  "type": "component",
+                  "componentType": "DataTable",
+                  "props": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "name": "Alice Johnson",
+                        "email": "alice@example.com",
+                        "role": "Admin",
+                        "status": "Active",
+                        "avatar": "👩‍💼",
+                        "joined": "2023-06-15"
+                      },
+                      {
+                        "id": 2,
+                        "name": "Bob Smith",
+                        "email": "bob@example.com",
+                        "role": "Manager",
+                        "status": "Active",
+                        "avatar": "👨‍💼",
+                        "joined": "2023-07-20"
+                      },
+                      {
+                        "id": 3,
+                        "name": "Carol White",
+                        "email": "carol@example.com",
+                        "role": "User",
+                        "status": "Inactive",
+                        "avatar": "👩‍🎓",
+                        "joined": "2023-08-10"
+                      },
+                      {
+                        "id": 4,
+                        "name": "Dave Brown",
+                        "email": "dave@example.com",
+                        "role": "User",
+                        "status": "Active",
+                        "avatar": "👨‍🔧",
+                        "joined": "2023-09-05"
+                      },
+                      {
+                        "id": 5,
+                        "name": "Eve Davis",
+                        "email": "eve@example.com",
+                        "role": "Manager",
+                        "status": "Active",
+                        "avatar": "👩‍🔬",
+                        "joined": "2023-10-12"
+                      }
+                    ],
+                    "columns": [
+                      {
+                        "field": "avatar",
+                        "header": ""
+                      },
+                      {
+                        "field": "name",
+                        "header": "Name"
+                      },
+                      {
+                        "field": "email",
+                        "header": "Email"
+                      },
+                      {
+                        "field": "role",
+                        "header": "Role"
+                      },
+                      {
+                        "field": "status",
+                        "header": "Status"
+                      },
+                      {
+                        "field": "joined",
+                        "header": "Joined"
+                      }
+                    ],
+                    "paginator": true,
+                    "rows": 10,
+                    "tableStyle": {
+                      "minWidth": "50rem"
+                    },
+                    "selectionMode": "multiple",
+                    "dataKey": "id"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "userDetailSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "userProfile",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "User Profile"
+                }
+              },
+              "components": [
+                {
+                  "id": "userAvatar",
+                  "type": "component",
+                  "componentType": "Avatar",
+                  "props": {
+                    "label": "AJ",
+                    "shape": "circle",
+                    "size": "xlarge",
+                    "style": {
+                      "backgroundColor": "#6366f1"
+                    }
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "userName",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Alice Johnson",
+                    "level": 2
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "userEmail",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "alice@example.com"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "userRoleBadge",
+                  "type": "component",
+                  "componentType": "Badge",
+                  "props": {
+                    "value": "Admin",
+                    "severity": "success"
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "userStats",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Statistics"
+                }
+              },
+              "components": [
+                {
+                  "id": "userProgress",
+                  "type": "component",
+                  "componentType": "ProgressBar",
+                  "props": {
+                    "value": 75
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "userSpinner",
+                  "type": "component",
+                  "componentType": "ProgressSpinner",
+                  "props": {
+                    "style": {
+                      "width": "50px",
+                      "height": "50px"
+                    },
+                    "strokeWidth": "4",
+                    "fill": "var(--surface-800)",
+                    "animationDuration": ".5s"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orders",
+      "type": "page",
+      "route": "/orders",
+      "state": {
+        "loading": false,
+        "initialized": true
+      },
+      "meta": {
+        "title": "Orders — CRM Platform"
+      },
+      "sections": [
+        {
+          "id": "ordersHeader",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "ordersTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "ordersPageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Order Management",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ordersTabs",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "tabViewBlock",
+              "type": "block",
+              "blockType": "tabs",
+              "state": {},
+              "components": [
+                {
+                  "id": "ordersTabView",
+                  "type": "component",
+                  "componentType": "TabView",
+                  "props": {
+                    "tabs": [
+                      {
+                        "label": "All Orders",
+                        "content": {
+                          "type": "table",
+                          "data": [
+                            {
+                              "id": "ORD-001",
+                              "customer": "Alice Johnson",
+                              "total": 1250,
+                              "status": "Completed",
+                              "date": "2024-01-15"
+                            },
+                            {
+                              "id": "ORD-002",
+                              "customer": "Bob Smith",
+                              "total": 890,
+                              "status": "Pending",
+                              "date": "2024-01-14"
+                            },
+                            {
+                              "id": "ORD-003",
+                              "customer": "Carol White",
+                              "total": 2100,
+                              "status": "Shipped",
+                              "date": "2024-01-13"
+                            },
+                            {
+                              "id": "ORD-004",
+                              "customer": "Dave Brown",
+                              "total": 450,
+                              "status": "Cancelled",
+                              "date": "2024-01-12"
+                            },
+                            {
+                              "id": "ORD-005",
+                              "customer": "Eve Davis",
+                              "total": 3200,
+                              "status": "Completed",
+                              "date": "2024-01-11"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID"
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer"
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total"
+                            },
+                            {
+                              "field": "status",
+                              "header": "Status"
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "label": "Pending",
+                        "content": {
+                          "type": "table",
+                          "data": [
+                            {
+                              "id": "ORD-002",
+                              "customer": "Bob Smith",
+                              "total": 890,
+                              "date": "2024-01-14"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID"
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer"
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total"
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "label": "Completed",
+                        "content": {
+                          "type": "table",
+                          "data": [
+                            {
+                              "id": "ORD-001",
+                              "customer": "Alice Johnson",
+                              "total": 1250,
+                              "date": "2024-01-15"
+                            },
+                            {
+                              "id": "ORD-005",
+                              "customer": "Eve Davis",
+                              "total": 3200,
+                              "date": "2024-01-11"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID"
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer"
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total"
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "orderDetailSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "orderForm",
+              "type": "block",
+              "blockType": "form",
+              "state": {
+                "formData": {}
+              },
+              "wrapper": {
+                "component": "Fieldset",
+                "props": {
+                  "legend": "New Order"
+                }
+              },
+              "components": [
+                {
+                  "id": "orderCustomer",
+                  "type": "component",
+                  "componentType": "AutoComplete",
+                  "props": {
+                    "placeholder": "Search customer...",
+                    "suggestions": [
+                      "Alice Johnson",
+                      "Bob Smith",
+                      "Carol White",
+                      "Dave Brown",
+                      "Eve Davis"
+                    ]
+                  },
+                  "state": {
+                    "value": ""
+                  }
+                },
+                {
+                  "id": "orderProduct",
+                  "type": "component",
+                  "componentType": "Dropdown",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "Widget A",
+                        "value": "widget-a"
+                      },
+                      {
+                        "label": "Widget B",
+                        "value": "widget-b"
+                      },
+                      {
+                        "label": "Gadget C",
+                        "value": "gadget-c"
+                      }
+                    ],
+                    "placeholder": "Select product"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "orderQuantity",
+                  "type": "component",
+                  "componentType": "InputNumber",
+                  "props": {
+                    "placeholder": "Quantity",
+                    "min": 1,
+                    "max": 100
+                  },
+                  "state": {
+                    "value": 1
+                  }
+                },
+                {
+                  "id": "orderNotes",
+                  "type": "component",
+                  "componentType": "InputTextarea",
+                  "props": {
+                    "placeholder": "Order notes...",
+                    "rows": 3
+                  },
+                  "state": {
+                    "value": ""
+                  }
+                },
+                {
+                  "id": "orderUrgent",
+                  "type": "component",
+                  "componentType": "Checkbox",
+                  "props": {
+                    "label": "Urgent order"
+                  },
+                  "state": {
+                    "value": false
+                  }
+                },
+                {
+                  "id": "orderDate",
+                  "type": "component",
+                  "componentType": "Calendar",
+                  "props": {
+                    "placeholder": "Delivery date",
+                    "showIcon": true
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "orderSubmit",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Create Order",
+                    "icon": "pi pi-check",
+                    "severity": "success"
+                  },
+                  "state": {},
+                  "events": [
+                    {
+                      "event": "onClick",
+                      "commands": [
+                        {
+                          "id": "orderToast",
+                          "type": "showToast",
+                          "params": {
+                            "severity": "success",
+                            "summary": "Order Created",
+                            "detail": "Order has been submitted successfully"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "orderMessages",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "infoMsg",
+                  "type": "component",
+                  "componentType": "Message",
+                  "props": {
+                    "severity": "info",
+                    "text": "Orders are processed within 24 hours"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "warnMsg",
+                  "type": "component",
+                  "componentType": "Message",
+                  "props": {
+                    "severity": "warn",
+                    "text": "Weekend orders processed on Monday"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "products",
+      "type": "page",
+      "route": "/products",
+      "state": {
+        "loading": false,
+        "initialized": true
+      },
+      "meta": {
+        "title": "Products — CRM Platform"
+      },
+      "sections": [
+        {
+          "id": "productsHeader",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row",
+            "justifyContent": "between"
+          },
+          "blocks": [
+            {
+              "id": "productsTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "productsPageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Product Catalog",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "productsBreadcrumb",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "breadcrumb",
+                  "type": "component",
+                  "componentType": "Breadcrumb",
+                  "props": {
+                    "model": [
+                      {
+                        "label": "Home",
+                        "route": "/"
+                      },
+                      {
+                        "label": "Products"
+                      }
+                    ]
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "productsSearch",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "searchBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Search & Filter"
+                }
+              },
+              "components": [
+                {
+                  "id": "productSearch",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Search products...",
+                    "icon": "pi pi-search"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "categoryFilter",
+                  "type": "component",
+                  "componentType": "MultiSelect",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "Electronics",
+                        "value": "electronics"
+                      },
+                      {
+                        "label": "Clothing",
+                        "value": "clothing"
+                      },
+                      {
+                        "label": "Home & Garden",
+                        "value": "home"
+                      },
+                      {
+                        "label": "Sports",
+                        "value": "sports"
+                      }
+                    ],
+                    "placeholder": "Select categories",
+                    "maxSelectedLabels": 3
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "priceRange",
+                  "type": "component",
+                  "componentType": "Slider",
+                  "props": {
+                    "range": true,
+                    "min": 0,
+                    "max": 1000
+                  },
+                  "state": {
+                    "value": [
+                      0,
+                      1000
+                    ]
+                  }
+                },
+                {
+                  "id": "inStockOnly",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "In stock only"
+                  },
+                  "state": {
+                    "value": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "productsGrid",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "productsCards",
+              "type": "block",
+              "blockType": "card-grid",
+              "state": {},
+              "components": [
+                {
+                  "id": "prodCard1",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Widget A",
+                    "subheader": "$29.99"
+                  },
+                  "state": {
+                    "data": "High-quality widget for everyday use. Rating: ⭐⭐⭐⭐"
+                  }
+                },
+                {
+                  "id": "prodCard2",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Widget B",
+                    "subheader": "$49.99"
+                  },
+                  "state": {
+                    "data": "Premium widget with extra features. Rating: ⭐⭐⭐⭐⭐"
+                  }
+                },
+                {
+                  "id": "prodCard3",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Gadget C",
+                    "subheader": "$99.99"
+                  },
+                  "state": {
+                    "data": "All-in-one gadget solution. Rating: ⭐⭐⭐⭐"
+                  }
+                },
+                {
+                  "id": "prodCard4",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Tool D",
+                    "subheader": "$19.99"
+                  },
+                  "state": {
+                    "data": "Essential tool for professionals. Rating: ⭐⭐⭐"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "productsTableSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "productsTableBlock",
+              "type": "block",
+              "blockType": "table",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "All Products"
+                }
+              },
+              "components": [
+                {
+                  "id": "productsTable",
+                  "type": "component",
+                  "componentType": "DataTable",
+                  "props": {
+                    "value": [
+                      {
+                        "id": "P001",
+                        "name": "Widget A",
+                        "category": "Electronics",
+                        "price": 29.99,
+                        "stock": 150,
+                        "rating": 4,
+                        "status": "Active"
+                      },
+                      {
+                        "id": "P002",
+                        "name": "Widget B",
+                        "category": "Electronics",
+                        "price": 49.99,
+                        "stock": 75,
+                        "rating": 5,
+                        "status": "Active"
+                      },
+                      {
+                        "id": "P003",
+                        "name": "Gadget C",
+                        "category": "Electronics",
+                        "price": 99.99,
+                        "stock": 30,
+                        "rating": 4,
+                        "status": "Low Stock"
+                      },
+                      {
+                        "id": "P004",
+                        "name": "Tool D",
+                        "category": "Home & Garden",
+                        "price": 19.99,
+                        "stock": 0,
+                        "rating": 3,
+                        "status": "Out of Stock"
+                      },
+                      {
+                        "id": "P005",
+                        "name": "Sport E",
+                        "category": "Sports",
+                        "price": 59.99,
+                        "stock": 200,
+                        "rating": 4,
+                        "status": "Active"
+                      }
+                    ],
+                    "columns": [
+                      {
+                        "field": "id",
+                        "header": "SKU"
+                      },
+                      {
+                        "field": "name",
+                        "header": "Name"
+                      },
+                      {
+                        "field": "category",
+                        "header": "Category"
+                      },
+                      {
+                        "field": "price",
+                        "header": "Price"
+                      },
+                      {
+                        "field": "stock",
+                        "header": "Stock"
+                      },
+                      {
+                        "field": "rating",
+                        "header": "Rating"
+                      },
+                      {
+                        "field": "status",
+                        "header": "Status"
+                      }
+                    ],
+                    "paginator": true,
+                    "rows": 10,
+                    "tableStyle": {
+                      "minWidth": "50rem"
+                    },
+                    "editMode": "row"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "productEditSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "productEditForm",
+              "type": "block",
+              "blockType": "form",
+              "state": {
+                "formData": {}
+              },
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Edit Product"
+                }
+              },
+              "components": [
+                {
+                  "id": "editName",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Product name"
+                  },
+                  "state": {
+                    "value": "Widget A"
+                  }
+                },
+                {
+                  "id": "editDesc",
+                  "type": "component",
+                  "componentType": "InputTextarea",
+                  "props": {
+                    "placeholder": "Description",
+                    "rows": 4
+                  },
+                  "state": {
+                    "value": "High-quality widget"
+                  }
+                },
+                {
+                  "id": "editPrice",
+                  "type": "component",
+                  "componentType": "InputNumber",
+                  "props": {
+                    "placeholder": "Price",
+                    "min": 0,
+                    "mode": "currency",
+                    "currency": "USD"
+                  },
+                  "state": {
+                    "value": 29.99
+                  }
+                },
+                {
+                  "id": "editCategory",
+                  "type": "component",
+                  "componentType": "Dropdown",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "Electronics",
+                        "value": "electronics"
+                      },
+                      {
+                        "label": "Clothing",
+                        "value": "clothing"
+                      },
+                      {
+                        "label": "Home & Garden",
+                        "value": "home"
+                      },
+                      {
+                        "label": "Sports",
+                        "value": "sports"
+                      }
+                    ]
+                  },
+                  "state": {
+                    "value": "electronics"
+                  }
+                },
+                {
+                  "id": "editStock",
+                  "type": "component",
+                  "componentType": "InputNumber",
+                  "props": {
+                    "placeholder": "Stock",
+                    "min": 0
+                  },
+                  "state": {
+                    "value": 150
+                  }
+                },
+                {
+                  "id": "editRating",
+                  "type": "component",
+                  "componentType": "Rating",
+                  "props": {
+                    "stars": 5
+                  },
+                  "state": {
+                    "value": 4
+                  }
+                },
+                {
+                  "id": "editColor",
+                  "type": "component",
+                  "componentType": "ColorPicker",
+                  "props": {},
+                  "state": {
+                    "value": "#6366f1"
+                  }
+                },
+                {
+                  "id": "editImage",
+                  "type": "component",
+                  "componentType": "FileUpload",
+                  "props": {
+                    "mode": "basic",
+                    "chooseLabel": "Upload Image",
+                    "auto": true,
+                    "severity": "secondary"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "editActive",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Active"
+                  },
+                  "state": {
+                    "value": true
+                  }
+                },
+                {
+                  "id": "editRadio",
+                  "type": "component",
+                  "componentType": "RadioButton",
+                  "props": {
+                    "name": "priority",
+                    "label": "High Priority",
+                    "value": "high"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "editPassword",
+                  "type": "component",
+                  "componentType": "Password",
+                  "props": {
+                    "placeholder": "Product PIN (optional)",
+                    "feedback": false
+                  },
+                  "state": {
+                    "value": ""
+                  }
+                },
+                {
+                  "id": "saveProduct",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Save Changes",
+                    "icon": "pi pi-save",
+                    "severity": "success"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "cancelEdit",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Cancel",
+                    "icon": "pi pi-times",
+                    "severity": "danger"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reports",
+      "type": "page",
+      "route": "/reports",
+      "state": {
+        "loading": false,
+        "initialized": true
+      },
+      "meta": {
+        "title": "Reports — CRM Platform"
+      },
+      "sections": [
+        {
+          "id": "reportsHeader",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "reportsTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "reportsPageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Reports & Analytics",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "reportFilters",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "dateFilterBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Panel",
+                "props": {
+                  "header": "Date Range"
+                }
+              },
+              "components": [
+                {
+                  "id": "startDate",
+                  "type": "component",
+                  "componentType": "Calendar",
+                  "props": {
+                    "placeholder": "Start date",
+                    "showIcon": true
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "endDate",
+                  "type": "component",
+                  "componentType": "Calendar",
+                  "props": {
+                    "placeholder": "End date",
+                    "showIcon": true
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "reportType",
+                  "type": "component",
+                  "componentType": "Dropdown",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "Sales Report",
+                        "value": "sales"
+                      },
+                      {
+                        "label": "User Report",
+                        "value": "users"
+                      },
+                      {
+                        "label": "Inventory Report",
+                        "value": "inventory"
+                      }
+                    ]
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "generateReport",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Generate",
+                    "icon": "pi pi-chart-bar"
+                  },
+                  "state": {},
+                  "events": [
+                    {
+                      "event": "onClick",
+                      "commands": [
+                        {
+                          "id": "genDelay",
+                          "type": "delay",
+                          "params": {
+                            "duration": 1000
+                          }
+                        },
+                        {
+                          "id": "genToast",
+                          "type": "showToast",
+                          "params": {
+                            "severity": "info",
+                            "summary": "Generating",
+                            "detail": "Report is being generated..."
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chartsSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "salesChart",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Sales Trend"
+                }
+              },
+              "components": [
+                {
+                  "id": "chartPlaceholder",
+                  "type": "component",
+                  "componentType": "Chart",
+                  "props": {
+                    "type": "line",
+                    "data": {
+                      "labels": [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun"
+                      ],
+                      "datasets": [
+                        {
+                          "label": "Sales",
+                          "data": [
+                            65,
+                            59,
+                            80,
+                            81,
+                            56,
+                            55
+                          ],
+                          "fill": false,
+                          "borderColor": "#6366f1"
+                        },
+                        {
+                          "label": "Revenue",
+                          "data": [
+                            28,
+                            48,
+                            40,
+                            19,
+                            86,
+                            27
+                          ],
+                          "fill": false,
+                          "borderColor": "#22c55e"
+                        }
+                      ]
+                    }
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "pieChart",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Revenue by Category"
+                }
+              },
+              "components": [
+                {
+                  "id": "piePlaceholder",
+                  "type": "component",
+                  "componentType": "Chart",
+                  "props": {
+                    "type": "pie",
+                    "data": {
+                      "labels": [
+                        "Electronics",
+                        "Clothing",
+                        "Home",
+                        "Sports"
+                      ],
+                      "datasets": [
+                        {
+                          "data": [
+                            540,
+                            325,
+                            702,
+                            421
+                          ],
+                          "backgroundColor": [
+                            "#6366f1",
+                            "#22c55e",
+                            "#f59e0b",
+                            "#ef4444"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "summarySection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "summaryCards",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "summaryCard1",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Total Sales"
+                  },
+                  "state": {
+                    "data": "$45,200 (+15%)"
+                  }
+                },
+                {
+                  "id": "summaryCard2",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Total Orders"
+                  },
+                  "state": {
+                    "data": "1,234 (+8%)"
+                  }
+                },
+                {
+                  "id": "summaryCard3",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Avg. Order Value"
+                  },
+                  "state": {
+                    "data": "$36.63 (+2%)"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "carouselSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "carouselBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Top Products"
+                }
+              },
+              "components": [
+                {
+                  "id": "productCarousel",
+                  "type": "component",
+                  "componentType": "Carousel",
+                  "props": {
+                    "value": [
+                      {
+                        "name": "Widget A",
+                        "sales": 1250
+                      },
+                      {
+                        "name": "Widget B",
+                        "sales": 980
+                      },
+                      {
+                        "name": "Gadget C",
+                        "sales": 756
+                      },
+                      {
+                        "name": "Tool D",
+                        "sales": 543
+                      }
+                    ],
+                    "numVisible": 3,
+                    "numScroll": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "skeletonSection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "loadingBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Loading Preview"
+                }
+              },
+              "components": [
+                {
+                  "id": "skeleton1",
+                  "type": "component",
+                  "componentType": "Skeleton",
+                  "props": {
+                    "width": "10rem",
+                    "height": "2rem"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "skeleton2",
+                  "type": "component",
+                  "componentType": "Skeleton",
+                  "props": {
+                    "width": "5rem",
+                    "height": "1rem",
+                    "borderRadius": "16px"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "skeleton3",
+                  "type": "component",
+                  "componentType": "Skeleton",
+                  "props": {
+                    "width": "100%",
+                    "height": "8rem"
+                  },
+                  "state": {}
+                }
+              ]
             }
           ]
         }
@@ -199,11 +2112,10 @@
       "route": "/settings",
       "state": {
         "loading": false,
-        "initialized": false
+        "initialized": true
       },
       "meta": {
-        "title": "Settings - CRM Platform",
-        "description": "Application settings"
+        "title": "Settings — CRM Platform"
       },
       "sections": [
         {
@@ -232,14 +2144,410 @@
               ]
             }
           ]
+        },
+        {
+          "id": "settingsSteps",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "stepsBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "settingsSteps",
+                  "type": "component",
+                  "componentType": "Steps",
+                  "props": {
+                    "model": [
+                      {
+                        "label": "Profile"
+                      },
+                      {
+                        "label": "Notifications"
+                      },
+                      {
+                        "label": "Security"
+                      },
+                      {
+                        "label": "Integrations"
+                      }
+                    ],
+                    "activeIndex": 0,
+                    "readOnly": false
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "settingsForm",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "profileForm",
+              "type": "block",
+              "blockType": "form",
+              "state": {
+                "formData": {}
+              },
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Profile Settings"
+                }
+              },
+              "components": [
+                {
+                  "id": "displayName",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Display name"
+                  },
+                  "state": {
+                    "value": "Admin User"
+                  }
+                },
+                {
+                  "id": "email",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Email address"
+                  },
+                  "state": {
+                    "value": "admin@crm.com"
+                  }
+                },
+                {
+                  "id": "bio",
+                  "type": "component",
+                  "componentType": "InputTextarea",
+                  "props": {
+                    "placeholder": "Bio",
+                    "rows": 3
+                  },
+                  "state": {
+                    "value": "System administrator"
+                  }
+                },
+                {
+                  "id": "avatar",
+                  "type": "component",
+                  "componentType": "Avatar",
+                  "props": {
+                    "label": "AU",
+                    "shape": "circle",
+                    "size": "xlarge",
+                    "style": {
+                      "backgroundColor": "#6366f1"
+                    }
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "chip1",
+                  "type": "component",
+                  "componentType": "Chip",
+                  "props": {
+                    "label": "Admin",
+                    "icon": "pi pi-user"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "chip2",
+                  "type": "component",
+                  "componentType": "Chip",
+                  "props": {
+                    "label": "Verified",
+                    "icon": "pi pi-check-circle"
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "notificationSettings",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Notifications"
+                }
+              },
+              "components": [
+                {
+                  "id": "emailNotif",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Email notifications"
+                  },
+                  "state": {
+                    "value": true
+                  }
+                },
+                {
+                  "id": "smsNotif",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "SMS notifications"
+                  },
+                  "state": {
+                    "value": false
+                  }
+                },
+                {
+                  "id": "pushNotif",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Push notifications"
+                  },
+                  "state": {
+                    "value": true
+                  }
+                },
+                {
+                  "id": "notifFrequency",
+                  "type": "component",
+                  "componentType": "Dropdown",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "Instant",
+                        "value": "instant"
+                      },
+                      {
+                        "label": "Daily digest",
+                        "value": "daily"
+                      },
+                      {
+                        "label": "Weekly digest",
+                        "value": "weekly"
+                      }
+                    ]
+                  },
+                  "state": {
+                    "value": "instant"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "securitySection",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row"
+          },
+          "blocks": [
+            {
+              "id": "securityForm",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Security"
+                }
+              },
+              "components": [
+                {
+                  "id": "currentPassword",
+                  "type": "component",
+                  "componentType": "Password",
+                  "props": {
+                    "placeholder": "Current password"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "newPassword",
+                  "type": "component",
+                  "componentType": "Password",
+                  "props": {
+                    "placeholder": "New password"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "confirmPassword",
+                  "type": "component",
+                  "componentType": "Password",
+                  "props": {
+                    "placeholder": "Confirm password"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "twoFactor",
+                  "type": "component",
+                  "componentType": "InputSwitch",
+                  "props": {
+                    "label": "Two-factor authentication"
+                  },
+                  "state": {
+                    "value": false
+                  }
+                },
+                {
+                  "id": "sessionTimeout",
+                  "type": "component",
+                  "componentType": "InputNumber",
+                  "props": {
+                    "placeholder": "Session timeout (minutes)",
+                    "min": 5,
+                    "max": 1440
+                  },
+                  "state": {
+                    "value": 30
+                  }
+                },
+                {
+                  "id": "changePassword",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Change Password",
+                    "icon": "pi pi-lock",
+                    "severity": "warning"
+                  },
+                  "state": {},
+                  "events": [
+                    {
+                      "event": "onClick",
+                      "commands": [
+                        {
+                          "id": "confirmChange",
+                          "type": "confirm",
+                          "params": {
+                            "message": "Are you sure you want to change your password?",
+                            "acceptLabel": "Yes",
+                            "rejectLabel": "No"
+                          }
+                        },
+                        {
+                          "id": "successToast",
+                          "type": "showToast",
+                          "params": {
+                            "severity": "success",
+                            "summary": "Password Changed",
+                            "detail": "Your password has been updated"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "integrations",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Integrations"
+            }
+          },
+          "components": [
+            {
+              "id": "apiToggle",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Enable API access"
+              },
+              "state": {
+                "value": true
+              }
+            },
+            {
+              "id": "apiKey",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "API Key",
+                "disabled": true
+              },
+              "state": {
+                "value": "sk-xxxx-xxxx-xxxx-xxxx"
+              }
+            },
+            {
+              "id": "webhookUrl",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Webhook URL"
+              },
+              "state": {
+                "value": "https://hooks.example.com/crm"
+              }
+            },
+            {
+              "id": "regenerateKey",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Regenerate API Key",
+                "icon": "pi pi-refresh",
+                "severity": "danger"
+              },
+              "state": {}
+            }
+          ],
+          "blocks": []
         }
       ]
     }
   ],
   "globalState": {
-    "user": null,
+    "user": {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@crm.com",
+      "role": "admin",
+      "permissions": [
+        "read",
+        "write",
+        "delete"
+      ],
+      "avatar": "👤"
+    },
     "auth": {
-      "isAuthenticated": false
+      "isAuthenticated": true,
+      "token": "mock-jwt-token",
+      "expiresAt": 1735689600000
     },
     "cache": {}
   },
@@ -249,8 +2557,35 @@
     "api": {
       "baseURL": "http://localhost:3001/api",
       "timeout": 10000,
-      "endpoints": {}
+      "endpoints": {
+        "getUsers": {
+          "path": "/users",
+          "method": "GET",
+          "cache": true,
+          "cacheTTL": 60000
+        },
+        "getOrders": {
+          "path": "/orders",
+          "method": "GET",
+          "cache": false
+        },
+        "getProducts": {
+          "path": "/products",
+          "method": "GET",
+          "cache": true,
+          "cacheTTL": 300000
+        },
+        "createOrder": {
+          "path": "/orders",
+          "method": "POST"
+        }
+      }
     },
-    "features": {}
+    "features": {
+      "darkMode": true,
+      "apiAccess": true,
+      "exportData": true,
+      "twoFactorAuth": false
+    }
   }
 }

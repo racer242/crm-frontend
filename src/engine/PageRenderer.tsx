@@ -36,10 +36,12 @@ export function PageRenderer({ page }: { page: Page }) {
     ? getLayoutClass(layout)
     : "flex flex-column gap-6";
 
+  const sectionsList = sections || [];
+
   return (
     <div className={layoutClass}>
       <Toast ref={toastRef} />
-      {sections.map((section) => (
+      {sectionsList.map((section) => (
         <SectionRenderer key={section.id} section={section} />
       ))}
     </div>

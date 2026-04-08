@@ -5,13 +5,14 @@ import { Section } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
 
 export function SectionRenderer({ section }: { section: Section }) {
-  const { layout, blocks, className, visibility } = section;
+  const { layout, className, visibility } = section;
 
   if (visibility && visibility.defaultVisible === false) {
     return null;
   }
 
   const layoutClass = getLayoutClass(layout);
+  const blocks = section.blocks || [];
 
   return (
     <section className={`mb-4 ${layoutClass} ${className || ""}`}>

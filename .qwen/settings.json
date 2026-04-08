@@ -6,7 +6,8 @@
       "Bash(rmdir *)",
       "Bash(npm install *)",
       "Bash(git commit *)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(node *)"
     ]
   },
   "$version": 3
