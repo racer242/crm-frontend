@@ -7,9 +7,6 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { StateManager } from "@/core";
 import { usePathname } from "next/navigation";
 
-/**
- * AppEngine - главный компонент приложения
- */
 export function AppEngine({ config }: { config: App }) {
   const pathname = usePathname();
 
@@ -63,7 +60,7 @@ export function AppEngine({ config }: { config: App }) {
     <div className="flex min-h-screen surface-900">
       {navItems.length > 0 && <DashboardSidebar items={navItems} />}
       <main className="flex-1 overflow-auto">
-        <div className="p-4 md:p-6 lg:p-8 max-w-12">
+        <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
           <PageRenderer key={currentPage.id} page={currentPage} />
         </div>
       </main>

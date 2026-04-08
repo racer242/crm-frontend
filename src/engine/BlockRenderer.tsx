@@ -27,7 +27,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Card
             title={wrapperProps.header}
-            className={className || "mb-3"}
+            className={`${className || ""} p-3 shadow-2`}
             style={style}
           >
             {content}
@@ -37,7 +37,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Panel
             header={wrapperProps.header}
-            className={className || "mb-3"}
+            className={`${className || ""} p-3`}
             style={style}
           >
             {content}
@@ -47,7 +47,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Fieldset
             legend={wrapperProps.header}
-            className={className || "mb-3"}
+            className={`${className || ""} p-3`}
             style={style}
           >
             {content}
@@ -55,13 +55,17 @@ export function BlockRenderer({ block }: { block: Block }) {
         );
       case "Toolbar":
         return (
-          <Toolbar className={className || "mb-3"} style={style}>
-            {content}
-          </Toolbar>
+          <Toolbar
+            className={`${className || ""} p-2`}
+            style={style}
+            start={
+              <div className="flex align-items-center gap-2">{content}</div>
+            }
+          />
         );
       default:
         return (
-          <div className={className || "mb-3"} style={style}>
+          <div className={`${className || ""} mb-3`} style={style}>
             {content}
           </div>
         );
@@ -69,7 +73,7 @@ export function BlockRenderer({ block }: { block: Block }) {
   }
 
   return (
-    <div className={className || "mb-3"} style={style}>
+    <div className={`${className || ""} mb-3`} style={style}>
       {content}
     </div>
   );

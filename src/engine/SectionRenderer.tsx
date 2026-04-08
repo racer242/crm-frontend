@@ -15,9 +15,11 @@ export function SectionRenderer({ section }: { section: Section }) {
   const blocks = section.blocks || [];
 
   return (
-    <section className={`mb-4 ${layoutClass} ${className || ""}`}>
+    <section className={`mb-5 ${layoutClass} ${className || ""}`}>
       {blocks.map((block) => (
-        <BlockRenderer key={block.id} block={block} />
+        <div key={block.id} className="flex-1 min-w-0">
+          <BlockRenderer block={block} />
+        </div>
       ))}
     </section>
   );
@@ -26,7 +28,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 function getLayoutClass(layout?: any): string {
   if (!layout) return "flex flex-column gap-4";
 
-  const { type, direction, justifyContent } = layout;
+  const { type, direction, justifyContent, columns } = layout;
 
   switch (type) {
     case "flex": {
@@ -35,8 +37,9 @@ function getLayoutClass(layout?: any): string {
         justifyContent === "between" ? "justify-content-between" : "";
       return `flex ${dir} align-items-center ${justify} gap-4`;
     }
-    case "grid":
+    case "grid": {
       return `grid grid-nogutter`;
+    }
     default:
       return "flex flex-column gap-4";
   }

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Page } from "@/types";
 import { SectionRenderer } from "./SectionRenderer";
 import { Toast } from "primereact/toast";
 
 export function PageRenderer({ page }: { page: Page }) {
   const { sections, layout, meta } = page;
-  const toastRef = React.useRef<Toast>(null);
+  const toastRef = useRef<Toast>(null);
 
   useEffect(() => {
     if (page.onLoad) {
@@ -32,9 +32,7 @@ export function PageRenderer({ page }: { page: Page }) {
     });
   };
 
-  const layoutClass = layout
-    ? getLayoutClass(layout)
-    : "flex flex-column gap-6";
+  const layoutClass = layout ? getLayoutClass(layout) : "flex flex-column";
 
   const sectionsList = sections || [];
 

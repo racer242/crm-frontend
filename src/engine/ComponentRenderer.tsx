@@ -71,7 +71,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 1)
         return (
           <h1
-            className={`text-3xl font-bold text-100 ${className || ""}`}
+            className={`text-3xl font-bold mb-3 text-100 ${className || ""}`}
             style={style}
           >
             {value}
@@ -80,7 +80,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 2)
         return (
           <h2
-            className={`text-2xl font-bold text-100 ${className || ""}`}
+            className={`text-2xl font-semibold mb-2 text-100 ${className || ""}`}
             style={style}
           >
             {value}
@@ -89,14 +89,17 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 3)
         return (
           <h3
-            className={`text-xl font-bold text-100 ${className || ""}`}
+            className={`text-xl font-medium mb-2 text-100 ${className || ""}`}
             style={style}
           >
             {value}
           </h3>
         );
       return (
-        <p className={`text-200 ${className || ""}`} style={style}>
+        <p
+          className={`text-base text-300 mb-2 ${className || ""}`}
+          style={style}
+        >
           {value}
         </p>
       );
@@ -104,165 +107,204 @@ export function ComponentRenderer({ component }: { component: Component }) {
 
     case "InputText":
       return (
-        <InputText
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
+        <div className="field mb-3">
+          <InputText
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+          />
+        </div>
       );
 
     case "InputNumber":
       return (
-        <InputNumber
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onValueChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3">
+          <InputNumber
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onValueChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "InputTextarea":
       return (
-        <InputTextarea
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
+        <div className="field mb-3">
+          <InputTextarea
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+          />
+        </div>
       );
 
     case "Password":
       return (
-        <Password
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
+        <div className="field mb-3">
+          <Password
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+          />
+        </div>
       );
 
     case "Dropdown":
       return (
-        <Dropdown
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3">
+          <Dropdown
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "MultiSelect":
       return (
-        <MultiSelect
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3">
+          <MultiSelect
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "AutoComplete":
       return (
-        <AutoComplete
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          completeMethod={(e) => {
-            const suggestions = (props.suggestions || []).filter((s: string) =>
-              s.toLowerCase().includes(e.query.toLowerCase()),
-            );
-          }}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3">
+          <AutoComplete
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            completeMethod={(e) => {
+              const suggestions = (props.suggestions || []).filter(
+                (s: string) => s.toLowerCase().includes(e.query.toLowerCase()),
+              );
+            }}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "Calendar":
       return (
-        <Calendar
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3">
+          <Calendar
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "Checkbox":
       return (
-        <Checkbox
-          {...props}
-          checked={component.state?.value || false}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.checked })}
-        />
+        <div className="flex align-items-center mb-2">
+          <Checkbox
+            {...props}
+            checked={component.state?.value || false}
+            className={className}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.checked })}
+          />
+          {props.label && (
+            <label className="ml-2 text-200">{props.label as string}</label>
+          )}
+        </div>
       );
 
     case "RadioButton":
       return (
-        <RadioButton
-          {...props}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="flex align-items-center mb-2">
+          <RadioButton
+            {...props}
+            className={className}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+          {props.label && (
+            <label className="ml-2 text-200">{props.label as string}</label>
+          )}
+        </div>
       );
 
     case "InputSwitch":
       return (
-        <InputSwitch
-          {...props}
-          checked={component.state?.value || false}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="flex align-items-center mb-2">
+          <InputSwitch
+            {...props}
+            checked={component.state?.value || false}
+            className={className}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+          {props.label && (
+            <label className="ml-2 text-200">{props.label as string}</label>
+          )}
+        </div>
       );
 
     case "Slider":
       return (
-        <Slider
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="field mb-3 px-2">
+          <Slider
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "Rating":
       return (
-        <Rating
-          {...props}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="flex align-items-center mb-2">
+          <Rating
+            {...props}
+            className={className}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "ColorPicker":
       return (
-        <ColorPicker
-          {...props}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
+        <div className="flex align-items-center mb-2">
+          <ColorPicker
+            {...props}
+            className={className}
+            style={style}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+        </div>
       );
 
     case "FileUpload":
       return (
-        <FileUpload
-          {...props}
-          className={`w-full ${className || ""}`}
-          style={style}
-        />
+        <div className="mb-3">
+          <FileUpload
+            {...props}
+            className={`w-full ${className || ""}`}
+            style={style}
+          />
+        </div>
       );
 
     case "Button":
       return (
         <Button
           {...props}
-          className={className}
+          className={`${className || ""} mr-2 mb-2`}
           style={style}
           onClick={(e) => handleEvent("onClick", e)}
         />
@@ -272,7 +314,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return (
         <SplitButton
           {...props}
-          className={className}
+          className={`${className || ""} mr-2 mb-2`}
           style={style}
           onClick={(e) => handleEvent("onClick", e)}
         />
@@ -283,7 +325,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
         <DataTable
           {...props}
           value={props.value || []}
-          className={className}
+          className={`w-full ${className || ""}`}
           style={style}
         >
           {props.columns?.map((col: any, index: number) => (
@@ -294,8 +336,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
 
     case "Card":
       return (
-        <Card {...props} className={className} style={style}>
-          {component.state?.data}
+        <Card {...props} className={`${className || ""} mb-3`} style={style}>
+          <p className="text-300 m-0">{component.state?.data}</p>
         </Card>
       );
 
@@ -318,7 +360,13 @@ export function ComponentRenderer({ component }: { component: Component }) {
       }));
       if (!isMounted)
         return <div className="h-3rem surface-800 border-round-md" />;
-      return <Menubar model={menuModel} className={className} style={style} />;
+      return (
+        <Menubar
+          model={menuModel}
+          className={`w-full mb-4 ${className || ""}`}
+          style={style}
+        />
+      );
     }
 
     case "Breadcrumb": {
@@ -329,7 +377,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return (
         <BreadCrumb
           model={breadcrumbModel}
-          className={className}
+          className={`mb-4 ${className || ""}`}
           style={style}
         />
       );
@@ -338,18 +386,20 @@ export function ComponentRenderer({ component }: { component: Component }) {
     case "TabView": {
       const tabs = props.tabs || [];
       return (
-        <TabView className={className} style={style}>
+        <TabView className={`mb-4 ${className || ""}`} style={style}>
           {tabs.map((tab: any, index: number) => (
             <TabPanel key={index} header={tab.label}>
-              {tab.content?.type === "table" ? (
-                <DataTable value={tab.content.data || []} className="w-full">
-                  {tab.content.columns?.map((col: any, i: number) => (
-                    <Column key={i} field={col.field} header={col.header} />
-                  ))}
-                </DataTable>
-              ) : (
-                <p>{tab.content}</p>
-              )}
+              <div className="p-3">
+                {tab.content?.type === "table" ? (
+                  <DataTable value={tab.content.data || []} className="w-full">
+                    {tab.content.columns?.map((col: any, i: number) => (
+                      <Column key={i} field={col.field} header={col.header} />
+                    ))}
+                  </DataTable>
+                ) : (
+                  <p className="text-300 m-0">{tab.content}</p>
+                )}
+              </div>
             </TabPanel>
           ))}
         </TabView>
@@ -365,7 +415,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return (
         <Steps
           model={stepsModel}
-          className={className}
+          className={`mb-4 ${className || ""}`}
           style={style}
           activeIndex={props.activeIndex || 0}
           readOnly={props.readOnly !== false}
@@ -377,62 +427,115 @@ export function ComponentRenderer({ component }: { component: Component }) {
       const tabs = props.tabs || [];
       return (
         <Accordion
-          className={className}
+          className={`mb-4 ${className || ""}`}
           style={style}
           activeIndex={props.activeIndex}
         >
           {tabs.map((tab: any, index: number) => (
             <AccordionTab key={index} header={tab.header}>
-              <p>{tab.content}</p>
+              <p className="text-300 m-0">{tab.content}</p>
             </AccordionTab>
           ))}
         </Accordion>
       );
     }
 
-    case "Carousel":
+    case "Carousel": {
       const carouselValue = props.value || [];
       return (
         <Carousel
           {...props}
           value={carouselValue}
-          className={className}
+          className={`mb-4 ${className || ""}`}
           style={style}
           itemTemplate={(item: any) => (
-            <div className="p-3 text-center">
-              <p className="font-bold">{item.name}</p>
-              <p className="text-500">Sales: {item.sales}</p>
+            <div className="p-4 text-center surface-800 border-round-md mx-2">
+              <p className="font-bold text-100 mb-1">{item.name}</p>
+              <p className="text-400 text-sm">Sales: {item.sales}</p>
             </div>
           )}
         />
       );
+    }
 
     case "Skeleton":
-      return <Skeleton {...props} className={className} style={style} />;
+      return (
+        <Skeleton
+          {...props}
+          className={`${className || ""} mb-2`}
+          style={style}
+        />
+      );
 
     case "Chip":
-      return <Chip {...props} className={className} style={style} />;
+      return (
+        <Chip
+          {...props}
+          className={`${className || ""} mr-2 mb-2`}
+          style={style}
+        />
+      );
 
     case "Avatar":
-      return <Avatar {...props} className={className} style={style} />;
+      return (
+        <Avatar
+          {...props}
+          className={`${className || ""} mr-2`}
+          style={style}
+        />
+      );
 
     case "Badge":
-      return <Badge {...props} className={className} style={style} />;
+      return (
+        <Badge
+          {...props}
+          className={`${className || ""} mr-2 mb-2`}
+          style={style}
+        />
+      );
 
     case "Tag":
-      return <Tag {...props} className={className} style={style} />;
+      return (
+        <Tag
+          {...props}
+          className={`${className || ""} mr-2 mb-2`}
+          style={style}
+        />
+      );
 
     case "ProgressBar":
-      return <ProgressBar {...props} className={className} style={style} />;
+      return (
+        <ProgressBar
+          {...props}
+          className={`${className || ""} mb-3`}
+          style={style}
+        />
+      );
 
     case "ProgressSpinner":
-      return <ProgressSpinner {...props} className={className} style={style} />;
+      return (
+        <div className="flex justify-content-center mb-3">
+          <ProgressSpinner {...props} className={className} style={style} />
+        </div>
+      );
 
     case "Message":
-      return <Message {...props} className={className} style={style} />;
+      return (
+        <Message
+          {...props}
+          className={`${className || ""} mb-3`}
+          style={style}
+        />
+      );
 
     case "Divider":
-      return <Divider {...props} className={className} style={style} />;
+      return (
+        <Divider
+          {...props}
+          className={`${className || ""} my-4`}
+          style={style}
+        />
+      );
 
     case "Timeline": {
       const timelineValue = props.value || [];
@@ -440,17 +543,17 @@ export function ComponentRenderer({ component }: { component: Component }) {
         <Timeline
           {...props}
           value={timelineValue}
-          className={className}
+          className={`${className || ""} mb-3`}
           style={style}
           content={(item: any) => (
             <div>
-              <p className="font-semibold">{item.status}</p>
+              <p className="font-semibold text-100 mb-1">{item.status}</p>
               <small className="text-500">{item.date}</small>
             </div>
           )}
           marker={(item: any) => (
             <span
-              className="flex w-2rem h-2rem align-items-center justify-content-center border-circle border-200"
+              className="flex w-2rem h-2rem align-items-center justify-content-center border-circle"
               style={{ backgroundColor: item.color || "#6366f1" }}
             >
               <i className={item.icon} />
@@ -462,7 +565,11 @@ export function ComponentRenderer({ component }: { component: Component }) {
 
     case "Chart": {
       if (!isMounted) return <Skeleton width="100%" height="20rem" />;
-      return <Chart {...props} className={className} style={style} />;
+      return (
+        <div className="mb-4">
+          <Chart {...props} className={`${className || ""}`} style={style} />
+        </div>
+      );
     }
 
     default:

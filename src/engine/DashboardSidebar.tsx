@@ -88,9 +88,11 @@ export function DashboardSidebar({ items }: { items: NavItem[] }) {
         }`}
       >
         {/* Logo */}
-        <div className="flex align-items-center h-14 px-3 border-bottom border-700">
+        <div className="flex align-items-center h-4rem px-3 border-bottom border-700">
           {!collapsed && (
-            <span className="text-lg font-semibold text-100 truncate">CRM</span>
+            <span className="text-lg font-semibold text-100 overflow-hidden text-ellipsis white-space-nowrap">
+              CRM
+            </span>
           )}
         </div>
 
@@ -101,7 +103,7 @@ export function DashboardSidebar({ items }: { items: NavItem[] }) {
               key={item.route}
               href={item.route}
               title={collapsed ? item.label : undefined}
-              className={`flex align-items-center gap-3 mx-2 px-3 py-3 border-round-md text-sm transition-colors no-underline ${
+              className={`flex align-items-center gap-3 mx-2 px-3 py-3 border-round-md text-sm no-underline transition-colors ${
                 collapsed ? "justify-content-center" : ""
               } ${
                 isActive(item.route)
@@ -110,7 +112,11 @@ export function DashboardSidebar({ items }: { items: NavItem[] }) {
               }`}
             >
               <i className={item.icon}></i>
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              {!collapsed && (
+                <span className="overflow-hidden text-ellipsis white-space-nowrap">
+                  {item.label}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
