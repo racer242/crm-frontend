@@ -25,25 +25,19 @@ export function BlockRenderer({ block }: { block: Block }) {
     switch (wrapper.component) {
       case "Card":
         return (
-          <div
-            className={`surface-card shadow-2 border-round-lg ${className || ""}`}
+          <Card
+            title={wrapperProps.header}
+            className={className || ""}
             style={style}
           >
-            {wrapperProps.header && (
-              <div className="px-4 pt-4 pb-2">
-                <h3 className="text-xl font-semibold text-100 m-0">
-                  {wrapperProps.header}
-                </h3>
-              </div>
-            )}
-            <div className="p-4 pt-0">{content}</div>
-          </div>
+            {content}
+          </Card>
         );
       case "Panel":
         return (
           <Panel
             header={wrapperProps.header}
-            className={`border-round-lg ${className || ""}`}
+            className={className || ""}
             style={style}
           >
             {content}
@@ -53,7 +47,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Fieldset
             legend={wrapperProps.header}
-            className={`border-round-lg ${className || ""}`}
+            className={className || ""}
             style={style}
           >
             {content}
@@ -62,7 +56,7 @@ export function BlockRenderer({ block }: { block: Block }) {
       case "Toolbar":
         return (
           <Toolbar
-            className={`border-round-lg py-2 px-3 ${className || ""}`}
+            className={className || ""}
             style={style}
             start={
               <div className="flex align-items-center gap-2 flex-wrap">
@@ -73,7 +67,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         );
       default:
         return (
-          <div className={`${className || ""} mb-3`} style={style}>
+          <div className={className || ""} style={style}>
             {content}
           </div>
         );
@@ -81,7 +75,7 @@ export function BlockRenderer({ block }: { block: Block }) {
   }
 
   return (
-    <div className={`${className || ""} mb-3`} style={style}>
+    <div className={className || ""} style={style}>
       {content}
     </div>
   );

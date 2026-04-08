@@ -71,7 +71,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 1)
         return (
           <h1
-            className={`text-3xl font-bold mb-3 text-100 ${className || ""}`}
+            className={`text-3xl font-bold mb-3 ${className || ""}`}
             style={style}
           >
             {value}
@@ -80,7 +80,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 2)
         return (
           <h2
-            className={`text-2xl font-semibold mb-2 text-100 ${className || ""}`}
+            className={`text-2xl font-semibold mb-2 ${className || ""}`}
             style={style}
           >
             {value}
@@ -89,17 +89,14 @@ export function ComponentRenderer({ component }: { component: Component }) {
       if (level === 3)
         return (
           <h3
-            className={`text-xl font-medium mb-2 text-100 ${className || ""}`}
+            className={`text-xl font-medium mb-2 ${className || ""}`}
             style={style}
           >
             {value}
           </h3>
         );
       return (
-        <p
-          className={`text-base text-300 mb-2 ${className || ""}`}
-          style={style}
-        >
+        <p className={`text-base mb-2 ${className || ""}`} style={style}>
           {value}
         </p>
       );
