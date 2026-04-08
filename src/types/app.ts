@@ -15,10 +15,24 @@ interface CommandStub {
   [key: string]: any;
 }
 
+/** Элемент навигации */
+export interface NavItem {
+  label: string;
+  icon: string;
+  route: string;
+}
+
+/** Конфигурация навбара */
+export interface NavbarConfig {
+  id: string;
+  items: NavItem[];
+}
+
 /** Приложение - корневой элемент */
 export interface App extends BaseElement {
   type: "app";
   pages: PageStub[];
+  navbar?: NavbarConfig;
   globalState: GlobalState;
   config: AppConfig;
 }

@@ -5,7 +5,8 @@
       "Bash(xcopy *)",
       "Bash(rmdir *)",
       "Bash(npm install *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm uninstall *)"
     ]
   },
   "$version": 3

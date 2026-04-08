@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "primereact/resources/primereact.min.css";
+import "primereact/resources/themes/lara-light-purple/theme.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import { PrimeReactProvider } from "primereact/api";
@@ -27,11 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
         <PrimeReactProvider>{children}</PrimeReactProvider>
       </body>
     </html>

@@ -4,22 +4,17 @@ import React from "react";
 import { Section } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
 
-/**
- * SectionRenderer - рендерит секцию с её layout и блоками
- */
 export function SectionRenderer({ section }: { section: Section }) {
-  const { layout, blocks, className, style, visibility } = section;
+  const { layout, blocks, className, visibility } = section;
 
-  // Проверка видимости
   if (visibility && visibility.defaultVisible === false) {
     return null;
   }
 
-  // Определяем классы для layout
-  const layoutClasses = getLayoutClasses(layout);
+  const layoutClass = getLayoutClass(layout);
 
   return (
-    <section className={`${className || ""} ${layoutClasses}`} style={style}>
+    <section className={`mb-4 ${layoutClass} ${className || ""}`}>
       {blocks.map((block) => (
         <BlockRenderer key={block.id} block={block} />
       ))}
@@ -27,41 +22,21 @@ export function SectionRenderer({ section }: { section: Section }) {
   );
 }
 
-/**
- * Получение CSS классов на основе layout конфигурации
- */
-function getLayoutClasses(layout?: any): string {
-  if (!layout) return "flex flex-col gap-4";
+function getLayoutClass(layout?: any): string {
+  if (!layout) return "flex flex-column gap-4";
 
-  const { type, direction, gap, alignItems, justifyContent } = layout;
-
-  const classes: string[] = [];
+  const { type, direction, justifyContent } = layout;
 
   switch (type) {
-    case "flex":
-      classes.push("flex");
-      classes.push(direction === "column" ? "flex-col" : "flex-row");
-      
-      if (gap) classes.push(`gap-${gap}`);
-      if (alignItems) classes.push(`items-${alignItems}`);
-      if (justifyContent) classes.push(`justify-${justifyContent}`);
-      break;
-
+    case "flex": {
+      const dir = direction === "column" ? "flex-column" : "flex-row";
+      const justify =
+        justifyContent === "between" ? "justify-content-between" : "";
+      return `flex ${dir} align-items-center ${justify} gap-4`;
+    }
     case "grid":
-      classes.push("grid");
-      if (layout.columns) {
-        classes.push(`grid-cols-${layout.columns}`);
-      }
-      if (gap) classes.push(`gap-${gap}`);
-      break;
-
-    case "stack":
-      classes.push("relative");
-      break;
-
+      return `grid grid-nogutter`;
     default:
-      classes.push("flex", "flex-col", "gap-4");
+      return "flex flex-column gap-4";
   }
-
-  return classes.join(" ");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Component } from "@/types";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -8,57 +8,78 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
+import { Menubar } from "primereact/menubar";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useRef } from "react";
 
-/**
- * ComponentRenderer - рендит компонент PrimeReact на основе его типа
- */
 export function ComponentRenderer({ component }: { component: Component }) {
   const { componentType, props = {}, className, style } = component;
   const toastRef = useRef<Toast>(null);
+  const router = useRouter();
 
-  // Обработка событий
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handleEvent = (eventType: string, eventValue: any) => {
     if (!component.events) return;
 
     const eventHandlers = component.events.filter((e) => e.event === eventType);
-    
     eventHandlers.forEach((handler) => {
-      if (handler.preventDefault) {
-        // preventDefault логика
-      }
-      if (handler.stopPropagation) {
-        // stopPropagation логика
-      }
-
-      // Выполнение команд (заглушка для future implementation)
       handler.commands.forEach((cmd) => {
         console.log(`[Command] ${cmd.type}:`, cmd.params);
       });
     });
   };
 
-  // Рендер компонента по типу
   switch (componentType) {
-    case "Text":
+    case "Text": {
       const level = props.level as number | undefined;
       const value = props.value as string;
-      
+
       if (level === 1) {
-        return <h1 className={className || "text-3xl font-bold"} style={style}>{value}</h1>;
+        return (
+          <h1
+            className={`text-3xl font-bold text-100 ${className || ""}`}
+            style={style}
+          >
+            {value}
+          </h1>
+        );
       } else if (level === 2) {
-        return <h2 className={className || "text-2xl font-bold"} style={style}>{value}</h2>;
+        return (
+          <h2
+            className={`text-2xl font-bold text-100 ${className || ""}`}
+            style={style}
+          >
+            {value}
+          </h2>
+        );
       } else if (level === 3) {
-        return <h3 className={className || "text-xl font-bold"} style={style}>{value}</h3>;
+        return (
+          <h3
+            className={`text-xl font-bold text-100 ${className || ""}`}
+            style={style}
+          >
+            {value}
+          </h3>
+        );
       } else {
-        return <p className={className} style={style}>{value}</p>;
+        return (
+          <p className={`text-200 ${className || ""}`} style={style}>
+            {value}
+          </p>
+        );
       }
+    }
 
     case "InputText":
       return (
         <InputText
           {...props}
-          className={className}
+          className={`w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.target.value })}
         />
@@ -90,11 +111,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
 
     case "Card":
       return (
-        <Card
-          {...props}
-          className={className}
-          style={style}
-        >
+        <Card {...props} className={className} style={style}>
           {component.state?.data}
         </Card>
       );
@@ -102,11 +119,32 @@ export function ComponentRenderer({ component }: { component: Component }) {
     case "Toast":
       return <Toast ref={toastRef} className={className} style={style} />;
 
+    case "Menubar": {
+      const menuModel = (props.model || []).map((item: any) => ({
+        ...item,
+        template: item.route ? (
+          <Link
+            href={item.route}
+            className="p-menuitem-link flex align-items-center gap-2"
+          >
+            {item.icon && <i className={item.icon}></i>}
+            <span className="p-menuitem-text">{item.label}</span>
+          </Link>
+        ) : undefined,
+        command: item.route ? () => router.push(item.route) : undefined,
+      }));
+
+      if (!isMounted) {
+        return <div className="h-3rem surface-800 border-round-md" />;
+      }
+
+      return <Menubar model={menuModel} className={className} style={style} />;
+    }
+
     default:
-      // Для неподдерживаемых типов выводим заглушку
       return (
         <div className={className} style={style}>
-          <p className="text-gray-500 text-sm">
+          <p className="text-500 text-sm">
             [Component: {componentType} - Not implemented]
           </p>
         </div>

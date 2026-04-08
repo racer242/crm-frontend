@@ -2,6 +2,26 @@
   "id": "crm",
   "type": "app",
   "state": {},
+  "navbar": {
+    "id": "mainNavbar",
+    "items": [
+      {
+        "label": "Dashboard",
+        "icon": "pi pi-home",
+        "route": "/"
+      },
+      {
+        "label": "Users",
+        "icon": "pi pi-users",
+        "route": "/users"
+      },
+      {
+        "label": "Settings",
+        "icon": "pi pi-cog",
+        "route": "/settings"
+      }
+    ]
+  },
   "pages": [
     {
       "id": "dashboard",
@@ -57,7 +77,7 @@
           },
           "layout": {
             "type": "grid",
-            "columns": 3,
+            "columns": 2,
             "gap": "1rem"
           },
           "blocks": [
@@ -81,14 +101,20 @@
                   "type": "component",
                   "componentType": "DataTable",
                   "props": {
-                    "value": [],
+                    "value": [
+                      {
+                        "name": "Total Users",
+                        "value": 1250,
+                        "change": "+12%"
+                      },
+                      { "name": "Active Leads", "value": 430, "change": "+8%" },
+                      { "name": "Revenue", "value": "$95K", "change": "+15%" }
+                    ],
                     "columns": [
-                      { "field": "name", "header": "Name" },
+                      { "field": "name", "header": "Metric" },
                       { "field": "value", "header": "Value" },
                       { "field": "change", "header": "Change" }
-                    ],
-                    "paginator": true,
-                    "rows": 10
+                    ]
                   },
                   "state": {}
                 }
@@ -118,17 +144,6 @@
                   "state": {
                     "value": ""
                   }
-                },
-                {
-                  "id": "actionButton",
-                  "type": "component",
-                  "componentType": "Button",
-                  "props": {
-                    "label": "Submit",
-                    "icon": "pi pi-check",
-                    "severity": "success"
-                  },
-                  "state": {}
                 }
               ]
             }
@@ -168,6 +183,48 @@
                   "componentType": "Text",
                   "props": {
                     "value": "User Management",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "type": "page",
+      "route": "/settings",
+      "state": {
+        "loading": false,
+        "initialized": false
+      },
+      "meta": {
+        "title": "Settings - CRM Platform",
+        "description": "Application settings"
+      },
+      "sections": [
+        {
+          "id": "settingsHeader",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "settingsTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "settingsPageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Settings",
                     "level": 1
                   },
                   "state": {}

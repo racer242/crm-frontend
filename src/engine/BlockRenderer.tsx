@@ -8,22 +8,17 @@ import { Panel } from "primereact/panel";
 import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
 
-/**
- * BlockRenderer - рендерит блок с его оберткой и компонентами
- */
 export function BlockRenderer({ block }: { block: Block }) {
   const { wrapper, components, className, style } = block;
 
-  // Контент блока - рендерим все компоненты
   const content = (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-column gap-3">
       {components.map((component) => (
         <ComponentRenderer key={component.id} component={component} />
       ))}
     </div>
   );
 
-  // Если есть обертка, рендерим соответствующий компонент
   if (wrapper) {
     const wrapperProps = wrapper.props || {};
 
@@ -32,7 +27,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Card
             title={wrapperProps.header}
-            className={className}
+            className={className || "mb-3"}
             style={style}
           >
             {content}
@@ -42,7 +37,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Panel
             header={wrapperProps.header}
-            className={className}
+            className={className || "mb-3"}
             style={style}
           >
             {content}
@@ -52,7 +47,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Fieldset
             legend={wrapperProps.header}
-            className={className}
+            className={className || "mb-3"}
             style={style}
           >
             {content}
@@ -60,22 +55,21 @@ export function BlockRenderer({ block }: { block: Block }) {
         );
       case "Toolbar":
         return (
-          <Toolbar className={className} style={style}>
+          <Toolbar className={className || "mb-3"} style={style}>
             {content}
           </Toolbar>
         );
       default:
         return (
-          <div className={className} style={style}>
+          <div className={className || "mb-3"} style={style}>
             {content}
           </div>
         );
     }
   }
 
-  // Без обертки
   return (
-    <div className={className} style={style}>
+    <div className={className || "mb-3"} style={style}>
       {content}
     </div>
   );
