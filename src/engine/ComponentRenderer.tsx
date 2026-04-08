@@ -540,26 +540,27 @@ export function ComponentRenderer({ component }: { component: Component }) {
     case "Timeline": {
       const timelineValue = props.value || [];
       return (
-        <Timeline
-          {...props}
-          value={timelineValue}
-          className={`${className || ""} mb-3`}
-          style={style}
-          content={(item: any) => (
-            <div>
-              <p className="font-semibold text-100 mb-1">{item.status}</p>
-              <small className="text-500">{item.date}</small>
-            </div>
-          )}
-          marker={(item: any) => (
-            <span
-              className="flex w-2rem h-2rem align-items-center justify-content-center border-circle"
-              style={{ backgroundColor: item.color || "#6366f1" }}
-            >
-              <i className={item.icon} />
-            </span>
-          )}
-        />
+        <div className={`${className || ""} mb-3`} style={style}>
+          <Timeline
+            value={timelineValue}
+            content={(item: any) => (
+              <div className="flex flex-column align-items-start">
+                <span className="font-semibold text-100 mb-1">
+                  {item.status}
+                </span>
+                <small className="text-500">{item.date}</small>
+              </div>
+            )}
+            marker={(item: any) => (
+              <span
+                className="flex w-2rem h-2rem align-items-center justify-content-center border-circle text-white"
+                style={{ backgroundColor: item.color || "#6366f1" }}
+              >
+                <i className={item.icon} />
+              </span>
+            )}
+          />
+        </div>
       );
     }
 

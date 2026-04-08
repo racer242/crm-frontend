@@ -9,7 +9,7 @@ import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
 
 export function BlockRenderer({ block }: { block: Block }) {
-  const { wrapper, components, className, style, blockType } = block;
+  const { wrapper, components, className, style } = block;
 
   const content = (
     <div className="flex flex-column gap-3">
@@ -25,19 +25,25 @@ export function BlockRenderer({ block }: { block: Block }) {
     switch (wrapper.component) {
       case "Card":
         return (
-          <Card
-            title={wrapperProps.header}
-            className={`${className || ""} p-3 shadow-2`}
+          <div
+            className={`surface-card shadow-2 border-round-lg ${className || ""}`}
             style={style}
           >
-            {content}
-          </Card>
+            {wrapperProps.header && (
+              <div className="px-4 pt-4 pb-2">
+                <h3 className="text-xl font-semibold text-100 m-0">
+                  {wrapperProps.header}
+                </h3>
+              </div>
+            )}
+            <div className="p-4 pt-0">{content}</div>
+          </div>
         );
       case "Panel":
         return (
           <Panel
             header={wrapperProps.header}
-            className={`${className || ""} p-3`}
+            className={`border-round-lg ${className || ""}`}
             style={style}
           >
             {content}
@@ -47,7 +53,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         return (
           <Fieldset
             legend={wrapperProps.header}
-            className={`${className || ""} p-3`}
+            className={`border-round-lg ${className || ""}`}
             style={style}
           >
             {content}
@@ -56,7 +62,7 @@ export function BlockRenderer({ block }: { block: Block }) {
       case "Toolbar":
         return (
           <Toolbar
-            className={`${className || ""} p-2`}
+            className={`border-round-lg py-2 px-3 ${className || ""}`}
             style={style}
             start={
               <div className="flex align-items-center gap-2 flex-wrap">
