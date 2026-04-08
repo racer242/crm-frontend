@@ -1,0 +1,199 @@
+{
+  "id": "crm",
+  "type": "app",
+  "state": {},
+  "pages": [
+    {
+      "id": "dashboard",
+      "type": "page",
+      "route": "/",
+      "state": {
+        "loading": false,
+        "initialized": false
+      },
+      "meta": {
+        "title": "Dashboard - CRM Platform",
+        "description": "Main dashboard view"
+      },
+      "sections": [
+        {
+          "id": "header",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "flex",
+            "direction": "row",
+            "alignItems": "center",
+            "justifyContent": "between"
+          },
+          "blocks": [
+            {
+              "id": "headerContent",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "title",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "CRM Dashboard",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mainContent",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "layout": {
+            "type": "grid",
+            "columns": 3,
+            "gap": "1rem"
+          },
+          "blocks": [
+            {
+              "id": "statsCard",
+              "type": "block",
+              "blockType": "stats",
+              "state": {
+                "data": null,
+                "loading": false
+              },
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Statistics"
+                }
+              },
+              "components": [
+                {
+                  "id": "statsTable",
+                  "type": "component",
+                  "componentType": "DataTable",
+                  "props": {
+                    "value": [],
+                    "columns": [
+                      { "field": "name", "header": "Name" },
+                      { "field": "value", "header": "Value" },
+                      { "field": "change", "header": "Change" }
+                    ],
+                    "paginator": true,
+                    "rows": 10
+                  },
+                  "state": {}
+                }
+              ]
+            },
+            {
+              "id": "actionForm",
+              "type": "block",
+              "blockType": "form",
+              "state": {
+                "formData": {}
+              },
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Quick Action"
+                }
+              },
+              "components": [
+                {
+                  "id": "actionInput",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "props": {
+                    "placeholder": "Enter value..."
+                  },
+                  "state": {
+                    "value": ""
+                  }
+                },
+                {
+                  "id": "actionButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "props": {
+                    "label": "Submit",
+                    "icon": "pi pi-check",
+                    "severity": "success"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "users",
+      "type": "page",
+      "route": "/users",
+      "state": {
+        "loading": false,
+        "initialized": false
+      },
+      "meta": {
+        "title": "Users - CRM Platform",
+        "description": "User management page"
+      },
+      "sections": [
+        {
+          "id": "usersHeader",
+          "type": "section",
+          "state": {
+            "visible": true
+          },
+          "blocks": [
+            {
+              "id": "usersTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "usersPageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "User Management",
+                    "level": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "globalState": {
+    "user": null,
+    "auth": {
+      "isAuthenticated": false
+    },
+    "cache": {}
+  },
+  "config": {
+    "name": "CRM Platform",
+    "version": "1.0.0",
+    "api": {
+      "baseURL": "http://localhost:3001/api",
+      "timeout": 10000,
+      "endpoints": {}
+    },
+    "features": {}
+  }
+}
