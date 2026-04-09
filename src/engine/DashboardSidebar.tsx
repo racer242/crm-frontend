@@ -6,7 +6,7 @@ import { NavItem, UserMenuConfig } from "@/types";
 import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
-import type { Menu as MenuType } from "primereact/menu";
+import { SplitButton } from "primereact/splitbutton";
 
 function buildMenuItems(
   items: NavItem[],
@@ -50,7 +50,6 @@ export function DashboardSidebar({
   const router = useRouter();
   const pathname = usePathname() || "/";
   const [collapsed, setCollapsed] = useState(false);
-  const userMenuRef = useRef<MenuType>(null);
 
   const handleNav = useCallback(
     (route: string) => {
@@ -161,40 +160,28 @@ export function DashboardSidebar({
           />
         </div>
 
-        <div
-          className="p-2"
-          style={{ borderTop: "1px solid var(--surface-border)" }}
-        >
-          {userMenu && (
-            <div className="relative mb-1">
-              {isAuthenticated && (
-                <Menu
-                  model={desktopUserItems}
-                  popup
-                  ref={userMenuRef}
-                  className="w-12rem"
-                  appendTo="self"
-                />
-              )}
-              <Button
-                icon={isAuthenticated ? "pi pi-user" : "pi pi-sign-in"}
-                label={
-                  !collapsed
-                    ? isAuthenticated
-                      ? userMenu.profileLabel
-                      : userMenu.loginLabel
-                    : undefined
-                }
-                className={`p-button-text p-button-sm p-button-rounded w-full ${
+        <div className="p-2 border-top-1 border-200">
+          {userMenu &&
+            (isAuthenticated ? (
+              <SplitButton
+                label={!collapsed ? userMenu.profileLabel : undefined}
+                icon="pi pi-user"
+                model={desktopUserItems}
+                className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
                   collapsed ? "justify-content-center" : ""
                 }`}
-                onClick={(e) => {
-                  if (isAuthenticated) userMenuRef.current?.toggle(e);
-                  else handleAuthClick();
-                }}
+                menuStyle={{ width: "12rem" }}
               />
-            </div>
-          )}
+            ) : (
+              <Button
+                icon="pi pi-sign-in"
+                label={!collapsed ? userMenu.loginLabel : undefined}
+                className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
+                  collapsed ? "justify-content-center" : ""
+                }`}
+                onClick={handleAuthClick}
+              />
+            ))}
           <Button
             icon={
               collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"

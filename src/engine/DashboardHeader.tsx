@@ -24,8 +24,6 @@ export function DashboardHeader({
     router.push(isAuthenticated ? "/profile" : "/login");
   }, [isAuthenticated, router]);
 
-  console.log("???", userMenu);
-
   return (
     <header className="md:hidden fixed top-0 left-0 right-0 h-4rem flex align-items-center justify-content-between px-3 surface-ground z-5">
       <Button

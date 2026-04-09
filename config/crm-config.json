@@ -1,6 +1,7 @@
 {
   "id": "crm",
   "type": "app",
+  "title": "CRM Platform",
   "state": {},
   "navbar": {
     "id": "mainNavbar",
@@ -35,6 +36,15 @@
         "icon": "pi pi-cog",
         "route": "/settings"
       }
+    ]
+  },
+  "userMenu": {
+    "loginLabel": "Войти",
+    "profileLabel": "Профиль",
+    "logoutLabel": "Выйти",
+    "items": [
+      { "label": "Профиль", "icon": "pi pi-user", "route": "/profile" },
+      { "label": "Выйти", "icon": "pi pi-sign-out", "route": "/" }
     ]
   },
   "pages": [
