@@ -70,6 +70,31 @@ export function DashboardSidebar({
 
   const menuItems = buildMenuItems(items, pathname, handleNav);
 
+  // Mobile user menu items
+  const mobileUserItems: any[] = userMenu
+    ? isAuthenticated
+      ? [
+          ...userMenu.items.map((item) => ({
+            label: item.label,
+            icon: item.icon,
+            command: () => handleNav(item.route),
+          })),
+          { separator: true },
+          {
+            label: userMenu.logoutLabel,
+            icon: "pi pi-sign-out",
+            command: handleLogout,
+          },
+        ]
+      : [
+          {
+            label: userMenu.loginLabel,
+            icon: "pi pi-sign-in",
+            command: handleAuthClick,
+          },
+        ]
+    : [];
+
   // Desktop user popup items
   const desktopUserItems: any[] =
     userMenu?.items.map((item) => ({
@@ -100,34 +125,13 @@ export function DashboardSidebar({
         blockScroll
         showCloseIcon={false}
       >
-        <Menu model={menuItems} className="border-none w-full mb-4" />
+        <Menu model={menuItems} className="border-none w-full mb-3" />
 
         {userMenu && (
-          <div
-            className="pt-3"
-            style={{ borderTop: "1px solid var(--surface-border)" }}
-          >
-            {isAuthenticated ? (
-              userMenu.items.map((item) => (
-                <button
-                  key={item.route}
-                  className="flex align-items-center gap-3 w-full px-3 py-2 border-round-md cursor-pointer text-500 hover:surface-hover bg-transparent border-none"
-                  onClick={() => handleNav(item.route)}
-                >
-                  <i className={item.icon}></i>
-                  <span>{item.label}</span>
-                </button>
-              ))
-            ) : (
-              <button
-                className="flex align-items-center gap-3 w-full px-3 py-2 border-round-md cursor-pointer text-500 hover:surface-hover bg-transparent border-none"
-                onClick={handleAuthClick}
-              >
-                <i className="pi pi-sign-in"></i>
-                <span>{userMenu.loginLabel}</span>
-              </button>
-            )}
-          </div>
+          <Menu
+            model={mobileUserItems}
+            className="border-none w-full border-top-1 border-200 pt-3"
+          />
         )}
       </Sidebar>
 
