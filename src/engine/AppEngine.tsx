@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { App, Page, NavItem } from "@/types";
 import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { DashboardHeader } from "./DashboardHeader";
 import { StateManager } from "@/core";
 import { usePathname } from "next/navigation";
 
@@ -46,6 +47,8 @@ export function AppEngine({ config }: { config: App }) {
     return unsubscribe;
   }, [stateManager]);
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   if (!currentPage) {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
@@ -56,18 +59,27 @@ export function AppEngine({ config }: { config: App }) {
 
   const navItems: NavItem[] = config.navbar?.items || [];
   const isAuthenticated = config.globalState?.auth?.isAuthenticated || false;
+  const title = config.title || "CRM Platform";
 
   return (
     <div className="flex min-h-screen surface-900">
+      <DashboardHeader
+        title={title}
+        userMenu={config.userMenu}
+        isAuthenticated={isAuthenticated}
+        onMenuClick={() => setMobileMenuOpen(true)}
+      />
       {navItems.length > 0 && (
         <DashboardSidebar
           items={navItems}
-          title={config.title || "CRM Platform"}
+          title={title}
           userMenu={config.userMenu}
           isAuthenticated={isAuthenticated}
+          mobileOpen={mobileMenuOpen}
+          onMobileOpenChange={setMobileMenuOpen}
         />
       )}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto pt-4rem md:pt-0">
         <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
           <PageRenderer key={currentPage.id} page={currentPage} />
         </div>

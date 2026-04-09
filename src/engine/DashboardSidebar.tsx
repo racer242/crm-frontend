@@ -35,6 +35,8 @@ interface DashboardSidebarProps {
   title: string;
   userMenu?: UserMenuConfig;
   isAuthenticated: boolean;
+  mobileOpen: boolean;
+  onMobileOpenChange: (open: boolean) => void;
 }
 
 export function DashboardSidebar({
@@ -42,19 +44,20 @@ export function DashboardSidebar({
   title,
   userMenu,
   isAuthenticated,
+  mobileOpen,
+  onMobileOpenChange,
 }: DashboardSidebarProps) {
   const router = useRouter();
   const pathname = usePathname() || "/";
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const userMenuRef = useRef<MenuType>(null);
 
   const handleNav = useCallback(
     (route: string) => {
-      setMobileOpen(false);
+      onMobileOpenChange(false);
       router.push(route);
     },
-    [router],
+    [router, onMobileOpenChange],
   );
 
   const handleAuthClick = useCallback(() => {
@@ -88,34 +91,10 @@ export function DashboardSidebar({
 
   return (
     <>
-      {/* Mobile Header */}
-      <header
-        className="md:hidden fixed top-0 left-0 right-0 h-4rem flex align-items-center justify-content-between px-3"
-        style={{
-          background: "var(--surface-overlay)",
-          borderBottom: "1px solid var(--surface-border)",
-          zIndex: 1000,
-        }}
-      >
-        <Button
-          icon="pi pi-bars"
-          className="p-button-rounded p-button-text p-button-secondary"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Menu"
-        />
-        <span className="font-semibold text-lg">{title}</span>
-        <Button
-          icon={isAuthenticated ? "pi pi-user" : "pi pi-sign-in"}
-          className="p-button-rounded p-button-text p-button-secondary"
-          onClick={handleAuthClick}
-          aria-label={isAuthenticated ? "Profile" : "Login"}
-        />
-      </header>
-
       {/* Mobile Sidebar */}
       <Sidebar
         visible={mobileOpen}
-        onHide={() => setMobileOpen(false)}
+        onHide={() => onMobileOpenChange(false)}
         position="left"
         className="w-16rem"
         blockScroll
@@ -221,9 +200,6 @@ export function DashboardSidebar({
           />
         </div>
       </aside>
-
-      {/* Mobile header spacer */}
-      <div className="md:hidden h-4rem w-full flex-shrink-0" />
     </>
   );
 }
