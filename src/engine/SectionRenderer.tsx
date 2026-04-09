@@ -19,7 +19,7 @@ export function SectionRenderer({ section }: { section: Section }) {
       {blocks.map((block) => (
         <div
           key={block.id}
-          className={(block as any).className || getBlockWrapperClass(layout)}
+          className={block.className || getBlockWrapperClass(layout)}
         >
           <BlockRenderer block={block} />
         </div>

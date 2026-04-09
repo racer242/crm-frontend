@@ -258,7 +258,14 @@
                   "componentType": "SplitButton",
                   "props": {
                     "label": "Export",
-                    "icon": "pi pi-download"
+                    "icon": "pi pi-download",
+                    "model": [
+                      {
+                        "label": "Upload",
+                        "icon": "pi pi-upload",
+                        "command": "command"
+                      }
+                    ]
                   },
                   "state": {}
                 }
@@ -872,11 +879,7 @@
                   "componentType": "AutoComplete",
                   "props": {
                     "placeholder": "Search customer...",
-                    "suggestions": [
-                      "Alice Johnson",
-                      "Bob Smith",
-                      "Carol White"
-                    ]
+                    "suggestions": ["Alice Johnson", "Bob Smith", "Carol White"]
                   },
                   "state": {
                     "value": ""
@@ -1144,10 +1147,7 @@
                     "max": 1000
                   },
                   "state": {
-                    "value": [
-                      0,
-                      1000
-                    ]
+                    "value": [0, 1000]
                   }
                 },
                 {
@@ -1582,38 +1582,17 @@
                   "props": {
                     "type": "line",
                     "data": {
-                      "labels": [
-                        "Jan",
-                        "Feb",
-                        "Mar",
-                        "Apr",
-                        "May",
-                        "Jun"
-                      ],
+                      "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
                       "datasets": [
                         {
                           "label": "Sales",
-                          "data": [
-                            65,
-                            59,
-                            80,
-                            81,
-                            56,
-                            55
-                          ],
+                          "data": [65, 59, 80, 81, 56, 55],
                           "fill": false,
                           "borderColor": "#6366f1"
                         },
                         {
                           "label": "Revenue",
-                          "data": [
-                            28,
-                            48,
-                            40,
-                            19,
-                            86,
-                            27
-                          ],
+                          "data": [28, 48, 40, 19, 86, 27],
                           "fill": false,
                           "borderColor": "#22c55e"
                         }
@@ -1644,20 +1623,10 @@
                   "props": {
                     "type": "pie",
                     "data": {
-                      "labels": [
-                        "Electronics",
-                        "Clothing",
-                        "Home",
-                        "Sports"
-                      ],
+                      "labels": ["Electronics", "Clothing", "Home", "Sports"],
                       "datasets": [
                         {
-                          "data": [
-                            540,
-                            325,
-                            702,
-                            421
-                          ],
+                          "data": [540, 325, 702, 421],
                           "backgroundColor": [
                             "#6366f1",
                             "#22c55e",
@@ -2271,11 +2240,7 @@
       "name": "Admin User",
       "email": "admin@crm.com",
       "role": "admin",
-      "permissions": [
-        "read",
-        "write",
-        "delete"
-      ],
+      "permissions": ["read", "write", "delete"],
       "avatar": "👤"
     },
     "auth": {

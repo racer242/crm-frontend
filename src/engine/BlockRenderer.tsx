@@ -9,7 +9,7 @@ import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
 
 export function BlockRenderer({ block }: { block: Block }) {
-  const { wrapper, components, className, style } = block;
+  const { wrapper, components, style } = block;
 
   const content = (
     <div className="flex flex-column gap-3">
@@ -25,38 +25,25 @@ export function BlockRenderer({ block }: { block: Block }) {
     switch (wrapper.component) {
       case "Card":
         return (
-          <Card
-            title={wrapperProps.header}
-            className={className || ""}
-            style={style}
-          >
+          <Card title={wrapperProps.header} style={style}>
             {content}
           </Card>
         );
       case "Panel":
         return (
-          <Panel
-            header={wrapperProps.header}
-            className={className || ""}
-            style={style}
-          >
+          <Panel header={wrapperProps.header} style={style}>
             {content}
           </Panel>
         );
       case "Fieldset":
         return (
-          <Fieldset
-            legend={wrapperProps.header}
-            className={className || ""}
-            style={style}
-          >
+          <Fieldset legend={wrapperProps.header} style={style}>
             {content}
           </Fieldset>
         );
       case "Toolbar":
         return (
           <Toolbar
-            className={className || ""}
             style={style}
             start={
               <div className="flex align-items-center gap-2 flex-wrap">
@@ -66,17 +53,9 @@ export function BlockRenderer({ block }: { block: Block }) {
           />
         );
       default:
-        return (
-          <div className={className || ""} style={style}>
-            {content}
-          </div>
-        );
+        return <div style={style}>{content}</div>;
     }
   }
 
-  return (
-    <div className={className || ""} style={style}>
-      {content}
-    </div>
-  );
+  return <div style={style}>{content}</div>;
 }

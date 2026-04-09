@@ -157,3 +157,18 @@ npm run build     # Production-билд
 - `globalState` — глобальное состояние (user, auth, cache)
 - `config.api` — настройки API (baseURL, endpoints)
 - `config.features` — флаги функциональности
+
+## Справочник конфигурации
+
+Полное описание всех параметров элементов конфигурации с примерами:
+→ [docs/config-reference.md](docs/config-reference.md)
+
+Разделы справочника:
+
+1. [App](docs/config-reference.md#1-app-приложение) — корневой элемент, навбар, глобальное состояние
+2. [Page](docs/config-reference.md#2-page-страница) — страницы, мета-данные, контроль доступа
+3. [Section](docs/config-reference.md#3-section-секция) — секции, макет, видимость
+4. [Block](docs/config-reference.md#4-block-блок) — блоки, типы, обёртки
+5. [Component](docs/config-reference.md#5-component-компонент) — компоненты, привязки, события
+6. [Command](docs/config-reference.md#6-command-команда) — команды, триггеры, условия
+7. [Общие типы](docs/config-reference.md#7-общие-типы) — LayoutConfig, ElementMeta, адресация
