@@ -439,6 +439,7 @@
               "id": "usersTitle",
               "type": "block",
               "blockType": "header",
+              "className": "col-12 lg:col-10",
               "state": {},
               "components": [
                 {
@@ -457,6 +458,7 @@
               "id": "usersActions",
               "type": "block",
               "blockType": "custom",
+              "className": "col-12 lg:col-2",
               "state": {},
               "components": [
                 {
@@ -475,7 +477,7 @@
                   "type": "component",
                   "componentType": "Button",
                   "props": {
-                    "label": "Delete Selected",
+                    "label": "Delete User",
                     "icon": "pi pi-trash",
                     "severity": "danger"
                   },

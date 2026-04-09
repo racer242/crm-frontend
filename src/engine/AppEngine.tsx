@@ -55,10 +55,18 @@ export function AppEngine({ config }: { config: App }) {
   }
 
   const navItems: NavItem[] = config.navbar?.items || [];
+  const isAuthenticated = config.globalState?.auth?.isAuthenticated || false;
 
   return (
     <div className="flex min-h-screen surface-900">
-      {navItems.length > 0 && <DashboardSidebar items={navItems} />}
+      {navItems.length > 0 && (
+        <DashboardSidebar
+          items={navItems}
+          title={config.title || "CRM Platform"}
+          userMenu={config.userMenu}
+          isAuthenticated={isAuthenticated}
+        />
+      )}
       <main className="flex-1 overflow-auto">
         <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
           <PageRenderer key={currentPage.id} page={currentPage} />

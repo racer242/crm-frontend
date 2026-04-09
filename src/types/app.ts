@@ -31,10 +31,27 @@ export interface NavbarConfig {
 /** Приложение - корневой элемент */
 export interface App extends BaseElement {
   type: "app";
+  title?: string;
   pages: PageStub[];
   navbar?: NavbarConfig;
+  userMenu?: UserMenuConfig;
   globalState: GlobalState;
   config: AppConfig;
+}
+
+/** Пункт меню пользователя */
+export interface UserMenuItem {
+  label: string;
+  icon: string;
+  route: string;
+}
+
+/** Конфигурация меню пользователя */
+export interface UserMenuConfig {
+  loginLabel: string;
+  profileLabel: string;
+  logoutLabel: string;
+  items: UserMenuItem[];
 }
 
 /** Глобальное состояние */
