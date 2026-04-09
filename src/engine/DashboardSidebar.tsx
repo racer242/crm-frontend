@@ -90,8 +90,12 @@ export function DashboardSidebar({
     <>
       {/* Mobile Header */}
       <header
-        className="md:hidden fixed top-0 left-0 right-0 h-4rem flex align-items-center justify-content-between px-3 z-5 surface-overlay"
-        style={{ borderBottom: "1px solid var(--surface-border)" }}
+        className="md:hidden fixed top-0 left-0 right-0 h-4rem flex align-items-center justify-content-between px-3"
+        style={{
+          background: "var(--surface-overlay)",
+          borderBottom: "1px solid var(--surface-border)",
+          zIndex: 1000,
+        }}
       >
         <Button
           icon="pi pi-bars"
@@ -115,34 +119,35 @@ export function DashboardSidebar({
         position="left"
         className="w-16rem"
         blockScroll
+        showCloseIcon={false}
       >
-        <div className="flex align-items-center justify-content-between mb-4">
-          <h3 className="text-xl font-semibold m-0">{title}</h3>
-          <Button
-            icon="pi pi-times"
-            className="p-button-rounded p-button-text p-button-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-        </div>
         <Menu model={menuItems} className="border-none w-full mb-4" />
 
         {userMenu && (
           <div
-            className="border-top border-200 pt-3"
+            className="pt-3"
             style={{ borderTop: "1px solid var(--surface-border)" }}
           >
-            {isAuthenticated
-              ? userMenu.items.map((item) => (
-                  <button
-                    key={item.route}
-                    className="flex align-items-center gap-3 w-full px-3 py-2 border-round-md cursor-pointer text-500 hover:surface-hover bg-transparent border-none"
-                    onClick={() => handleNav(item.route)}
-                  >
-                    <i className={item.icon}></i>
-                    <span>{item.label}</span>
-                  </button>
-                ))
-              : null}
+            {isAuthenticated ? (
+              userMenu.items.map((item) => (
+                <button
+                  key={item.route}
+                  className="flex align-items-center gap-3 w-full px-3 py-2 border-round-md cursor-pointer text-500 hover:surface-hover bg-transparent border-none"
+                  onClick={() => handleNav(item.route)}
+                >
+                  <i className={item.icon}></i>
+                  <span>{item.label}</span>
+                </button>
+              ))
+            ) : (
+              <button
+                className="flex align-items-center gap-3 w-full px-3 py-2 border-round-md cursor-pointer text-500 hover:surface-hover bg-transparent border-none"
+                onClick={handleAuthClick}
+              >
+                <i className="pi pi-sign-in"></i>
+                <span>{userMenu.loginLabel}</span>
+              </button>
+            )}
           </div>
         )}
       </Sidebar>
