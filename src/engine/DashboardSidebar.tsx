@@ -19,12 +19,11 @@ function buildMenuItems(
       label: item.label,
       icon: item.icon,
       command: () => onNavigate(item.route),
-      className: "p-menuitem-list",
+      className: "border-round-lg overflow-hidden",
       style: active
         ? {
-            background: "var(--primary-color)",
-            color: "var(--primary-color-text)",
-            borderRadius: "6px",
+            background: "var(--highlight-bg)",
+            color: "var(--highlight-text-color)",
           }
         : undefined,
     };
