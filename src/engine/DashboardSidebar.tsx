@@ -64,20 +64,29 @@ export function DashboardSidebar({ items }: { items: NavItem[] }) {
           </button>
         </div>
         <nav className="p-4 flex flex-column gap-1">
-          {items.map((item) => (
-            <button
-              key={item.route}
-              className={`flex align-items-center gap-3 w-full px-4 py-3 border-round-md text-left cursor-pointer transition-colors ${
-                isActive(item.route)
-                  ? "bg-primary text-white"
-                  : "text-400 hover:surface-700"
-              }`}
-              onClick={() => handleNav(item.route)}
-            >
-              <i className={item.icon}></i>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {items.map((item) => {
+            const active = isActive(item.route);
+            return (
+              <button
+                key={item.route}
+                className={`flex align-items-center gap-3 w-full px-4 py-3 border-round-md text-left cursor-pointer transition-colors border-none ${
+                  active ? "" : "text-400 hover:surface-700"
+                }`}
+                style={
+                  active
+                    ? {
+                        background: "var(--primary-color)",
+                        color: "var(--primary-color-text)",
+                      }
+                    : undefined
+                }
+                onClick={() => handleNav(item.route)}
+              >
+                <i className={item.icon}></i>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
 
@@ -98,27 +107,34 @@ export function DashboardSidebar({ items }: { items: NavItem[] }) {
 
         {/* Navigation */}
         <nav className="flex-1 py-2 overflow-y-auto overflow-x-hidden">
-          {items.map((item) => (
-            <Link
-              key={item.route}
-              href={item.route}
-              title={collapsed ? item.label : undefined}
-              className={`flex align-items-center gap-3 mx-2 px-3 py-3 border-round-md text-sm no-underline transition-colors ${
-                collapsed ? "justify-content-center" : ""
-              } ${
-                isActive(item.route)
-                  ? "bg-primary text-white"
-                  : "text-400 hover:surface-700"
-              }`}
-            >
-              <i className={item.icon}></i>
-              {!collapsed && (
-                <span className="overflow-hidden text-ellipsis white-space-nowrap">
-                  {item.label}
-                </span>
-              )}
-            </Link>
-          ))}
+          {items.map((item) => {
+            const active = isActive(item.route);
+            return (
+              <Link
+                key={item.route}
+                href={item.route}
+                title={collapsed ? item.label : undefined}
+                className={`flex align-items-center gap-3 mx-2 px-3 py-3 border-round-md text-sm no-underline transition-colors ${
+                  collapsed ? "justify-content-center" : ""
+                } ${active ? "" : "text-400 hover:surface-700"}`}
+                style={
+                  active
+                    ? {
+                        background: "var(--primary-color)",
+                        color: "var(--primary-color-text)",
+                      }
+                    : undefined
+                }
+              >
+                <i className={item.icon}></i>
+                {!collapsed && (
+                  <span className="overflow-hidden text-ellipsis white-space-nowrap">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Collapse button */}
