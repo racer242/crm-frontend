@@ -1,155 +1,156 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
 import { NavItem } from "@/types";
+import { Sidebar } from "primereact/sidebar";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+
+/** Рендерит пункт меню с подсветкой активного */
+function NavMenuItem({ item, active }: { item: NavItem; active: boolean }) {
+  const { label, icon, route } = item;
+  return (
+    <div
+      className={`flex align-items-center gap-3 px-3 py-2 border-round-md cursor-pointer transition-all ${
+        active ? "font-medium" : "text-500 hover:surface-hover"
+      }`}
+      style={
+        active
+          ? {
+              background: "var(--primary-color)",
+              color: "var(--primary-color-text)",
+            }
+          : undefined
+      }
+    >
+      <i className={icon}></i>
+      <span className="overflow-hidden text-ellipsis white-space-nowrap">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 export function DashboardSidebar({ items }: { items: NavItem[] }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
 
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileVisible, setMobileVisible] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
-        setMobileOpen(false);
+        setMobileVisible(false);
       }
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleNav = (route: string) => {
-    setMobileOpen(false);
-    router.push(route);
-  };
+  const isActive = useCallback(
+    (route: string) => pathname === route,
+    [pathname],
+  );
 
-  const isActive = (route: string) => pathname === route;
+  const handleNav = useCallback(
+    (route: string) => {
+      setMobileVisible(false);
+      router.push(route);
+    },
+    [router],
+  );
+
+  // Build menu items with custom template per item
+  const menuItems = items.map((item) => ({
+    label: item.label,
+    icon: item.icon,
+    command: () => handleNav(item.route),
+    template: (
+      <div onClick={() => handleNav(item.route)}>
+        <NavMenuItem item={item} active={isActive(item.route)} />
+      </div>
+    ),
+  }));
 
   return (
     <>
       {/* Mobile hamburger */}
-      <button
-        className="fixed top-4 left-4 z-5 p-3 border-round-md cursor-pointer md:hidden surface-800 border-1 border-700 text-400 hover:text-100"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
-      >
-        <i className="pi pi-bars text-xl"></i>
-      </button>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black-alpha-50 md:hidden"
-          onClick={() => setMobileOpen(false)}
+      <div className="md:hidden fixed top-3 left-3 z-5">
+        <Button
+          icon="pi pi-bars"
+          className="p-button-rounded p-button-text p-button-secondary"
+          onClick={() => setMobileVisible(true)}
+          aria-label="Open menu"
         />
-      )}
-
-      {/* Mobile full-screen menu */}
-      <div
-        className={`fixed inset-0 z-50 transition-duration-300 transition-transform md:hidden surface-900 ${
-          mobileOpen ? "" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex align-items-center justify-content-between p-4 border-bottom border-700">
-          <span className="text-xl font-semibold text-100">Menu</span>
-          <button
-            className="p-3 border-none cursor-pointer text-400 hover:text-100"
-            onClick={() => setMobileOpen(false)}
-          >
-            <i className="pi pi-times text-xl"></i>
-          </button>
-        </div>
-        <nav className="p-4 flex flex-column gap-1">
-          {items.map((item) => {
-            const active = isActive(item.route);
-            return (
-              <button
-                key={item.route}
-                className={`flex align-items-center gap-3 w-full px-4 py-3 border-round-md text-left cursor-pointer transition-colors border-none ${
-                  active ? "" : "text-400 hover:surface-700"
-                }`}
-                style={
-                  active
-                    ? {
-                        background: "var(--primary-color)",
-                        color: "var(--primary-color-text)",
-                      }
-                    : undefined
-                }
-                onClick={() => handleNav(item.route)}
-              >
-                <i className={item.icon}></i>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
       </div>
+
+      {/* Mobile sidebar using PrimeReact Sidebar + Menu */}
+      <Sidebar
+        visible={mobileVisible}
+        onHide={() => setMobileVisible(false)}
+        position="left"
+        baseZIndex={1000}
+        showCloseIcon={false}
+        className="w-18rem"
+      >
+        <div className="flex align-items-center justify-content-between mb-3">
+          <h3 className="text-xl font-semibold m-0">Menu</h3>
+          <Button
+            icon="pi pi-times"
+            className="p-button-rounded p-button-text p-button-sm"
+            onClick={() => setMobileVisible(false)}
+          />
+        </div>
+        <Menu
+          model={menuItems}
+          className="border-none w-full"
+          style={{ background: "transparent" }}
+        />
+      </Sidebar>
 
       {/* Desktop sidebar */}
       <aside
-        className={`hidden md:flex flex-column h-screen surface-800 border-right border-700 transition-all transition-duration-300 sticky top-0 ${
-          collapsed ? "w-4rem" : "w-14rem"
+        className={`hidden md:flex flex-column h-screen surface-overlay transition-all transition-duration-300 sticky top-0 ${
+          collapsed ? "w-4rem" : "w-15rem"
         }`}
+        style={{ borderRight: "1px solid var(--surface-border)" }}
       >
         {/* Logo */}
-        <div className="flex align-items-center h-4rem px-3 border-bottom border-700">
+        <div
+          className="flex align-items-center h-4rem px-3"
+          style={{ borderBottom: "1px solid var(--surface-border)" }}
+        >
           {!collapsed && (
-            <span className="text-lg font-semibold text-100 overflow-hidden text-ellipsis white-space-nowrap">
+            <span className="text-lg font-semibold overflow-hidden text-ellipsis white-space-nowrap">
               CRM
             </span>
           )}
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 py-2 overflow-y-auto overflow-x-hidden">
-          {items.map((item) => {
-            const active = isActive(item.route);
-            return (
-              <Link
-                key={item.route}
-                href={item.route}
-                title={collapsed ? item.label : undefined}
-                className={`flex align-items-center gap-3 mx-2 px-3 py-3 border-round-md text-sm no-underline transition-colors ${
-                  collapsed ? "justify-content-center" : ""
-                } ${active ? "" : "text-400 hover:surface-700"}`}
-                style={
-                  active
-                    ? {
-                        background: "var(--primary-color)",
-                        color: "var(--primary-color-text)",
-                      }
-                    : undefined
-                }
-              >
-                <i className={item.icon}></i>
-                {!collapsed && (
-                  <span className="overflow-hidden text-ellipsis white-space-nowrap">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Navigation using PrimeReact Menu */}
+        <div className="flex-1 py-2 overflow-y-auto overflow-x-hidden px-2">
+          <Menu
+            model={menuItems}
+            className="border-none w-full"
+            style={{ background: "transparent" }}
+          />
+        </div>
 
         {/* Collapse button */}
-        <div className="p-2 border-top border-700">
-          <button
-            className="flex align-items-center justify-content-center w-full py-2 text-400 hover:text-100 transition-colors cursor-pointer border-none"
+        <div
+          className="p-2"
+          style={{ borderTop: "1px solid var(--surface-border)" }}
+        >
+          <Button
+            icon={
+              collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"
+            }
+            className="p-button-text p-button-sm p-button-rounded w-full"
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <i
-              className={`pi text-sm ${
-                collapsed ? "pi-angle-double-right" : "pi-angle-double-left"
-              }`}
-            ></i>
-          </button>
+          />
         </div>
       </aside>
     </>
