@@ -17,9 +17,10 @@ interface CommandStub {
 
 /** Элемент навигации */
 export interface NavItem {
-  label: string;
-  icon: string;
-  route: string;
+  label?: string;
+  icon?: string;
+  route?: string;
+  separator?: boolean;
 }
 
 /** Конфигурация навбара */
@@ -41,9 +42,10 @@ export interface App extends BaseElement {
 
 /** Пункт меню пользователя */
 export interface UserMenuItem {
-  label: string;
-  icon: string;
-  route: string;
+  label?: string;
+  icon?: string;
+  route?: string;
+  separator?: boolean;
 }
 
 /** Конфигурация меню пользователя */

@@ -14,11 +14,14 @@ function buildMenuItems(
   onNavigate: (route: string) => void,
 ) {
   return items.map((item) => {
+    if ((item as any).separator) {
+      return { separator: true };
+    }
     const active = pathname === item.route;
     return {
       label: item.label,
       icon: item.icon,
-      command: () => onNavigate(item.route),
+      command: () => onNavigate(item.route || "/"),
       className: "border-round-lg overflow-hidden",
       style: active
         ? {
@@ -63,55 +66,30 @@ export function DashboardSidebar({
     router.push(isAuthenticated ? "/profile" : "/login");
   }, [isAuthenticated, router]);
 
-  const handleLogout = useCallback(() => {
-    router.push("/");
-  }, [router]);
-
   const menuItems = buildMenuItems(items, pathname, handleNav);
 
-  // Mobile user menu items
-  const mobileUserItems: any[] = userMenu
-    ? isAuthenticated
-      ? [
-          ...userMenu.items.map((item) => ({
-            label: item.label,
-            icon: item.icon,
-            command: () => handleNav(item.route),
-          })),
-          { separator: true },
-          {
-            label: userMenu.logoutLabel,
-            icon: "pi pi-sign-out",
-            command: handleLogout,
-          },
-        ]
-      : [
-          {
-            label: userMenu.loginLabel,
-            icon: "pi pi-sign-in",
-            command: handleAuthClick,
-          },
-        ]
+  // Build user menu items (shared between desktop and mobile)
+  const userMenuItems: any[] = userMenu
+    ? (isAuthenticated
+        ? userMenu.items
+        : [
+            {
+              label: userMenu.loginLabel,
+              icon: "pi pi-sign-in",
+              route: "/login",
+            },
+          ]
+      ).map((item) => {
+        if (item.separator) {
+          return { separator: true };
+        }
+        return {
+          label: item.label,
+          icon: item.icon,
+          command: () => handleNav(item.route || "/"),
+        };
+      })
     : [];
-
-  // Desktop user popup items
-  const desktopUserItems: any[] =
-    userMenu?.items.map((item) => ({
-      label: item.label,
-      icon: item.icon,
-      command: () => handleNav(item.route),
-    })) || [];
-
-  if (isAuthenticated && userMenu) {
-    desktopUserItems.push(
-      { separator: true },
-      {
-        label: userMenu.logoutLabel,
-        icon: "pi pi-sign-out",
-        command: handleLogout,
-      },
-    );
-  }
 
   return (
     <>
@@ -122,16 +100,21 @@ export function DashboardSidebar({
         position="left"
         className="w-16rem"
         blockScroll
-        showCloseIcon={false}
+        showCloseIcon={true}
       >
-        <Menu model={menuItems} className="border-none w-full mb-3" />
-
-        {userMenu && (
+        <div className="flex flex-column h-full">
           <Menu
-            model={mobileUserItems}
-            className="border-none w-full border-top-1 border-200 pt-3"
+            model={menuItems}
+            className="border-none w-full flex-shrink-0"
           />
-        )}
+          <div className="flex-1"></div>
+          {userMenu && (
+            <Menu
+              model={userMenuItems}
+              className="w-full border-none pt-3 flex-shrink-0"
+            />
+          )}
+        </div>
       </Sidebar>
 
       {/* Desktop Sidebar */}
@@ -160,17 +143,19 @@ export function DashboardSidebar({
           />
         </div>
 
-        <div className="p-2 border-top-1 border-200">
+        <div className="p-2">
           {userMenu &&
             (isAuthenticated ? (
               <SplitButton
                 label={!collapsed ? userMenu.profileLabel : undefined}
                 icon="pi pi-user"
-                model={desktopUserItems}
+                model={userMenuItems}
                 className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
                   collapsed ? "justify-content-center" : ""
                 }`}
                 menuStyle={{ width: "12rem" }}
+                dropdownIcon="pi pi-angle-right"
+                onClick={() => handleNav("/profile")}
               />
             ) : (
               <Button
