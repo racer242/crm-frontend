@@ -10,6 +10,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import { PrimeReactProvider } from "primereact/api";
+import { GlobalPreloader } from "@/components/GlobalPreloader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
+        <GlobalPreloader />
         <PrimeReactProvider>{children}</PrimeReactProvider>
       </body>
     </html>
