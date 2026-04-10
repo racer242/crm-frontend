@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { Menu } from "primereact/menu";
@@ -53,6 +53,9 @@ export function DashboardSidebar({
   const router = useRouter();
   const pathname = usePathname() || "/";
   const [collapsed, setCollapsed] = useState(false);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const handleNav = useCallback(
     (route: string) => {
@@ -145,7 +148,7 @@ export function DashboardSidebar({
 
         <div className="p-2">
           {userMenu &&
-            (isAuthenticated ? (
+            (mounted && isAuthenticated ? (
               <SplitButton
                 label={!collapsed ? userMenu.profileLabel : undefined}
                 icon="pi pi-user"
