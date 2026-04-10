@@ -52,8 +52,9 @@ export interface UserMenuItem {
 export interface UserMenuConfig {
   loginLabel: string;
   profileLabel: string;
-  logoutLabel: string;
   items: UserMenuItem[];
+  userName?: string;
+  userRole?: string;
 }
 
 /** Глобальное состояние */

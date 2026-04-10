@@ -1,18 +1,22 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
-import dynamic from "next/dynamic";
-import { SplitButton } from "primereact/splitbutton";
+import { Divider } from "primereact/divider";
+import { PanelMenu } from "primereact/panelmenu";
+import { TieredMenu } from "primereact/tieredmenu";
+import { Avatar } from "primereact/avatar";
+import { classNames } from "primereact/utils";
 
 function buildMenuItems(
   items: NavItem[],
   pathname: string,
   onNavigate: (route: string) => void,
+  collapsed: boolean,
 ) {
   return items.map((item) => {
     if ((item as any).separator) {
@@ -20,10 +24,9 @@ function buildMenuItems(
     }
     const active = pathname === item.route;
     return {
-      label: item.label,
+      label: collapsed ? "" : item.label,
       icon: item.icon,
       command: () => onNavigate(item.route || "/"),
-      className: "border-round-lg overflow-hidden",
       style: active
         ? {
             background: "var(--highlight-bg)",
@@ -34,13 +37,31 @@ function buildMenuItems(
   });
 }
 
+function buildUserMenuItems(
+  userMenu: UserMenuConfig | undefined,
+  onNavigate: (route: string) => void,
+) {
+  return userMenu?.items.map((item) => {
+    if ((item as any).separator) {
+      return { separator: true };
+    }
+    return {
+      label: item.label,
+      icon: item.icon,
+      command: () => onNavigate(item.route || "/"),
+    };
+  });
+}
+
 interface DashboardSidebarProps {
   items: NavItem[];
   title: string;
   userMenu?: UserMenuConfig;
   isAuthenticated: boolean;
   mobileOpen: boolean;
+  collapsed: boolean;
   onMobileOpenChange: (open: boolean) => void;
+  onCollapseChange: () => void;
 }
 
 export function DashboardSidebar({
@@ -49,11 +70,12 @@ export function DashboardSidebar({
   userMenu,
   isAuthenticated,
   mobileOpen,
+  collapsed,
   onMobileOpenChange,
+  onCollapseChange,
 }: DashboardSidebarProps) {
   const router = useRouter();
   const pathname = usePathname() || "/";
-  const [collapsed, setCollapsed] = useState(false);
 
   const handleNav = useCallback(
     (route: string) => {
@@ -67,31 +89,6 @@ export function DashboardSidebar({
     router.push(isAuthenticated ? "/profile" : "/login");
   }, [isAuthenticated, router]);
 
-  const menuItems = buildMenuItems(items, pathname, handleNav);
-
-  // Build user menu items (shared between desktop and mobile)
-  const userMenuItems: any[] = userMenu
-    ? (isAuthenticated
-        ? userMenu.items
-        : [
-            {
-              label: userMenu.loginLabel,
-              icon: "pi pi-sign-in",
-              route: "/login",
-            },
-          ]
-      ).map((item) => {
-        if (item.separator) {
-          return { separator: true };
-        }
-        return {
-          label: item.label,
-          icon: item.icon,
-          command: () => handleNav(item.route || "/"),
-        };
-      })
-    : [];
-
   return (
     <>
       {/* Mobile Sidebar */}
@@ -101,32 +98,49 @@ export function DashboardSidebar({
         position="left"
         className="w-16rem"
         blockScroll
-        showCloseIcon={true}
       >
         <div className="flex flex-column h-full">
           <Menu
-            model={menuItems}
+            model={buildMenuItems(items, pathname, handleNav, false)}
             className="border-none w-full flex-shrink-0"
           />
           <div className="flex-1"></div>
           {userMenu && (
-            <Menu
-              model={userMenuItems}
-              className="w-full border-none pt-3 flex-shrink-0"
-            />
+            <>
+              <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color">
+                <Avatar
+                  icon="pi pi-user"
+                  shape="circle"
+                  className="flex-none pointer-events-none"
+                />
+
+                <div className="flex flex-column align pointer-events-none">
+                  <span className="font-bold">{userMenu?.userName}</span>
+                  <span className="text-sm">{userMenu?.userRole}</span>
+                </div>
+              </div>
+
+              <Menu
+                model={buildUserMenuItems(userMenu, handleNav)}
+                className="w-full border-none flex-shrink-0"
+              />
+            </>
           )}
         </div>
       </Sidebar>
 
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-column h-screen surface-overlay sticky top-0 transition-all transition-duration-300 ${
-          collapsed ? "w-4rem" : "w-14rem"
+        className={`hidden md:flex flex-column h-screen surface-overlay sticky z-4 top-0 transition-all transition-duration-300 ${
+          collapsed ? "w-4rem" : "w-16rem"
         }`}
-        style={{ borderRight: "1px solid var(--surface-border)" }}
+        style={{
+          borderRight: "1px solid var(--surface-border)",
+        }}
       >
+        {/* Logo */}
         <div
-          className="flex align-items-center h-4rem px-3"
+          className="flex align-items-center h-4rem px-4 flex-shrink-0"
           style={{ borderBottom: "1px solid var(--surface-border)" }}
         >
           {!collapsed && (
@@ -136,47 +150,83 @@ export function DashboardSidebar({
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 py-2">
+        <div className={`flex-shrink-0 p-1`}>
           <Menu
-            model={menuItems}
+            model={buildMenuItems(items, pathname, handleNav, collapsed)}
             className="border-none w-full"
-            style={{ background: "transparent" }}
           />
         </div>
+        <div className="flex-1"></div>
+        {/* User Section */}
+        <div className="flex-shrink-0 p-1">
+          {isAuthenticated ? (
+            <TieredMenu
+              model={[
+                {
+                  label: collapsed ? "" : userMenu?.profileLabel,
+                  template: (item, options) => {
+                    return (
+                      <button
+                        className={classNames(
+                          options.className,
+                          "w-full p-link flex gap-3 align-items-center h-4rem text-color",
+                        )}
+                        style={{ paddingLeft: ".8rem" }}
+                      >
+                        <Avatar
+                          icon="pi pi-user"
+                          shape="circle"
+                          className="flex-none pointer-events-none"
+                        />
+                        {!collapsed && (
+                          <>
+                            <div className="flex flex-column align pointer-events-none">
+                              <span className="font-bold">
+                                {userMenu?.userName}
+                              </span>
+                              <span className="text-sm">
+                                {userMenu?.userRole}
+                              </span>
+                            </div>
+                            <div className="pi pi-angle-right pointer-events-none" />
+                          </>
+                        )}
+                      </button>
+                    );
+                  },
 
-        <div className="p-2">
-          {userMenu &&
-            (isAuthenticated ? (
-              <SplitButton
-                label={!collapsed ? userMenu.profileLabel : undefined}
-                icon="pi pi-user"
-                model={userMenuItems}
-                className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
-                  collapsed ? "justify-content-center" : ""
-                }`}
-                menuStyle={{ width: "12rem" }}
-                dropdownIcon="pi pi-angle-right"
-                onClick={() => handleNav("/profile")}
-              />
-            ) : (
-              <Button
-                icon="pi pi-sign-in"
-                label={!collapsed ? userMenu.loginLabel : undefined}
-                className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
-                  collapsed ? "justify-content-center" : ""
-                }`}
-                onClick={handleAuthClick}
-              />
-            ))}
+                  items: buildUserMenuItems(userMenu, handleNav),
+                },
+              ]}
+              className="w-full border-none"
+            />
+          ) : (
+            <Button
+              icon="pi pi-sign-in"
+              label={!collapsed ? userMenu?.loginLabel : undefined}
+              className={`p-button-text p-button-sm p-button-rounded w-full mb-1 ${
+                collapsed ? "justify-content-center" : ""
+              }`}
+              onClick={handleAuthClick}
+            />
+          )}
+        </div>
+        <div className="h-3rem"></div>
+
+        {/* Collapse Button */}
+        <div className="flex p-2">
           <Button
             icon={
               collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"
             }
-            className="p-button-text p-button-sm p-button-rounded"
-            onClick={() => setCollapsed(!collapsed)}
+            text
+            onClick={() => onCollapseChange()}
           />
         </div>
       </aside>
+
+      {/* Mobile Spacer */}
+      <div className="md:hidden h-4rem w-full flex-shrink-0" />
     </>
   );
 }

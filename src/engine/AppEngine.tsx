@@ -49,6 +49,7 @@ export function AppEngine({ config }: { config: App }) {
   }, [stateManager]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef(null);
 
   if (!currentPage) {
@@ -64,7 +65,7 @@ export function AppEngine({ config }: { config: App }) {
   const title = config.title || "CRM Platform";
 
   return (
-    <div className="flex min-h-screen surface-900">
+    <div className="flex flex-column md:flex-row min-h-screen surface-900">
       <Toast ref={toastRef} />
       <DashboardHeader
         title={title}
@@ -79,7 +80,9 @@ export function AppEngine({ config }: { config: App }) {
           userMenu={config.userMenu}
           isAuthenticated={isAuthenticated}
           mobileOpen={mobileMenuOpen}
+          collapsed={collapsed}
           onMobileOpenChange={setMobileMenuOpen}
+          onCollapseChange={() => setCollapsed(!collapsed)}
         />
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">

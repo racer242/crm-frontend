@@ -40,8 +40,8 @@
   },
   "userMenu": {
     "loginLabel": "Войти",
-    "profileLabel": "Профиль",
-    "logoutLabel": "Выйти",
+    "userName": "e.simonov",
+    "userRole": "администратор",
     "items": [
       { "label": "Профиль", "icon": "pi pi-user", "route": "/profile" },
       { "separator": true },

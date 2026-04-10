@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { UserMenuConfig } from "@/types";
 import { Button } from "primereact/button";
+import { Avatar } from "primereact/avatar";
 
 interface DashboardHeaderProps {
   title: string;
@@ -34,7 +35,17 @@ export function DashboardHeader({
       />
       <span className="font-semibold text-lg">{title}</span>
       <Button
-        icon={isAuthenticated ? "pi pi-user" : "pi pi-sign-in"}
+        icon={
+          isAuthenticated ? (
+            <Avatar
+              icon="pi pi-user"
+              shape="circle"
+              className="flex-none pointer-events-none"
+            />
+          ) : (
+            "pi pi-sign-in"
+          )
+        }
         className="p-button-rounded p-button-text p-button-secondary"
         onClick={handleAuthClick}
         aria-label={isAuthenticated ? "Profile" : "Login"}
