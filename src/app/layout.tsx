@@ -10,16 +10,25 @@ import { PrimeReactProvider } from "primereact/api";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
   title: "CRM Platform",
   description: "Metadata-Driven CRM Platform",
+  other: {
+    // Preload PrimeReact CSS to prevent FOUC
+    "link:rel": "preload",
+    "link:as": "style",
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +38,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        {/* Critical inline styles to prevent FOUC */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              body {
+                background: var(--surface-ground, #f8f9fa);
+                margin: 0;
+                font-family: ${geistSans.style.fontFamily}, system-ui, -apple-system, sans-serif;
+              }
+              html {
+                scroll-behavior: smooth;
+              }
+            `,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>
         <PrimeReactProvider>{children}</PrimeReactProvider>
       </body>

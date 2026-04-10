@@ -551,7 +551,9 @@ export function ComponentRenderer({ component }: { component: Component }) {
             marker={(item: any) => (
               <span
                 className="flex w-2rem h-2rem align-items-center justify-content-center border-circle text-white"
-                style={{ backgroundColor: item.color || "#6366f1" }}
+                style={{
+                  backgroundColor: item.color || "var(--primary-color)",
+                }}
               >
                 <i className={item.icon} />
               </span>

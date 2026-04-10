@@ -44,6 +44,7 @@
     "logoutLabel": "Выйти",
     "items": [
       { "label": "Профиль", "icon": "pi pi-user", "route": "/profile" },
+      { "separator": true },
       { "label": "Выйти", "icon": "pi pi-sign-out", "route": "/" }
     ]
   },
@@ -372,7 +373,7 @@
                   "state": {}
                 }
               ],
-              "className": "col-12 lg:col-8"
+              "className": "col-12 lg:col-6"
             },
             {
               "id": "activityFeed",
@@ -415,7 +416,7 @@
                   "state": {}
                 }
               ],
-              "className": "col-12 lg:col-4"
+              "className": "col-12 lg:col-6"
             }
           ]
         }
