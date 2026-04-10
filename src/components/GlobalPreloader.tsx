@@ -11,15 +11,15 @@ import React, { useEffect, useState } from "react";
  */
 export function GlobalPreloader() {
   const [isVisible, setIsVisible] = useState(true);
+  const [isRemoved, setIsRemoved] = useState(false);
 
   useEffect(() => {
     // Используем событие 'load', которое срабатывает после полной загрузки всех ресурсов.
     // Это предотвращает мигание и FOUC только при старте сессии.
     const handleLoad = () => {
       // Небольшая задержка для плавности, чтобы браузер успел отрисовать фрейм
-      requestAnimationFrame(() => {
-        setIsVisible(false);
-      });
+      setIsVisible(false);
+      setTimeout(() => setIsRemoved(true), 500);
     };
 
     // Если документ уже загружен (например, при быстрой навигации), сразу скрываем
@@ -34,13 +34,14 @@ export function GlobalPreloader() {
     };
   }, []);
 
-  if (!isVisible) return null;
+  if (isRemoved) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[var(--surface-ground)] transition-opacity duration-500 ease-in-out"
+      className="w-full h-full fixed inset-0 z-5 flex align-items-center justify-content-center transition-all transition-duration-500 transition-ease-in-out"
       style={{
-        opacity: 1,
+        opacity: isVisible ? 1 : 0,
+        background: "var(--surface-ground)",
       }}
     >
       {/* Здесь можно разместить спиннер или логотип */}

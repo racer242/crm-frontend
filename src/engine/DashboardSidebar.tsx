@@ -7,12 +7,7 @@ import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import dynamic from "next/dynamic";
-const SplitButton = dynamic(
-  () => import("primereact/splitbutton").then((mod) => mod.SplitButton),
-  {
-    ssr: false,
-  },
-);
+import { SplitButton } from "primereact/splitbutton";
 
 function buildMenuItems(
   items: NavItem[],
@@ -150,7 +145,7 @@ export function DashboardSidebar({
         </div>
 
         <div className="p-2">
-          {/* {userMenu &&
+          {userMenu &&
             (isAuthenticated ? (
               <SplitButton
                 label={!collapsed ? userMenu.profileLabel : undefined}
@@ -172,12 +167,12 @@ export function DashboardSidebar({
                 }`}
                 onClick={handleAuthClick}
               />
-            ))} */}
+            ))}
           <Button
             icon={
               collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"
             }
-            className="p-button-text p-button-sm p-button-rounded w-full"
+            className="p-button-text p-button-sm p-button-rounded"
             onClick={() => setCollapsed(!collapsed)}
           />
         </div>

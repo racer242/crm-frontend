@@ -4,13 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Component } from "@/types";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import dynamic from "next/dynamic";
-const SplitButton = dynamic(
-  () => import("primereact/splitbutton").then((mod) => mod.SplitButton),
-  {
-    ssr: false,
-  },
-);
+
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Card } from "primereact/card";
@@ -283,16 +277,6 @@ export function ComponentRenderer({ component }: { component: Component }) {
           onClick={(e) => handleEvent("onClick", e)}
         />
       );
-
-    // case "SplitButton":
-    //   return (
-    //     <SplitButton
-    //       {...props}
-    //       className={`${className || ""} mr-2 mb-2`}
-    //       style={style}
-    //       onClick={(e) => handleEvent("onClick", e)}
-    //     />
-    //   );
 
     case "DataTable":
       return (
