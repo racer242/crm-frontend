@@ -1,4 +1,3 @@
-"use client";
 import { App } from "@/types";
 import { AppEngine } from "@/engine";
 import crmConfig from "../../../config/crm-config.json";
