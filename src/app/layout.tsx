@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
 import "primereact/resources/themes/lara-light-purple/theme.css";
+// import "primereact/resources/themes/lara-dark-purple/theme.css";
+// import "primereact/resources/themes/viva-dark/theme.css";
+
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
@@ -38,24 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <head>
-        {/* Critical inline styles to prevent FOUC */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              body {
-                background: var(--surface-ground, #f8f9fa);
-                margin: 0;
-                font-family: ${geistSans.style.fontFamily}, system-ui, -apple-system, sans-serif;
-              }
-              html {
-                scroll-behavior: smooth;
-              }
-            `,
-          }}
-        />
-      </head>
-      <body suppressHydrationWarning>
+      <body>
         <PrimeReactProvider>{children}</PrimeReactProvider>
       </body>
     </html>

@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Page } from "@/types";
 import { SectionRenderer } from "./SectionRenderer";
-import { Toast } from "primereact/toast";
 
 export function PageRenderer({ page }: { page: Page }) {
   const { sections, layout, meta } = page;
-  const toastRef = useRef<Toast>(null);
 
   useEffect(() => {
     if (page.onLoad) {
@@ -38,7 +36,6 @@ export function PageRenderer({ page }: { page: Page }) {
 
   return (
     <div className={layoutClass}>
-      <Toast ref={toastRef} />
       {sectionsList.map((section) => (
         <SectionRenderer key={section.id} section={section} />
       ))}

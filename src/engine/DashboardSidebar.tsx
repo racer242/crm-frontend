@@ -6,7 +6,13 @@ import { NavItem, UserMenuConfig } from "@/types";
 import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
-import { SplitButton } from "primereact/splitbutton";
+import dynamic from "next/dynamic";
+const SplitButton = dynamic(
+  () => import("primereact/splitbutton").then((mod) => mod.SplitButton),
+  {
+    ssr: false,
+  },
+);
 
 function buildMenuItems(
   items: NavItem[],
@@ -53,9 +59,6 @@ export function DashboardSidebar({
   const router = useRouter();
   const pathname = usePathname() || "/";
   const [collapsed, setCollapsed] = useState(false);
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   const handleNav = useCallback(
     (route: string) => {
@@ -147,8 +150,8 @@ export function DashboardSidebar({
         </div>
 
         <div className="p-2">
-          {userMenu &&
-            (mounted && isAuthenticated ? (
+          {/* {userMenu &&
+            (isAuthenticated ? (
               <SplitButton
                 label={!collapsed ? userMenu.profileLabel : undefined}
                 icon="pi pi-user"
@@ -169,7 +172,7 @@ export function DashboardSidebar({
                 }`}
                 onClick={handleAuthClick}
               />
-            ))}
+            ))} */}
           <Button
             icon={
               collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"

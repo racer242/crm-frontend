@@ -7,6 +7,7 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { StateManager } from "@/core";
 import { usePathname } from "next/navigation";
+import { Toast } from "primereact/toast";
 
 export function AppEngine({ config }: { config: App }) {
   const pathname = usePathname();
@@ -48,6 +49,7 @@ export function AppEngine({ config }: { config: App }) {
   }, [stateManager]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const toastRef = useRef(null);
 
   if (!currentPage) {
     return (
@@ -63,6 +65,7 @@ export function AppEngine({ config }: { config: App }) {
 
   return (
     <div className="flex min-h-screen surface-900">
+      <Toast ref={toastRef} />
       <DashboardHeader
         title={title}
         userMenu={config.userMenu}
