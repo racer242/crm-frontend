@@ -35,6 +35,11 @@
         "label": "Settings",
         "icon": "pi pi-cog",
         "route": "/settings"
+      },
+      {
+        "label": "Components",
+        "icon": "pi pi-th-large",
+        "route": "/components"
       }
     ]
   },
@@ -2241,6 +2246,408 @@
                   "state": {}
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "components",
+      "type": "page",
+      "route": "/components",
+      "state": {
+        "loading": false
+      },
+      "meta": {
+        "title": "Components — CRM Platform"
+      },
+      "sections": [
+        {
+          "id": "componentsHeader",
+          "type": "section",
+          "state": { "visible": true },
+          "blocks": [
+            {
+              "id": "componentsTitle",
+              "type": "block",
+              "blockType": "header",
+              "state": {},
+              "components": [
+                {
+                  "id": "pageTitle",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": { "value": "Component Showcase", "level": 1 },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "menubarSection",
+          "type": "section",
+          "state": { "visible": true },
+          "blocks": [
+            {
+              "id": "menubarBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "Menubar" }
+              },
+              "components": [
+                {
+                  "id": "demoMenubar",
+                  "type": "component",
+                  "componentType": "Menubar",
+                  "props": {
+                    "model": [
+                      {
+                        "label": "File",
+                        "icon": "pi pi-file",
+                        "items": [{ "label": "New" }, { "label": "Open" }]
+                      },
+                      {
+                        "label": "Edit",
+                        "icon": "pi pi-pencil",
+                        "items": [{ "label": "Copy" }, { "label": "Paste" }]
+                      },
+                      { "label": "Help", "icon": "pi pi-question-circle" }
+                    ]
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tabviewSection",
+          "type": "section",
+          "state": { "visible": true },
+          "blocks": [
+            {
+              "id": "tabviewBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "TabView" }
+              },
+              "components": [
+                {
+                  "id": "demoTabView",
+                  "type": "component",
+                  "componentType": "TabView",
+                  "props": {
+                    "tabs": [
+                      {
+                        "header": "Tab 1",
+                        "content": "Content for tab 1. Lorem ipsum dolor sit amet."
+                      },
+                      {
+                        "header": "Tab 2",
+                        "content": "Content for tab 2. Consectetur adipiscing elit."
+                      },
+                      {
+                        "header": "Tab 3",
+                        "content": "Content for tab 3. Sed do eiusmod tempor."
+                      }
+                    ]
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "carouselSection",
+          "type": "section",
+          "state": { "visible": true },
+          "blocks": [
+            {
+              "id": "carouselBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "Carousel" }
+              },
+              "components": [
+                {
+                  "id": "demoCarousel",
+                  "type": "component",
+                  "componentType": "Carousel",
+                  "props": {
+                    "items": [
+                      {
+                        "title": "Slide 1",
+                        "description": "First slide description"
+                      },
+                      {
+                        "title": "Slide 2",
+                        "description": "Second slide description"
+                      },
+                      {
+                        "title": "Slide 3",
+                        "description": "Third slide description"
+                      },
+                      {
+                        "title": "Slide 4",
+                        "description": "Fourth slide description"
+                      }
+                    ],
+                    "numVisible": 3,
+                    "numScroll": 1
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "inputsSection",
+          "type": "section",
+          "state": { "visible": true },
+          "layout": { "type": "grid", "columns": 3 },
+          "blocks": [
+            {
+              "id": "radioBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "RadioButton" }
+              },
+              "components": [
+                {
+                  "id": "demoRadio",
+                  "type": "component",
+                  "componentType": "RadioButton",
+                  "props": {
+                    "options": [
+                      { "label": "Option A", "value": "a" },
+                      { "label": "Option B", "value": "b" },
+                      { "label": "Option C", "value": "c" }
+                    ],
+                    "name": "demoRadioGroup"
+                  },
+                  "state": { "value": "a" },
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "colorBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "ColorPicker" }
+              },
+              "components": [
+                {
+                  "id": "demoColor",
+                  "type": "component",
+                  "componentType": "ColorPicker",
+                  "props": { "inline": true },
+                  "state": { "value": "#42A5F5" },
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "fileBlock",
+              "type": "block",
+              "blockType": "form",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "FileUpload" }
+              },
+              "components": [
+                {
+                  "id": "demoFile",
+                  "type": "component",
+                  "componentType": "FileUpload",
+                  "props": {
+                    "mode": "basic",
+                    "chooseLabel": "Select File",
+                    "uploadLabel": "Upload",
+                    "cancelLabel": "Cancel",
+                    "accept": "image/*",
+                    "maxFileSize": 1000000
+                  },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            }
+          ]
+        },
+        {
+          "id": "feedbackSection",
+          "type": "section",
+          "state": { "visible": true },
+          "layout": { "type": "grid", "columns": 3 },
+          "blocks": [
+            {
+              "id": "progressBarBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "ProgressBar" }
+              },
+              "components": [
+                {
+                  "id": "demoProgressBar",
+                  "type": "component",
+                  "componentType": "ProgressBar",
+                  "props": { "value": 65, "showValue": true },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "spinnerBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "ProgressSpinner" }
+              },
+              "components": [
+                {
+                  "id": "demoSpinner",
+                  "type": "component",
+                  "componentType": "ProgressSpinner",
+                  "props": {
+                    "strokeWidth": "4",
+                    "fill": "transparent",
+                    "animationDuration": ".5s"
+                  },
+                  "state": {},
+                  "className": "col-12 flex justify-content-center"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "toastBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "Toast" }
+              },
+              "components": [
+                {
+                  "id": "demoToast",
+                  "type": "component",
+                  "componentType": "Toast",
+                  "props": { "position": "bottom-right" },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            }
+          ]
+        },
+        {
+          "id": "miscSection",
+          "type": "section",
+          "state": { "visible": true },
+          "layout": { "type": "grid", "columns": 3 },
+          "blocks": [
+            {
+              "id": "badgeBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "Badge" }
+              },
+              "components": [
+                {
+                  "id": "demoBadge",
+                  "type": "component",
+                  "componentType": "Badge",
+                  "props": { "value": "2", "severity": "danger" },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "dividerBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "wrapper": {
+                "component": "Card",
+                "props": { "header": "Divider" }
+              },
+              "components": [
+                {
+                  "id": "demoDivider1",
+                  "type": "component",
+                  "componentType": "Divider",
+                  "props": { "align": "left", "type": "solid" },
+                  "state": {},
+                  "className": "col-12"
+                },
+                {
+                  "id": "demoDivider2",
+                  "type": "component",
+                  "componentType": "Divider",
+                  "props": { "align": "center", "type": "dashed" },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
+            },
+            {
+              "id": "cardBlock",
+              "type": "block",
+              "blockType": "custom",
+              "state": {},
+              "components": [
+                {
+                  "id": "demoCard",
+                  "type": "component",
+                  "componentType": "Card",
+                  "props": {
+                    "header": "Card Header",
+                    "subheader": "Card subheader",
+                    "footer": "Card Footer"
+                  },
+                  "state": {},
+                  "className": "col-12"
+                }
+              ],
+              "className": "col-12 md:col-4"
             }
           ]
         }
