@@ -135,7 +135,7 @@
               "props": {
                 "placeholder": "Дата начала",
                 "showIcon": true,
-                "iconDisplay": "input",
+                "icondisplay": "input",
                 "dateFormat": "dd.mm.yy"
               },
               "state": {
@@ -149,7 +149,7 @@
               "props": {
                 "placeholder": "Дата окончания",
                 "showIcon": true,
-                "iconDisplay": "input",
+                "icondisplay": "input",
                 "dateFormat": "dd.mm.yy"
               },
               "state": {
@@ -157,39 +157,49 @@
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "menuBarSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "column",
+        "gap": 20
+      },
+      "blocks": [
         {
-          "id": "downloadBlock",
+          "id": "menuBarBlock",
           "type": "block",
           "blockType": "custom",
           "state": {},
-          "wrapper": {
-            "component": "Toolbar",
-            "props": {}
-          },
           "components": [
             {
-              "id": "btnDownloadTabs",
+              "id": "downloadMenuBar",
               "type": "component",
-              "componentType": "SplitButton",
+              "componentType": "Menubar",
               "props": {
-                "label": "Скачать данные",
-                "icon": "pi pi-download",
                 "model": [
                   {
-                    "label": "Покупатели",
-                    "icon": "pi pi-users",
-                    "command": "downloadTable-customers"
-                  },
-                  {
-                    "label": "Заказы",
-                    "icon": "pi pi-shopping-cart",
-                    "command": "downloadTable-orders"
-                  },
-                  {
-                    "label": "Продукты",
-                    "icon": "pi pi-box",
-                    "command": "downloadTable-products"
+                    "label": "Скачать данные",
+                    "items": [
+                      {
+                        "label": "Покупатели",
+                        "command": "downloadTable-customers"
+                      },
+                      {
+                        "label": "Заказы",
+                        "command": "downloadTable-orders"
+                      },
+                      {
+                        "label": "Продукты",
+                        "command": "downloadTable-products"
+                      }
+                    ]
                   }
                 ]
               },
