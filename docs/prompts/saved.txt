@@ -1,0 +1,24 @@
+Заметка: обрати внимание, я изменил у weekDropdown "finish" на "end" в 
+
+1. setState - не хотел бы использовать, так как я хотел ее оставить для изменения state у элементов. Давай использовать команду setProperty
+2. Пусть команды будут атомарны. то есть для установки разных значений у разных компонентов будет вызвано 2 команды. 
+3. Свойства могут меняться не только value. Но и другие - мы не знаем какие. поэтому предлагаю адрессацию сделать упрощенно, через "." 
+
+Пример: 
+"event": "onChange",
+      "commands": [
+        {
+          "type": "setState",
+          "params": {
+            "source": "weekDropdown.value.start",
+            "target": "startDatePicker.value"
+          }
+        },
+        {
+          "type": "setState",
+          "params": {
+            "source": "weekDropdown.value.end",
+            "target": "endDatePicker.value"
+          }
+        },
+
