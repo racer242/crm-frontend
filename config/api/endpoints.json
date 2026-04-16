@@ -1,0 +1,23 @@
+{
+  "getUsers": {
+    "path": "/users",
+    "method": "GET",
+    "cache": true,
+    "cacheTTL": 60000
+  },
+  "getOrders": {
+    "path": "/orders",
+    "method": "GET",
+    "cache": false
+  },
+  "getProducts": {
+    "path": "/products",
+    "method": "GET",
+    "cache": true,
+    "cacheTTL": 300000
+  },
+  "createOrder": {
+    "path": "/orders",
+    "method": "POST"
+  }
+}

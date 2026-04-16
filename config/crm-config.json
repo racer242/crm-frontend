@@ -64,27 +64,13 @@
     ]
   },
   "pages": [
-    {
-      "$ref": "./pages/dashboard.json"
-    },
-    {
-      "$ref": "./pages/users.json"
-    },
-    {
-      "$ref": "./pages/orders.json"
-    },
-    {
-      "$ref": "./pages/products.json"
-    },
-    {
-      "$ref": "./pages/reports.json"
-    },
-    {
-      "$ref": "./pages/settings.json"
-    },
-    {
-      "$ref": "./pages/components.json"
-    }
+    { "$ref": "./pages/dashboard.json" },
+    { "$ref": "./pages/users.json" },
+    { "$ref": "./pages/orders.json" },
+    { "$ref": "./pages/products.json" },
+    { "$ref": "./pages/reports.json" },
+    { "$ref": "./pages/settings.json" },
+    { "$ref": "./pages/components.json" }
   ],
   "globalState": {
     "user": {
@@ -92,11 +78,7 @@
       "name": "Admin User",
       "email": "admin@crm.com",
       "role": "admin",
-      "permissions": [
-        "read",
-        "write",
-        "delete"
-      ],
+      "permissions": ["read", "write", "delete"],
       "avatar": "👤"
     },
     "auth": {
@@ -112,29 +94,7 @@
     "api": {
       "baseURL": "http://localhost:3001/api",
       "timeout": 10000,
-      "endpoints": {
-        "getUsers": {
-          "path": "/users",
-          "method": "GET",
-          "cache": true,
-          "cacheTTL": 60000
-        },
-        "getOrders": {
-          "path": "/orders",
-          "method": "GET",
-          "cache": false
-        },
-        "getProducts": {
-          "path": "/products",
-          "method": "GET",
-          "cache": true,
-          "cacheTTL": 300000
-        },
-        "createOrder": {
-          "path": "/orders",
-          "method": "POST"
-        }
-      }
+      "endpoints": { "$ref": "./api/endpoints.json" }
     },
     "features": {
       "darkMode": true,
