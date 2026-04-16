@@ -1,13 +1,14 @@
 import { App } from "@/types";
 import { AppEngine } from "@/engine";
-import crmConfig from "../../../config/crm-config.json";
+import { initApp } from "@/core/config-loader";
 
-const config = crmConfig as unknown as App;
-
-export default function Page({
+export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string[] }>;
 }) {
-  return <AppEngine config={config} />;
+  // Initialize CRM App Singleton (loads config once per application lifetime)
+  const config = await initApp();
+
+  return <AppEngine config={config as unknown as App} />;
 }
