@@ -1,0 +1,653 @@
+{
+  "id": "statistics",
+  "type": "page",
+  "route": "/statistics",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Статистика — CRM Platform"
+  },
+  "onLoad": [
+    {
+      "id": "loadStatsData",
+      "type": "log",
+      "params": {
+        "level": "info",
+        "message": "Statistics page loaded"
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "statsTitleSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "statsHeaderBlock",
+          "type": "block",
+          "blockType": "header",
+          "state": {},
+          "components": [
+            {
+              "id": "pageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Статистика",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filtersSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "column",
+        "gap": 20
+      },
+      "blocks": [
+        {
+          "id": "weekFilterBlock",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Выбор недели"
+            }
+          },
+          "components": [
+            {
+              "id": "weekDropdown",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "15 - 20.04.2026 - 27.04.2026",
+                    "value": "week-16"
+                  },
+                  {
+                    "label": "8 - 13.04.2026 - 20.04.2026",
+                    "value": "week-15"
+                  },
+                  {
+                    "label": "1 - 6.04.2026 - 13.04.2026",
+                    "value": "week-14"
+                  },
+                  {
+                    "label": "25.03.2026 - 30.03.2026 - 6.04.2026",
+                    "value": "week-13"
+                  },
+                  {
+                    "label": "18.03.2026 - 23.03.2026 - 30.03.2026",
+                    "value": "week-12"
+                  },
+                  {
+                    "label": "11.03.2026 - 16.03.2026 - 23.03.2026",
+                    "value": "week-11"
+                  }
+                ],
+                "placeholder": "Выберите неделю",
+                "showClear": true
+              },
+              "state": {
+                "value": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "dateRangeBlock",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Диапазон дат"
+            }
+          },
+          "components": [
+            {
+              "id": "startDatePicker",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Дата начала",
+                "showIcon": true,
+                "iconDisplay": "input",
+                "dateFormat": "dd.mm.yy"
+              },
+              "state": {
+                "value": null
+              }
+            },
+            {
+              "id": "endDatePicker",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Дата окончания",
+                "showIcon": true,
+                "iconDisplay": "input",
+                "dateFormat": "dd.mm.yy"
+              },
+              "state": {
+                "value": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "downloadBlock",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Toolbar",
+            "props": {}
+          },
+          "components": [
+            {
+              "id": "btnDownloadTabs",
+              "type": "component",
+              "componentType": "SplitButton",
+              "props": {
+                "label": "Скачать данные",
+                "icon": "pi pi-download",
+                "model": [
+                  {
+                    "label": "Покупатели",
+                    "icon": "pi pi-users",
+                    "command": "downloadTable-customers"
+                  },
+                  {
+                    "label": "Заказы",
+                    "icon": "pi pi-shopping-cart",
+                    "command": "downloadTable-orders"
+                  },
+                  {
+                    "label": "Продукты",
+                    "icon": "pi pi-box",
+                    "command": "downloadTable-products"
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tabsSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "blocks": [
+        {
+          "id": "allTabsContainer",
+          "type": "block",
+          "blockType": "tabs",
+          "state": {},
+          "className": "col-12",
+          "wrapper": {
+            "component": "TabView",
+            "props": {}
+          },
+          "components": [
+            {
+              "id": "customersTab",
+              "type": "component",
+              "componentType": "TabPanel",
+              "props": {
+                "header": "Покупатели",
+                "closable": false
+              },
+              "children": {
+                "type": "table",
+                "data": [
+                  {
+                    "id": "CUST-001",
+                    "name": "Алексей Иванов",
+                    "email": "alex.ivanov@example.com",
+                    "phone": "+7 (999) 123-45-67",
+                    "company": "ООО \"Вектор\"",
+                    "totalOrders": 24,
+                    "totalSpent": 125000,
+                    "lastOrderDate": "2026-04-10"
+                  },
+                  {
+                    "id": "CUST-002",
+                    "name": "Мария Петрова",
+                    "email": "maria.petrova@example.com",
+                    "phone": "+7 (999) 234-56-78",
+                    "company": "ИП Петрова М.С.",
+                    "totalOrders": 18,
+                    "totalSpent": 89500,
+                    "lastOrderDate": "2026-04-08"
+                  },
+                  {
+                    "id": "CUST-003",
+                    "name": "Дмитрий Сидоров",
+                    "email": "d.sidorov@example.com",
+                    "phone": "+7 (999) 345-67-89",
+                    "company": "ЗАО \"ТехноСервис\"",
+                    "totalOrders": 31,
+                    "totalSpent": 245000,
+                    "lastOrderDate": "2026-04-12"
+                  },
+                  {
+                    "id": "CUST-004",
+                    "name": "Елена Волкова",
+                    "email": "elena.volkova@example.com",
+                    "phone": "+7 (999) 456-78-90",
+                    "company": "ООО \"Команда\"",
+                    "totalOrders": 12,
+                    "totalSpent": 56000,
+                    "lastOrderDate": "2026-04-05"
+                  },
+                  {
+                    "id": "CUST-005",
+                    "name": "Игорь Морозов",
+                    "email": "igor.morozov@example.com",
+                    "phone": "+7 (999) 567-89-01",
+                    "company": "ООО \"Север\"",
+                    "totalOrders": 45,
+                    "totalSpent": 380000,
+                    "lastOrderDate": "2026-04-14"
+                  },
+                  {
+                    "id": "CUST-006",
+                    "name": "Ольга Новикова",
+                    "email": "olga.novikova@example.com",
+                    "phone": "+7 (999) 678-90-12",
+                    "company": "ИП Новикова О.В.",
+                    "totalOrders": 8,
+                    "totalSpent": 32000,
+                    "lastOrderDate": "2026-04-01"
+                  },
+                  {
+                    "id": "CUST-007",
+                    "name": "Сергей Кузнецов",
+                    "email": "sergey.kuznetsov@example.com",
+                    "phone": "+7 (999) 789-01-23",
+                    "company": "ЗАО \"СтройГрупп\"",
+                    "totalOrders": 27,
+                    "totalSpent": 178000,
+                    "lastOrderDate": "2026-04-11"
+                  },
+                  {
+                    "id": "CUST-008",
+                    "name": "Татьяна Соколова",
+                    "email": "tatyana.sokolova@example.com",
+                    "phone": "+7 (999) 890-12-34",
+                    "company": "ООО \"Медиа\"",
+                    "totalOrders": 15,
+                    "totalSpent": 94500,
+                    "lastOrderDate": "2026-04-09"
+                  }
+                ],
+                "columns": [
+                  { "field": "name", "header": "ФИО", "sortable": true },
+                  { "field": "email", "header": "Email", "sortable": true },
+                  { "field": "phone", "header": "Телефон", "sortable": true },
+                  {
+                    "field": "company",
+                    "header": "Компания",
+                    "sortable": true
+                  },
+                  {
+                    "field": "totalOrders",
+                    "header": "Всего заказов",
+                    "sortable": true
+                  },
+                  {
+                    "field": "totalSpent",
+                    "header": "Сумма покупок",
+                    "sortable": true
+                  },
+                  {
+                    "field": "lastOrderDate",
+                    "header": "Последняя покупка",
+                    "sortable": true
+                  }
+                ]
+              }
+            },
+            {
+              "id": "ordersTab",
+              "type": "component",
+              "componentType": "TabPanel",
+              "props": {
+                "header": "Заказы",
+                "closable": false
+              },
+              "children": {
+                "type": "table",
+                "data": [
+                  {
+                    "orderId": "ORD-001",
+                    "customer": "ООО \"Вектор\"",
+                    "product": "Ноутбук ProBook 15",
+                    "quantity": 10,
+                    "unitPrice": 45000,
+                    "totalAmount": 450000,
+                    "status": "Выполнен",
+                    "orderDate": "2026-04-10",
+                    "manager": "Анна Смирнова"
+                  },
+                  {
+                    "orderId": "ORD-002",
+                    "customer": "ИП Петрова М.С.",
+                    "product": "Монитор UltraView 27",
+                    "quantity": 5,
+                    "unitPrice": 22000,
+                    "totalAmount": 110000,
+                    "status": "Обработка",
+                    "orderDate": "2026-04-12",
+                    "manager": "Петр Васильев"
+                  },
+                  {
+                    "orderId": "ORD-003",
+                    "customer": "ЗАО \"ТехноСервис\"",
+                    "product": "Клавиатура MechKey RGB",
+                    "quantity": 50,
+                    "unitPrice": 5500,
+                    "totalAmount": 275000,
+                    "status": "Отправлен",
+                    "orderDate": "2026-04-11",
+                    "manager": "Анна Смирнова"
+                  },
+                  {
+                    "orderId": "ORD-004",
+                    "customer": "ООО \"Север\"",
+                    "product": "Мышь WirelessPro X",
+                    "quantity": 30,
+                    "unitPrice": 3500,
+                    "totalAmount": 105000,
+                    "status": "Выполнен",
+                    "orderDate": "2026-04-14",
+                    "manager": "Михаил Орлов"
+                  },
+                  {
+                    "orderId": "ORD-005",
+                    "customer": "ЗАО \"СтройГрупп\"",
+                    "product": "Веб-камера HD Pro",
+                    "quantity": 15,
+                    "unitPrice": 8000,
+                    "totalAmount": 120000,
+                    "status": "Отменен",
+                    "orderDate": "2026-04-09",
+                    "manager": "Елена Козлова"
+                  },
+                  {
+                    "orderId": "ORD-006",
+                    "customer": "ООО \"Медиа\"",
+                    "product": "Наушники SoundMax BT",
+                    "quantity": 20,
+                    "unitPrice": 6500,
+                    "totalAmount": 130000,
+                    "status": "Выполнен",
+                    "orderDate": "2026-04-08",
+                    "manager": "Сергей Павлов"
+                  },
+                  {
+                    "orderId": "ORD-007",
+                    "customer": "ИП Новикова О.В.",
+                    "product": "USB Hub 7-Port",
+                    "quantity": 8,
+                    "unitPrice": 2200,
+                    "totalAmount": 17600,
+                    "status": "Обработка",
+                    "orderDate": "2026-04-13",
+                    "manager": "Петр Васильев"
+                  },
+                  {
+                    "orderId": "ORD-008",
+                    "customer": "ООО \"Вектор\"",
+                    "product": "Docking Station Pro",
+                    "quantity": 3,
+                    "unitPrice": 15000,
+                    "totalAmount": 45000,
+                    "status": "Отправлен",
+                    "orderDate": "2026-04-12",
+                    "manager": "Анна Смирнова"
+                  }
+                ],
+                "columns": [
+                  {
+                    "field": "orderId",
+                    "header": "# Заказа",
+                    "sortable": true
+                  },
+                  { "field": "customer", "header": "Клиент", "sortable": true },
+                  { "field": "product", "header": "Товар", "sortable": true },
+                  { "field": "quantity", "header": "Кол-во", "sortable": true },
+                  { "field": "unitPrice", "header": "Цена", "sortable": true },
+                  {
+                    "field": "totalAmount",
+                    "header": "Сумма",
+                    "sortable": true
+                  },
+                  { "field": "status", "header": "Статус", "sortable": true },
+                  {
+                    "field": "orderDate",
+                    "header": "Дата заказа",
+                    "sortable": true
+                  },
+                  { "field": "manager", "header": "Менеджер", "sortable": true }
+                ]
+              }
+            },
+            {
+              "id": "productsTab",
+              "type": "component",
+              "componentType": "TabPanel",
+              "props": {
+                "header": "Продукты",
+                "closable": false
+              },
+              "children": {
+                "type": "table",
+                "data": [
+                  {
+                    "productId": "PROD-001",
+                    "name": "Ноутбук ProBook 15",
+                    "category": "Компьютеры",
+                    "manufacturer": "TechBrand",
+                    "sku": "NB-PB15-001",
+                    "stockQuantity": 45,
+                    "price": 45000,
+                    "soldCount": 128,
+                    "revenue": 5760000,
+                    "rating": 4.7,
+                    "supplier": "Global Distributors Inc."
+                  },
+                  {
+                    "productId": "PROD-002",
+                    "name": "Монитор UltraView 27",
+                    "category": "Мониторы",
+                    "manufacturer": "VisionTech",
+                    "sku": "MN-UV27-4K",
+                    "stockQuantity": 78,
+                    "price": 22000,
+                    "soldCount": 89,
+                    "revenue": 1958000,
+                    "rating": 4.5,
+                    "supplier": "VisionTech Direct"
+                  },
+                  {
+                    "productId": "PROD-003",
+                    "name": "Клавиатура MechKey RGB",
+                    "category": "Периферия",
+                    "manufacturer": "GameGear",
+                    "sku": "KB-MKR-RGB",
+                    "stockQuantity": 156,
+                    "price": 5500,
+                    "soldCount": 234,
+                    "revenue": 1287000,
+                    "rating": 4.8,
+                    "supplier": "GameGear Asia Ltd."
+                  },
+                  {
+                    "productId": "PROD-004",
+                    "name": "Мышь WirelessPro X",
+                    "category": "Периферия",
+                    "manufacturer": "TechBrand",
+                    "sku": "MS-WPX-BLK",
+                    "stockQuantity": 203,
+                    "price": 3500,
+                    "soldCount": 412,
+                    "revenue": 1442000,
+                    "rating": 4.6,
+                    "supplier": "Global Distributors Inc."
+                  },
+                  {
+                    "productId": "PROD-005",
+                    "name": "Веб-камера HD Pro",
+                    "category": "Периферия",
+                    "manufacturer": "VisionTech",
+                    "sku": "WC-HDP-1080",
+                    "stockQuantity": 92,
+                    "price": 8000,
+                    "soldCount": 167,
+                    "revenue": 1336000,
+                    "rating": 4.4,
+                    "supplier": "VisionTech Direct"
+                  },
+                  {
+                    "productId": "PROD-006",
+                    "name": "Наушники SoundMax BT",
+                    "category": "Аудио",
+                    "manufacturer": "AudioPro",
+                    "sku": "HN-SMBT-WHT",
+                    "stockQuantity": 64,
+                    "price": 6500,
+                    "soldCount": 298,
+                    "revenue": 1937000,
+                    "rating": 4.9,
+                    "supplier": "AudioWorld Distribution"
+                  },
+                  {
+                    "productId": "PROD-007",
+                    "name": "USB Hub 7-Port",
+                    "category": "Аксессуары",
+                    "manufacturer": "ConnectPlus",
+                    "sku": "UB-7P-300",
+                    "stockQuantity": 187,
+                    "price": 2200,
+                    "soldCount": 356,
+                    "revenue": 783200,
+                    "rating": 4.3,
+                    "supplier": "ConnectPlus Global"
+                  },
+                  {
+                    "productId": "PROD-008",
+                    "name": "Docking Station Pro",
+                    "category": "Аксессуары",
+                    "manufacturer": "TechBrand",
+                    "sku": "DS-PRO-WD",
+                    "stockQuantity": 41,
+                    "price": 15000,
+                    "soldCount": 76,
+                    "revenue": 1140000,
+                    "rating": 4.7,
+                    "supplier": "Global Distributors Inc."
+                  },
+                  {
+                    "productId": "PROD-009",
+                    "name": "SSD диск Extreme 1TB",
+                    "category": "Накопители",
+                    "manufacturer": "SpeedDrive",
+                    "sku": "SSD-E1TB-NVME",
+                    "stockQuantity": 118,
+                    "price": 9500,
+                    "soldCount": 287,
+                    "revenue": 2726500,
+                    "rating": 4.8,
+                    "supplier": "SpeedDrive International"
+                  },
+                  {
+                    "productId": "PROD-010",
+                    "name": "RAM память ProKit 32GB",
+                    "category": "Компоненты",
+                    "manufacturer": "MemoryX",
+                    "sku": "RAM-32G-DDR5",
+                    "stockQuantity": 85,
+                    "price": 12000,
+                    "soldCount": 145,
+                    "revenue": 1740000,
+                    "rating": 4.6,
+                    "supplier": "MemoryX Corp."
+                  }
+                ],
+                "columns": [
+                  { "field": "productId", "header": "#", "sortable": true },
+                  {
+                    "field": "name",
+                    "header": "Название товара",
+                    "sortable": true
+                  },
+                  {
+                    "field": "category",
+                    "header": "Категория",
+                    "sortable": true
+                  },
+                  {
+                    "field": "manufacturer",
+                    "header": "Производитель",
+                    "sortable": true
+                  },
+                  {
+                    "field": "stockQuantity",
+                    "header": "Остаток",
+                    "sortable": true
+                  },
+                  { "field": "price", "header": "Цена", "sortable": true },
+                  {
+                    "field": "soldCount",
+                    "header": "Продано",
+                    "sortable": true
+                  },
+                  { "field": "revenue", "header": "Выручка", "sortable": true },
+                  { "field": "rating", "header": "Рейтинг", "sortable": true },
+                  {
+                    "field": "supplier",
+                    "header": "Поставщик",
+                    "sortable": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

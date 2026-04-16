@@ -12,6 +12,11 @@
         "route": "/"
       },
       {
+        "label": "Статистика",
+        "icon": "pi pi-chart-bar",
+        "route": "/statistics"
+      },
+      {
         "label": "Users",
         "icon": "pi pi-users",
         "route": "/users"
@@ -65,6 +70,7 @@
   },
   "pages": [
     { "$ref": "./pages/dashboard.json" },
+    { "$ref": "./pages/statistics.json" },
     { "$ref": "./pages/users.json" },
     { "$ref": "./pages/orders.json" },
     { "$ref": "./pages/products.json" },
