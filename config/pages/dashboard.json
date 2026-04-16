@@ -1,0 +1,373 @@
+{
+  "id": "dashboard",
+  "type": "page",
+  "route": "/",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Dashboard — CRM Platform"
+  },
+  "onLoad": [
+    {
+      "id": "loadStats",
+      "type": "log",
+      "params": {
+        "level": "info",
+        "message": "Dashboard loaded"
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "statsRow",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 4
+      },
+      "blocks": [
+        {
+          "id": "statCard1",
+          "type": "block",
+          "blockType": "stats",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Total Users"
+            }
+          },
+          "components": [
+            {
+              "id": "sv1",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "1,250",
+                "level": 1
+              },
+              "state": {}
+            },
+            {
+              "id": "sb1",
+              "type": "component",
+              "componentType": "Tag",
+              "props": {
+                "value": "+12%",
+                "severity": "success"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "statCard2",
+          "type": "block",
+          "blockType": "stats",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Revenue"
+            }
+          },
+          "components": [
+            {
+              "id": "sv2",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "$95,400",
+                "level": 1
+              },
+              "state": {}
+            },
+            {
+              "id": "sb2",
+              "type": "component",
+              "componentType": "Tag",
+              "props": {
+                "value": "+8%",
+                "severity": "success"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "statCard3",
+          "type": "block",
+          "blockType": "stats",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Pending Orders"
+            }
+          },
+          "components": [
+            {
+              "id": "sv3",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "42",
+                "level": 1
+              },
+              "state": {}
+            },
+            {
+              "id": "sb3",
+              "type": "component",
+              "componentType": "Tag",
+              "props": {
+                "value": "-3%",
+                "severity": "danger"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "statCard4",
+          "type": "block",
+          "blockType": "stats",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Active Tasks"
+            }
+          },
+          "components": [
+            {
+              "id": "sv4",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "17",
+                "level": 1
+              },
+              "state": {}
+            },
+            {
+              "id": "sb4",
+              "type": "component",
+              "componentType": "Tag",
+              "props": {
+                "value": "5 due",
+                "severity": "warning"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toolbarRow",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "toolbarBlock",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Toolbar",
+            "props": {}
+          },
+          "components": [
+            {
+              "id": "btnNewUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "New User",
+                "icon": "pi pi-plus",
+                "severity": "success"
+              },
+              "state": {}
+            },
+            {
+              "id": "btnNewOrder",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "New Order",
+                "icon": "pi pi-shopping-cart"
+              },
+              "state": {}
+            },
+            {
+              "id": "btnExport",
+              "type": "component",
+              "componentType": "SplitButton",
+              "props": {
+                "label": "Export",
+                "icon": "pi pi-download",
+                "model": [
+                  {
+                    "label": "Upload",
+                    "icon": "pi pi-upload",
+                    "command": "command"
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainGrid",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 3
+      },
+      "blocks": [
+        {
+          "id": "recentOrders",
+          "type": "block",
+          "blockType": "table",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Recent Orders"
+            }
+          },
+          "components": [
+            {
+              "id": "ordersTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": [
+                  {
+                    "id": "ORD-001",
+                    "customer": "Alice Johnson",
+                    "amount": 1250,
+                    "status": "Completed",
+                    "date": "2024-01-15"
+                  },
+                  {
+                    "id": "ORD-002",
+                    "customer": "Bob Smith",
+                    "amount": 890,
+                    "status": "Pending",
+                    "date": "2024-01-14"
+                  },
+                  {
+                    "id": "ORD-003",
+                    "customer": "Carol White",
+                    "amount": 2100,
+                    "status": "Shipped",
+                    "date": "2024-01-13"
+                  },
+                  {
+                    "id": "ORD-004",
+                    "customer": "Dave Brown",
+                    "amount": 450,
+                    "status": "Cancelled",
+                    "date": "2024-01-12"
+                  }
+                ],
+                "columns": [
+                  {
+                    "field": "id",
+                    "header": "Order ID"
+                  },
+                  {
+                    "field": "customer",
+                    "header": "Customer"
+                  },
+                  {
+                    "field": "amount",
+                    "header": "Amount"
+                  },
+                  {
+                    "field": "status",
+                    "header": "Status"
+                  },
+                  {
+                    "field": "date",
+                    "header": "Date"
+                  }
+                ],
+                "paginator": true,
+                "rows": 5,
+                "tableStyle": {
+                  "minWidth": "50rem"
+                }
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 lg:col-6"
+        },
+        {
+          "id": "activityFeed",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Activity Feed"
+            }
+          },
+          "components": [
+            {
+              "id": "timeline",
+              "type": "component",
+              "componentType": "Timeline",
+              "props": {
+                "value": [
+                  {
+                    "status": "Order placed",
+                    "date": "10 min ago",
+                    "icon": "pi pi-shopping-cart",
+                    "color": "#6366f1"
+                  },
+                  {
+                    "status": "Payment received",
+                    "date": "5 min ago",
+                    "icon": "pi pi-credit-card",
+                    "color": "#22c55e"
+                  },
+                  {
+                    "status": "Shipping",
+                    "date": "Just now",
+                    "icon": "pi pi-truck",
+                    "color": "#f59e0b"
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 lg:col-6"
+        }
+      ]
+    }
+  ]
+}

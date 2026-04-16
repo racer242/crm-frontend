@@ -1,0 +1,344 @@
+{
+  "id": "orders",
+  "type": "page",
+  "route": "/orders",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Orders — CRM Platform"
+  },
+  "sections": [
+    {
+      "id": "ordersHeader",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "ordersTitle",
+          "type": "block",
+          "blockType": "header",
+          "state": {},
+          "components": [
+            {
+              "id": "ordersPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Order Management",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ordersTabs",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "tabViewBlock",
+          "type": "block",
+          "blockType": "tabs",
+          "state": {},
+          "components": [
+            {
+              "id": "ordersTabView",
+              "type": "component",
+              "componentType": "TabView",
+              "props": {
+                "tabs": [
+                  {
+                    "label": "All Orders",
+                    "content": {
+                      "type": "table",
+                      "data": [
+                        {
+                          "id": "ORD-001",
+                          "customer": "Alice Johnson",
+                          "total": 1250,
+                          "status": "Completed",
+                          "date": "2024-01-15"
+                        },
+                        {
+                          "id": "ORD-002",
+                          "customer": "Bob Smith",
+                          "total": 890,
+                          "status": "Pending",
+                          "date": "2024-01-14"
+                        },
+                        {
+                          "id": "ORD-003",
+                          "customer": "Carol White",
+                          "total": 2100,
+                          "status": "Shipped",
+                          "date": "2024-01-13"
+                        }
+                      ],
+                      "columns": [
+                        {
+                          "field": "id",
+                          "header": "Order ID"
+                        },
+                        {
+                          "field": "customer",
+                          "header": "Customer"
+                        },
+                        {
+                          "field": "total",
+                          "header": "Total"
+                        },
+                        {
+                          "field": "status",
+                          "header": "Status"
+                        },
+                        {
+                          "field": "date",
+                          "header": "Date"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "label": "Pending",
+                    "content": {
+                      "type": "table",
+                      "data": [
+                        {
+                          "id": "ORD-002",
+                          "customer": "Bob Smith",
+                          "total": 890,
+                          "date": "2024-01-14"
+                        }
+                      ],
+                      "columns": [
+                        {
+                          "field": "id",
+                          "header": "Order ID"
+                        },
+                        {
+                          "field": "customer",
+                          "header": "Customer"
+                        },
+                        {
+                          "field": "total",
+                          "header": "Total"
+                        },
+                        {
+                          "field": "date",
+                          "header": "Date"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "label": "Completed",
+                    "content": {
+                      "type": "table",
+                      "data": [
+                        {
+                          "id": "ORD-001",
+                          "customer": "Alice Johnson",
+                          "total": 1250,
+                          "date": "2024-01-15"
+                        }
+                      ],
+                      "columns": [
+                        {
+                          "field": "id",
+                          "header": "Order ID"
+                        },
+                        {
+                          "field": "customer",
+                          "header": "Customer"
+                        },
+                        {
+                          "field": "total",
+                          "header": "Total"
+                        },
+                        {
+                          "field": "date",
+                          "header": "Date"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orderFormSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 3
+      },
+      "blocks": [
+        {
+          "id": "orderForm",
+          "type": "block",
+          "blockType": "form",
+          "state": {
+            "formData": {}
+          },
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "New Order"
+            }
+          },
+          "components": [
+            {
+              "id": "orderCustomer",
+              "type": "component",
+              "componentType": "AutoComplete",
+              "props": {
+                "placeholder": "Search customer...",
+                "suggestions": [
+                  "Alice Johnson",
+                  "Bob Smith",
+                  "Carol White"
+                ]
+              },
+              "state": {
+                "value": ""
+              }
+            },
+            {
+              "id": "orderProduct",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "Widget A",
+                    "value": "widget-a"
+                  },
+                  {
+                    "label": "Widget B",
+                    "value": "widget-b"
+                  },
+                  {
+                    "label": "Gadget C",
+                    "value": "gadget-c"
+                  }
+                ],
+                "placeholder": "Select product"
+              },
+              "state": {}
+            },
+            {
+              "id": "orderQuantity",
+              "type": "component",
+              "componentType": "InputNumber",
+              "props": {
+                "placeholder": "Quantity",
+                "min": 1,
+                "max": 100
+              },
+              "state": {
+                "value": 1
+              }
+            },
+            {
+              "id": "orderNotes",
+              "type": "component",
+              "componentType": "InputTextarea",
+              "props": {
+                "placeholder": "Order notes...",
+                "rows": 3
+              },
+              "state": {
+                "value": ""
+              }
+            },
+            {
+              "id": "orderUrgent",
+              "type": "component",
+              "componentType": "Checkbox",
+              "props": {
+                "label": "Urgent order"
+              },
+              "state": {
+                "value": false
+              }
+            },
+            {
+              "id": "orderDate",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Delivery date",
+                "showIcon": true
+              },
+              "state": {}
+            },
+            {
+              "id": "orderSubmit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Create Order",
+                "icon": "pi pi-check",
+                "severity": "success"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 lg:col-8"
+        },
+        {
+          "id": "orderMessages",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Info"
+            }
+          },
+          "components": [
+            {
+              "id": "infoMsg",
+              "type": "component",
+              "componentType": "Message",
+              "props": {
+                "severity": "info",
+                "text": "Orders processed within 24 hours"
+              },
+              "state": {}
+            },
+            {
+              "id": "warnMsg",
+              "type": "component",
+              "componentType": "Message",
+              "props": {
+                "severity": "warn",
+                "text": "Weekend orders processed Monday"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 lg:col-4"
+        }
+      ]
+    }
+  ]
+}

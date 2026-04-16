@@ -1,0 +1,448 @@
+{
+  "id": "settings",
+  "type": "page",
+  "route": "/settings",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Settings — CRM Platform"
+  },
+  "sections": [
+    {
+      "id": "settingsHeader",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "settingsTitle",
+          "type": "block",
+          "blockType": "header",
+          "state": {},
+          "components": [
+            {
+              "id": "settingsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Settings",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settingsSteps",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "stepsBlock",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "components": [
+            {
+              "id": "settingsSteps",
+              "type": "component",
+              "componentType": "Steps",
+              "props": {
+                "model": [
+                  {
+                    "label": "Profile"
+                  },
+                  {
+                    "label": "Notifications"
+                  },
+                  {
+                    "label": "Security"
+                  },
+                  {
+                    "label": "Integrations"
+                  }
+                ],
+                "activeIndex": 0,
+                "readOnly": false
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settingsForm",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 2
+      },
+      "blocks": [
+        {
+          "id": "profileForm",
+          "type": "block",
+          "blockType": "form",
+          "state": {
+            "formData": {}
+          },
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Profile Settings"
+            }
+          },
+          "components": [
+            {
+              "id": "displayName",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Display name"
+              },
+              "state": {
+                "value": "Admin User"
+              }
+            },
+            {
+              "id": "email",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Email address"
+              },
+              "state": {
+                "value": "admin@crm.com"
+              }
+            },
+            {
+              "id": "bio",
+              "type": "component",
+              "componentType": "InputTextarea",
+              "props": {
+                "placeholder": "Bio",
+                "rows": 3
+              },
+              "state": {
+                "value": "System administrator"
+              }
+            },
+            {
+              "id": "avatar",
+              "type": "component",
+              "componentType": "Avatar",
+              "props": {
+                "label": "AU",
+                "shape": "circle",
+                "size": "xlarge",
+                "style": {
+                  "backgroundColor": "#6366f1"
+                }
+              },
+              "state": {}
+            },
+            {
+              "id": "chip1",
+              "type": "component",
+              "componentType": "Chip",
+              "props": {
+                "label": "Admin",
+                "icon": "pi pi-user"
+              },
+              "state": {}
+            },
+            {
+              "id": "chip2",
+              "type": "component",
+              "componentType": "Chip",
+              "props": {
+                "label": "Verified",
+                "icon": "pi pi-check-circle"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-6"
+        },
+        {
+          "id": "notificationSettings",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Notifications"
+            }
+          },
+          "components": [
+            {
+              "id": "emailNotif",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Email notifications"
+              },
+              "state": {
+                "value": true
+              }
+            },
+            {
+              "id": "smsNotif",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "SMS notifications"
+              },
+              "state": {
+                "value": false
+              }
+            },
+            {
+              "id": "pushNotif",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Push notifications"
+              },
+              "state": {
+                "value": true
+              }
+            },
+            {
+              "id": "notifFrequency",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "Instant",
+                    "value": "instant"
+                  },
+                  {
+                    "label": "Daily digest",
+                    "value": "daily"
+                  },
+                  {
+                    "label": "Weekly digest",
+                    "value": "weekly"
+                  }
+                ]
+              },
+              "state": {
+                "value": "instant"
+              }
+            }
+          ],
+          "className": "col-12 md:col-6"
+        }
+      ]
+    },
+    {
+      "id": "securitySection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 2
+      },
+      "blocks": [
+        {
+          "id": "securityForm",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Security"
+            }
+          },
+          "components": [
+            {
+              "id": "currentPassword",
+              "type": "component",
+              "componentType": "Password",
+              "props": {
+                "placeholder": "Current password"
+              },
+              "state": {}
+            },
+            {
+              "id": "newPassword",
+              "type": "component",
+              "componentType": "Password",
+              "props": {
+                "placeholder": "New password"
+              },
+              "state": {}
+            },
+            {
+              "id": "confirmPassword",
+              "type": "component",
+              "componentType": "Password",
+              "props": {
+                "placeholder": "Confirm password"
+              },
+              "state": {}
+            },
+            {
+              "id": "twoFactor",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Two-factor authentication"
+              },
+              "state": {
+                "value": false
+              }
+            },
+            {
+              "id": "sessionTimeout",
+              "type": "component",
+              "componentType": "InputNumber",
+              "props": {
+                "placeholder": "Session timeout (min)",
+                "min": 5,
+                "max": 1440
+              },
+              "state": {
+                "value": 30
+              }
+            },
+            {
+              "id": "changePassword",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Change Password",
+                "icon": "pi pi-lock",
+                "severity": "warning"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-6"
+        },
+        {
+          "id": "integrations",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Integrations"
+            }
+          },
+          "components": [
+            {
+              "id": "apiToggle",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Enable API access"
+              },
+              "state": {
+                "value": true
+              }
+            },
+            {
+              "id": "apiKey",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "API Key",
+                "disabled": true
+              },
+              "state": {
+                "value": "sk-xxxx-xxxx-xxxx-xxxx"
+              }
+            },
+            {
+              "id": "webhookUrl",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Webhook URL"
+              },
+              "state": {
+                "value": "https://hooks.example.com/crm"
+              }
+            },
+            {
+              "id": "regenerateKey",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Regenerate API Key",
+                "icon": "pi pi-refresh",
+                "severity": "danger"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-6"
+        }
+      ]
+    },
+    {
+      "id": "accordionSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "accordionBlock",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "FAQ"
+            }
+          },
+          "components": [
+            {
+              "id": "faqAccordion",
+              "type": "component",
+              "componentType": "Accordion",
+              "props": {
+                "activeIndex": 0,
+                "tabs": [
+                  {
+                    "header": "How to reset my settings?",
+                    "content": "Go to Profile > Reset Settings. All changes will be reverted to defaults."
+                  },
+                  {
+                    "header": "How to export my data?",
+                    "content": "Use the Export button in the toolbar to download your data as CSV or JSON."
+                  },
+                  {
+                    "header": "How to enable dark mode?",
+                    "content": "Dark mode is enabled by default. Light mode coming soon."
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

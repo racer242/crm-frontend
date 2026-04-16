@@ -1,0 +1,258 @@
+{
+  "id": "users",
+  "type": "page",
+  "route": "/users",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Users — CRM Platform"
+  },
+  "sections": [
+    {
+      "id": "usersHeader",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "usersTitle",
+          "type": "block",
+          "blockType": "header",
+          "className": "col-12 lg:col-10",
+          "state": {},
+          "components": [
+            {
+              "id": "usersPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "User Management",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "usersActions",
+          "type": "block",
+          "blockType": "custom",
+          "className": "col-12 lg:col-2",
+          "state": {},
+          "components": [
+            {
+              "id": "btnAddUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Add User",
+                "icon": "pi pi-plus",
+                "severity": "success"
+              },
+              "state": {}
+            },
+            {
+              "id": "btnDeleteUsers",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Delete User",
+                "icon": "pi pi-trash",
+                "severity": "danger"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "usersFilters",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row"
+      },
+      "blocks": [
+        {
+          "id": "searchBlock",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Search & Filter"
+            }
+          },
+          "components": [
+            {
+              "id": "searchInput",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Search users...",
+                "icon": "pi pi-search"
+              },
+              "state": {
+                "value": ""
+              }
+            },
+            {
+              "id": "roleFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "All Roles",
+                    "value": null
+                  },
+                  {
+                    "label": "Admin",
+                    "value": "admin"
+                  },
+                  {
+                    "label": "Manager",
+                    "value": "manager"
+                  },
+                  {
+                    "label": "User",
+                    "value": "user"
+                  }
+                ],
+                "placeholder": "Filter by role",
+                "showClear": true
+              },
+              "state": {}
+            },
+            {
+              "id": "activeFilter",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "Active only"
+              },
+              "state": {
+                "value": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "usersTableSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "usersTableBlock",
+          "type": "block",
+          "blockType": "table",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Users"
+            }
+          },
+          "components": [
+            {
+              "id": "usersTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": [
+                  {
+                    "id": 1,
+                    "name": "Alice Johnson",
+                    "email": "alice@example.com",
+                    "role": "Admin",
+                    "status": "Active",
+                    "joined": "2023-06-15"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Bob Smith",
+                    "email": "bob@example.com",
+                    "role": "Manager",
+                    "status": "Active",
+                    "joined": "2023-07-20"
+                  },
+                  {
+                    "id": 3,
+                    "name": "Carol White",
+                    "email": "carol@example.com",
+                    "role": "User",
+                    "status": "Inactive",
+                    "joined": "2023-08-10"
+                  },
+                  {
+                    "id": 4,
+                    "name": "Dave Brown",
+                    "email": "dave@example.com",
+                    "role": "User",
+                    "status": "Active",
+                    "joined": "2023-09-05"
+                  },
+                  {
+                    "id": 5,
+                    "name": "Eve Davis",
+                    "email": "eve@example.com",
+                    "role": "Manager",
+                    "status": "Active",
+                    "joined": "2023-10-12"
+                  }
+                ],
+                "columns": [
+                  {
+                    "field": "name",
+                    "header": "Name"
+                  },
+                  {
+                    "field": "email",
+                    "header": "Email"
+                  },
+                  {
+                    "field": "role",
+                    "header": "Role"
+                  },
+                  {
+                    "field": "status",
+                    "header": "Status"
+                  },
+                  {
+                    "field": "joined",
+                    "header": "Joined"
+                  }
+                ],
+                "paginator": true,
+                "rows": 10,
+                "tableStyle": {
+                  "minWidth": "50rem"
+                },
+                "selectionMode": "multiple",
+                "dataKey": "id"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

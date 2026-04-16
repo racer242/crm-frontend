@@ -1,0 +1,430 @@
+{
+  "id": "products",
+  "type": "page",
+  "route": "/products",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Products — CRM Platform"
+  },
+  "sections": [
+    {
+      "id": "productsHeader",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "productsTitle",
+          "type": "block",
+          "blockType": "header",
+          "state": {},
+          "components": [
+            {
+              "id": "productsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Product Catalog",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "productsBreadcrumb",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "props": {
+                "model": [
+                  {
+                    "label": "Home",
+                    "route": "/"
+                  },
+                  {
+                    "label": "Products"
+                  }
+                ]
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productsSearch",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row"
+      },
+      "blocks": [
+        {
+          "id": "searchBlock",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Search & Filter"
+            }
+          },
+          "components": [
+            {
+              "id": "productSearch",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Search products...",
+                "icon": "pi pi-search"
+              },
+              "state": {}
+            },
+            {
+              "id": "categoryFilter",
+              "type": "component",
+              "componentType": "MultiSelect",
+              "props": {
+                "options": [
+                  {
+                    "label": "Electronics",
+                    "value": "electronics"
+                  },
+                  {
+                    "label": "Clothing",
+                    "value": "clothing"
+                  },
+                  {
+                    "label": "Home & Garden",
+                    "value": "home"
+                  },
+                  {
+                    "label": "Sports",
+                    "value": "sports"
+                  }
+                ],
+                "placeholder": "Select categories",
+                "maxSelectedLabels": 3
+              },
+              "state": {}
+            },
+            {
+              "id": "priceRange",
+              "type": "component",
+              "componentType": "Slider",
+              "props": {
+                "range": true,
+                "min": 0,
+                "max": 1000
+              },
+              "state": {
+                "value": [
+                  0,
+                  1000
+                ]
+              }
+            },
+            {
+              "id": "inStockOnly",
+              "type": "component",
+              "componentType": "InputSwitch",
+              "props": {
+                "label": "In stock only"
+              },
+              "state": {
+                "value": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productsGrid",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 4
+      },
+      "blocks": [
+        {
+          "id": "prodCard1",
+          "type": "block",
+          "blockType": "card-grid",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Widget A",
+              "subheader": "$29.99"
+            }
+          },
+          "components": [
+            {
+              "id": "desc1",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "High-quality widget"
+              },
+              "state": {}
+            },
+            {
+              "id": "rate1",
+              "type": "component",
+              "componentType": "Rating",
+              "props": {
+                "stars": 5
+              },
+              "state": {
+                "value": 4
+              }
+            }
+          ]
+        },
+        {
+          "id": "prodCard2",
+          "type": "block",
+          "blockType": "card-grid",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Widget B",
+              "subheader": "$49.99"
+            }
+          },
+          "components": [
+            {
+              "id": "desc2",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Premium widget"
+              },
+              "state": {}
+            },
+            {
+              "id": "rate2",
+              "type": "component",
+              "componentType": "Rating",
+              "props": {
+                "stars": 5
+              },
+              "state": {
+                "value": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "prodCard3",
+          "type": "block",
+          "blockType": "card-grid",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Gadget C",
+              "subheader": "$99.99"
+            }
+          },
+          "components": [
+            {
+              "id": "desc3",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "All-in-one gadget"
+              },
+              "state": {}
+            },
+            {
+              "id": "rate3",
+              "type": "component",
+              "componentType": "Rating",
+              "props": {
+                "stars": 5
+              },
+              "state": {
+                "value": 4
+              }
+            }
+          ]
+        },
+        {
+          "id": "prodCard4",
+          "type": "block",
+          "blockType": "card-grid",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Tool D",
+              "subheader": "$19.99"
+            }
+          },
+          "components": [
+            {
+              "id": "desc4",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Essential tool"
+              },
+              "state": {}
+            },
+            {
+              "id": "rate4",
+              "type": "component",
+              "componentType": "Rating",
+              "props": {
+                "stars": 5
+              },
+              "state": {
+                "value": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productsTableSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "productsTableBlock",
+          "type": "block",
+          "blockType": "table",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "All Products"
+            }
+          },
+          "components": [
+            {
+              "id": "productsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": [
+                  {
+                    "id": "P001",
+                    "name": "Widget A",
+                    "category": "Electronics",
+                    "price": 29.99,
+                    "stock": 150,
+                    "rating": 4,
+                    "status": "Active"
+                  },
+                  {
+                    "id": "P002",
+                    "name": "Widget B",
+                    "category": "Electronics",
+                    "price": 49.99,
+                    "stock": 75,
+                    "rating": 5,
+                    "status": "Active"
+                  },
+                  {
+                    "id": "P003",
+                    "name": "Gadget C",
+                    "category": "Electronics",
+                    "price": 99.99,
+                    "stock": 30,
+                    "rating": 4,
+                    "status": "Low Stock"
+                  },
+                  {
+                    "id": "P004",
+                    "name": "Tool D",
+                    "category": "Home & Garden",
+                    "price": 19.99,
+                    "stock": 0,
+                    "rating": 3,
+                    "status": "Out of Stock"
+                  },
+                  {
+                    "id": "P005",
+                    "name": "Sport E",
+                    "category": "Sports",
+                    "price": 59.99,
+                    "stock": 200,
+                    "rating": 4,
+                    "status": "Active"
+                  }
+                ],
+                "columns": [
+                  {
+                    "field": "id",
+                    "header": "SKU"
+                  },
+                  {
+                    "field": "name",
+                    "header": "Name"
+                  },
+                  {
+                    "field": "category",
+                    "header": "Category"
+                  },
+                  {
+                    "field": "price",
+                    "header": "Price"
+                  },
+                  {
+                    "field": "stock",
+                    "header": "Stock"
+                  },
+                  {
+                    "field": "rating",
+                    "header": "Rating"
+                  },
+                  {
+                    "field": "status",
+                    "header": "Status"
+                  }
+                ],
+                "paginator": true,
+                "rows": 10,
+                "tableStyle": {
+                  "minWidth": "50rem"
+                },
+                "editMode": "row"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

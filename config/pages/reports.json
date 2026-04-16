@@ -1,0 +1,382 @@
+{
+  "id": "reports",
+  "type": "page",
+  "route": "/reports",
+  "state": {
+    "loading": false,
+    "initialized": true
+  },
+  "meta": {
+    "title": "Reports — CRM Platform"
+  },
+  "sections": [
+    {
+      "id": "reportsHeader",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "reportsTitle",
+          "type": "block",
+          "blockType": "header",
+          "state": {},
+          "components": [
+            {
+              "id": "reportsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Reports & Analytics",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reportFilters",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row"
+      },
+      "blocks": [
+        {
+          "id": "dateFilterBlock",
+          "type": "block",
+          "blockType": "form",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Date Range"
+            }
+          },
+          "components": [
+            {
+              "id": "startDate",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Start date",
+                "showIcon": true
+              },
+              "state": {}
+            },
+            {
+              "id": "endDate",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "End date",
+                "showIcon": true
+              },
+              "state": {}
+            },
+            {
+              "id": "reportType",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "Sales Report",
+                    "value": "sales"
+                  },
+                  {
+                    "label": "User Report",
+                    "value": "users"
+                  },
+                  {
+                    "label": "Inventory Report",
+                    "value": "inventory"
+                  }
+                ]
+              },
+              "state": {}
+            },
+            {
+              "id": "generateReport",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Generate",
+                "icon": "pi pi-chart-bar"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chartsSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 2
+      },
+      "blocks": [
+        {
+          "id": "salesChart",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Sales Trend"
+            }
+          },
+          "components": [
+            {
+              "id": "chartPlaceholder",
+              "type": "component",
+              "componentType": "Chart",
+              "props": {
+                "type": "line",
+                "data": {
+                  "labels": [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun"
+                  ],
+                  "datasets": [
+                    {
+                      "label": "Sales",
+                      "data": [
+                        65,
+                        59,
+                        80,
+                        81,
+                        56,
+                        55
+                      ],
+                      "fill": false,
+                      "borderColor": "#6366f1"
+                    },
+                    {
+                      "label": "Revenue",
+                      "data": [
+                        28,
+                        48,
+                        40,
+                        19,
+                        86,
+                        27
+                      ],
+                      "fill": false,
+                      "borderColor": "#22c55e"
+                    }
+                  ]
+                }
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-6"
+        },
+        {
+          "id": "pieChart",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Revenue by Category"
+            }
+          },
+          "components": [
+            {
+              "id": "piePlaceholder",
+              "type": "component",
+              "componentType": "Chart",
+              "props": {
+                "type": "pie",
+                "data": {
+                  "labels": [
+                    "Electronics",
+                    "Clothing",
+                    "Home",
+                    "Sports"
+                  ],
+                  "datasets": [
+                    {
+                      "data": [
+                        540,
+                        325,
+                        702,
+                        421
+                      ],
+                      "backgroundColor": [
+                        "#6366f1",
+                        "#22c55e",
+                        "#f59e0b",
+                        "#ef4444"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-6"
+        }
+      ]
+    },
+    {
+      "id": "summarySection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "grid",
+        "columns": 3
+      },
+      "blocks": [
+        {
+          "id": "summaryCard1",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Total Sales"
+            }
+          },
+          "components": [
+            {
+              "id": "sv1",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "$45,200 (+15%)",
+                "level": 2
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "summaryCard2",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Total Orders"
+            }
+          },
+          "components": [
+            {
+              "id": "sv2",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "1,234 (+8%)",
+                "level": 2
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "summaryCard3",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Avg. Order Value"
+            }
+          },
+          "components": [
+            {
+              "id": "sv3",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "$36.63 (+2%)",
+                "level": 2
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skeletonSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "loadingBlock",
+          "type": "block",
+          "blockType": "custom",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Loading Preview"
+            }
+          },
+          "components": [
+            {
+              "id": "skeleton1",
+              "type": "component",
+              "componentType": "Skeleton",
+              "props": {
+                "width": "10rem",
+                "height": "2rem"
+              },
+              "state": {}
+            },
+            {
+              "id": "skeleton2",
+              "type": "component",
+              "componentType": "Skeleton",
+              "props": {
+                "width": "5rem",
+                "height": "1rem",
+                "borderRadius": "16px"
+              },
+              "state": {}
+            },
+            {
+              "id": "skeleton3",
+              "type": "component",
+              "componentType": "Skeleton",
+              "props": {
+                "width": "100%",
+                "height": "8rem"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
