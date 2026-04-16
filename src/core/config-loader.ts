@@ -108,13 +108,13 @@ export function clearConfigCache(): void {
 function printStartupBanner(config: CrmConfig, configPath: string): void {
   console.log("");
   console.log(
-    "╔══════════════════════════════════════════════════════════════╗",
+    "╔═════════════════════════════════════════════════════════════╗",
   );
   console.log(
     "║                    🚀 CRM PLATFORM STARTED                  ║",
   );
   console.log(
-    "╠══════════════════════════════════════════════════════════════╣",
+    "╠═════════════════════════════════════════════════════════════╣",
   );
   console.log(`║  Name:      ${(config.title || "CRM Platform").padEnd(48)}║`);
   console.log(`║  Version:   ${(config.version || "0.1.0").padEnd(48)}║`);
@@ -124,7 +124,7 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Mode:      ${(process.env.NODE_ENV || "development").padEnd(48)}║`,
   );
   console.log(
-    "╚══════════════════════════════════════════════════════════════╝",
+    "╚═════════════════════════════════════════════════════════════╝",
   );
   console.log("");
 }

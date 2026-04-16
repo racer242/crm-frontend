@@ -84,27 +84,51 @@
                 "options": [
                   {
                     "label": "11 - 16.03.2026 - 23.03.2026",
-                    "value": "week-11"
+                    "value": {
+                      "week": 11,
+                      "start": "16.03.2026",
+                      "finish": "23.03.2026"
+                    }
                   },
                   {
                     "label": "18 - 23.03.2026 - 30.03.2026",
-                    "value": "week-12"
+                    "value": {
+                      "week": 12,
+                      "start": "23.03.2026",
+                      "finish": "30.03.2026"
+                    }
                   },
                   {
                     "label": "25 - 30.03.2026 - 6.04.2026",
-                    "value": "week-13"
+                    "value": {
+                      "week": 13,
+                      "start": "30.03.2026",
+                      "finish": "06.04.2026"
+                    }
                   },
                   {
                     "label": "1 - 6.04.2026 - 13.04.2026",
-                    "value": "week-14"
+                    "value": {
+                      "week": 14,
+                      "start": "06.04.2026",
+                      "finish": "13.04.2026"
+                    }
                   },
                   {
                     "label": "8 - 13.04.2026 - 20.04.2026",
-                    "value": "week-15"
+                    "value": {
+                      "week": 15,
+                      "start": "13.04.2026",
+                      "finish": "20.04.2026"
+                    }
                   },
                   {
                     "label": "15 - 20.04.2026 - 27.04.2026",
-                    "value": "week-16"
+                    "value": {
+                      "week": 16,
+                      "start": "20.04.2026",
+                      "finish": "27.04.2026"
+                    }
                   }
                 ],
                 "placeholder": "Выберите неделю",
@@ -198,6 +222,53 @@
                       {
                         "label": "Продукты",
                         "command": "downloadTable-products"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Скачать данные",
+                    "items": [
+                      {
+                        "label": "Покупатели",
+                        "command": "downloadTable-customers"
+                      },
+                      {
+                        "label": "Заказы",
+                        "command": "downloadTable-orders"
+                      },
+                      {
+                        "label": "Продукты",
+                        "command": "downloadTable-products"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Скачать данные",
+                    "items": [
+                      {
+                        "label": "Покупатели",
+                        "command": "downloadTable-customers"
+                      },
+                      {
+                        "label": "Заказы",
+                        "command": "downloadTable-orders"
+                      },
+                      {
+                        "label": "Продукты",
+                        "items": [
+                          {
+                            "label": "Покупатели",
+                            "command": "downloadTable-customers"
+                          },
+                          {
+                            "label": "Заказы",
+                            "command": "downloadTable-orders"
+                          },
+                          {
+                            "label": "Продукты",
+                            "command": "downloadTable-products"
+                          }
+                        ]
                       }
                     ]
                   }
