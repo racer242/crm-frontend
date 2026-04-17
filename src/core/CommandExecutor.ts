@@ -109,10 +109,12 @@ export class CommandExecutor {
 
     // Выполняем запись
     if (targetField) {
-      // Частичное обновление состояния — передаем элемент и поле для обновления
-      this.context.stateManager.mergeState(targetElementPath, {
-        [targetField]: value,
-      });
+      // Обновление состояния — setStateField поддерживает вложенные пути (textData.input)
+      this.context.stateManager.setStateField(
+        targetElementPath,
+        targetField,
+        value,
+      );
     } else {
       // Полная замена состояния элемента
       this.context.stateManager.setState(targetElementPath, value);

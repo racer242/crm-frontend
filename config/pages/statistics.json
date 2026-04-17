@@ -168,7 +168,21 @@
               "props": {
                 "placeholder": "Default"
               },
-              "value": "@state.textData.input"
+              "value": "@state.textData.input",
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value",
+                        "target": "state.textData.input"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -221,7 +235,21 @@
                 "dateFormat": "dd.mm.yy",
                 "showTime": true
               },
-              "value": "@state.end"
+              "value": "@state.end",
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value",
+                        "target": "state.end"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

@@ -1,6 +1,6 @@
 /**
  * StateManager - управление состояниями элементов CRM
- * 
+ *
  * Обеспечивает:
  * - Доступ к состоянию любого элемента по пути
  * - Обновление состояния с триггером ре-рендера
@@ -15,7 +15,7 @@ import { PathResolver } from "./PathResolver";
 export type StateChangeListener = (
   elementPath: ElementPath,
   oldState: Record<string, any>,
-  newState: Record<string, any>
+  newState: Record<string, any>,
 ) => void;
 
 export class StateManager {
@@ -42,7 +42,7 @@ export class StateManager {
   private notifyListeners(
     elementPath: ElementPath,
     oldState: Record<string, any>,
-    newState: Record<string, any>
+    newState: Record<string, any>,
   ): void {
     this.listeners.forEach((listener) => {
       try {
@@ -58,7 +58,7 @@ export class StateManager {
    */
   getState(elementPath: ElementPath): Record<string, any> | null {
     const element = PathResolver.resolveElement(elementPath, this.appConfig);
-    
+
     if (!element) {
       console.warn(`Element not found: ${elementPath}`);
       return null;
@@ -72,7 +72,7 @@ export class StateManager {
    */
   getStateField(elementPath: ElementPath, field: string): any {
     const state = this.getState(elementPath);
-    
+
     if (!state) {
       return undefined;
     }
@@ -94,14 +94,13 @@ export class StateManager {
 
     const oldState = element.state || {};
     element.state = newState;
-
     this.notifyListeners(elementPath, oldState, newState);
   }
 
   /**
-   * Слияние с текущим состоянием (частичное обновление)
+   * Установка значения поля в состоянии (поддержка вложенных путей через точку)
    */
-  mergeState(elementPath: ElementPath, updates: Record<string, any>): void {
+  setStateField(elementPath: ElementPath, field: string, value: any): void {
     const element = PathResolver.resolveElement(elementPath, this.appConfig);
 
     if (!element) {
@@ -109,9 +108,26 @@ export class StateManager {
       return;
     }
 
+    if (!element.state) {
+      element.state = {};
+    }
+
+    const oldState = { ...element.state };
+    PathResolver.setValue(element.state, field, value);
+    this.notifyListeners(elementPath, oldState, element.state);
+  }
+
+  /**
+   * Слияние с текущим состоянием (частичное обновление — верхнеуровневые ключи)
+   */
+  mergeState(elementPath: ElementPath, updates: Record<string, any>): void {
+    const element = PathResolver.resolveElement(elementPath, this.appConfig);
+    if (!element) {
+      console.warn(`Element not found: ${elementPath}`);
+      return;
+    }
     const oldState = element.state || {};
     element.state = { ...oldState, ...updates };
-
     this.notifyListeners(elementPath, oldState, element.state);
   }
 
@@ -150,7 +166,11 @@ export class StateManager {
     const oldValue = element.state[field];
     element.state[field] = !oldValue;
 
-    this.notifyListeners(elementPath, { [field]: oldValue }, { [field]: !oldValue });
+    this.notifyListeners(
+      elementPath,
+      { [field]: oldValue },
+      { [field]: !oldValue },
+    );
   }
 
   /**
@@ -172,7 +192,7 @@ export class StateManager {
    */
   setGlobalStateField(field: string, value: any): void {
     const oldState = { ...this.appConfig.globalState };
-    
+
     if (!this.appConfig.globalState) {
       this.appConfig.globalState = {};
     }
@@ -182,7 +202,7 @@ export class StateManager {
     this.notifyListeners(
       `global.${field}`,
       PathResolver.getValue(oldState, field),
-      value
+      value,
     );
   }
 
