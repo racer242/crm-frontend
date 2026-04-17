@@ -18,6 +18,26 @@ All notable changes to this project will be documented in this file.
 - Link resolver for relative (`@ELEMENT_ID.state.FIELD`) and absolute (`@state.field`) references
 - Cross-component communication through shared application state
 
+### State Management
+
+- `setStateField(elementPath, field, value)` — set nested state fields with dot notation
+  - Example: `setStateField("statistics", "textData.input", "hello")` → `{ textData: { input: "hello" } }`
+  - Uses `PathResolver.setValue` for proper nested path support
+- `StateChangeListener` now receives `changedPath` parameter for filtering updates
+  - `changedPath: string | null` — path of the changed field (null for full state replacement)
+  - Enables components to subscribe only to relevant state changes
+
+### Performance Optimizations
+
+- Filtered state subscriptions in `ComponentRenderer`
+  - Components now check if a state change affects their specific bindings before re-rendering
+  - Eliminates unnecessary re-renders on every state change
+  - Improves input field responsiveness (no lag during typing)
+  - Binding path comparison handles multiple formats:
+    - `@state.field` — short form (relative to current page)
+    - `@pageId.state.field` — full form with page ID
+    - `@componentId.prop` — cross-component references
+
 ### Date Utilities
 
 - Created `src/utils/date.ts` with date parsing utilities:
@@ -28,10 +48,19 @@ All notable changes to this project will be documented in this file.
   - ISO: `2026-04-13T23:30:00`
   - Custom: `13.04.2026 23:30`, `13.04.2026`
 
+### Component Fixes
+
+- Fixed `EventHandler.type` property (was incorrectly named `event`)
+- Fixed `isMounted` for Menubar/Chart: changed from `useRef` to `useState`
+  - `useRef` doesn't trigger re-render, causing components to show skeleton placeholders forever
+  - `useState` properly triggers re-render after hydration, fixing SSR hydration mismatch
+
 ### Changed
 
 - API configuration split: endpoints moved to separate `config/api/endpoints.json` file
 - Week dropdown format: consistent object value structure `{week, start, finish}`
+- `CommandExecutor.setProperty` now uses `setStateField` instead of `mergeState`
+  - Properly handles nested paths like `textData.input`
 
 ---
 
