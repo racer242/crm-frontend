@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { Component, App } from "@/types";
 import { InputText } from "primereact/inputtext";
-import { LinkResolver, CommandExecutor } from "@/core";
+import { LinkResolver, CommandExecutor, StateManager } from "@/core";
 import { Button } from "primereact/button";
 
 import { DataTable } from "primereact/datatable";
@@ -155,17 +155,73 @@ export function ComponentRenderer({
     resolveBindings();
   }, [resolveBindings]);
 
-  // Подписка на изменения stateManager для реактивности
+  // Извлекаем пути binding-ов для фильтрации уведомлений
+  const bindingPaths = React.useMemo(() => {
+    const paths: string[] = [];
+    if (component.valueBinding) {
+      paths.push(component.valueBinding);
+    }
+    if (
+      component.value &&
+      typeof component.value === "string" &&
+      component.value.startsWith("@")
+    ) {
+      paths.push(component.value);
+    }
+    if (component.visibleBinding) {
+      paths.push(component.visibleBinding);
+    }
+    if (component.disabledBinding) {
+      paths.push(component.disabledBinding);
+    }
+    return paths;
+  }, [component]);
+
+  // Проверяет, касается ли изменение binding-ов этого компонента
+  const shouldUpdate = React.useCallback(
+    (changedPath: string | null): boolean => {
+      // Если нет binding-ов — не обновляемся
+      if (bindingPaths.length === 0) return false;
+      // Если changedPath null (полная замена state) — обновляем
+      if (!changedPath) return true;
+
+      // Проверяем, содержит ли changedPath один из наших binding-ов
+      // или binding содержит changedPath
+      for (const bp of bindingPaths) {
+        // Убираем @ из binding path
+        const normalizedBp = bp.startsWith("@") ? bp.slice(1) : bp;
+        // Формируем полный путь с pageId
+        const fullPath = normalizedBp.startsWith("state.")
+          ? `${pageId}.${normalizedBp}`
+          : normalizedBp;
+
+        if (
+          changedPath.startsWith(fullPath) ||
+          fullPath.startsWith(changedPath)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [bindingPaths, pageId],
+  );
+
+  // Подписка на изменения stateManager для реактивности (с фильтрацией)
   useEffect(() => {
     if (!stateManager) return;
 
-    // Подписываемся на изменения состояния — при любом изменении перерезолвляем binding-и
-    const unsubscribe = stateManager.subscribe(() => {
-      resolveBindings();
-    });
+    // Подписываемся на изменения состояния — перерезолвляем binding-и только если изменение касается нас
+    const unsubscribe = stateManager.subscribe(
+      (_elementPath: string, changedPath: string | null) => {
+        if (shouldUpdate(changedPath)) {
+          resolveBindings();
+        }
+      },
+    );
 
     return unsubscribe;
-  }, [stateManager, resolveBindings]);
+  }, [stateManager, resolveBindings, shouldUpdate]);
 
   const handleEvent = useCallback(
     (eventType: string, eventValue: any) => {

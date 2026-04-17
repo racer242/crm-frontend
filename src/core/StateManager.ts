@@ -14,6 +14,7 @@ import { PathResolver } from "./PathResolver";
 /** Callback для уведомлений об изменениях */
 export type StateChangeListener = (
   elementPath: ElementPath,
+  changedPath: string | null,
   oldState: Record<string, any>,
   newState: Record<string, any>,
 ) => void;
@@ -41,12 +42,13 @@ export class StateManager {
    */
   private notifyListeners(
     elementPath: ElementPath,
+    changedPath: string | null,
     oldState: Record<string, any>,
     newState: Record<string, any>,
   ): void {
     this.listeners.forEach((listener) => {
       try {
-        listener(elementPath, oldState, newState);
+        listener(elementPath, changedPath, oldState, newState);
       } catch (error) {
         console.error("Error in state change listener:", error);
       }
@@ -94,7 +96,7 @@ export class StateManager {
 
     const oldState = element.state || {};
     element.state = newState;
-    this.notifyListeners(elementPath, oldState, newState);
+    this.notifyListeners(elementPath, null, oldState, newState);
   }
 
   /**
@@ -114,7 +116,12 @@ export class StateManager {
 
     const oldState = { ...element.state };
     PathResolver.setValue(element.state, field, value);
-    this.notifyListeners(elementPath, oldState, element.state);
+    this.notifyListeners(
+      elementPath,
+      `${elementPath}.${field}`,
+      oldState,
+      element.state,
+    );
   }
 
   /**
@@ -128,7 +135,7 @@ export class StateManager {
     }
     const oldState = element.state || {};
     element.state = { ...oldState, ...updates };
-    this.notifyListeners(elementPath, oldState, element.state);
+    this.notifyListeners(elementPath, elementPath, oldState, element.state);
   }
 
   /**
@@ -145,7 +152,7 @@ export class StateManager {
     const oldState = element.state || {};
     element.state = {};
 
-    this.notifyListeners(elementPath, oldState, {});
+    this.notifyListeners(elementPath, elementPath, oldState, {});
   }
 
   /**
@@ -168,6 +175,7 @@ export class StateManager {
 
     this.notifyListeners(
       elementPath,
+      `${elementPath}.${field}`,
       { [field]: oldValue },
       { [field]: !oldValue },
     );
@@ -200,6 +208,7 @@ export class StateManager {
     PathResolver.setValue(this.appConfig.globalState, field, value);
 
     this.notifyListeners(
+      `global.${field}`,
       `global.${field}`,
       PathResolver.getValue(oldState, field),
       value,
