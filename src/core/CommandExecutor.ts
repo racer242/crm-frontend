@@ -59,21 +59,26 @@ export class CommandExecutor {
 
   /**
    * Выполнить команду setProperty
-   * Формат params: { source: "event.value.start" | "componentId.prop", target: "state.field" }
+   * Формат params: { source: "event.value.start" | "componentId.prop", target: "state.field", value: any }
    */
   async executeSetProperty(
     params: Record<string, any>,
     eventData: any,
   ): Promise<void> {
-    const { source, target } = params;
+    const { source, target, value: directValue } = params;
 
-    if (!source || !target) {
-      console.warn("setProperty: missing source or target");
+    if (!target) {
+      console.warn("setProperty: missing target");
       return;
     }
 
-    // Получаем значение из источника
-    const value = this.getSourceValue(source, eventData);
+    // Получаем значение: приоритет у прямого value, затем из source
+    const value =
+      directValue !== undefined
+        ? directValue
+        : source
+          ? this.getSourceValue(source, eventData)
+          : undefined;
 
     // Определяем куда записывать (относительно текущего компонента или страницы)
     let targetElementPath: string;
