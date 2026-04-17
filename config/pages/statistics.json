@@ -143,14 +143,14 @@
                       {
                         "type": "setProperty",
                         "params": {
-                          "source": "weekDropdown.value.start",
+                          "source": "this.value.start",
                           "target": "state.start"
                         }
                       },
                       {
                         "type": "setProperty",
                         "params": {
-                          "source": "weekDropdown.value.end",
+                          "source": "this.value.end",
                           "target": "state.end"
                         }
                       }

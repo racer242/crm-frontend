@@ -4,6 +4,7 @@
 
 import { StateManager } from "./StateManager";
 import { LinkResolver, LinkContext } from "./LinkResolver";
+import { PathResolver } from "./PathResolver";
 import { BaseElement, App } from "@/types";
 
 export interface CommandExecutionContext {
@@ -107,13 +108,9 @@ export class CommandExecutor {
     }
 
     // Выполняем запись
-    const fullTarget = targetField
-      ? `${targetElementPath}.${targetField}`
-      : targetElementPath;
-
     if (targetField) {
-      // Частичное обновление состояния
-      this.context.stateManager.mergeState(fullTarget, {
+      // Частичное обновление состояния — передаем элемент и поле для обновления
+      this.context.stateManager.mergeState(targetElementPath, {
         [targetField]: value,
       });
     } else {
@@ -135,10 +132,16 @@ export class CommandExecutor {
     // Если начинается с event. - читаем из eventData
     if (source.startsWith("event.")) {
       const field = source.slice(6);
-      return LinkResolver.resolve(eventData?.[field], linkContext);
+      return PathResolver.getValue(eventData, field);
     }
 
-    // Иначе пытаемся разрешить как ссылку
+    // Если начинается с this. - читаем из eventData (this = триггер-компонент)
+    if (source.startsWith("this.")) {
+      const field = source.slice(5);
+      return PathResolver.getValue(eventData, field);
+    }
+
+    // Иначе пытаемся разрешить как ссылку (@ELEMENT_ID...)
     return LinkResolver.resolve(source, linkContext);
   }
 

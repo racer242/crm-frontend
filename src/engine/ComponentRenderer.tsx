@@ -101,11 +101,9 @@ export function ComponentRenderer({
     }
   }, [pageId, appConfig, stateManager, component.id]);
 
-  // Разрешение ссылок при изменении компонента или stateManager
-  useEffect(() => {
-    if (!appConfig || !pageId) {
-      return;
-    }
+  // Функция разрешения binding-ов
+  const resolveBindings = useCallback(() => {
+    if (!appConfig || !pageId) return;
 
     const linkContext = {
       pageId,
@@ -150,7 +148,24 @@ export function ComponentRenderer({
     } else {
       setResolvedDisabled(component.disabled);
     }
-  }, [component, appConfig, pageId, stateManager, pageId]);
+  }, [component, appConfig, pageId]);
+
+  // Первоначальное разрешение binding-ов
+  useEffect(() => {
+    resolveBindings();
+  }, [resolveBindings]);
+
+  // Подписка на изменения stateManager для реактивности
+  useEffect(() => {
+    if (!stateManager) return;
+
+    // Подписываемся на изменения состояния — при любом изменении перерезолвляем binding-и
+    const unsubscribe = stateManager.subscribe(() => {
+      resolveBindings();
+    });
+
+    return unsubscribe;
+  }, [stateManager, resolveBindings]);
 
   const handleEvent = useCallback(
     (eventType: string, eventValue: any) => {
