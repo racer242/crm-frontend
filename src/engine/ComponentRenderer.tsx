@@ -172,7 +172,7 @@ export function ComponentRenderer({
       if (!component.events || !commandContextRef.current) return;
 
       const eventHandlers = component.events.filter(
-        (e) => e.event === eventType,
+        (e) => e.type === eventType,
       );
 
       for (const handler of eventHandlers) {

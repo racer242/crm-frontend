@@ -136,7 +136,7 @@ export type ValidationType =
 
 /** Обработчик события */
 export interface EventHandler {
-  event: EventType;
+  type: EventType;
   commands: Command[];
   preventDefault?: boolean;
   stopPropagation?: boolean;

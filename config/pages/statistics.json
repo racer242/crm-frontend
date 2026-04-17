@@ -136,30 +136,30 @@
                     }
                   }
                 ],
-                "events": [
-                  {
-                    "type": "onChange",
-                    "commands": [
-                      {
-                        "type": "setProperty",
-                        "params": {
-                          "source": "this.value.start",
-                          "target": "state.start"
-                        }
-                      },
-                      {
-                        "type": "setProperty",
-                        "params": {
-                          "source": "this.value.end",
-                          "target": "state.end"
-                        }
-                      }
-                    ]
-                  }
-                ],
                 "placeholder": "Выберите неделю",
                 "showClear": true
-              }
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value.start",
+                        "target": "state.start"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value.end",
+                        "target": "state.end"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "it1",
