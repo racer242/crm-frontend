@@ -4,7 +4,9 @@
   "route": "/statistics",
   "state": {
     "loading": false,
-    "initialized": true
+    "initialized": true,
+    "start": "13.04.2026",
+    "end": "20.04.2026"
   },
   "meta": {
     "title": "Статистика — CRM Platform"
@@ -131,11 +133,29 @@
                     }
                   }
                 ],
+                "events": [
+                  {
+                    "type": "onChange",
+                    "commands": [
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "source": "weekDropdown.value.start",
+                          "target": "state.start"
+                        }
+                      },
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "source": "weekDropdown.value.end",
+                          "target": "state.end"
+                        }
+                      }
+                    ]
+                  }
+                ],
                 "placeholder": "Выберите неделю",
                 "showClear": true
-              },
-              "state": {
-                "value": null
               }
             }
           ]
@@ -162,9 +182,7 @@
                 "icondisplay": "input",
                 "dateFormat": "dd.mm.yy"
               },
-              "state": {
-                "value": null
-              }
+              "value": "@state.start"
             },
             {
               "id": "endDatePicker",
@@ -176,9 +194,7 @@
                 "icondisplay": "input",
                 "dateFormat": "dd.mm.yy"
               },
-              "state": {
-                "value": null
-              }
+              "value": "@state.end"
             }
           ]
         }

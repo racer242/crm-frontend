@@ -1,6 +1,6 @@
 import { App } from "@/types";
 import { AppEngine } from "@/engine";
-import { initApp } from "@/core/config-loader";
+import { initApp } from "@/core/config";
 
 export default async function Page({
   params,

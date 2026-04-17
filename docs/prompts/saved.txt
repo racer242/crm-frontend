@@ -20,5 +20,49 @@
             "source": "weekDropdown.value.end",
             "target": "endDatePicker.value"
           }
-        },
+        }]
 
+
+Ма работаем над системой управления динамическими данными.
+1. Каждый элемент имеет свойство state
+2. Каждое свойство элемента может ссылаться на свойство в state любого элемента. 
+Адрессация осуществляется в формате @ELEMENT_ID.state. Для корневого элемента (тип page) просто state.
+Например: 
+statistics.json корневой элемента statistics имеет state, в котором есть свойства start и finish.
+Компоненты startDatePicker и endDatePicker имеют свойство "value". В свойстве установлены соответственно "@state.start" и "@state.end".
+При загрузке страницы, при рендере, данные должны поступить из состояния state в value этих компонентов.
+При изменении state, должен осуществиться рендер этих элементов.
+
+3. Теперь мы реализуем первую команду setProperty.
+Команда устанавливает в state указанного элемента значение.
+{
+  "type": "setProperty", //Тип команды
+  "params": { //Параметры
+    "source": "weekDropdown.value.start", //Источник данных
+    "target": "state.start" //Назначение 
+  }
+}
+
+Пример: При событии изменения компонента onChange вызываются несколько команд.
+"events": [
+                  {
+                    "type": "onChange",
+                    "commands": [
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "source": "weekDropdown.value.start",
+                          "target": "state.start"
+                        }
+                      },
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "source": "weekDropdown.value.end",
+                          "target": "state.end"
+                        }
+                      }
+                    ]
+                  }
+                ],
+3.1. Команды будут атомарны. То есть для одного события будет обработанонесколько команд, например, установка разных значений у разных компонентов.
