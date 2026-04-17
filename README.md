@@ -51,8 +51,12 @@ App (приложение)
 │   │   └── index.ts
 │   ├── core/                    # Ядро платформы
 │   │   ├── StateManager.ts      # Управление состояниями элементов
-│   │   ├── PathResolver.ts      # Система адресации (path-based lookup)
+│   │   ├── CommandExecutor.ts   # Исполнитель команд
+│   │   ├── LinkResolver.ts      # Разрешение ссылок (@ELEMENT_ID.state.FIELD)
 │   │   └── index.ts
+│   └── utils/                   # Общие утилиты
+│       ├── date.ts             # Парсинг и конвертация дат
+│       └── index.ts
 │   ├── engine/                  # Рендер-движок
 │   │   ├── AppEngine.tsx        # Главный компонент, роутинг, sidebar
 │   │   ├── PageRenderer.tsx     # Рендер страницы с секциями
@@ -95,9 +99,16 @@ App (приложение)
 
 ### Система команд
 
-- Базовые команды: `setState`, `mergeState`, `showToast`, `navigate`, `log`, `confirm`, `delay`
+- Базовые команды: `setProperty`, `setState`, `mergeState`, `showToast`, `navigate`, `log`, `confirm`, `delay`
 - Триггеры: `onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
 - Цепочки команд (sequences)
+
+### Привязка данных к компонентам
+
+- `valueBinding` — привязка значения компонента к state (`@ELEMENT_ID.state.FIELD`)
+- `visibleBinding` / `disabledBinding` — управление видимостью и блокировкой
+- Автоконвертация форматов даты для Calendar (ISO ↔ custom)
+- Контроллированные инпуты с fallback значениями по умолчанию
 
 ### Система состояний компонентов
 
@@ -110,7 +121,7 @@ App (приложение)
 | Страница       | Маршрут       | Описание                                                                    |
 | -------------- | ------------- | --------------------------------------------------------------------------- |
 | **Dashboard**  | `/`           | Карточки статистики, быстрые действия, таблица заказов, timeline активности |
-| **Statistics** | `/statistics` | Фильтры по дате (неделя, диапазон), скачивание данных в табах               |
+| **Statistics** | `/statistics` | Фильтры по дате (неделя, диапазон), экспорт CSV, календари                  |
 | **Users**      | `/users`      | Фильтры, таблица пользователей, профиль, прогресс, аватары                  |
 | **Orders**     | `/orders`     | Вкладки (TabView), форма заказа, сообщения                                  |
 | **Products**   | `/products`   | Поиск/фильтры, карточки товаров, таблица, форма редактирования              |
