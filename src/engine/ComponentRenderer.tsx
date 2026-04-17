@@ -1,62 +1,47 @@
 "use client";
 
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef as useReactRef,
-} from "react";
+import React from "react";
 import { Component, App } from "@/types";
-import { InputText } from "primereact/inputtext";
-import { LinkResolver, CommandExecutor, StateManager } from "@/core";
-import { Button } from "primereact/button";
-
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Card } from "primereact/card";
-import { Toast } from "primereact/toast";
-import { Menubar } from "primereact/menubar";
-import { BreadCrumb } from "primereact/breadcrumb";
-import { TabView, TabPanel } from "primereact/tabview";
-import { Steps } from "primereact/steps";
-import { Accordion, AccordionTab } from "primereact/accordion";
-import { Carousel } from "primereact/carousel";
-import { Skeleton } from "primereact/skeleton";
-import { Chip } from "primereact/chip";
-import { Avatar } from "primereact/avatar";
-import { Badge } from "primereact/badge";
-import { Tag } from "primereact/tag";
-import { ProgressBar } from "primereact/progressbar";
-import { ProgressSpinner } from "primereact/progressspinner";
-import { InputNumber } from "primereact/inputnumber";
-import { InputTextarea } from "primereact/inputtextarea";
-import { Password } from "primereact/password";
-import { Dropdown } from "primereact/dropdown";
-import { MultiSelect } from "primereact/multiselect";
-import { AutoComplete } from "primereact/autocomplete";
-import { Calendar } from "primereact/calendar";
-import { Checkbox } from "primereact/checkbox";
-import { RadioButton } from "primereact/radiobutton";
-import { InputSwitch } from "primereact/inputswitch";
-import { Slider } from "primereact/slider";
-import { Rating } from "primereact/rating";
-import { ColorPicker } from "primereact/colorpicker";
-import { FileUpload } from "primereact/fileupload";
-import { Message } from "primereact/message";
-import { Divider } from "primereact/divider";
-import { Timeline } from "primereact/timeline";
-import { Chart } from "primereact/chart";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { isIsoDateLike, parseDateString } from "@/utils/date";
-
-// Тип контекста для команд (локальное определение)
-type CommandExecutionContext = {
-  pageId: string;
-  triggerComponentId: string;
-  appConfig: App;
-  stateManager: any;
-};
+import { useComponentBindings } from "./hooks/useComponentBindings";
+import {
+  renderText,
+  renderInputText,
+  renderInputNumber,
+  renderInputTextarea,
+  renderPassword,
+  renderDropdown,
+  renderMultiSelect,
+  renderAutoComplete,
+  renderCalendar,
+  renderCheckbox,
+  renderRadioButton,
+  renderInputSwitch,
+  renderSlider,
+  renderRating,
+  renderColorPicker,
+  renderFileUpload,
+  renderButton,
+  renderDataTable,
+  renderCard,
+  renderToast,
+  renderMenubar,
+  renderBreadcrumb,
+  renderSteps,
+  renderTabView,
+  renderAccordion,
+  renderCarousel,
+  renderSkeleton,
+  renderChip,
+  renderAvatar,
+  renderBadge,
+  renderTag,
+  renderProgressBar,
+  renderProgressSpinner,
+  renderMessage,
+  renderDivider,
+  renderTimeline,
+  renderChart,
+} from "./components";
 
 export function ComponentRenderer({
   component,
@@ -70,754 +55,107 @@ export function ComponentRenderer({
   stateManager?: any;
 }) {
   const { componentType, props = {}, className, style } = component;
-  const toastRef = useReactRef<Toast>(null);
-  const router = useRouter();
 
-  // Разрешенные значения для binding-ов
-  const [resolvedValue, setResolvedValue] = useState<any>(undefined);
-  const [resolvedVisible, setResolvedVisible] = useState<boolean | undefined>(
-    undefined,
-  );
-  const [resolvedDisabled, setResolvedDisabled] = useState<boolean | undefined>(
-    undefined,
-  );
+  const {
+    resolvedValue,
+    resolvedVisible,
+    resolvedDisabled,
+    isMounted,
+    handleEvent,
+  } = useComponentBindings({
+    component,
+    pageId,
+    appConfig,
+    stateManager,
+  });
 
-  // Контекст для исполнения команд
-  const commandContextRef = useReactRef<CommandExecutionContext | null>(null);
-
-  // Для Menubar/Chart — используем useState чтобы вызвать ре-рендер после монтирования
-  // (нужно для избежания hydration mismatch в SSR)
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Создаем контекст для CommandExecutor при появлении страницы
-  useEffect(() => {
-    if (pageId && appConfig && stateManager) {
-      commandContextRef.current = {
-        pageId,
-        triggerComponentId: component.id || "",
-        appConfig,
-        stateManager,
-      };
-    }
-  }, [pageId, appConfig, stateManager, component.id]);
-
-  // Функция разрешения binding-ов
-  const resolveBindings = useCallback(() => {
-    if (!appConfig || !pageId) return;
-
-    const linkContext = {
-      pageId,
-      appConfig,
-      componentMap: new Map(),
-    };
-
-    let resolvedVal: any = undefined;
-
-    // Сначала проверяем valueBinding
-    if (component.valueBinding) {
-      resolvedVal = LinkResolver.resolve(component.valueBinding, linkContext);
-    }
-    // Затем проверяем component.value (для прямой ссылки вида @state.field)
-    else if (component.value !== undefined) {
-      if (
-        typeof component.value === "string" &&
-        component.value.startsWith("@")
-      ) {
-        resolvedVal = LinkResolver.resolve(component.value, linkContext);
-      } else {
-        resolvedVal = component.value;
-      }
-    }
-
-    setResolvedValue(resolvedVal);
-
-    // Разрешаем visibleBinding / visible
-    if (component.visibleBinding) {
-      setResolvedVisible(
-        LinkResolver.resolve(component.visibleBinding, linkContext),
-      );
-    } else {
-      setResolvedVisible(component.visible);
-    }
-
-    // Разрешаем disabledBinding / disabled
-    if (component.disabledBinding) {
-      setResolvedDisabled(
-        LinkResolver.resolve(component.disabledBinding, linkContext),
-      );
-    } else {
-      setResolvedDisabled(component.disabled);
-    }
-  }, [component, appConfig, pageId]);
-
-  // Первоначальное разрешение binding-ов
-  useEffect(() => {
-    resolveBindings();
-  }, [resolveBindings]);
-
-  // Извлекаем пути binding-ов для фильтрации уведомлений
-  const bindingPaths = React.useMemo(() => {
-    const paths: string[] = [];
-    if (component.valueBinding) {
-      paths.push(component.valueBinding);
-    }
-    if (
-      component.value &&
-      typeof component.value === "string" &&
-      component.value.startsWith("@")
-    ) {
-      paths.push(component.value);
-    }
-    if (component.visibleBinding) {
-      paths.push(component.visibleBinding);
-    }
-    if (component.disabledBinding) {
-      paths.push(component.disabledBinding);
-    }
-    return paths;
-  }, [component]);
-
-  // Проверяет, касается ли изменение binding-ов этого компонента
-  const shouldUpdate = React.useCallback(
-    (changedPath: string | null): boolean => {
-      // Если нет binding-ов — не обновляемся
-      if (bindingPaths.length === 0) return false;
-      // Если changedPath null (полная замена state) — обновляем
-      if (!changedPath) return true;
-
-      // Проверяем, содержит ли changedPath один из наших binding-ов
-      // или binding содержит changedPath
-      for (const bp of bindingPaths) {
-        // Убираем @ из binding path
-        const normalizedBp = bp.startsWith("@") ? bp.slice(1) : bp;
-        // Формируем полный путь с pageId
-        const fullPath = normalizedBp.startsWith("state.")
-          ? `${pageId}.${normalizedBp}`
-          : normalizedBp;
-
-        if (
-          changedPath.startsWith(fullPath) ||
-          fullPath.startsWith(changedPath)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    },
-    [bindingPaths, pageId],
-  );
-
-  // Подписка на изменения stateManager для реактивности (с фильтрацией)
-  useEffect(() => {
-    if (!stateManager) return;
-
-    // Подписываемся на изменения состояния — перерезолвляем binding-и только если изменение касается нас
-    const unsubscribe = stateManager.subscribe(
-      (_elementPath: string, changedPath: string | null) => {
-        if (shouldUpdate(changedPath)) {
-          resolveBindings();
-        }
-      },
-    );
-
-    return unsubscribe;
-  }, [stateManager, resolveBindings, shouldUpdate]);
-
-  const handleEvent = useCallback(
-    (eventType: string, eventValue: any) => {
-      if (!component.events || !commandContextRef.current) return;
-
-      const eventHandlers = component.events.filter(
-        (e) => e.type === eventType,
-      );
-
-      for (const handler of eventHandlers) {
-        for (const cmd of handler.commands) {
-          const executor = new CommandExecutor(commandContextRef.current);
-          executor.executeCommand(cmd.type, cmd.params, eventValue);
-        }
-      }
-    },
-    [component.events],
-  );
-
-  // Устанавливаем флаг монтирования — это вызывает ре-рендер
-  useEffect(() => {
-    setIsMounted(true);
-    return () => {
-      setIsMounted(false);
-    };
-  }, []);
+  const renderProps = {
+    component,
+    props,
+    className,
+    style,
+    resolvedValue,
+    resolvedVisible,
+    resolvedDisabled,
+    isMounted,
+    handleEvent,
+  };
 
   switch (componentType) {
-    case "Text": {
-      const level = props.level as number | undefined;
-      const value =
-        resolvedValue !== undefined ? resolvedValue : (props.value as string);
-      if (level === 1)
-        return (
-          <h1 className={className || ""} style={style}>
-            {value}
-          </h1>
-        );
-      if (level === 2)
-        return (
-          <h2 className={className || ""} style={style}>
-            {value}
-          </h2>
-        );
-      if (level === 3)
-        return (
-          <h3 className={className || ""} style={style}>
-            {value}
-          </h3>
-        );
-      return (
-        <p className={className || ""} style={style}>
-          {value}
-        </p>
-      );
-    }
-
-    case "InputText": {
-      // Для контроллированных инпутов всегда задаем значение, чтобы избежать переключения между controlled/uncontrolled
-      const defaultValue =
-        resolvedValue !== undefined ? resolvedValue : (props.value ?? "");
-
-      const inputProps = {
-        ...props,
-        value: defaultValue,
-        disabled: resolvedDisabled ?? props.disabled,
-        visible: resolvedVisible ?? props.visible,
-      };
-      return (
-        <InputText
-          {...inputProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
-      );
-    }
-
-    case "InputNumber": {
-      const inputNumberProps = {
-        ...props,
-        value: resolvedValue !== undefined ? resolvedValue : (props.value ?? 0),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <InputNumber
-          {...inputNumberProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onValueChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
-    case "InputTextarea": {
-      const textareaProps = {
-        ...props,
-        value:
-          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <InputTextarea
-          {...textareaProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
-      );
-    }
-
-    case "Password": {
-      const passwordProps = {
-        ...props,
-        value:
-          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <Password
-          {...passwordProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.target.value })}
-        />
-      );
-    }
-
-    case "Dropdown": {
-      const dropdownProps = {
-        ...props,
-        value:
-          resolvedValue !== undefined ? resolvedValue : (props.value ?? null),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <Dropdown
-          {...dropdownProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
-    case "MultiSelect": {
-      const multiSelectProps = {
-        ...props,
-        value:
-          resolvedValue !== undefined ? resolvedValue : (props.value ?? []),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <MultiSelect
-          {...multiSelectProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
-    case "AutoComplete": {
-      const autoCompleteProps = {
-        ...props,
-        value:
-          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <AutoComplete
-          {...autoCompleteProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          completeMethod={(e) => {
-            const suggestions = (props.suggestions || []).filter((s: string) =>
-              s.toLowerCase().includes(e.query.toLowerCase()),
-            );
-          }}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
-    case "Calendar": {
-      // Преобразуем значение для Calendar - принимает Date объект
-      let calendarValue: any =
-        resolvedValue !== undefined ? resolvedValue : props.value;
-
-      // Конвертация строки в Date объект
-      if (typeof calendarValue === "string" && calendarValue.trim() !== "") {
-        // Сначала пробуем parseDateString (для формата dd.mm.yyyy HH:mm)
-        const parsedDate = parseDateString(calendarValue);
-        if (parsedDate) {
-          calendarValue = parsedDate;
-        } else if (isIsoDateLike(calendarValue)) {
-          // ISO строка — конвертируем в Date
-          const date = new Date(calendarValue);
-          if (!isNaN(date.getTime())) {
-            calendarValue = date;
-          }
-        }
-      }
-
-      // Устанавливаем формат даты если не указан
-      const dateFormat = props.dateFormat || "dd.mm.yy";
-
-      const calendarProps = {
-        ...props,
-        value: calendarValue,
-        disabled: resolvedDisabled ?? props.disabled,
-        dateFormat,
-      };
-      return (
-        <Calendar
-          {...calendarProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
-    case "Checkbox": {
-      const checkboxProps = {
-        ...props,
-        checked:
-          resolvedValue !== undefined
-            ? resolvedValue
-            : component.state?.value || false,
-        disabled: resolvedDisabled ?? props.disabled,
-        visible: resolvedVisible ?? props.visible,
-      };
-      return (
-        <div className="mb-2 flex align-items-center">
-          <Checkbox
-            {...checkboxProps}
-            className={className}
-            style={style}
-            onChange={(e) => handleEvent("onChange", { value: e.checked })}
-          />
-          {props.label && (
-            <label className="ml-2 text-200">{props.label as string}</label>
-          )}
-        </div>
-      );
-    }
-
-    case "RadioButton": {
-      const radioButtonProps = {
-        ...props,
-        value: resolvedValue !== undefined ? resolvedValue : props.value,
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <div className="field flex align-items-center">
-          <RadioButton
-            {...radioButtonProps}
-            className={className}
-            style={style}
-            onChange={(e) => handleEvent("onChange", { value: e.value })}
-          />
-          {props.label && (
-            <label className="ml-2 text-200">{props.label as string}</label>
-          )}
-        </div>
-      );
-    }
-
-    case "InputSwitch": {
-      const inputSwitchProps = {
-        ...props,
-        checked:
-          resolvedValue !== undefined
-            ? resolvedValue
-            : component.state?.value || false,
-        disabled: resolvedDisabled ?? props.disabled,
-        visible: resolvedVisible ?? props.visible,
-      };
-      return (
-        <div className="field flex align-items-center">
-          <InputSwitch
-            {...inputSwitchProps}
-            className={className}
-            style={style}
-            onChange={(e) => handleEvent("onChange", { value: e.value })}
-          />
-          {props.label && (
-            <label className="ml-2 text-200">{props.label as string}</label>
-          )}
-        </div>
-      );
-    }
-
-    case "Slider": {
-      const sliderProps = {
-        ...props,
-        value: resolvedValue !== undefined ? resolvedValue : props.value,
-        disabled: resolvedDisabled ?? props.disabled,
-      };
-      return (
-        <Slider
-          {...sliderProps}
-          className={`field w-full ${className || ""}`}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-    }
-
+    case "Text":
+      return renderText(renderProps);
+    case "InputText":
+      return renderInputText(renderProps);
+    case "InputNumber":
+      return renderInputNumber(renderProps);
+    case "InputTextarea":
+      return renderInputTextarea(renderProps);
+    case "Password":
+      return renderPassword(renderProps);
+    case "Dropdown":
+      return renderDropdown(renderProps);
+    case "MultiSelect":
+      return renderMultiSelect(renderProps);
+    case "AutoComplete":
+      return renderAutoComplete(renderProps);
+    case "Calendar":
+      return renderCalendar(renderProps);
+    case "Checkbox":
+      return renderCheckbox(renderProps);
+    case "RadioButton":
+      return renderRadioButton(renderProps);
+    case "InputSwitch":
+      return renderInputSwitch(renderProps);
+    case "Slider":
+      return renderSlider(renderProps);
     case "Rating":
-      return (
-        <Rating
-          {...props}
-          className={className}
-          style={style}
-          onChange={(e) => handleEvent("onChange", { value: e.value })}
-        />
-      );
-
+      return renderRating(renderProps);
     case "ColorPicker":
-      return (
-        <div className="flex align-items-center mb-2">
-          <ColorPicker
-            {...props}
-            className={className}
-            style={style}
-            onChange={(e) => handleEvent("onChange", { value: e.value })}
-          />
-        </div>
-      );
-
+      return renderColorPicker(renderProps);
     case "FileUpload":
-      return (
-        <div className="mb-3">
-          <FileUpload
-            {...props}
-            className={`w-full ${className || ""}`}
-            style={style}
-          />
-        </div>
-      );
-
+      return renderFileUpload(renderProps);
     case "Button":
-      return (
-        <Button
-          {...props}
-          className={className || ""}
-          style={style}
-          onClick={(e) => handleEvent("onClick", e)}
-        />
-      );
-
+      return renderButton(renderProps);
     case "DataTable":
-      return (
-        <DataTable
-          {...props}
-          value={props.value || []}
-          className={`w-full ${className || ""}`}
-          style={style}
-        >
-          {props.columns?.map((col: any, index: number) => (
-            <Column key={index} field={col.field} header={col.header} />
-          ))}
-        </DataTable>
-      );
-
+      return renderDataTable(renderProps);
     case "Card":
-      return (
-        <Card {...props} className={className || ""} style={style}>
-          {component.state?.data}
-        </Card>
-      );
-
+      return renderCard(renderProps);
     case "Toast":
-      return <Toast ref={toastRef} className={className} style={style} />;
-
-    case "Menubar": {
-      const menuModel = (props.model || []).map((item: any) => ({
-        ...item,
-        template: item.route ? (
-          <Link
-            href={item.route}
-            className="p-menuitem-link flex align-items-center gap-2"
-          >
-            {item.icon && <i className={item.icon}></i>}
-            <span className="p-menuitem-text">{item.label}</span>
-          </Link>
-        ) : undefined,
-        command: item.route ? () => router.push(item.route) : undefined,
-      }));
-      if (!isMounted)
-        return <div className="h-3rem surface-800 border-round-md" />;
-      return (
-        <Menubar
-          model={menuModel}
-          className={`w-full mb-4 ${className || ""}`}
-          style={style}
-        />
-      );
-    }
-
-    case "Breadcrumb": {
-      const breadcrumbModel = (props.model || []).map((item: any) => ({
-        ...item,
-        command: item.route ? () => router.push(item.route) : undefined,
-      }));
-      return (
-        <BreadCrumb
-          model={breadcrumbModel}
-          className={`mb-4 ${className || ""}`}
-          style={style}
-        />
-      );
-    }
-
-    case "TabView": {
-      const tabs = props.tabs || [];
-      return (
-        <TabView className={`mb-4 ${className || ""}`} style={style}>
-          {tabs.map((tab: any, index: number) => (
-            <TabPanel key={index} header={tab.label}>
-              <div className="p-3">
-                {tab.content?.type === "table" ? (
-                  <DataTable value={tab.content.data || []} className="w-full">
-                    {tab.content.columns?.map((col: any, i: number) => (
-                      <Column key={i} field={col.field} header={col.header} />
-                    ))}
-                  </DataTable>
-                ) : (
-                  <p className="text-300 m-0">{tab.content}</p>
-                )}
-              </div>
-            </TabPanel>
-          ))}
-        </TabView>
-      );
-    }
-
-    case "Steps": {
-      const stepsModel = (props.model || []).map((item: any) => ({
-        label: item.label,
-        icon: item.icon,
-        command: item.route ? () => router.push(item.route) : undefined,
-      }));
-      return (
-        <Steps
-          model={stepsModel}
-          className={className || ""}
-          style={style}
-          activeIndex={props.activeIndex || 0}
-          readOnly={props.readOnly !== false}
-        />
-      );
-    }
-
-    case "Accordion": {
-      const tabs = props.tabs || [];
-      return (
-        <Accordion
-          className={className || ""}
-          style={style}
-          activeIndex={props.activeIndex}
-        >
-          {tabs.map((tab: any, index: number) => (
-            <AccordionTab key={index} header={tab.header}>
-              <p className="text-300 m-0">{tab.content}</p>
-            </AccordionTab>
-          ))}
-        </Accordion>
-      );
-    }
-
-    case "Carousel": {
-      const carouselValue = props.value || [];
-      return (
-        <Carousel
-          {...props}
-          value={carouselValue}
-          className={`mb-4 ${className || ""}`}
-          style={style}
-          itemTemplate={(item: any) => (
-            <div className="p-4 text-center surface-800 border-round-md mx-2">
-              <p className="font-bold text-100 mb-1">{item.name}</p>
-              <p className="text-400 text-sm">Sales: {item.sales}</p>
-            </div>
-          )}
-        />
-      );
-    }
-
+      return renderToast(renderProps);
+    case "Menubar":
+      return renderMenubar(renderProps);
+    case "Breadcrumb":
+      return renderBreadcrumb(renderProps);
+    case "TabView":
+      return renderTabView(renderProps);
+    case "Steps":
+      return renderSteps(renderProps);
+    case "Accordion":
+      return renderAccordion(renderProps);
+    case "Carousel":
+      return renderCarousel(renderProps);
     case "Skeleton":
-      return (
-        <Skeleton
-          {...props}
-          className={`${className || ""} mb-2`}
-          style={style}
-        />
-      );
-
+      return renderSkeleton(renderProps);
     case "Chip":
-      return (
-        <Chip
-          {...props}
-          className={`${className || ""} mr-2 mb-2`}
-          style={style}
-        />
-      );
-
+      return renderChip(renderProps);
     case "Avatar":
-      return (
-        <Avatar
-          {...props}
-          className={`${className || ""} mr-2`}
-          style={style}
-        />
-      );
-
+      return renderAvatar(renderProps);
     case "Badge":
-      return <Badge {...props} className={className || ""} style={style} />;
-
+      return renderBadge(renderProps);
     case "Tag":
-      return <Tag {...props} className={className || ""} style={style} />;
-
+      return renderTag(renderProps);
     case "ProgressBar":
-      return (
-        <ProgressBar
-          {...props}
-          className={`${className || ""} mb-3`}
-          style={style}
-        />
-      );
-
+      return renderProgressBar(renderProps);
     case "ProgressSpinner":
-      return (
-        <div className="flex justify-content-center mb-3">
-          <ProgressSpinner {...props} className={className} style={style} />
-        </div>
-      );
-
+      return renderProgressSpinner(renderProps);
     case "Message":
-      return (
-        <Message
-          {...props}
-          className={`${className || ""} mb-3`}
-          style={style}
-        />
-      );
-
+      return renderMessage(renderProps);
     case "Divider":
-      return (
-        <Divider
-          {...props}
-          className={`${className || ""} my-4`}
-          style={style}
-        />
-      );
-
-    case "Timeline": {
-      const timelineValue = props.value || [];
-      return (
-        <div className={`${className || ""} mb-3`} style={style}>
-          <Timeline
-            value={timelineValue}
-            content={(item: any) => (
-              <div className="flex flex-column align-items-start">
-                <span className="font-semibold text-100 mb-1">
-                  {item.status}
-                </span>
-                <small className="text-500">{item.date}</small>
-              </div>
-            )}
-            marker={(item: any) => (
-              <span
-                className="flex w-2rem h-2rem align-items-center justify-content-center border-circle text-white"
-                style={{
-                  backgroundColor: item.color || "var(--primary-color)",
-                }}
-              >
-                <i className={item.icon} />
-              </span>
-            )}
-          />
-        </div>
-      );
-    }
-
-    case "Chart": {
-      if (!isMounted) return <Skeleton width="100%" height="20rem" />;
-      return (
-        <div className="mb-4">
-          <Chart {...props} className={`${className || ""}`} style={style} />
-        </div>
-      );
-    }
-
+      return renderDivider(renderProps);
+    case "Timeline":
+      return renderTimeline(renderProps);
+    case "Chart":
+      return renderChart(renderProps);
     default:
       return (
         <div className={className} style={style}>
