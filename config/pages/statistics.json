@@ -192,10 +192,23 @@
                 "placeholder": "Дата начала",
                 "showIcon": true,
                 "icondisplay": "input",
-                "dateFormat": "dd.mm.yy",
-                "showTime": true
+                "dateFormat": "dd.mm.yy"
               },
-              "value": "@state.start"
+              "value": "@state.start",
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value",
+                        "target": "state.start"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "endDatePicker",

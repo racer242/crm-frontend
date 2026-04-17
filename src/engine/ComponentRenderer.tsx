@@ -5,7 +5,6 @@ import React, {
   useState,
   useCallback,
   useRef as useReactRef,
-  useRef,
 } from "react";
 import { Component, App } from "@/types";
 import { InputText } from "primereact/inputtext";
@@ -84,10 +83,11 @@ export function ComponentRenderer({
   );
 
   // Контекст для исполнения команд
-  const commandContextRef = useRef<CommandExecutionContext | null>(null);
+  const commandContextRef = useReactRef<CommandExecutionContext | null>(null);
 
-  // Для Menubar/Chart
-  const isMountedRef = useRef(false);
+  // Для Menubar/Chart — используем useState чтобы вызвать ре-рендер после монтирования
+  // (нужно для избежания hydration mismatch в SSR)
+  const [isMounted, setIsMounted] = useState(false);
 
   // Создаем контекст для CommandExecutor при появлении страницы
   useEffect(() => {
@@ -185,11 +185,11 @@ export function ComponentRenderer({
     [component.events],
   );
 
-  // Обновляем флаг монтирования
+  // Устанавливаем флаг монтирования — это вызывает ре-рендер
   useEffect(() => {
-    isMountedRef.current = true;
+    setIsMounted(true);
     return () => {
-      isMountedRef.current = false;
+      setIsMounted(false);
     };
   }, []);
 
@@ -557,7 +557,7 @@ export function ComponentRenderer({
         ) : undefined,
         command: item.route ? () => router.push(item.route) : undefined,
       }));
-      if (!isMountedRef.current)
+      if (!isMounted)
         return <div className="h-3rem surface-800 border-round-md" />;
       return (
         <Menubar
@@ -754,8 +754,7 @@ export function ComponentRenderer({
     }
 
     case "Chart": {
-      if (!isMountedRef.current)
-        return <Skeleton width="100%" height="20rem" />;
+      if (!isMounted) return <Skeleton width="100%" height="20rem" />;
       return (
         <div className="mb-4">
           <Chart {...props} className={`${className || ""}`} style={style} />
