@@ -39,8 +39,6 @@ export function PageRenderer({
 
   const executeCommands = (commands: any[]) => {
     commands.forEach((cmd) => {
-      console.log(`[Page Command] ${cmd.type}:`, cmd.params);
-
       // Выполняем команду если есть контекст
       if (commandContextRef.current && cmd.type === "setProperty") {
         import("@/core")

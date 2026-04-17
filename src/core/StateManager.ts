@@ -113,7 +113,6 @@ export class StateManager {
     if (!element.state) {
       element.state = {};
     }
-
     const oldState = { ...element.state };
     PathResolver.setValue(element.state, field, value);
     this.notifyListeners(
