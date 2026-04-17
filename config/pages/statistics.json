@@ -183,6 +183,17 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "ch1",
+              "type": "component",
+              "componentType": "Checkbox",
+              "props": {
+                "label": "Accept terms"
+              },
+              "state": {
+                "value": false
+              }
             }
           ]
         },
