@@ -62,7 +62,27 @@ App (приложение)
 │   │   ├── PageRenderer.tsx     # Рендер страницы с секциями
 │   │   ├── SectionRenderer.tsx  # Рендер секции с layout
 │   │   ├── BlockRenderer.tsx    # Рендер блока с обёрткой (Card, Panel, Toolbar)
-│   │   ├── ComponentRenderer.tsx# Рендер PrimeReact компонентов
+│   │   ├── ComponentRenderer.tsx# Рендер PrimeReact компонентов (~160 строк, switch/mapping)
+│   │   ├── components/           # Render-функции компонентов (16 файлов)
+│   │   │   ├── types.ts          # Интерфейс ComponentRendererProps
+│   │   │   ├── index.ts          # Barrel export всех render-функций
+│   │   │   ├── TextComponent.tsx     # Text: H1, H2, H3, P
+│   │   │   ├── InputComponents.tsx   # InputText, InputNumber, InputTextarea, Password
+│   │   │   ├── SelectComponents.tsx  # Dropdown, MultiSelect, AutoComplete, Calendar
+│   │   │   ├── ToggleComponents.tsx  # Checkbox, RadioButton, InputSwitch, Slider, Rating
+│   │   │   ├── MiscInputComponents.tsx # ColorPicker, FileUpload
+│   │   │   ├── ButtonComponent.tsx   # Button
+│   │   │   ├── DataTableComponent.tsx # DataTable
+│   │   │   ├── CardComponent.tsx     # Card
+│   │   │   ├── ToastComponent.tsx    # Toast
+│   │   │   ├── NavComponents.tsx     # Menubar, Breadcrumb, Steps
+│   │   │   ├── ContainerComponents.tsx # TabView, Accordion, Carousel
+│   │   │   ├── DisplayComponents.tsx # Skeleton, Chip, Avatar, Badge, Tag
+│   │   │   ├── ProgressComponents.tsx # ProgressBar, ProgressSpinner
+│   │   │   ├── FeedbackComponents.tsx # Message, Divider, Timeline
+│   │   │   └── ChartComponent.tsx    # Chart
+│   │   ├── hooks/
+│   │   │   └── useComponentBindings.ts # Binding logic + state subscription
 │   │   ├── DashboardSidebar.tsx # Боковая панель навигации
 │   │   └── index.ts
 │   └── app/

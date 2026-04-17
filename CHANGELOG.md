@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Refactored
+
+- **ComponentRenderer modularization** — split monolithic `ComponentRenderer.tsx` (~850 lines) into modular structure (~160 lines)
+  - Extracted `useComponentBindings` hook for binding logic and state subscription
+  - Split component renderers into 16 separate files grouped by type:
+    - `TextComponent` — Text: H1, H2, H3, P
+    - `InputComponents` — InputText, InputNumber, InputTextarea, Password
+    - `SelectComponents` — Dropdown, MultiSelect, AutoComplete, Calendar
+    - `ToggleComponents` — Checkbox, RadioButton, InputSwitch, Slider, Rating
+    - `MiscInputComponents` — ColorPicker, FileUpload
+    - `ButtonComponent` — Button
+    - `DataTableComponent` — DataTable
+    - `CardComponent` — Card
+    - `ToastComponent` — Toast
+    - `NavComponents` — Menubar, Breadcrumb, Steps
+    - `ContainerComponents` — TabView, Accordion, Carousel
+    - `DisplayComponents` — Skeleton, Chip, Avatar, Badge, Tag
+    - `ProgressComponents` — ProgressBar, ProgressSpinner
+    - `FeedbackComponents` — Message, Divider, Timeline
+    - `ChartComponent` — Chart
+  - Barrel export via `components/index.ts`
+  - Type definitions moved to `components/types.ts`
+
 ### Added
 
 - Statistics page with date filters and data export functionality
