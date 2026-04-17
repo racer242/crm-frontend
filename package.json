@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "nodemon --watch config/ --exec \"next dev --turbo\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -26,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
+    "nodemon": "^3.1.14",
     "puppeteer": "^24.40.0",
     "typescript": "^5"
   }
