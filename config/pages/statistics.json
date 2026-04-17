@@ -5,8 +5,11 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "start": "13.04.2026",
-    "end": "20.04.2026"
+    "start": "2026-04-13T23:30:00",
+    "end": "20.04.2026 8:30",
+    "textData": {
+      "input": "Тестовая строка"
+    }
   },
   "meta": {
     "title": "Статистика — CRM Platform"
@@ -157,6 +160,15 @@
                 "placeholder": "Выберите неделю",
                 "showClear": true
               }
+            },
+            {
+              "id": "it1",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default"
+              },
+              "value": "@state.textData.input"
             }
           ]
         },
@@ -180,7 +192,8 @@
                 "placeholder": "Дата начала",
                 "showIcon": true,
                 "icondisplay": "input",
-                "dateFormat": "dd.mm.yy"
+                "dateFormat": "dd.mm.yy",
+                "showTime": true
               },
               "value": "@state.start"
             },
@@ -192,7 +205,8 @@
                 "placeholder": "Дата окончания",
                 "showIcon": true,
                 "icondisplay": "input",
-                "dateFormat": "dd.mm.yy"
+                "dateFormat": "dd.mm.yy",
+                "showTime": true
               },
               "value": "@state.end"
             }

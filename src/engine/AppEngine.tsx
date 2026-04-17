@@ -87,7 +87,12 @@ export function AppEngine({ config }: { config: App }) {
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">
         <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
-          <PageRenderer key={currentPage.id} page={currentPage} />
+          <PageRenderer
+            key={currentPage.id}
+            page={currentPage}
+            appConfig={config}
+            stateManager={stateManager}
+          />
         </div>
       </main>
     </div>

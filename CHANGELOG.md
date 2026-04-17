@@ -11,6 +11,23 @@ All notable changes to this project will be documented in this file.
   - Date range picker (start/end dates)
   - Menubar download menu with tabs for Customers, Orders, Products tables
 
+### Component Binding System
+
+- Data binding support via `valueBinding`, `visibleBinding`, `disabledBinding` properties
+- Command-based event handling: `setProperty` command to update state from components
+- Link resolver for relative (`@ELEMENT_ID.state.FIELD`) and absolute (`@state.field`) references
+- Cross-component communication through shared application state
+
+### Date Utilities
+
+- Created `src/utils/date.ts` with date parsing utilities:
+  - `isIsoDateLike()` — check ISO date format
+  - `parseDateString()` — parse custom formats (dd.mm.yyyy HH:mm)
+  - `isoToCustomFormat()` — convert ISO to custom format
+- Support for multiple date formats in Calendar component:
+  - ISO: `2026-04-13T23:30:00`
+  - Custom: `13.04.2026 23:30`, `13.04.2026`
+
 ### Changed
 
 - API configuration split: endpoints moved to separate `config/api/endpoints.json` file

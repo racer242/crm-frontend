@@ -97,7 +97,6 @@ export type TransformFunction =
   | "toBoolean"
   | "toDate"
   | "toArray"
-  | "toObject"
   | "jsonParse"
   | "jsonStringify"
   | "uppercase"
@@ -162,15 +161,36 @@ export type EventType =
   | "onHide"
   | "onShow";
 
-/** Компонент */
+/** Компонент с поддержкой динамических привязок */
 export interface Component extends BaseElement {
   type: "component";
   componentType: ComponentType;
+
+  /** Динамические привязки (ссылки типа @state.field или @componentId.property) */
+  valueBinding?: string; // например "@state.start"
+  visibleBinding?: string; // например "@state.visible"
+  disabledBinding?: string; // например "@state.disabled"
+
+  /** Прямые значения для value/visible/disabled (может содержать ссылки) */
+  value?: any;
+  visible?: boolean;
+  disabled?: boolean;
+
+  /** Статические пропсы PrimeReact */
   props?: Record<string, any>;
+
+  /** Привязки данных */
   bindings?: DataBinding[];
+
+  /** Правила валидации */
   validation?: ValidationRule[];
+
+  /** Команды (альтернатива events) */
   commands?: Command[];
+
+  /** Обработчики событий */
   events?: EventHandler[];
+
   className?: string;
   style?: React.CSSProperties;
 }

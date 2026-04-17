@@ -6,6 +6,7 @@ export type CommandType =
   | "mergeState"
   | "clearState"
   | "toggleState"
+  | "setProperty"
   | "apiRequest"
   | "getData"
   | "setData"

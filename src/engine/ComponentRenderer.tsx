@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Component } from "@/types";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef as useReactRef,
+  useRef,
+} from "react";
+import { Component, App } from "@/types";
 import { InputText } from "primereact/inputtext";
+import { LinkResolver, CommandExecutor } from "@/core";
 import { Button } from "primereact/button";
 
 import { DataTable } from "primereact/datatable";
@@ -42,32 +49,140 @@ import { Timeline } from "primereact/timeline";
 import { Chart } from "primereact/chart";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useRef } from "react";
+import { isIsoDateLike, parseDateString } from "@/utils/date";
 
-export function ComponentRenderer({ component }: { component: Component }) {
+// Тип контекста для команд (локальное определение)
+type CommandExecutionContext = {
+  pageId: string;
+  triggerComponentId: string;
+  appConfig: App;
+  stateManager: any;
+};
+
+export function ComponentRenderer({
+  component,
+  pageId,
+  appConfig,
+  stateManager,
+}: {
+  component: Component;
+  pageId?: string;
+  appConfig?: App;
+  stateManager?: any;
+}) {
   const { componentType, props = {}, className, style } = component;
-  const toastRef = useRef<Toast>(null);
+  const toastRef = useReactRef<Toast>(null);
   const router = useRouter();
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Разрешенные значения для binding-ов
+  const [resolvedValue, setResolvedValue] = useState<any>(undefined);
+  const [resolvedVisible, setResolvedVisible] = useState<boolean | undefined>(
+    undefined,
+  );
+  const [resolvedDisabled, setResolvedDisabled] = useState<boolean | undefined>(
+    undefined,
+  );
 
-  const handleEvent = (eventType: string, eventValue: any) => {
-    if (!component.events) return;
-    const eventHandlers = component.events.filter((e) => e.event === eventType);
-    eventHandlers.forEach((handler) => {
-      handler.commands.forEach((cmd) => {
-        console.log(`[Command] ${cmd.type}:`, cmd.params);
-      });
-    });
-  };
+  // Контекст для исполнения команд
+  const commandContextRef = useRef<CommandExecutionContext | null>(null);
+
+  // Для Menubar/Chart
+  const isMountedRef = useRef(false);
+
+  // Создаем контекст для CommandExecutor при появлении страницы
+  useEffect(() => {
+    if (pageId && appConfig && stateManager) {
+      commandContextRef.current = {
+        pageId,
+        triggerComponentId: component.id || "",
+        appConfig,
+        stateManager,
+      };
+    }
+  }, [pageId, appConfig, stateManager, component.id]);
+
+  // Разрешение ссылок при изменении компонента или stateManager
+  useEffect(() => {
+    if (!appConfig || !pageId) {
+      return;
+    }
+
+    const linkContext = {
+      pageId,
+      appConfig,
+      componentMap: new Map(),
+    };
+
+    let resolvedVal: any = undefined;
+
+    // Сначала проверяем valueBinding
+    if (component.valueBinding) {
+      resolvedVal = LinkResolver.resolve(component.valueBinding, linkContext);
+    }
+    // Затем проверяем component.value (для прямой ссылки вида @state.field)
+    else if (component.value !== undefined) {
+      if (
+        typeof component.value === "string" &&
+        component.value.startsWith("@")
+      ) {
+        resolvedVal = LinkResolver.resolve(component.value, linkContext);
+      } else {
+        resolvedVal = component.value;
+      }
+    }
+
+    setResolvedValue(resolvedVal);
+
+    // Разрешаем visibleBinding / visible
+    if (component.visibleBinding) {
+      setResolvedVisible(
+        LinkResolver.resolve(component.visibleBinding, linkContext),
+      );
+    } else {
+      setResolvedVisible(component.visible);
+    }
+
+    // Разрешаем disabledBinding / disabled
+    if (component.disabledBinding) {
+      setResolvedDisabled(
+        LinkResolver.resolve(component.disabledBinding, linkContext),
+      );
+    } else {
+      setResolvedDisabled(component.disabled);
+    }
+  }, [component, appConfig, pageId, stateManager, pageId]);
+
+  const handleEvent = useCallback(
+    (eventType: string, eventValue: any) => {
+      if (!component.events || !commandContextRef.current) return;
+
+      const eventHandlers = component.events.filter(
+        (e) => e.event === eventType,
+      );
+
+      for (const handler of eventHandlers) {
+        for (const cmd of handler.commands) {
+          const executor = new CommandExecutor(commandContextRef.current);
+          executor.executeCommand(cmd.type, cmd.params, eventValue);
+        }
+      }
+    },
+    [component.events],
+  );
+
+  // Обновляем флаг монтирования
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   switch (componentType) {
     case "Text": {
       const level = props.level as number | undefined;
-      const value = props.value as string;
+      const value =
+        resolvedValue !== undefined ? resolvedValue : (props.value as string);
       if (level === 1)
         return (
           <h1 className={className || ""} style={style}>
@@ -93,70 +208,121 @@ export function ComponentRenderer({ component }: { component: Component }) {
       );
     }
 
-    case "InputText":
+    case "InputText": {
+      // Для контроллированных инпутов всегда задаем значение, чтобы избежать переключения между controlled/uncontrolled
+      const defaultValue =
+        resolvedValue !== undefined ? resolvedValue : (props.value ?? "");
+
+      const inputProps = {
+        ...props,
+        value: defaultValue,
+        disabled: resolvedDisabled ?? props.disabled,
+        visible: resolvedVisible ?? props.visible,
+      };
       return (
         <InputText
-          {...props}
+          {...inputProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.target.value })}
         />
       );
+    }
 
-    case "InputNumber":
+    case "InputNumber": {
+      const inputNumberProps = {
+        ...props,
+        value: resolvedValue !== undefined ? resolvedValue : (props.value ?? 0),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <InputNumber
-          {...props}
+          {...inputNumberProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onValueChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
-    case "InputTextarea":
+    case "InputTextarea": {
+      const textareaProps = {
+        ...props,
+        value:
+          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <InputTextarea
-          {...props}
+          {...textareaProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.target.value })}
         />
       );
+    }
 
-    case "Password":
+    case "Password": {
+      const passwordProps = {
+        ...props,
+        value:
+          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <Password
-          {...props}
+          {...passwordProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.target.value })}
         />
       );
+    }
 
-    case "Dropdown":
+    case "Dropdown": {
+      const dropdownProps = {
+        ...props,
+        value:
+          resolvedValue !== undefined ? resolvedValue : (props.value ?? null),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <Dropdown
-          {...props}
+          {...dropdownProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
-    case "MultiSelect":
+    case "MultiSelect": {
+      const multiSelectProps = {
+        ...props,
+        value:
+          resolvedValue !== undefined ? resolvedValue : (props.value ?? []),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <MultiSelect
-          {...props}
+          {...multiSelectProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
-    case "AutoComplete":
+    case "AutoComplete": {
+      const autoCompleteProps = {
+        ...props,
+        value:
+          resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <AutoComplete
-          {...props}
+          {...autoCompleteProps}
           className={`field w-full ${className || ""}`}
           style={style}
           completeMethod={(e) => {
@@ -167,23 +333,61 @@ export function ComponentRenderer({ component }: { component: Component }) {
           onChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
-    case "Calendar":
+    case "Calendar": {
+      // Преобразуем значение для Calendar - принимает Date объект
+      let calendarValue: any =
+        resolvedValue !== undefined ? resolvedValue : props.value;
+
+      // Конвертация строки в Date объект
+      if (typeof calendarValue === "string" && calendarValue.trim() !== "") {
+        // Сначала пробуем parseDateString (для формата dd.mm.yyyy HH:mm)
+        const parsedDate = parseDateString(calendarValue);
+        if (parsedDate) {
+          calendarValue = parsedDate;
+        } else if (isIsoDateLike(calendarValue)) {
+          // ISO строка — конвертируем в Date
+          const date = new Date(calendarValue);
+          if (!isNaN(date.getTime())) {
+            calendarValue = date;
+          }
+        }
+      }
+
+      // Устанавливаем формат даты если не указан
+      const dateFormat = props.dateFormat || "dd.mm.yy";
+
+      const calendarProps = {
+        ...props,
+        value: calendarValue,
+        disabled: resolvedDisabled ?? props.disabled,
+        dateFormat,
+      };
       return (
         <Calendar
-          {...props}
+          {...calendarProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
-    case "Checkbox":
+    case "Checkbox": {
+      const checkboxProps = {
+        ...props,
+        checked:
+          resolvedValue !== undefined
+            ? resolvedValue
+            : component.state?.value || false,
+        disabled: resolvedDisabled ?? props.disabled,
+        visible: resolvedVisible ?? props.visible,
+      };
       return (
         <div className="mb-2 flex align-items-center">
           <Checkbox
-            {...props}
-            checked={component.state?.value || false}
+            {...checkboxProps}
             className={className}
             style={style}
             onChange={(e) => handleEvent("onChange", { value: e.checked })}
@@ -193,12 +397,18 @@ export function ComponentRenderer({ component }: { component: Component }) {
           )}
         </div>
       );
+    }
 
-    case "RadioButton":
+    case "RadioButton": {
+      const radioButtonProps = {
+        ...props,
+        value: resolvedValue !== undefined ? resolvedValue : props.value,
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <div className="field flex align-items-center">
           <RadioButton
-            {...props}
+            {...radioButtonProps}
             className={className}
             style={style}
             onChange={(e) => handleEvent("onChange", { value: e.value })}
@@ -208,13 +418,22 @@ export function ComponentRenderer({ component }: { component: Component }) {
           )}
         </div>
       );
+    }
 
-    case "InputSwitch":
+    case "InputSwitch": {
+      const inputSwitchProps = {
+        ...props,
+        checked:
+          resolvedValue !== undefined
+            ? resolvedValue
+            : component.state?.value || false,
+        disabled: resolvedDisabled ?? props.disabled,
+        visible: resolvedVisible ?? props.visible,
+      };
       return (
         <div className="field flex align-items-center">
           <InputSwitch
-            {...props}
-            checked={component.state?.value || false}
+            {...inputSwitchProps}
             className={className}
             style={style}
             onChange={(e) => handleEvent("onChange", { value: e.value })}
@@ -224,16 +443,23 @@ export function ComponentRenderer({ component }: { component: Component }) {
           )}
         </div>
       );
+    }
 
-    case "Slider":
+    case "Slider": {
+      const sliderProps = {
+        ...props,
+        value: resolvedValue !== undefined ? resolvedValue : props.value,
+        disabled: resolvedDisabled ?? props.disabled,
+      };
       return (
         <Slider
-          {...props}
+          {...sliderProps}
           className={`field w-full ${className || ""}`}
           style={style}
           onChange={(e) => handleEvent("onChange", { value: e.value })}
         />
       );
+    }
 
     case "Rating":
       return (
@@ -316,7 +542,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
         ) : undefined,
         command: item.route ? () => router.push(item.route) : undefined,
       }));
-      if (!isMounted)
+      if (!isMountedRef.current)
         return <div className="h-3rem surface-800 border-round-md" />;
       return (
         <Menubar
@@ -513,7 +739,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
     }
 
     case "Chart": {
-      if (!isMounted) return <Skeleton width="100%" height="20rem" />;
+      if (!isMountedRef.current)
+        return <Skeleton width="100%" height="20rem" />;
       return (
         <div className="mb-4">
           <Chart {...props} className={`${className || ""}`} style={style} />

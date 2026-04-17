@@ -1,10 +1,23 @@
 "use client";
 
 import React from "react";
-import { Section } from "@/types";
+import { Section, App } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
+import { StateManager } from "@/core";
 
-export function SectionRenderer({ section }: { section: Section }) {
+interface SectionRendererProps {
+  section: Section;
+  pageId?: string;
+  appConfig?: App;
+  stateManager?: StateManager;
+}
+
+export function SectionRenderer({
+  section,
+  pageId,
+  appConfig,
+  stateManager,
+}: SectionRendererProps) {
   const { layout, className, visibility } = section;
 
   if (visibility && visibility.defaultVisible === false) {
@@ -21,7 +34,12 @@ export function SectionRenderer({ section }: { section: Section }) {
           key={block.id}
           className={block.className || getBlockWrapperClass(layout)}
         >
-          <BlockRenderer block={block} />
+          <BlockRenderer
+            block={block}
+            pageId={pageId || ""}
+            appConfig={appConfig}
+            stateManager={stateManager}
+          />
         </div>
       ))}
     </section>
