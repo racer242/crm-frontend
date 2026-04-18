@@ -9,14 +9,19 @@
   "meta": {
     "title": "Dashboard — CRM Platform"
   },
-  "onLoad": [
+  "events": [
     {
-      "id": "loadStats",
-      "type": "log",
-      "params": {
-        "level": "info",
-        "message": "Dashboard loaded"
-      }
+      "type": "onLoad",
+      "commands": [
+        {
+          "id": "loadStats",
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "Dashboard loaded"
+          }
+        }
+      ]
     }
   ],
   "sections": [

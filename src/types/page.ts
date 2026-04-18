@@ -2,6 +2,12 @@ import { BaseElement, ElementPath, LayoutConfig } from "./base";
 import { Command } from "./commands";
 import { Section } from "./section";
 
+/** Событие страницы */
+export interface PageEvent {
+  type: "onLoad" | "onUnload" | "onReady" | "onError";
+  commands: Command[];
+}
+
 /** Страница - основной элемент навигации */
 export interface Page extends BaseElement {
   type: "page";
@@ -10,7 +16,10 @@ export interface Page extends BaseElement {
   layout?: LayoutConfig;
   meta?: PageMeta;
   access?: AccessControl;
+  events?: PageEvent[];
+  /** @deprecated Use events array instead */
   onLoad?: Command[];
+  /** @deprecated Use events array instead */
   onUnload?: Command[];
   onError?: Command[];
 }

@@ -53,16 +53,38 @@ export function PageRenderer({
     });
   };
 
+  // Получить команды для указанного типа события
+  const getEventCommands = (eventType: string): any[] => {
+    const pageEvents = (page as any).events || [];
+    const event = pageEvents.find((e: any) => e.type === eventType);
+    return event ? event.commands || [] : [];
+  };
+
   const layoutClass = layout ? getLayoutClass(layout) : "flex flex-column";
   const sectionsList = sections || [];
 
   useEffect(() => {
-    if (page.onLoad) {
-      executeCommands(page.onLoad);
+    // Поддержка нового формата через events
+    const onLoadCommands = getEventCommands("onLoad");
+    // Поддержка старого формата (deprecated)
+    const legacyOnLoadCommands = page.onLoad || [];
+    const commandsToExecute =
+      onLoadCommands.length > 0 ? onLoadCommands : legacyOnLoadCommands;
+
+    if (commandsToExecute.length > 0) {
+      executeCommands(commandsToExecute);
     }
+
     return () => {
-      if (page.onUnload) {
-        executeCommands(page.onUnload);
+      // Поддержка нового формата через events
+      const onUnloadCommands = getEventCommands("onUnload");
+      // Поддержка старого формата (deprecated)
+      const legacyOnUnloadCommands = page.onUnload || [];
+      const unloadCommands =
+        onUnloadCommands.length > 0 ? onUnloadCommands : legacyOnUnloadCommands;
+
+      if (unloadCommands.length > 0) {
+        executeCommands(unloadCommands);
       }
     };
   }, [page]);

@@ -14,21 +14,26 @@
   "meta": {
     "title": "Статистика — CRM Platform"
   },
-  "onLoad": [
+  "events": [
     {
-      "id": "loadStatsData",
-      "type": "log",
-      "params": {
-        "level": "info",
-        "message": "Statistics page loaded"
-      }
-    },
-    {
-      "type": "setProperty",
-      "params": {
-        "value": "Simply Text",
-        "target": "state.textData.input"
-      }
+      "type": "onLoad",
+      "commands": [
+        {
+          "id": "loadStatsData",
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "Statistics page loaded"
+          }
+        },
+        {
+          "type": "setProperty",
+          "params": {
+            "value": "Simply Text",
+            "target": "state.textData.input"
+          }
+        }
+      ]
     }
   ],
   "sections": [
