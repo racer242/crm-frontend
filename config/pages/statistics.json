@@ -19,7 +19,6 @@
       "type": "onLoad",
       "commands": [
         {
-          "id": "loadStatsData",
           "type": "log",
           "params": {
             "level": "info",

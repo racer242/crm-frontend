@@ -153,6 +153,22 @@ export class CommandExecutor {
   }
 
   /**
+   * Выполнить команду log
+   */
+  executeLog(params: Record<string, any>): void {
+    const { level = "info", message } = params;
+    const levels: Record<string, (...args: any[]) => void> = {
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+      debug: console.debug,
+      log: console.log,
+    };
+    const logFn = levels[level] || console.log;
+    logFn(`[${level.toUpperCase()}] ${message}`);
+  }
+
+  /**
    * Общая функция исполнения команд
    */
   async executeCommand(
@@ -163,6 +179,10 @@ export class CommandExecutor {
     switch (type) {
       case "setProperty":
         await this.executeSetProperty(params, eventData);
+        break;
+
+      case "log":
+        this.executeLog(params);
         break;
 
       default:
