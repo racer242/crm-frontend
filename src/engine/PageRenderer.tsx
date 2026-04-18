@@ -40,7 +40,7 @@ export function PageRenderer({
   const executeCommands = (commands: any[]) => {
     commands.forEach((cmd) => {
       // Выполняем команду если есть контекст
-      if (commandContextRef.current && cmd.type === "setProperty") {
+      if (commandContextRef.current) {
         import("@/core")
           .then(({ CommandExecutor }) => {
             const executor = new CommandExecutor(commandContextRef.current!);
