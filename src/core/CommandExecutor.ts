@@ -67,8 +67,6 @@ export class CommandExecutor {
       targetElementPath = this.context.triggerComponentId;
       targetField = target;
     }
-    console.log("???", targetElementPath, targetField);
-
     // Выполняем запись
     if (targetField) {
       // Обновление состояния — setStateField поддерживает вложенные пути (textData.input)
