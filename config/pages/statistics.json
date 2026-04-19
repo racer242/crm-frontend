@@ -26,7 +26,7 @@
           "type": "setProperty",
           "params": {
             "value": "Simply Text",
-            "target": "state.textData.input"
+            "target": "filtersSection.state.textData.input"
           }
         }
       ]
