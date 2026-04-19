@@ -1,6 +1,6 @@
 /**
  * PathResolver - система адресации элементов
- * 
+ *
  * Примеры путей:
  * - "dashboard" → страница
  * - "dashboard.header" → секция
@@ -25,10 +25,9 @@ export class PathResolver {
    */
   static resolveElement(
     path: ElementPath,
-    root: BaseElement
+    root: BaseElement,
   ): BaseElement | null {
     const parts = this.parse(path);
-    
     // Если путь пустой, возвращаем корень
     if (parts.length === 0) {
       return root;
@@ -36,21 +35,27 @@ export class PathResolver {
 
     // Начинаем поиск с корня
     let current: BaseElement | null = root;
-    
+
     // Первый элемент должен быть ID страницы
     if (root.type === "app") {
       const app = root as any;
       const pageId = parts[0];
       current = app.pages?.find((p: any) => p.id === pageId) || null;
-      
+
       if (!current || parts.length === 1) {
         return current;
       }
-      
+
       // Продолжаем с остальными частями пути
       return this.resolveInHierarchy(current, parts.slice(1));
     }
 
+    // Если root — страница, сначала ищем элемент по ID в иерархии
+    if (root.type === "page") {
+      return this.resolveInHierarchy(current, parts);
+    }
+
+    // Для других типов — ищем рекурсивно
     return this.resolveInHierarchy(current, parts);
   }
 
@@ -59,7 +64,7 @@ export class PathResolver {
    */
   private static resolveInHierarchy(
     element: BaseElement,
-    pathParts: string[]
+    pathParts: string[],
   ): BaseElement | null {
     if (pathParts.length === 0) {
       return element;
@@ -96,7 +101,7 @@ export class PathResolver {
    */
   private static getChildren(element: BaseElement): BaseElement[] {
     const elementAny = element as any;
-    
+
     switch (element.type) {
       case "app":
         return elementAny.pages || [];

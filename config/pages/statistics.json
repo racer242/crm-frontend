@@ -6,10 +6,7 @@
     "loading": false,
     "initialized": true,
     "start": "2026-04-13T23:30:00",
-    "end": "20.04.2026 8:30",
-    "textData": {
-      "input": "Тестовая строка"
-    }
+    "end": "20.04.2026 8:30"
   },
   "meta": {
     "title": "Статистика — CRM Platform"
@@ -72,7 +69,10 @@
       "id": "filtersSection",
       "type": "section",
       "state": {
-        "visible": true
+        "visible": true,
+        "textData": {
+          "input": "Тестовая строка"
+        }
       },
       "layout": {
         "type": "flex",
@@ -179,7 +179,7 @@
               "props": {
                 "placeholder": "Default"
               },
-              "value": "@state.textData.input",
+              "value": "@filtersSection.state.textData.input",
               "events": [
                 {
                   "type": "onChange",
@@ -188,7 +188,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "this.value",
-                        "target": "state.textData.input"
+                        "target": "filtersSection.state.textData.input"
                       }
                     }
                   ]

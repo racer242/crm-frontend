@@ -59,7 +59,12 @@ export class CommandExecutor {
 
   /**
    * Выполнить команду setProperty
-   * Формат params: { source: "event.value.start" | "componentId.prop", target: "state.field", value: any }
+   * Формат params: { source: "event.value.start" | "this.value", target: "state.field" | "elementId.state.field", value: any }
+   *
+   * Форматы target:
+   * - "state.field" — запись в state страницы (pageId)
+   * - "elementId.state.field" — запись в state указанного элемента
+   * - "field" — запись в state триггер-компонента (legacy)
    */
   async executeSetProperty(
     params: Record<string, any>,
@@ -80,34 +85,23 @@ export class CommandExecutor {
           ? this.getSourceValue(source, eventData)
           : undefined;
 
-    // Определяем куда записывать (относительно текущего компонента или страницы)
+    // Определяем куда записывать
     let targetElementPath: string;
     let targetField: string;
 
-    if (target.startsWith("state.")) {
-      // Запись в state страницы (относительно current page)
+    // Находим позицию ".state." в target
+    const stateIndex = target.indexOf(".state.");
+
+    if (stateIndex === 0) {
+      // "state.field" — запись в state страницы
       targetElementPath = this.context.pageId;
-      targetField = target.slice(6); // Убираем "state."
-    } else if (target.startsWith("@")) {
-      // Абсолютный путь @ELEMENT_ID.state.FIELD
-      const path = target.slice(1);
-      if (path.startsWith("state.")) {
-        // Например @statistics.state.start
-        const match = path.match(/^([^.]+)\.state\.(.+)$/);
-        if (match) {
-          targetElementPath = `${match[1]}`;
-          targetField = match[2];
-        } else {
-          console.warn("setProperty: invalid target format:", target);
-          return;
-        }
-      } else {
-        // Компонентное свойство
-        targetElementPath = path;
-        targetField = "";
-      }
+      targetField = target.slice(7); // Убираем "state."
+    } else if (stateIndex > 0) {
+      // "elementId.state.field" — запись в state указанного элемента
+      targetElementPath = target.slice(0, stateIndex);
+      targetField = target.slice(stateIndex + 7); // Убираем ".state."
     } else {
-      // Относительно триггерующего компонента
+      // Просто "field" — запись в state триггер-компонента (legacy)
       targetElementPath = this.context.triggerComponentId;
       targetField = target;
     }
