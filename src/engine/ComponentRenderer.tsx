@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Component, App } from "@/types";
+import { ElementIndex } from "@/core";
 import { useComponentBindings } from "./hooks/useComponentBindings";
 import {
   renderText,
@@ -48,11 +49,13 @@ export function ComponentRenderer({
   pageId,
   appConfig,
   stateManager,
+  elementIndex,
 }: {
   component: Component;
   pageId?: string;
   appConfig?: App;
   stateManager?: any;
+  elementIndex?: ElementIndex;
 }) {
   const { componentType, props = {}, className, style } = component;
 
@@ -67,6 +70,7 @@ export function ComponentRenderer({
     pageId,
     appConfig,
     stateManager,
+    elementIndex,
   });
 
   const renderProps = {

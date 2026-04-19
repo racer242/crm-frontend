@@ -5,18 +5,24 @@ import { App, Page, NavItem } from "@/types";
 import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
-import { StateManager } from "@/core";
+import { StateManager, ElementIndex } from "@/core";
 import { usePathname } from "next/navigation";
 import { Toast } from "primereact/toast";
 
 export function AppEngine({ config }: { config: App }) {
   const pathname = usePathname();
 
+  const elementIndexRef = useRef<ElementIndex | null>(null);
+  if (!elementIndexRef.current) {
+    elementIndexRef.current = new ElementIndex(config);
+  }
+
   const stateManagerRef = useRef<StateManager | null>(null);
   if (!stateManagerRef.current) {
-    stateManagerRef.current = new StateManager(config);
+    stateManagerRef.current = new StateManager(config, elementIndexRef.current);
   }
   const stateManager = stateManagerRef.current!;
+  const elementIndex = elementIndexRef.current!;
 
   const resolvePage = useCallback(
     (currentPath: string | null): Page | null => {
@@ -92,6 +98,7 @@ export function AppEngine({ config }: { config: App }) {
             page={currentPage}
             appConfig={config}
             stateManager={stateManager}
+            elementIndex={elementIndex}
           />
         </div>
       </main>

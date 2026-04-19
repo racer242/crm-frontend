@@ -3,18 +3,20 @@
 import React, { useEffect, useRef } from "react";
 import { Page, App } from "@/types";
 import { SectionRenderer } from "./SectionRenderer";
-import { StateManager } from "@/core";
+import { StateManager, ElementIndex } from "@/core";
 
 interface PageRendererProps {
   page: Page;
   appConfig?: App;
   stateManager?: StateManager;
+  elementIndex?: ElementIndex;
 }
 
 export function PageRenderer({
   page,
   appConfig,
   stateManager,
+  elementIndex,
 }: PageRendererProps) {
   const { sections, layout, meta } = page;
 
@@ -24,18 +26,20 @@ export function PageRenderer({
     triggerComponentId: string;
     appConfig: App;
     stateManager: StateManager;
+    elementIndex: ElementIndex;
   } | null>(null);
 
   useEffect(() => {
-    if (appConfig && stateManager) {
+    if (appConfig && stateManager && elementIndex) {
       commandContextRef.current = {
         pageId: page.id || "",
         triggerComponentId: page.id || "",
         appConfig,
         stateManager,
+        elementIndex,
       };
     }
-  }, [appConfig, stateManager, page.id]);
+  }, [appConfig, stateManager, page.id, elementIndex]);
 
   const executeCommands = (commands: any[]) => {
     commands.forEach((cmd) => {
@@ -104,6 +108,7 @@ export function PageRenderer({
           pageId={page.id || ""}
           appConfig={appConfig}
           stateManager={stateManager}
+          elementIndex={elementIndex}
         />
       ))}
     </div>

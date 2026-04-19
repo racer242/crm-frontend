@@ -3,13 +3,14 @@
 import React from "react";
 import { Section, App } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
-import { StateManager } from "@/core";
+import { StateManager, ElementIndex } from "@/core";
 
 interface SectionRendererProps {
   section: Section;
   pageId?: string;
   appConfig?: App;
   stateManager?: StateManager;
+  elementIndex?: ElementIndex;
 }
 
 export function SectionRenderer({
@@ -17,6 +18,7 @@ export function SectionRenderer({
   pageId,
   appConfig,
   stateManager,
+  elementIndex,
 }: SectionRendererProps) {
   const { layout, className, visibility } = section;
 
@@ -39,6 +41,7 @@ export function SectionRenderer({
             pageId={pageId || ""}
             appConfig={appConfig}
             stateManager={stateManager}
+            elementIndex={elementIndex}
           />
         </div>
       ))}

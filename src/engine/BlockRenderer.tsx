@@ -7,13 +7,14 @@ import { Card } from "primereact/card";
 import { Panel } from "primereact/panel";
 import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
-import { StateManager } from "@/core";
+import { StateManager, ElementIndex } from "@/core";
 
 interface BlockRendererProps {
   block: Block;
   pageId?: string;
   appConfig?: App;
   stateManager?: StateManager;
+  elementIndex?: ElementIndex;
 }
 
 export function BlockRenderer({
@@ -21,6 +22,7 @@ export function BlockRenderer({
   pageId,
   appConfig,
   stateManager,
+  elementIndex,
 }: BlockRendererProps) {
   const { wrapper, components, style, className } = block;
 
@@ -40,6 +42,7 @@ export function BlockRenderer({
             pageId={pageId || ""}
             appConfig={appConfig}
             stateManager={stateManager}
+            elementIndex={elementIndex}
           />
         ))}
     </div>

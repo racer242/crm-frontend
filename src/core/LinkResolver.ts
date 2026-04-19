@@ -8,13 +8,14 @@
 
 import { BaseElement, App } from "@/types";
 import { PathResolver } from "./PathResolver";
+import { ElementIndex } from "./ElementIndex";
 
 export type SourceType = "state" | "component";
 
 export interface LinkContext {
   pageId: string;
   appConfig: App;
-  componentMap: Map<string, BaseElement>; // Для быстрого доступа к компонентам
+  elementIndex: ElementIndex;
 }
 
 export class LinkResolver {
@@ -79,22 +80,8 @@ export class LinkResolver {
     const componentId = parts[0];
     const propPath = parts.slice(1).join(".");
 
-    // Ищем компонент по ID во всём приложении
-    let targetComponent: BaseElement | null = null;
-
-    // Сначала проверяем кэш
-    if (context.componentMap.has(componentId)) {
-      targetComponent = context.componentMap.get(componentId)!;
-    } else {
-      // Рекурсивный поиск
-      for (const page of context.appConfig.pages) {
-        targetComponent = this.findElementById(page, componentId);
-        if (targetComponent) {
-          context.componentMap.set(componentId, targetComponent);
-          break;
-        }
-      }
-    }
+    // Ищем компонент по ID через индекс
+    const targetComponent = context.elementIndex.getElement(componentId);
 
     if (!targetComponent) {
       console.warn(`Component not found: ${componentId}`);
@@ -107,45 +94,6 @@ export class LinkResolver {
     }
 
     return PathResolver.getValue(targetComponent, propPath);
-  }
-
-  /**
-   * Рекурсивный поиск элемента по ID
-   */
-  private static findElementById(
-    element: BaseElement,
-    id: string,
-  ): BaseElement | null {
-    if (element.id === id) {
-      return element;
-    }
-
-    // Рекурсивный поиск в дочерних элементах
-    if ((element as any).components) {
-      const components = (element as any).components as BaseElement[];
-      for (const comp of components) {
-        const found = this.findElementById(comp, id);
-        if (found) return found;
-      }
-    }
-
-    if ((element as any).blocks) {
-      const blocks = (element as any).blocks as BaseElement[];
-      for (const block of blocks) {
-        const found = this.findElementById(block, id);
-        if (found) return found;
-      }
-    }
-
-    if ((element as any).sections) {
-      const sections = (element as any).sections as BaseElement[];
-      for (const section of sections) {
-        const found = this.findElementById(section, id);
-        if (found) return found;
-      }
-    }
-
-    return null;
   }
 
   /**

@@ -6,56 +6,18 @@ import { StateManager } from "./StateManager";
 import { LinkResolver, LinkContext } from "./LinkResolver";
 import { PathResolver } from "./PathResolver";
 import { BaseElement, App } from "@/types";
+import { ElementIndex } from "./ElementIndex";
 
 export interface CommandExecutionContext {
   pageId: string;
   triggerComponentId: string;
   appConfig: App;
   stateManager: StateManager;
+  elementIndex: ElementIndex;
 }
 
 export class CommandExecutor {
-  private componentMap: Map<string, BaseElement> = new Map();
-
-  constructor(private context: CommandExecutionContext) {
-    this.buildComponentMap();
-  }
-
-  /**
-   * Построить карту всех компонентов для быстрого доступа
-   */
-  private buildComponentMap() {
-    for (const page of this.context.appConfig.pages) {
-      this.findElementsInPage(page);
-    }
-  }
-
-  private findElementsInPage(element: BaseElement) {
-    if (element.id) {
-      this.componentMap.set(element.id, element);
-    }
-
-    if ((element as any).components) {
-      const components = (element as any).components as BaseElement[];
-      for (const comp of components) {
-        this.findElementsInPage(comp);
-      }
-    }
-
-    if ((element as any).blocks) {
-      const blocks = (element as any).blocks as BaseElement[];
-      for (const block of blocks) {
-        this.findElementsInPage(block);
-      }
-    }
-
-    if ((element as any).sections) {
-      const sections = (element as any).sections as BaseElement[];
-      for (const section of sections) {
-        this.findElementsInPage(section);
-      }
-    }
-  }
+  constructor(private context: CommandExecutionContext) {}
 
   /**
    * Выполнить команду setProperty
@@ -90,21 +52,22 @@ export class CommandExecutor {
     let targetField: string;
 
     // Находим позицию ".state." в target
-    const stateIndex = target.indexOf(".state.");
+    const stateIndex = target.indexOf("state.");
 
     if (stateIndex === 0) {
       // "state.field" — запись в state страницы
       targetElementPath = this.context.pageId;
-      targetField = target.slice(7); // Убираем "state."
+      targetField = target.slice(6); // Убираем "state."
     } else if (stateIndex > 0) {
       // "elementId.state.field" — запись в state указанного элемента
-      targetElementPath = target.slice(0, stateIndex);
-      targetField = target.slice(stateIndex + 7); // Убираем ".state."
+      targetElementPath = target.slice(0, stateIndex - 1);
+      targetField = target.slice(stateIndex + 6); // Убираем ".state."
     } else {
       // Просто "field" — запись в state триггер-компонента (legacy)
       targetElementPath = this.context.triggerComponentId;
       targetField = target;
     }
+    console.log("???", targetElementPath, targetField);
 
     // Выполняем запись
     if (targetField) {
@@ -127,7 +90,7 @@ export class CommandExecutor {
     const linkContext: LinkContext = {
       pageId: this.context.pageId,
       appConfig: this.context.appConfig,
-      componentMap: this.componentMap,
+      elementIndex: this.context.elementIndex,
     };
 
     // Если начинается с event. - читаем из eventData

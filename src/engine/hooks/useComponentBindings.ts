@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Component, App } from "@/types";
-import { LinkResolver } from "@/core";
+import { LinkResolver, ElementIndex } from "@/core";
 
 // Тип контекста для команд
 export type CommandExecutionContext = {
@@ -10,6 +10,7 @@ export type CommandExecutionContext = {
   triggerComponentId: string;
   appConfig: App;
   stateManager: any;
+  elementIndex: ElementIndex;
 };
 
 // Результат хука
@@ -27,11 +28,13 @@ export function useComponentBindings({
   pageId,
   appConfig,
   stateManager,
+  elementIndex,
 }: {
   component: Component;
   pageId?: string;
   appConfig?: App;
   stateManager?: any;
+  elementIndex?: ElementIndex;
 }): ComponentBindings {
   const [resolvedValue, setResolvedValue] = useState<any>(undefined);
   const [resolvedVisible, setResolvedVisible] = useState<boolean | undefined>(
@@ -46,15 +49,16 @@ export function useComponentBindings({
 
   // Создаем контекст для CommandExecutor
   useEffect(() => {
-    if (pageId && appConfig && stateManager) {
+    if (pageId && appConfig && stateManager && elementIndex) {
       commandContextRef.current = {
         pageId,
         triggerComponentId: component.id || "",
         appConfig,
         stateManager,
+        elementIndex,
       };
     }
-  }, [pageId, appConfig, stateManager, component.id]);
+  }, [pageId, appConfig, stateManager, component.id, elementIndex]);
 
   // Функция разрешения binding-ов
   const resolveBindings = useCallback(() => {
@@ -63,7 +67,7 @@ export function useComponentBindings({
     const linkContext = {
       pageId,
       appConfig,
-      componentMap: new Map(),
+      elementIndex: elementIndex!,
     };
 
     let resolvedVal: any = undefined;

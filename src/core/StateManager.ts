@@ -10,6 +10,7 @@
 
 import { BaseElement, ElementPath, App } from "@/types";
 import { PathResolver } from "./PathResolver";
+import { ElementIndex } from "./ElementIndex";
 
 /** Callback для уведомлений об изменениях */
 export type StateChangeListener = (
@@ -22,9 +23,11 @@ export type StateChangeListener = (
 export class StateManager {
   private appConfig: App;
   private listeners: Set<StateChangeListener> = new Set();
+  private elementIndex: ElementIndex;
 
-  constructor(appConfig: App) {
+  constructor(appConfig: App, elementIndex: ElementIndex) {
     this.appConfig = appConfig;
+    this.elementIndex = elementIndex;
   }
 
   /**
@@ -56,16 +59,24 @@ export class StateManager {
   }
 
   /**
+   * Получить элемент по ID через индекс
+   */
+  private getElement(elementPath: ElementPath): BaseElement | null {
+    const element = this.elementIndex.getElement(elementPath);
+    if (!element) {
+      console.warn(`Element not found: ${elementPath}`);
+    }
+    return element;
+  }
+
+  /**
    * Получение состояния элемента
    */
   getState(elementPath: ElementPath): Record<string, any> | null {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
-
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return null;
     }
-
     return element.state || null;
   }
 
@@ -74,11 +85,9 @@ export class StateManager {
    */
   getStateField(elementPath: ElementPath, field: string): any {
     const state = this.getState(elementPath);
-
     if (!state) {
       return undefined;
     }
-
     // Поддержка вложенных полей через точку
     return PathResolver.getValue(state, field);
   }
@@ -87,13 +96,10 @@ export class StateManager {
    * Обновление состояния элемента (полная замена)
    */
   setState(elementPath: ElementPath, newState: Record<string, any>): void {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
-
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return;
     }
-
     const oldState = element.state || {};
     element.state = newState;
     this.notifyListeners(elementPath, null, oldState, newState);
@@ -103,13 +109,10 @@ export class StateManager {
    * Установка значения поля в состоянии (поддержка вложенных путей через точку)
    */
   setStateField(elementPath: ElementPath, field: string, value: any): void {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
-
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return;
     }
-
     if (!element.state) {
       element.state = {};
     }
@@ -127,9 +130,8 @@ export class StateManager {
    * Слияние с текущим состоянием (частичное обновление — верхнеуровневые ключи)
    */
   mergeState(elementPath: ElementPath, updates: Record<string, any>): void {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return;
     }
     const oldState = element.state || {};
@@ -141,16 +143,12 @@ export class StateManager {
    * Очистка состояния
    */
   clearState(elementPath: ElementPath): void {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
-
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return;
     }
-
     const oldState = element.state || {};
     element.state = {};
-
     this.notifyListeners(elementPath, elementPath, oldState, {});
   }
 
@@ -158,20 +156,15 @@ export class StateManager {
    * Переключение булевого поля в состоянии
    */
   toggleStateField(elementPath: ElementPath, field: string): void {
-    const element = PathResolver.resolveElement(elementPath, this.appConfig);
-
+    const element = this.getElement(elementPath);
     if (!element) {
-      console.warn(`Element not found: ${elementPath}`);
       return;
     }
-
     if (!element.state) {
       element.state = {};
     }
-
     const oldValue = element.state[field];
     element.state[field] = !oldValue;
-
     this.notifyListeners(
       elementPath,
       `${elementPath}.${field}`,
