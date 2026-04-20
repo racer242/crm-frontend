@@ -8,9 +8,10 @@
  * - Поддержку относительных путей
  */
 
-import { BaseElement, ElementPath, App } from "@/types";
+import { BaseElement, ElementPath, App, DataFeedResult } from "@/types";
 import { PathResolver } from "./PathResolver";
 import { ElementIndex } from "./ElementIndex";
+import { parseTarget } from "@/utils/macro";
 
 /** Callback для уведомлений об изменениях */
 export type StateChangeListener = (
@@ -25,9 +26,39 @@ export class StateManager {
   private listeners: Set<StateChangeListener> = new Set();
   private elementIndex: ElementIndex;
 
-  constructor(appConfig: App, elementIndex: ElementIndex) {
+  constructor(
+    appConfig: App,
+    elementIndex: ElementIndex,
+    initialDataFeed?: DataFeedResult[],
+    initialPageId?: string,
+  ) {
     this.appConfig = appConfig;
     this.elementIndex = elementIndex;
+
+    // Apply dataFeed results to state during initialization
+    if (initialDataFeed) {
+      for (const result of initialDataFeed) {
+        if (result.success && result.target) {
+          const { elementId, statePath } = parseTarget(result.target);
+          // If no elementId specified, use page context (state belongs to page)
+          const targetId = elementId || initialPageId;
+          if (!targetId) continue;
+
+          if (statePath) {
+            // Specific path: set field (e.g., "state.loadedText" → set state.loadedText)
+            this.setStateField(targetId, statePath, result.data);
+          } else {
+            // No path: merge data into existing state (e.g., "state" → merge {loadedText: "..."})
+            const element = this.getElement(targetId);
+            if (element && typeof result.data === "object") {
+              this.mergeState(targetId, result.data);
+            } else {
+              this.setStateField(targetId, statePath, result.data);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -110,6 +141,7 @@ export class StateManager {
    */
   setStateField(elementPath: ElementPath, field: string, value: any): void {
     const element = this.getElement(elementPath);
+
     if (!element) {
       return;
     }

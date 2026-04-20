@@ -123,6 +123,15 @@ App (приложение)
 - Триггеры: `onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
 - Цепочки команд (sequences)
 
+### External API Data Feed
+
+- **Server-side**: `dataFeed` в конфигурации страницы — запросы API при загрузке страницы
+- **Client-side**: `sendRequest` команда — запросы API из событий (onLoad, onClick, и т.д.)
+- **Macro substitution**: `{$ELEMENT_ID.state.PATH.TO.FIELD}`, `{$config.*}` в URL и data
+- **Target addressing**: `"target": "state"` (текущая страница), `"target": "elementId.state.field"`
+- **Error handling**: Toast уведомления при ошибках запросов
+- **State merge**: Успешные данные сливаются с существующим state (не заменяют)
+
 ### Привязка данных к компонентам
 
 - `valueBinding` — привязка значения компонента к state (`@ELEMENT_ID.state.FIELD`)

@@ -1,6 +1,8 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { DataFeedConfig, DataFeedResult, ApiRouteConfig } from "@/types";
+import { resolveMacrosInObject } from "@/utils/macro";
 
 /**
  * CRM Configuration Loader
@@ -100,6 +102,136 @@ export function getConfig(): CrmConfig {
  */
 export function clearConfigCache(): void {
   cachedConfig = null;
+}
+
+/**
+ * Get page configuration by route
+ */
+export function getPageConfigByRoute(route: string): any | null {
+  if (!cachedConfig) {
+    return null;
+  }
+  const normalizedRoute = route === "" ? "/" : route;
+  return (
+    cachedConfig.pages?.find((p: any) => p.route === normalizedRoute) || null
+  );
+}
+
+/**
+ * Execute server-side data feeds for a page
+ * Returns array of results with any errors
+ */
+export async function executeServerDataFeeds(
+  pageId: string,
+  pageConfig: any,
+): Promise<DataFeedResult[]> {
+  const dataFeeds: DataFeedConfig[] | undefined = pageConfig?.dataFeed;
+
+  if (!dataFeeds || dataFeeds.length === 0) {
+    return [];
+  }
+
+  // Get auth token from global state
+  const authToken = cachedConfig?.globalState?.auth?.token;
+
+  // Get API routes config
+  const apiRoutes: ApiRouteConfig[] | undefined =
+    cachedConfig?.config?.apiRoutes;
+
+  // For server-side execution, we need a minimal StateManager-like interface
+  // Since we're running on the server, we'll execute the requests and collect results
+  // without actually updating state (state will be updated on the client)
+
+  const results: DataFeedResult[] = [];
+
+  // Get app config for macro resolution
+  const appConfig = cachedConfig?.config;
+
+  for (const feed of dataFeeds) {
+    try {
+      // Resolve macros in URL (including {$config.*})
+      let url = resolveMacrosInObject(
+        feed.url,
+        null as any,
+        null,
+        appConfig,
+      ) as string;
+
+      // Resolve macros in data
+      let data = feed.data
+        ? (resolveMacrosInObject(
+            feed.data,
+            null as any,
+            null,
+            appConfig,
+          ) as Record<string, any>)
+        : undefined;
+
+      // Resolve the URL (check if it's a router URL)
+      if (url.startsWith("/api/")) {
+        const routeName = url.substring(5);
+        const routeConfig = apiRoutes?.find((r) => r.path === routeName);
+        if (routeConfig) {
+          url = routeConfig.url;
+        }
+      }
+
+      // Build headers
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+
+      if (authToken) {
+        headers["Authorization"] = `Bearer ${authToken}`;
+      }
+
+      // Execute the request
+      const options: RequestInit = {
+        method: feed.method,
+        headers,
+      };
+
+      if (data && ["POST", "PUT", "PATCH"].includes(feed.method)) {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "");
+        results.push({
+          success: false,
+          target: feed.target,
+          error: `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ""}`,
+        });
+        continue;
+      }
+
+      // Parse response
+      const contentType = response.headers.get("content-type");
+      let responseData: any;
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+      } else {
+        responseData = await response.text();
+      }
+
+      results.push({
+        success: true,
+        data: responseData,
+        target: feed.target,
+      });
+    } catch (error) {
+      results.push({
+        success: false,
+        target: feed.target,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return results;
 }
 
 /**

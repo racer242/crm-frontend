@@ -11,6 +11,13 @@
   "meta": {
     "title": "Статистика — CRM Platform"
   },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/getstats.json",
+      "method": "GET",
+      "target": "state"
+    }
+  ],
   "events": [
     {
       "type": "onLoad",
@@ -194,6 +201,16 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "it2",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "disabled": true
+              },
+              "value": "@state.loadedText"
             },
             {
               "id": "ch1",

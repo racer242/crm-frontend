@@ -5,3 +5,4 @@ export * from "./section";
 export * from "./block";
 export * from "./component";
 export * from "./commands";
+export * from "./datafeed";

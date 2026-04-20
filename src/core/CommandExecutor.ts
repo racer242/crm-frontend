@@ -5,8 +5,9 @@
 import { StateManager } from "./StateManager";
 import { LinkResolver, LinkContext } from "./LinkResolver";
 import { PathResolver } from "./PathResolver";
-import { BaseElement, App } from "@/types";
+import { BaseElement, App, SendRequestParams } from "@/types";
 import { ElementIndex } from "./ElementIndex";
+import { executeClientDataFeed } from "./DataFeedService";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -124,6 +125,61 @@ export class CommandExecutor {
   }
 
   /**
+   * Выполнить команду sendRequest
+   * Отправляет запрос к API и записывает результат в state
+   */
+  async executeSendRequest(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    const { url, method, data, target } = params;
+
+    if (!url || !target) {
+      console.warn("sendRequest: missing url or target");
+      return;
+    }
+
+    const requestParams: SendRequestParams = {
+      url,
+      method: method || "GET",
+      data,
+      target,
+    };
+
+    // Get auth token from global state
+    const authToken = this.context.appConfig.globalState?.auth?.token;
+
+    try {
+      const result = await executeClientDataFeed(
+        requestParams,
+        this.context.stateManager,
+        this.context.pageId,
+        authToken,
+        this.context.appConfig.config,
+      );
+
+      if (!result.success && result.error) {
+        console.error(`sendRequest error: ${result.error}`);
+        // Store error in page state for Toast display
+        this.context.stateManager.setStateField(
+          this.context.pageId,
+          "dataFeedErrors",
+          [result.error],
+        );
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(`sendRequest error: ${errorMessage}`);
+      this.context.stateManager.setStateField(
+        this.context.pageId,
+        "dataFeedErrors",
+        [errorMessage],
+      );
+    }
+  }
+
+  /**
    * Общая функция исполнения команд
    */
   async executeCommand(
@@ -138,6 +194,10 @@ export class CommandExecutor {
 
       case "log":
         this.executeLog(params);
+        break;
+
+      case "sendRequest":
+        await this.executeSendRequest(params, eventData);
         break;
 
       default:

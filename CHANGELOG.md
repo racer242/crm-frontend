@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **External API Data Feed** — server-side and client-side data fetching with macro resolution
+  - `dataFeed` configuration in page configs defines API requests at page load
+  - `sendRequest` command for client-side API calls from events (onLoad, onClick, etc.)
+  - Macro substitution `{$ELEMENT_ID.state.PATH.TO.FIELD}` and `{$config.*}` in URLs and data
+  - Server-side execution in `page.tsx` — data fetched before HTML is sent to client
+  - Successful results merged into element state (preserves existing fields)
+  - Error handling with Toast notifications for failed requests
+  - Client-side navigation support — dataFeed re-applied on page transitions
+
 ### Refactored
 
 - **ComponentRenderer modularization** — split monolithic `ComponentRenderer.tsx` (~850 lines) into modular structure (~160 lines)
@@ -43,6 +54,8 @@ All notable changes to this project will be documented in this file.
 
 ### State Management
 
+- StateManager constructor accepts `initialDataFeed` for server-side data preloading
+- Successful dataFeed results are merged into state (not replaced) preserving existing fields
 - `setStateField(elementPath, field, value)` — set nested state fields with dot notation
   - Example: `setStateField("statistics", "textData.input", "hello")` → `{ textData: { input: "hello" } }`
   - Uses `PathResolver.setValue` for proper nested path support
@@ -113,3 +126,11 @@ All notable changes to this project will be documented in this file.
 
 - JSON-based configuration with `$ref` support
 - Modular config files (pages, API endpoints)
+
+### Data Feed
+
+- `dataFeed` section in page configuration for server-side API data fetching
+- `sendRequest` command for client-side API requests
+- Macro support: `{$config.baseURL}`, `{$ELEMENT_ID.state.field}`
+- Target addressing: `"target": "state"`, `"target": "elementId.state.field"`
+- Error handling via Toast notifications

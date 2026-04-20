@@ -1,4 +1,5 @@
 import { BaseElement } from "./base";
+import { ApiRouteConfig } from "./datafeed";
 
 // Определяем типы локально чтобы избежать циклических импортов
 // Page и Command импортируются через barrel exports в index.ts
@@ -72,6 +73,8 @@ export interface AppConfig {
   api: ApiConfig;
   features?: FeatureFlags;
   routes?: RouteConfig[];
+  /** API router configurations: maps short route names to external API URLs */
+  apiRoutes?: ApiRouteConfig[];
 }
 
 /** Конфигурация API */

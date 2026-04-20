@@ -1,28 +1,78 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { App, Page, NavItem } from "@/types";
+import { App, Page, NavItem, DataFeedResult } from "@/types";
 import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { StateManager, ElementIndex } from "@/core";
 import { usePathname } from "next/navigation";
 import { Toast } from "primereact/toast";
+import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
+import { parseTarget } from "@/utils/macro";
 
-export function AppEngine({ config }: { config: App }) {
+export function AppEngine({
+  config,
+  dataFeedErrors: initialErrors,
+  initialDataFeed,
+  initialPageId,
+}: {
+  config: App;
+  dataFeedErrors?: string[];
+  initialDataFeed?: DataFeedResult[];
+  initialPageId?: string | null;
+}) {
   const pathname = usePathname();
-
   const elementIndexRef = useRef<ElementIndex | null>(null);
   if (!elementIndexRef.current) {
     elementIndexRef.current = new ElementIndex(config);
   }
 
   const stateManagerRef = useRef<StateManager | null>(null);
+  const prevPageIdRef = useRef<string | null>(null);
   if (!stateManagerRef.current) {
-    stateManagerRef.current = new StateManager(config, elementIndexRef.current);
+    stateManagerRef.current = new StateManager(
+      config,
+      elementIndexRef.current,
+      initialDataFeed,
+      initialPageId || undefined,
+    );
   }
   const stateManager = stateManagerRef.current!;
   const elementIndex = elementIndexRef.current!;
+
+  // On client-side navigation, re-apply initialDataFeed for the new page
+  useEffect(() => {
+    // Resolve page to get its ID
+    const route = pathname || "/";
+    const page = stateManager.getPageByRoute(route);
+    const newPageId = page?.id || null;
+
+    // If page changed and we have new dataFeed results, apply them
+    if (
+      prevPageIdRef.current !== newPageId &&
+      initialDataFeed &&
+      initialDataFeed.length > 0
+    ) {
+      for (const result of initialDataFeed) {
+        if (result.success && result.target) {
+          const { elementId, statePath } = parseTarget(result.target);
+          const targetId = elementId || newPageId;
+          if (!targetId) continue;
+
+          if (statePath) {
+            stateManager.setStateField(targetId, statePath, result.data);
+          } else {
+            // No path: merge data into existing state
+            if (typeof result.data === "object") {
+              stateManager.mergeState(targetId, result.data);
+            }
+          }
+        }
+      }
+    }
+    prevPageIdRef.current = newPageId;
+  }, [pathname, initialDataFeed, stateManager]);
 
   const resolvePage = useCallback(
     (currentPath: string | null): Page | null => {
@@ -56,7 +106,40 @@ export function AppEngine({ config }: { config: App }) {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const toastRef = useRef(null);
+  const toastRef = useRef<Toast>(null);
+
+  // Show server-side data feed errors on mount
+  useEffect(() => {
+    if (initialErrors && initialErrors.length > 0 && toastRef.current) {
+      initialErrors.forEach((error) => {
+        toastRef.current?.show({
+          severity: "error",
+          summary: "Data Feed Error",
+          detail: error,
+          life: 5000,
+        });
+      });
+    }
+  }, [initialErrors]);
+
+  // Track client-side data feed errors from page state
+  const [dataFeedErrors, setDataFeedErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = stateManager.subscribe(
+      (elementPath, changedPath, oldState, newState) => {
+        // Check if dataFeedErrors changed in page state
+        if (currentPage && elementPath === currentPage.id) {
+          const newErrors = newState?.dataFeedErrors || [];
+          setDataFeedErrors(newErrors);
+        }
+      },
+    );
+    return unsubscribe;
+  }, [stateManager, currentPage]);
+
+  // Use the hook to display client-side errors
+  useDataFeedErrors(toastRef, dataFeedErrors);
 
   if (!currentPage) {
     return (
