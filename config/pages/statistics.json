@@ -5,15 +5,15 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "start": "2026-04-13T23:30:00",
-    "end": "20.04.2026 8:30"
+    "start": "",
+    "end": ""
   },
   "meta": {
     "title": "Статистика — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/getstats.json",
+      "url": "{$config.baseURL}/mocks/api/getstats.json",
       "method": "GET",
       "target": "state"
     }
@@ -180,7 +180,7 @@
               ]
             },
             {
-              "id": "it1",
+              "id": "itt1",
               "type": "component",
               "componentType": "InputText",
               "props": {
@@ -203,7 +203,7 @@
               ]
             },
             {
-              "id": "it2",
+              "id": "itt2",
               "type": "component",
               "componentType": "InputText",
               "props": {
@@ -213,15 +213,57 @@
               "value": "@state.loadedText"
             },
             {
-              "id": "ch1",
+              "id": "chh1",
               "type": "component",
               "componentType": "Checkbox",
               "props": {
                 "label": "Accept terms"
               },
-              "state": {
-                "value": false
-              }
+              "value": "@filtersSection.state.acceptTerms",
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "this.value",
+                        "target": "filtersSection.state.acceptTerms"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btt1",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Primary",
+                "severity": "primary"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "value": true,
+                        "target": "filtersSection.state.acceptTerms"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "state.end",
+                        "target": "state.start"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

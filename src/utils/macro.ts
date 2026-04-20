@@ -172,41 +172,5 @@ export function resolveMacrosInObject(
   return value;
 }
 
-/**
- * Parses a target address in the format "[ELEMENT_ID.]state[.PATH.TO.FIELD]"
- *
- * Examples:
- * - "ordersTable.state.data" → { elementId: "ordersTable", statePath: "data" }
- * - "state.feed.orders" → { elementId: null, statePath: "feed.orders" }
- * - "state.loading" → { elementId: null, statePath: "loading" }
- */
-export function parseTarget(target: string): {
-  elementId: string | null;
-  statePath: string;
-} {
-  const parts = target.split(".");
-
-  // Check if first part is "state"
-  if (parts[0] === "state") {
-    return {
-      elementId: null,
-      statePath: parts.slice(1).join("."),
-    };
-  }
-
-  // First part is element ID
-  // Find "state" in the path
-  const stateIndex = parts.indexOf("state");
-  if (stateIndex === -1) {
-    // No "state" found - treat entire string as element ID
-    return {
-      elementId: target,
-      statePath: "",
-    };
-  }
-
-  return {
-    elementId: parts.slice(0, stateIndex).join("."),
-    statePath: parts.slice(stateIndex + 1).join("."),
-  };
-}
+// Re-export parseTarget from PathResolver for backward compatibility
+export { PathResolver } from "@/core/PathResolver";

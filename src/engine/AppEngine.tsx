@@ -9,7 +9,7 @@ import { StateManager, ElementIndex } from "@/core";
 import { usePathname } from "next/navigation";
 import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
-import { parseTarget } from "@/utils/macro";
+import { PathResolver } from "@/core/PathResolver";
 
 export function AppEngine({
   config,
@@ -56,7 +56,9 @@ export function AppEngine({
     ) {
       for (const result of initialDataFeed) {
         if (result.success && result.target) {
-          const { elementId, statePath } = parseTarget(result.target);
+          const { elementId, statePath } = PathResolver.parseTarget(
+            result.target,
+          );
           const targetId = elementId || newPageId;
           if (!targetId) continue;
 

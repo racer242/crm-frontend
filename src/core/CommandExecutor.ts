@@ -3,7 +3,6 @@
  */
 
 import { StateManager } from "./StateManager";
-import { LinkResolver, LinkContext } from "./LinkResolver";
 import { PathResolver } from "./PathResolver";
 import { BaseElement, App, SendRequestParams } from "@/types";
 import { ElementIndex } from "./ElementIndex";
@@ -84,14 +83,14 @@ export class CommandExecutor {
 
   /**
    * Получить значение из источника
+   *
+   * Форматы source:
+   * - "event.value.start" — из eventData
+   * - "this.value" — из eventData (триггер-компонент)
+   * - "elementId.state.field" — из state элемента
+   * - "state.field" — из state текущей страницы
    */
   private getSourceValue(source: string, eventData: any): any {
-    const linkContext: LinkContext = {
-      pageId: this.context.pageId,
-      appConfig: this.context.appConfig,
-      elementIndex: this.context.elementIndex,
-    };
-
     // Если начинается с event. - читаем из eventData
     if (source.startsWith("event.")) {
       const field = source.slice(6);
@@ -104,8 +103,10 @@ export class CommandExecutor {
       return PathResolver.getValue(eventData, field);
     }
 
-    // Иначе пытаемся разрешить как ссылку (@ELEMENT_ID...)
-    return LinkResolver.resolve(source, linkContext);
+    // Иначе разбираем как ELEMENT_ID.state.field или state.field
+    const { elementId, statePath } = PathResolver.parseTarget(source);
+    const targetId = elementId || this.context.pageId;
+    return this.context.stateManager.getStateField(targetId, statePath);
   }
 
   /**

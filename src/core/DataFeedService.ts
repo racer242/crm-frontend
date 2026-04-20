@@ -13,7 +13,8 @@ import {
 } from "@/types";
 import { StateManager } from "./StateManager";
 import { ElementIndex } from "./ElementIndex";
-import { resolveMacrosInObject, parseTarget } from "@/utils/macro";
+import { resolveMacrosInObject } from "@/utils/macro";
+import { PathResolver } from "./PathResolver";
 
 /**
  * Resolves the target element ID for a data feed request.
@@ -182,7 +183,7 @@ export async function executeDataFeed(
     );
 
     // Parse target and resolve element ID
-    const parsedTarget = parseTarget(feed.target);
+    const parsedTarget = PathResolver.parseTarget(feed.target);
     const elementId = resolveTargetElementId(parsedTarget, pageId);
 
     // Store response in state
@@ -277,7 +278,7 @@ export async function executeClientDataFeed(
     );
 
     // Parse target and resolve element ID
-    const parsedTarget = parseTarget(params.target);
+    const parsedTarget = PathResolver.parseTarget(params.target);
     const elementId = resolveTargetElementId(parsedTarget, pageId);
 
     // Store response in state

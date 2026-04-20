@@ -11,7 +11,6 @@
 import { BaseElement, ElementPath, App, DataFeedResult } from "@/types";
 import { PathResolver } from "./PathResolver";
 import { ElementIndex } from "./ElementIndex";
-import { parseTarget } from "@/utils/macro";
 
 /** Callback для уведомлений об изменениях */
 export type StateChangeListener = (
@@ -39,7 +38,9 @@ export class StateManager {
     if (initialDataFeed) {
       for (const result of initialDataFeed) {
         if (result.success && result.target) {
-          const { elementId, statePath } = parseTarget(result.target);
+          const { elementId, statePath } = PathResolver.parseTarget(
+            result.target,
+          );
           // If no elementId specified, use page context (state belongs to page)
           const targetId = elementId || initialPageId;
           if (!targetId) continue;
