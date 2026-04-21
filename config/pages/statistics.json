@@ -6,14 +6,15 @@
     "loading": false,
     "initialized": true,
     "start": "",
-    "end": ""
+    "end": "",
+    "dynamicData": { "title": "Текст, который был динамически загружен" }
   },
   "meta": {
     "title": "Статистика — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/mocks/api/getstats.json",
+      "url": "{$config.baseURL}/mocks/api/get-stats.json",
       "method": "GET",
       "target": "state"
     }
@@ -260,6 +261,14 @@
                         "source": "state.end",
                         "target": "state.start"
                       }
+                    },
+                    {
+                      "type": "sendRequest",
+                      "params": {
+                        "url": "/api/get-dynamic-data",
+                        "method": "GET",
+                        "target": "state.dynamicData"
+                      }
                     }
                   ]
                 }
@@ -331,6 +340,16 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "itt3",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "disabled": true
+              },
+              "value": "@state.dynamicData.title"
             }
           ]
         }

@@ -19,10 +19,10 @@
 В любые данные могут интегрироваться данные через макросы {$ELEMENT_ID.state.PATH.TO.FIELD}.
 Например: 
 "url": "URL/TO/API/ENDPOINT/{$ELEMENT_ID.state.PATH.TO.FIELD}/{$ELEMENT_ID.state.PATH.TO.FIELD}/",
-"data": {"data1":{$ELEMENT_ID.state.PATH.TO.FIELD},"data2":{$ELEMENT_ID.state.PATH.TO.FIELD}},
+"data": {"data1":"{$ELEMENT_ID.state.PATH.TO.FIELD}","data2":"{$ELEMENT_ID.state.PATH.TO.FIELD}"},
 
 может быть передано всё состояние state:
-"data": {$ELEMENT_ID.state}
+"data": "{$ELEMENT_ID.state}"
 
 
 #Серверная часть.

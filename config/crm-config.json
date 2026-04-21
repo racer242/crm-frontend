@@ -105,6 +105,12 @@
       "apiAccess": true,
       "exportData": true,
       "twoFactorAuth": false
-    }
+    },
+    "apiRoutes": [
+      {
+        "path": "get-dynamic-data",
+        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
+      }
+    ]
   }
 }
