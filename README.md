@@ -92,17 +92,16 @@ App (приложение)
 
 Каждый элемент имеет собственное состояние (`state`).
 
-| Возможность                                  | Описание                                                        |
-| -------------------------------------------- | --------------------------------------------------------------- |
-| `getState(elementPath)`                      | Получить полное состояние элемента                              |
-| `getStateField(elementPath, field)`          | Получить поле состояния (поддержка вложенных путей через точку) |
-| `setState(elementPath, newState)`            | Полная замена состояния                                         |
-| `setStateField(elementPath, field, value)`   | Установка поля состояния                                        |
-| `mergeState(elementPath, updates)`           | Частичное обновление (слияние с существующим)                   |
-| `clearState(elementPath)`                    | Очистка состояния                                               |
-| `toggleStateField(elementPath, field)`       | Переключение boolean-поля                                       |
-| `getGlobalState()` / `getGlobalStateField()` | Глобальное состояние приложения                                 |
-| `subscribe(listener)`                        | Подписка на изменения состояний                                 |
+| Возможность                                | Описание                                                        |
+| ------------------------------------------ | --------------------------------------------------------------- |
+| `getState(elementPath)`                    | Получить полное состояние элемента                              |
+| `getStateField(elementPath, field)`        | Получить поле состояния (поддержка вложенных путей через точку) |
+| `setState(elementPath, newState)`          | Полная замена состояния                                         |
+| `setStateField(elementPath, field, value)` | Установка поля состояния                                        |
+| `mergeState(elementPath, updates)`         | Частичное обновление (слияние с существующим)                   |
+| `clearState(elementPath)`                  | Очистка состояния                                               |
+| `toggleStateField(elementPath, field)`     | Переключение boolean-поля                                       |
+| `subscribe(listener)`                      | Подписка на изменения состояний                                 |
 
 Доступ к состоянию: `dashboard.mainContent.statsCard.state.data`
 
@@ -148,7 +147,6 @@ App (приложение)
 | `{$auth.PROP}`               | Данные авторизации (заглушка)                              |   ❌   |   ❌   |
 | `{$math.random}`             | Случайное число 0-1                                        |   ✅   |   ✅   |
 | `{$math.randomInt.MIN.MAX}`  | Случайное целое                                            |   ✅   |   ✅   |
-| `{$math.uuid}`               | UUID v4                                                    |   ✅   |   ✅   |
 | `{$math.guid}`               | GUID                                                       |   ✅   |   ✅   |
 | `{$device.platform}`         | Платформа (win32, linux...)                                |   ✅   |   ✅   |
 | `{$device.mobile}`           | Мобильное устройство (boolean)                             |   ✅   |   ✅   |
@@ -167,13 +165,20 @@ App (приложение)
 
 Команды привязываются к событиям компонентов и выполняют действия.
 
-| Команда       | Описание                                         |
-| ------------- | ------------------------------------------------ |
-| `setProperty` | Запись значения в state (source → target)        |
-| `setState`    | Полная замена состояния элемента                 |
-| `mergeState`  | Слияние с текущим состоянием                     |
-| `sendRequest` | HTTP-запрос к API с записью результата в state   |
-| `log`         | Логирование в консоль (info, warn, error, debug) |
+| Команда          | Описание                                               |
+| ---------------- | ------------------------------------------------------ |
+| `setProperty`    | Запись значения из source в target                     |
+| `setState`       | Полная замена состояния элемента                       |
+| `mergeState`     | Слияние данных с текущим состоянием                    |
+| `clearState`     | Очистка состояния элемента                             |
+| `toggleProperty` | Инвертирование boolean-поля                            |
+| `sendRequest`    | HTTP-запрос к API с записью результата в state         |
+| `showToast`      | Показ Toast-уведомления                                |
+| `navigate`       | Переход по URL                                         |
+| `confirm`        | Диалог подтверждения с ветвлением (onConfirm/onCancel) |
+| `delay`          | Пауза в последовательности команд (мс)                 |
+| `sequence`       | Последовательное выполнение нескольких команд          |
+| `log`            | Логирование в консоль (info, warn, error, debug)       |
 
 ### Источники данных (source)
 
@@ -186,17 +191,95 @@ App (приложение)
 
 ### Целевые пути (target)
 
-| Формат                    | Описание                                   |
-| ------------------------- | ------------------------------------------ |
-| `"state.field"`           | Запись в state страницы                    |
-| `"elementId.state.field"` | Запись в state указанного элемента         |
-| `"field"`                 | Запись в state триггер-компонента (legacy) |
+| Формат                    | Описание                           |
+| ------------------------- | ---------------------------------- |
+| `"state.field"`           | Запись в state страницы            |
+| `"elementId.state.field"` | Запись в state указанного элемента |
+| `"field"`                 | Запись в state триггер-компонента  |
 
 ### Триггеры команд
 
 `onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
 
-Поддержка цепочек команд (sequences) и условного выполнения (Condition).
+### Примеры команд
+
+**showToast:**
+
+```json
+{
+  "type": "showToast",
+  "params": {
+    "message": "Данные сохранены",
+    "severity": "success"
+  }
+}
+```
+
+**navigate:**
+
+```json
+{
+  "type": "navigate",
+  "params": {
+    "url": "/users"
+  }
+}
+```
+
+**confirm:**
+
+```json
+{
+  "type": "confirm",
+  "params": {
+    "message": "Удалить запись?",
+    "onConfirm": [
+      {
+        "type": "sendRequest",
+        "params": {
+          "url": "/api/delete",
+          "method": "POST",
+          "data": { "id": 1 },
+          "target": "state.result"
+        }
+      }
+    ],
+    "onCancel": []
+  }
+}
+```
+
+**sequence:**
+
+```json
+{
+  "type": "sequence",
+  "params": {
+    "commands": [
+      {
+        "type": "setProperty",
+        "params": {
+          "source": "this.value",
+          "target": "state.loading",
+          "value": true
+        }
+      },
+      {
+        "type": "sendRequest",
+        "params": {
+          "url": "/api/data",
+          "method": "GET",
+          "target": "state.data"
+        }
+      },
+      {
+        "type": "setProperty",
+        "params": { "target": "state.loading", "value": false }
+      }
+    ]
+  }
+}
+```
 
 ## 5. External API Data Feed
 
@@ -208,14 +291,56 @@ App (приложение)
 | **Client-side** (`sendRequest` команда)              | Запросы API из событий (onClick, onLoad, и т.д.)           |
 | **API Router** (`/api/[route]`)                      | Проксирование запросов через сервер с разрешением макросов |
 
-### Конфигурация dataFeed
+### Формат запроса
 
 ```json
 {
-  "url": "/api/get-dynamic-data",
+  "url": "URL/TO/API/ENDPOINT",
+  "method": "GET/POST/PUT/PATCH/DELETE",
+  "data": { "data1": "value1", "data2": "value2" },
+  "target": "[ELEMENT_ID.]state[.PATH.TO.FIELD]",
+  "cache": true,
+  "cacheTTL": 60000
+}
+```
+
+### Макросы в запросах
+
+В любые поля (url, data) могут быть вставлены макросы `{$ELEMENT_ID.state.PATH.TO.FIELD}`:
+
+```json
+{
+  "url": "https://api.example.com/users/{$userPage.state.selectedId}/",
+  "method": "GET",
+  "target": "userData.state.profile"
+}
+```
+
+Можно передать всё состояние элемента:
+
+```json
+{
+  "url": "https://api.example.com/search",
   "method": "POST",
-  "data": { "filter": "{$form.state.selectedItems}" },
-  "target": "dataTable.state.data"
+  "data": {$form.state},
+  "target": "results.state.items"
+}
+```
+
+### Конфигурация dataFeed (серверная часть)
+
+При загрузке страницы сервер обрабатывает раздел `dataFeed`:
+
+```json
+{
+  "dataFeed": [
+    {
+      "url": "/api/get-dynamic-data",
+      "method": "POST",
+      "data": { "filter": "{$form.state.selectedItems}" },
+      "target": "dataTable.state.data"
+    }
+  ]
 }
 ```
 
@@ -223,9 +348,9 @@ App (приложение)
 
 - Макросы в URL и data разрешаются перед выполнением запроса
 - API-маршруты (`/api/ROUTE_NAME`) резолвятся из `config.apiRoutes` с применением макросов
-- Успешные данные сливаются с существующим state (не заменяют)
-- Toast-уведомления при ошибках запросов
-- Автоматическая передача auth-токена
+- Успешные данные записываются в state по адресу target
+- При ошибке на сервере — Toast-уведомление при загрузке страницы
+- При ошибке на клиенте — ошибка сохраняется в `state.dataFeedErrors`
 
 ## 6. Привязка данных к компонентам (Bindings)
 
@@ -325,14 +450,11 @@ npm run build     # Production-билд
 
 | Раздел             | Описание                                          |
 | ------------------ | ------------------------------------------------- |
+| `title`            | Заголовок приложения                              |
 | `navbar`           | Пункты навигации (label, icon, route)             |
 | `userMenu`         | Меню пользователя (профиль, выйти)                |
 | `pages`            | Массив страниц с секциями, блоками и компонентами |
-| `globalState`      | Глобальное состояние (user, auth, cache)          |
-| `config.name`      | Название приложения                               |
-| `config.version`   | Версия                                            |
-| `config.baseURL`   | Базовый URL                                       |
-| `config.timeout`   | Таймаут запросов                                  |
+| `config`           | Конфигурация приложения (name, version, baseURL)  |
 | `config.features`  | Флаги функциональности                            |
 | `config.apiRoutes` | Маршруты API (path → url) с поддержкой макросов   |
 
