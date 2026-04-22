@@ -10,10 +10,11 @@ import {
   DataFeedResult,
   SendRequestParams,
   ApiRouteConfig,
+  MacroSources,
 } from "@/types";
 import { StateManager } from "./StateManager";
 import { ElementIndex } from "./ElementIndex";
-import { resolveMacrosInObject } from "@/utils/macro";
+import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
 
 /**
@@ -134,6 +135,28 @@ function storeInState(
 }
 
 /**
+ * Create MacroSources for macro resolution
+ */
+function createMacroSources(
+  stateManager: StateManager,
+  pageId: string,
+  appConfig?: Record<string, any>,
+): MacroSources {
+  return {
+    stateManager,
+    pageId,
+    config: appConfig,
+    env: Object.fromEntries(
+      Object.entries(typeof process !== "undefined" ? process.env : {})
+        .filter(
+          ([key, val]) => key.startsWith("NEXT_PUBLIC_") && val !== undefined,
+        )
+        .map(([key, val]) => [key, val as string]),
+    ),
+  };
+}
+
+/**
  * Executes a single data feed request
  */
 export async function executeDataFeed(
@@ -150,22 +173,16 @@ export async function executeDataFeed(
   };
 
   try {
-    // Resolve macros in URL (including {$config.*})
-    const resolvedUrl = resolveMacrosInObject(
-      feed.url,
-      stateManager,
-      pageId,
-      appConfig,
-    ) as string;
+    const macroEngine = new MacroEngine(
+      createMacroSources(stateManager, pageId, appConfig),
+    );
+
+    // Resolve macros in URL
+    const resolvedUrl = macroEngine.apply(feed.url) as string;
 
     // Resolve macros in data
     const resolvedData = feed.data
-      ? (resolveMacrosInObject(
-          feed.data,
-          stateManager,
-          pageId,
-          appConfig,
-        ) as Record<string, any>)
+      ? (macroEngine.apply(feed.data) as Record<string, any>)
       : undefined;
 
     // Resolve the actual URL (check if it's a router URL)
@@ -248,22 +265,16 @@ export async function executeClientDataFeed(
   };
 
   try {
-    // Resolve macros in URL (including {$config.*})
-    const resolvedUrl = resolveMacrosInObject(
-      params.url,
-      stateManager,
-      pageId,
-      appConfig,
-    ) as string;
+    const macroEngine = new MacroEngine(
+      createMacroSources(stateManager, pageId, appConfig),
+    );
+
+    // Resolve macros in URL
+    const resolvedUrl = macroEngine.apply(params.url) as string;
 
     // Resolve macros in data
     const resolvedData = params.data
-      ? (resolveMacrosInObject(
-          params.data,
-          stateManager,
-          pageId,
-          appConfig,
-        ) as Record<string, any>)
+      ? (macroEngine.apply(params.data) as Record<string, any>)
       : undefined;
 
     // Build headers with auth

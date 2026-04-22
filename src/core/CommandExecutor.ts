@@ -4,9 +4,10 @@
 
 import { StateManager } from "./StateManager";
 import { PathResolver } from "./PathResolver";
-import { BaseElement, App, SendRequestParams } from "@/types";
+import { BaseElement, App, SendRequestParams, MacroSources } from "@/types";
 import { ElementIndex } from "./ElementIndex";
 import { executeClientDataFeed } from "./DataFeedService";
+import { MacroEngine } from "./MacroEngine";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -16,8 +17,34 @@ export interface CommandExecutionContext {
   elementIndex: ElementIndex;
 }
 
+/**
+ * Create MacroSources from command context
+ */
+function createMacroSources(context: CommandExecutionContext): MacroSources {
+  return {
+    stateManager: context.stateManager,
+    pageId: context.pageId,
+    config: context.appConfig,
+    env:
+      typeof process !== "undefined"
+        ? Object.fromEntries(
+            Object.entries(process.env)
+              .filter(
+                ([key, val]) =>
+                  key.startsWith("NEXT_PUBLIC_") && val !== undefined,
+              )
+              .map(([key, val]) => [key, val as string]),
+          )
+        : undefined,
+  };
+}
+
 export class CommandExecutor {
-  constructor(private context: CommandExecutionContext) {}
+  private macroEngine: MacroEngine;
+
+  constructor(private context: CommandExecutionContext) {
+    this.macroEngine = new MacroEngine(createMacroSources(context));
+  }
 
   /**
    * Выполнить команду setProperty
@@ -40,12 +67,15 @@ export class CommandExecutor {
     }
 
     // Получаем значение: приоритет у прямого value, затем из source
-    const value =
+    let rawValue =
       directValue !== undefined
         ? directValue
         : source
           ? this.getSourceValue(source, eventData)
           : undefined;
+
+    // Применяем макросы к значению
+    const value = this.macroEngine.apply(rawValue);
 
     // Определяем куда записывать
     let targetElementPath: string;
@@ -140,10 +170,16 @@ export class CommandExecutor {
       return;
     }
 
+    // Применяем макросы к url и data
+    const resolvedUrl = this.macroEngine.apply(url) as string;
+    const resolvedData = data
+      ? (this.macroEngine.apply(data) as Record<string, any>)
+      : undefined;
+
     const requestParams: SendRequestParams = {
-      url,
+      url: resolvedUrl,
       method: method || "GET",
-      data,
+      data: resolvedData,
       target,
     };
 

@@ -7,3 +7,4 @@ export * from "./component";
 export * from "./commands";
 export * from "./datafeed";
 export * from "./linkage";
+export * from "./macro";

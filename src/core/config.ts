@@ -1,8 +1,13 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { DataFeedConfig, DataFeedResult, ApiRouteConfig } from "@/types";
-import { resolveMacrosInObject } from "@/utils/macro";
+import {
+  DataFeedConfig,
+  DataFeedResult,
+  ApiRouteConfig,
+  MacroSources,
+} from "@/types";
+import { MacroEngine } from "./MacroEngine";
 
 /**
  * CRM Configuration Loader
@@ -147,24 +152,32 @@ export async function executeServerDataFeeds(
   // Get app config for macro resolution
   const appConfig = cachedConfig?.config;
 
+  // Server-side macro sources (no state manager, no client APIs)
+  const serverSources: MacroSources = {
+    config: appConfig,
+    env:
+      typeof process !== "undefined"
+        ? Object.fromEntries(
+            Object.entries(process.env)
+              .filter(
+                ([key, val]) =>
+                  key.startsWith("NEXT_PUBLIC_") && val !== undefined,
+              )
+              .map(([key, val]) => [key, val as string]),
+          )
+        : undefined,
+  };
+
+  const macroEngine = new MacroEngine(serverSources);
+
   for (const feed of dataFeeds) {
     try {
-      // Resolve macros in URL (including {$config.*})
-      let url = resolveMacrosInObject(
-        feed.url,
-        null as any,
-        null,
-        appConfig,
-      ) as string;
+      // Resolve macros in URL
+      let url = macroEngine.apply(feed.url) as string;
 
       // Resolve macros in data
       let data = feed.data
-        ? (resolveMacrosInObject(
-            feed.data,
-            null as any,
-            null,
-            appConfig,
-          ) as Record<string, any>)
+        ? (macroEngine.apply(feed.data) as Record<string, any>)
         : undefined;
 
       // Resolve the URL (check if it's a router URL)
