@@ -13,7 +13,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { initApp } from "@/core/config";
-import { ApiRouteConfig, DataFeedMethod } from "@/types";
+import { ApiRouteConfig, DataFeedMethod, MacroSources } from "@/types";
+import { MacroEngine } from "@/core";
 
 /**
  * Finds a route configuration by path name
@@ -86,11 +87,25 @@ async function handleRequest(
       );
     }
 
+    // Resolve macros in the route URL
+    const serverSources: MacroSources = {
+      config: config.config,
+      env: Object.fromEntries(
+        Object.entries(process.env)
+          .filter(
+            ([key, val]) => key.startsWith("NEXT_PUBLIC_") && val !== undefined,
+          )
+          .map(([key, val]) => [key, val as string]),
+      ),
+    };
+    const macroEngine = new MacroEngine(serverSources);
+    const resolvedUrl = macroEngine.apply(routeConfig.url) as string;
+
     // Build the fetch options
     const fetchOptions = buildFetchOptions(request);
 
     // Forward the request to the external API
-    const externalResponse = await fetch(routeConfig.url, fetchOptions);
+    const externalResponse = await fetch(resolvedUrl, fetchOptions);
 
     // Get the response content type
     const contentType = externalResponse.headers.get("content-type");
