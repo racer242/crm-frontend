@@ -57,15 +57,9 @@ export function ComponentRenderer({
   stateManager?: any;
   elementIndex?: ElementIndex;
 }) {
-  const { componentType, props = {}, className, style } = component;
+  const { componentType, className, style } = component;
 
-  const {
-    resolvedValue,
-    resolvedVisible,
-    resolvedDisabled,
-    isMounted,
-    handleEvent,
-  } = useComponentBindings({
+  const { resolvedProps, isMounted, handleEvent } = useComponentBindings({
     component,
     pageId,
     appConfig,
@@ -73,14 +67,15 @@ export function ComponentRenderer({
     elementIndex,
   });
 
+  // resolvedProps уже содержит value и все props с разрешёнными bindings
   const renderProps = {
     component,
-    props,
+    props: resolvedProps,
     className,
     style,
-    resolvedValue,
-    resolvedVisible,
-    resolvedDisabled,
+    resolvedValue: resolvedProps.value,
+    resolvedVisible: resolvedProps.visible,
+    resolvedDisabled: resolvedProps.disabled,
     isMounted,
     handleEvent,
   };

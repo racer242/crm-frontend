@@ -6,3 +6,4 @@ export * from "./block";
 export * from "./component";
 export * from "./commands";
 export * from "./datafeed";
+export * from "./linkage";

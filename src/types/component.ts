@@ -166,17 +166,10 @@ export interface Component extends BaseElement {
   type: "component";
   componentType: ComponentType;
 
-  /** Динамические привязки (ссылки типа @state.field или @componentId.property) */
-  valueBinding?: string; // например "@state.start"
-  visibleBinding?: string; // например "@state.visible"
-  disabledBinding?: string; // например "@state.disabled"
-
-  /** Прямые значения для value/visible/disabled (может содержать ссылки) */
+  /** Основное значение компонента (может быть binding: "@form.state.username") */
   value?: any;
-  visible?: boolean;
-  disabled?: boolean;
 
-  /** Статические пропсы PrimeReact */
+  /** Пропсы PrimeReact (любое поле может быть binding: "@config.theme") */
   props?: Record<string, any>;
 
   /** Привязки данных */
