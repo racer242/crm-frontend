@@ -165,14 +165,14 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value.start",
+                        "source": "event.value.start",
                         "target": "state.start"
                       }
                     },
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value.end",
+                        "source": "event.value.end",
                         "target": "state.end"
                       }
                     }
@@ -195,7 +195,7 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value",
+                        "source": "event.value",
                         "target": "filtersSection.state.textData.input"
                       }
                     }
@@ -228,7 +228,7 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value",
+                        "source": "event.value",
                         "target": "filtersSection.state.acceptTerms"
                       }
                     }
@@ -306,7 +306,7 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value",
+                        "source": "event.value",
                         "target": "state.start"
                       }
                     }
@@ -333,7 +333,7 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "this.value",
+                        "source": "event.value",
                         "target": "state.end"
                       }
                     }

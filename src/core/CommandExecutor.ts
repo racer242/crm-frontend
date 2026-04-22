@@ -442,16 +442,13 @@ export class CommandExecutor {
    * Получить значение из источника
    */
   private getSourceValue(source: string, eventData: any): any {
+    // Если начинается с "event." - читаем из eventData
     if (source.startsWith("event.")) {
       const field = source.slice(6);
       return PathResolver.getValue(eventData, field);
     }
 
-    if (source.startsWith("this.")) {
-      const field = source.slice(5);
-      return PathResolver.getValue(eventData, field);
-    }
-
+    // Иначе разбираем как ELEMENT_ID.state.field или state.field
     const { elementId, statePath } = PathResolver.parseTarget(source);
     const targetId = elementId || this.context.pageId;
     return this.context.stateManager.getStateField(targetId, statePath);

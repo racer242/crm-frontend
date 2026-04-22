@@ -75,7 +75,6 @@ export interface ApiConfig {
   headers?: Record<string, string>;
   retryAttempts?: number;
   retryDelay?: number;
-  endpoints?: Record<string, EndpointConfig>;
 }
 
 /** Эндпоинт API */
