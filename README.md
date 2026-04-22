@@ -26,19 +26,22 @@ App (приложение)
 
 ## Технологический стек
 
-- **Next.js 16** — App Router, динамический роутинг `[[...slug]]`
+- **Next.js 16** — App Router, динамический роутинг `[[...slug]]`, серверный рендеринг
 - **TypeScript** — полная типизация
 - **PrimeReact** — UI-компоненты (40+ типов)
 - **PrimeFlex** — CSS-утилиты
 - **PrimeIcons** — иконки
 - **chart.js** — графики и диаграммы
+- **$RefParser** — разрешение `$ref` в конфигурации
 - Тёмная тема **lara-dark-blue**
 
 ## Структура проекта
 
 ```
 ├── config/
-│   └── crm-config.json          # JSON-конфигурация CRM (Blueprint)
+│   ├── crm-config.json          # Главная конфигурация CRM (Blueprint)
+│   ├── pages/                   # Конфигурации страниц
+│   └── api/                     # Конфигурации API-маршрутов
 ├── src/
 │   ├── types/                   # Система типов
 │   │   ├── base.ts              # Базовые типы (BaseElement, Condition, LayoutConfig)
@@ -48,126 +51,221 @@ App (приложение)
 │   │   ├── block.ts             # Block, BlockType, WrapperConfig
 │   │   ├── component.ts         # Component, ComponentType, DataBinding
 │   │   ├── commands.ts          # Command, CommandType, Condition
+│   │   ├── datafeed.ts          # DataFeedConfig, SendRequestParams
+│   │   ├── linkage.ts           # Linkage types
+│   │   ├── macro.ts             # MacroSources, MacroOptions
 │   │   └── index.ts
 │   ├── core/                    # Ядро платформы
 │   │   ├── StateManager.ts      # Управление состояниями элементов
 │   │   ├── CommandExecutor.ts   # Исполнитель команд
-│   │   ├── LinkResolver.ts      # Разрешение ссылок (@ELEMENT_ID.state.FIELD)
+│   │   ├── MacroEngine.ts       # Система макросов (24 типа)
+│   │   ├── Linkage.ts           # Система линковки (реактивные связи)
+│   │   ├── ElementIndex.ts      # Индекс элементов по ID
+│   │   ├── PathResolver.ts      # Разрешение путей и парсинг target
+│   │   ├── config.ts            # Загрузчик конфигурации
 │   │   └── index.ts
-│   └── utils/                   # Общие утилиты
-│       ├── date.ts             # Парсинг и конвертация дат
-│       └── index.ts
 │   ├── engine/                  # Рендер-движок
 │   │   ├── AppEngine.tsx        # Главный компонент, роутинг, sidebar
 │   │   ├── PageRenderer.tsx     # Рендер страницы с секциями
 │   │   ├── SectionRenderer.tsx  # Рендер секции с layout
-│   │   ├── BlockRenderer.tsx    # Рендер блока с обёрткой (Card, Panel, Toolbar)
-│   │   ├── ComponentRenderer.tsx# Рендер PrimeReact компонентов (~160 строк, switch/mapping)
-│   │   ├── components/           # Render-функции компонентов (16 файлов)
-│   │   │   ├── types.ts          # Интерфейс ComponentRendererProps
-│   │   │   ├── index.ts          # Barrel export всех render-функций
-│   │   │   ├── TextComponent.tsx     # Text: H1, H2, H3, P
-│   │   │   ├── InputComponents.tsx   # InputText, InputNumber, InputTextarea, Password
-│   │   │   ├── SelectComponents.tsx  # Dropdown, MultiSelect, AutoComplete, Calendar
-│   │   │   ├── ToggleComponents.tsx  # Checkbox, RadioButton, InputSwitch, Slider, Rating
-│   │   │   ├── MiscInputComponents.tsx # ColorPicker, FileUpload
-│   │   │   ├── ButtonComponent.tsx   # Button
-│   │   │   ├── DataTableComponent.tsx # DataTable
-│   │   │   ├── CardComponent.tsx     # Card
-│   │   │   ├── ToastComponent.tsx    # Toast
-│   │   │   ├── NavComponents.tsx     # Menubar, Breadcrumb, Steps
-│   │   │   ├── ContainerComponents.tsx # TabView, Accordion, Carousel
-│   │   │   ├── DisplayComponents.tsx # Skeleton, Chip, Avatar, Badge, Tag
-│   │   │   ├── ProgressComponents.tsx # ProgressBar, ProgressSpinner
-│   │   │   ├── FeedbackComponents.tsx # Message, Divider, Timeline
-│   │   │   └── ChartComponent.tsx    # Chart
-│   │   ├── hooks/
-│   │   │   └── useComponentBindings.ts # Binding logic + state subscription
-│   │   ├── DashboardSidebar.tsx # Боковая панель навигации
+│   │   ├── BlockRenderer.tsx    # Рендер блока с обёрткой
+│   │   ├── ComponentRenderer.tsx# Рендер PrimeReact компонентов
+│   │   ├── components/          # Render-функции компонентов (16 файлов)
+│   │   ├── hooks/               # React-хуки
+│   │   │   └── useComponentBindings.ts # Подписка на state + binding logic
 │   │   └── index.ts
+│   ├── utils/                   # Общие утилиты
+│   │   └── date.ts              # Парсинг и конвертация дат
 │   └── app/
 │       ├── layout.tsx           # Корневой layout с PrimeReactProvider
 │       ├── globals.css          # Минимальные CSS-reset
-│       └── [[...slug]]/page.tsx # Динамический роутер
+│       ├── [[...slug]]/page.tsx # Динамический роутер
+│       └── api/[...route]/route.ts # API Router (проксирование запросов)
 └── docs/                        # Документация и ТЗ
 ```
 
-## Ключевые возможности
+---
 
-### Система состояний
+# Ключевые возможности платформы
 
-- Каждый элемент имеет собственное состояние (`state`)
-- Доступ по пути: `dashboard.mainContent.statsCard.state.data`
-- Частичное обновление (`mergeState`), полная замена (`setState`), очистка (`clearState`)
-- Глобальное состояние приложения (`global.user`, `global.auth`)
-- Подписка на изменения с автоматическим ре-рендером
+## 1. Система состояний (StateManager)
 
-### Система адресации
+Каждый элемент имеет собственное состояние (`state`).
 
-- Иерархические пути: `appId.pageId.sectionId.blockId.componentId`
-- Доступ к состоянию: `pageId.sectionId.state.fieldName`
-- Относительные пути: `../state.data`
-- Wildcard-селекторы: `*.section1.state.visible`
+| Возможность                                  | Описание                                                        |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| `getState(elementPath)`                      | Получить полное состояние элемента                              |
+| `getStateField(elementPath, field)`          | Получить поле состояния (поддержка вложенных путей через точку) |
+| `setState(elementPath, newState)`            | Полная замена состояния                                         |
+| `setStateField(elementPath, field, value)`   | Установка поля состояния                                        |
+| `mergeState(elementPath, updates)`           | Частичное обновление (слияние с существующим)                   |
+| `clearState(elementPath)`                    | Очистка состояния                                               |
+| `toggleStateField(elementPath, field)`       | Переключение boolean-поля                                       |
+| `getGlobalState()` / `getGlobalStateField()` | Глобальное состояние приложения                                 |
+| `subscribe(listener)`                        | Подписка на изменения состояний                                 |
 
-### Навигация
+Доступ к состоянию: `dashboard.mainContent.statsCard.state.data`
 
-- Боковая панель (sidebar) на уровне приложения, НЕ перезагружается при переходах
-- Desktop: сворачивается до иконок кнопкой внизу
-- Mobile: полноэкранное меню из кнопки «бургер»
+## 2. Система линковки (Linkage)
+
+Реактивная связь свойств элементов с состояниями. При изменении state автоматически обновляются все привязанные элементы.
+
+| Формат                                       | Описание                           |
+| -------------------------------------------- | ---------------------------------- |
+| `"value": "@ELEMENT_ID.state.PATH.TO.FIELD"` | Линковка параметра к state         |
+| `"@state.PATH"`                              | Линковка к state текущей страницы  |
+| `"@.state.PATH"`                             | Линковка к state текущего элемента |
+
+- Изменение state влечёт рендер только линкованных элементов
+- Линковка работает в рамках страницы
+- Поддержка вложенных путей: `@form.state.textData.input`
+
+## 3. Система макросов (MacroEngine)
+
+Динамическая подстановка данных в параметры команд, конфигурации, URL и data запросов.
+
+Формат: `{$PREFIX.PATH.TO.FIELD}`
+
+### Типы макросов
+
+| Префикс                      | Описание                                                   | Сервер | Клиент |
+| ---------------------------- | ---------------------------------------------------------- | :----: | :----: |
+| `{$ELEMENT_ID.state.PATH}`   | State элемента                                             |   ✅   |   ✅   |
+| `{$state.PATH}`              | State страницы                                             |   ✅   |   ✅   |
+| `{$config.PATH}`             | Конфиг приложения                                          |   ✅   |   ✅   |
+| `{$location.PROP}`           | URL (href, protocol, host, pathname, search, hash, origin) |   ❌   |   ✅   |
+| `{$location.query.PARAM}`    | Query-параметры URL                                        |   ❌   |   ✅   |
+| `{$location.slug.N}`         | Сегменты пути URL                                          |   ❌   |   ✅   |
+| `{$now.iso}`                 | Текущая дата ISO                                           |   ✅   |   ✅   |
+| `{$now.timestamp}`           | Timestamp (ms)                                             |   ✅   |   ✅   |
+| `{$now.DD.MM.YY}`            | Дата в формате ДД.ММ.ГГ                                    |   ✅   |   ✅   |
+| `{$now.DD.MM.YYYY HH:mm:ss}` | Дата+время                                                 |   ✅   |   ✅   |
+| `{$session.PROP}`            | sessionStorage                                             |   ❌   |   ✅   |
+| `{$localStorage.PROP}`       | localStorage (авто-JSON parse)                             |   ❌   |   ✅   |
+| `{$cookie.PROP}`             | document.cookie                                            |   ❌   |   ✅   |
+| `{$window.PROP}`             | Любое свойство window                                      |   ❌   |   ✅   |
+| `{$user.PROP}`               | Данные пользователя (заглушка)                             |   ❌   |   ❌   |
+| `{$auth.PROP}`               | Данные авторизации (заглушка)                              |   ❌   |   ❌   |
+| `{$math.random}`             | Случайное число 0-1                                        |   ✅   |   ✅   |
+| `{$math.randomInt.MIN.MAX}`  | Случайное целое                                            |   ✅   |   ✅   |
+| `{$math.uuid}`               | UUID v4                                                    |   ✅   |   ✅   |
+| `{$math.guid}`               | GUID                                                       |   ✅   |   ✅   |
+| `{$device.platform}`         | Платформа (win32, linux...)                                |   ✅   |   ✅   |
+| `{$device.mobile}`           | Мобильное устройство (boolean)                             |   ✅   |   ✅   |
+| `{$browser.userAgent}`       | User-Agent                                                 |   ✅   |   ✅   |
+| `{$env.VAR}`                 | NEXT*PUBLIC*\* переменные окружения                        |   ✅   |   ✅   |
+
+### Особенности макросов
+
+- **Одиночный макрос** — возвращает оригинальный тип (Object, Boolean, Number, String)
+- **Несколько макросов в строке** — приводятся к строке и конкатенируются
+- **Рекурсивная подстановка** — если результат макроса содержит макрос, он тоже разрешается
+- **Лимит рекурсии** — настраиваемый параметр `maxRecursion` (по умолчанию 3)
+- **Объекты и массивы** — рекурсивная обработка каждого поля/элемента
+
+## 4. Система команд (CommandExecutor)
+
+Команды привязываются к событиям компонентов и выполняют действия.
+
+| Команда       | Описание                                         |
+| ------------- | ------------------------------------------------ |
+| `setProperty` | Запись значения в state (source → target)        |
+| `setState`    | Полная замена состояния элемента                 |
+| `mergeState`  | Слияние с текущим состоянием                     |
+| `sendRequest` | HTTP-запрос к API с записью результата в state   |
+| `log`         | Логирование в консоль (info, warn, error, debug) |
+
+### Источники данных (source)
+
+| Формат                    | Описание                    |
+| ------------------------- | --------------------------- |
+| `"event.value.start"`     | Значение из eventData       |
+| `"this.value"`            | Значение триггер-компонента |
+| `"elementId.state.field"` | State другого элемента      |
+| `"state.field"`           | State текущей страницы      |
+
+### Целевые пути (target)
+
+| Формат                    | Описание                                   |
+| ------------------------- | ------------------------------------------ |
+| `"state.field"`           | Запись в state страницы                    |
+| `"elementId.state.field"` | Запись в state указанного элемента         |
+| `"field"`                 | Запись в state триггер-компонента (legacy) |
+
+### Триггеры команд
+
+`onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
+
+Поддержка цепочек команд (sequences) и условного выполнения (Condition).
+
+## 5. External API Data Feed
+
+Загрузка данных из внешних API при загрузке страницы и по событиям.
+
+| Режим                                                | Описание                                                   |
+| ---------------------------------------------------- | ---------------------------------------------------------- |
+| **Server-side** (`dataFeed` в конфигурации страницы) | Запросы API при загрузке страницы на сервере               |
+| **Client-side** (`sendRequest` команда)              | Запросы API из событий (onClick, onLoad, и т.д.)           |
+| **API Router** (`/api/[route]`)                      | Проксирование запросов через сервер с разрешением макросов |
+
+### Конфигурация dataFeed
+
+```json
+{
+  "url": "/api/get-dynamic-data",
+  "method": "POST",
+  "data": { "filter": "{$form.state.selectedItems}" },
+  "target": "dataTable.state.data"
+}
+```
+
+### Особенности
+
+- Макросы в URL и data разрешаются перед выполнением запроса
+- API-маршруты (`/api/ROUTE_NAME`) резолвятся из `config.apiRoutes` с применением макросов
+- Успешные данные сливаются с существующим state (не заменяют)
+- Toast-уведомления при ошибках запросов
+- Автоматическая передача auth-токена
+
+## 6. Привязка данных к компонентам (Bindings)
+
+| Привязка          | Формат                         | Описание                             |
+| ----------------- | ------------------------------ | ------------------------------------ |
+| `valueBinding`    | `"@ELEMENT_ID.state.FIELD"`    | Привязка значения компонента к state |
+| `visibleBinding`  | `"@ELEMENT_ID.state.visible"`  | Управление видимостью                |
+| `disabledBinding` | `"@ELEMENT_ID.state.disabled"` | Управление блокировкой               |
+
+- Автоконвертация форматов даты для Calendar (ISO ↔ custom)
+- Контроллируемые инпуты с fallback значениями по умолчанию
+- Автоматический ре-рендер при изменении привязанного state
+
+## 7. Система адресации
+
+| Тип                | Пример                                       |
+| ------------------ | -------------------------------------------- |
+| Полный путь        | `appId.pageId.sectionId.blockId.componentId` |
+| Доступ к состоянию | `pageId.sectionId.state.fieldName`           |
+| Относительный путь | `../state.data`                              |
+| Wildcard-селекторы | `*.section1.state.visible`                   |
+
+## 8. Навигация
+
+- **Sidebar** — боковая панель на уровне приложения, НЕ перезагружается при переходах
+- **Desktop** — сворачивается до иконок кнопкой внизу
+- **Mobile** — полноэкранное меню из кнопки «бургер»
 - Активный раздел подсвечивается
 - Поддержка кнопок «Назад/Вперёд» браузера
 
-### Система команд
+## 9. Производительность
 
-- Базовые команды: `setProperty`, `setState`, `mergeState`, `showToast`, `navigate`, `log`, `confirm`, `delay`
-- Триггеры: `onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
-- Цепочки команд (sequences)
-
-### External API Data Feed
-
-- **Server-side**: `dataFeed` в конфигурации страницы — запросы API при загрузке страницы
-- **Client-side**: `sendRequest` команда — запросы API из событий (onLoad, onClick, и т.д.)
-- **Macro substitution**: `{$ELEMENT_ID.state.PATH.TO.FIELD}`, `{$config.*}` в URL и data
-- **Target addressing**: `"target": "state"` (текущая страница), `"target": "elementId.state.field"`
-- **Error handling**: Toast уведомления при ошибках запросов
-- **State merge**: Успешные данные сливаются с существующим state (не заменяют)
-
-### Привязка данных к компонентам
-
-- `valueBinding` — привязка значения компонента к state (`@ELEMENT_ID.state.FIELD`)
-- `visibleBinding` / `disabledBinding` — управление видимостью и блокировкой
-- Автоконвертация форматов даты для Calendar (ISO ↔ custom)
-- Контроллированные инпуты с fallback значениями по умолчанию
-
-### Система состояний компонентов
-
-- Глобальное хранилище состояний всех компонентов по `componentId`
-- Доступ к значениям свойств через явное указание пути
-- Синхронизация значений между компонентами через команды
-
-### Производительность
-
-- Фильтрация подписок на изменения state в `ComponentRenderer`
-  - Компоненты обновляются только при изменении их binding-ов
-  - Исключены лишние ре-рендеры при вводе в поля
+- Фильтрация подписок на изменения state — компоненты обновляются только при изменении их binding-ов
+- Исключены лишние ре-рендеры при вводе в поля
 - `setStateField` для вложенных путей через точку
-  - Правильная работа с вложенными объектами: `{ textData: { input: "value" } }`
-- `isMounted` через `useState` для Menubar/Chart
-  - Исправлена проблема с отображением skeleton-заглушек в SSR
+- `isMounted` через `useState` для SSR-совместимости
 
-## Страницы
+---
 
-| Страница       | Маршрут       | Описание                                                                    |
-| -------------- | ------------- | --------------------------------------------------------------------------- |
-| **Dashboard**  | `/`           | Карточки статистики, быстрые действия, таблица заказов, timeline активности |
-| **Statistics** | `/statistics` | Фильтры по дате (неделя, диапазон), экспорт CSV, календари                  |
-| **Users**      | `/users`      | Фильтры, таблица пользователей, профиль, прогресс, аватары                  |
-| **Orders**     | `/orders`     | Вкладки (TabView), форма заказа, сообщения                                  |
-| **Products**   | `/products`   | Поиск/фильтры, карточки товаров, таблица, форма редактирования              |
-| **Reports**    | `/reports`    | Фильтры дат, графики (line/pie), carousel, skeleton-заглушки                |
-| **Settings**   | `/settings`   | Steps, профиль, уведомления, безопасность, интеграции, FAQ (Accordion)      |
-
-## Компоненты PrimeReact
+# Компоненты PrimeReact
 
 ### Формы
 
@@ -197,7 +295,23 @@ Chart (line/pie), Carousel
 
 Avatar, Badge, Tag, Chip, Skeleton, ProgressBar, ProgressSpinner, Message, Divider, Timeline, Text, HTML
 
-## Запуск
+---
+
+# Страницы
+
+| Страница       | Маршрут       | Описание                                                                    |
+| -------------- | ------------- | --------------------------------------------------------------------------- |
+| **Dashboard**  | `/`           | Карточки статистики, быстрые действия, таблица заказов, timeline активности |
+| **Statistics** | `/statistics` | Фильтры по дате (неделя, диапазон), экспорт CSV, календари                  |
+| **Users**      | `/users`      | Фильтры, таблица пользователей, профиль, прогресс, аватары                  |
+| **Orders**     | `/orders`     | Вкладки (TabView), форма заказа, сообщения                                  |
+| **Products**   | `/products`   | Поиск/фильтры, карточки товаров, таблица, форма редактирования              |
+| **Reports**    | `/reports`    | Фильтры дат, графики (line/pie), carousel, skeleton-заглушки                |
+| **Settings**   | `/settings`   | Steps, профиль, уведомления, безопасность, интеграции, FAQ (Accordion)      |
+
+---
+
+# Запуск
 
 ```bash
 npm install
@@ -205,17 +319,24 @@ npm run dev       # Dev-сервер
 npm run build     # Production-билд
 ```
 
-## Конфигурация
+# Конфигурация
 
 Все настройки в `config/crm-config.json`:
 
-- `navbar` — пункты навигации (label, icon, route)
-- `pages` — массив страниц с секциями, блоками и компонентами
-- `globalState` — глобальное состояние (user, auth, cache)
-- `config.api` — настройки API (baseURL, endpoints)
-- `config.features` — флаги функциональности
+| Раздел             | Описание                                          |
+| ------------------ | ------------------------------------------------- |
+| `navbar`           | Пункты навигации (label, icon, route)             |
+| `userMenu`         | Меню пользователя (профиль, выйти)                |
+| `pages`            | Массив страниц с секциями, блоками и компонентами |
+| `globalState`      | Глобальное состояние (user, auth, cache)          |
+| `config.name`      | Название приложения                               |
+| `config.version`   | Версия                                            |
+| `config.baseURL`   | Базовый URL                                       |
+| `config.timeout`   | Таймаут запросов                                  |
+| `config.features`  | Флаги функциональности                            |
+| `config.apiRoutes` | Маршруты API (path → url) с поддержкой макросов   |
 
-## Справочник конфигурации
+# Справочник конфигурации
 
 Полное описание всех параметров элементов конфигурации с примерами:
 → [docs/config-reference.md](docs/config-reference.md)
