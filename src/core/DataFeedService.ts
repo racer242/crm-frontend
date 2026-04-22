@@ -31,17 +31,20 @@ function resolveTargetElementId(
 /**
  * Resolves the full URL for a request.
  * If URL starts with /api/, looks up the route in apiRoutes config.
+ * Macro resolution in route URL is handled by the caller (macroEngine).
  */
 function resolveUrl(
   url: string,
   apiRoutes: ApiRouteConfig[] | undefined,
+  macroEngine?: MacroEngine,
 ): string {
   // Check if this is a router URL (/api/ROUTE_NAME)
   if (url.startsWith("/api/")) {
     const routeName = url.substring(5); // Remove "/api/"
     const route = apiRoutes?.find((r) => r.path === routeName);
     if (route) {
-      return route.url;
+      // Apply macros to the route URL if macroEngine is provided
+      return macroEngine ? (macroEngine.apply(route.url) as string) : route.url;
     }
     // If route not found, return as-is (might be internal Next.js route)
     return url;
@@ -186,7 +189,8 @@ export async function executeDataFeed(
       : undefined;
 
     // Resolve the actual URL (check if it's a router URL)
-    const finalUrl = resolveUrl(resolvedUrl, apiRoutes);
+    // Note: macros in route URLs are resolved inside resolveUrl via macroEngine
+    const finalUrl = resolveUrl(resolvedUrl, apiRoutes, macroEngine);
 
     // Build headers with auth
     const headers = buildHeaders(authToken);

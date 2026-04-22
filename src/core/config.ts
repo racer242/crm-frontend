@@ -185,7 +185,8 @@ export async function executeServerDataFeeds(
         const routeName = url.substring(5);
         const routeConfig = apiRoutes?.find((r) => r.path === routeName);
         if (routeConfig) {
-          url = routeConfig.url;
+          // Apply macros to the route URL
+          url = macroEngine.apply(routeConfig.url) as string;
         }
       }
 
