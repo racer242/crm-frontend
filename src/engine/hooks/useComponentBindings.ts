@@ -16,12 +16,21 @@ export function useComponentBindings({
   appConfig,
   stateManager,
   elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: {
   component: Component;
   pageId?: string;
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
+  showToast?: (
+    message: string,
+    severity?: "success" | "info" | "warn" | "error",
+  ) => void;
+  navigate?: (url: string) => void;
+  confirm?: (message: string) => Promise<boolean>;
 }): ComponentBindings {
   const [isMounted, setIsMounted] = useState(false);
   const [resolvedProps, setResolvedProps] = useState<Record<string, any>>({});
@@ -32,6 +41,12 @@ export function useComponentBindings({
     appConfig: App;
     stateManager: StateManager;
     elementIndex: ElementIndex;
+    showToast?: (
+      message: string,
+      severity?: "success" | "info" | "warn" | "error",
+    ) => void;
+    navigate?: (url: string) => void;
+    confirm?: (message: string) => Promise<boolean>;
   } | null>(null);
 
   // Создаём Linkage instance
@@ -49,9 +64,21 @@ export function useComponentBindings({
         appConfig,
         stateManager,
         elementIndex,
+        showToast,
+        navigate,
+        confirm,
       };
     }
-  }, [pageId, appConfig, stateManager, component.id, elementIndex]);
+  }, [
+    pageId,
+    appConfig,
+    stateManager,
+    component.id,
+    elementIndex,
+    showToast,
+    navigate,
+    confirm,
+  ]);
 
   // Собираем все binding-строки из value и props
   const allBindings = useMemo(() => {

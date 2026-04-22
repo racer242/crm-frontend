@@ -37,7 +37,6 @@ export interface App extends BaseElement {
   pages: PageStub[];
   navbar?: NavbarConfig;
   userMenu?: UserMenuConfig;
-  globalState: GlobalState;
   config: AppConfig;
 }
 
@@ -56,14 +55,6 @@ export interface UserMenuConfig {
   items: UserMenuItem[];
   userName?: string;
   userRole?: string;
-}
-
-/** Глобальное состояние */
-export interface GlobalState {
-  user?: UserData;
-  auth?: AuthData;
-  cache?: Record<string, any>;
-  [key: string]: any;
 }
 
 /** Конфигурация приложения */
@@ -109,22 +100,4 @@ export interface RouteConfig {
   pageId: string;
   exact?: boolean;
   middleware?: string[];
-}
-
-/** Данные пользователя */
-export interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  permissions: string[];
-  avatar?: string;
-}
-
-/** Данные авторизации */
-export interface AuthData {
-  token: string;
-  refreshToken?: string;
-  expiresAt: number;
-  isAuthenticated: boolean;
 }

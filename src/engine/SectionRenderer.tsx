@@ -11,6 +11,12 @@ interface SectionRendererProps {
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
+  showToast?: (
+    message: string,
+    severity?: "success" | "info" | "warn" | "error",
+  ) => void;
+  navigate?: (url: string) => void;
+  confirm?: (message: string) => Promise<boolean>;
 }
 
 export function SectionRenderer({
@@ -19,6 +25,9 @@ export function SectionRenderer({
   appConfig,
   stateManager,
   elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: SectionRendererProps) {
   const { layout, className, visibility } = section;
 
@@ -42,6 +51,9 @@ export function SectionRenderer({
             appConfig={appConfig}
             stateManager={stateManager}
             elementIndex={elementIndex}
+            showToast={showToast}
+            navigate={navigate}
+            confirm={confirm}
           />
         </div>
       ))}

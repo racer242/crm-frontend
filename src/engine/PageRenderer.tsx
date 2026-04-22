@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { Page, App } from "@/types";
 import { SectionRenderer } from "./SectionRenderer";
 import { StateManager, ElementIndex } from "@/core";
@@ -10,6 +10,12 @@ interface PageRendererProps {
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
+  showToast?: (
+    message: string,
+    severity?: "success" | "info" | "warn" | "error",
+  ) => void;
+  navigate?: (url: string) => void;
+  confirm?: (message: string) => Promise<boolean>;
 }
 
 export function PageRenderer({
@@ -17,6 +23,9 @@ export function PageRenderer({
   appConfig,
   stateManager,
   elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: PageRendererProps) {
   const { sections, layout, meta } = page;
 
@@ -27,6 +36,12 @@ export function PageRenderer({
     appConfig: App;
     stateManager: StateManager;
     elementIndex: ElementIndex;
+    showToast?: (
+      message: string,
+      severity?: "success" | "info" | "warn" | "error",
+    ) => void;
+    navigate?: (url: string) => void;
+    confirm?: (message: string) => Promise<boolean>;
   } | null>(null);
 
   useEffect(() => {
@@ -37,9 +52,20 @@ export function PageRenderer({
         appConfig,
         stateManager,
         elementIndex,
+        showToast,
+        navigate,
+        confirm,
       };
     }
-  }, [appConfig, stateManager, page.id, elementIndex]);
+  }, [
+    appConfig,
+    stateManager,
+    page.id,
+    elementIndex,
+    showToast,
+    navigate,
+    confirm,
+  ]);
 
   const executeCommands = (commands: any[]) => {
     commands.forEach((cmd) => {

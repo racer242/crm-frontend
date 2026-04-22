@@ -15,6 +15,12 @@ interface BlockRendererProps {
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
+  showToast?: (
+    message: string,
+    severity?: "success" | "info" | "warn" | "error",
+  ) => void;
+  navigate?: (url: string) => void;
+  confirm?: (message: string) => Promise<boolean>;
 }
 
 export function BlockRenderer({
@@ -23,6 +29,9 @@ export function BlockRenderer({
   appConfig,
   stateManager,
   elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: BlockRendererProps) {
   const { wrapper, components, style, className } = block;
 
@@ -43,6 +52,9 @@ export function BlockRenderer({
             appConfig={appConfig}
             stateManager={stateManager}
             elementIndex={elementIndex}
+            showToast={showToast}
+            navigate={navigate}
+            confirm={confirm}
           />
         ))}
     </div>

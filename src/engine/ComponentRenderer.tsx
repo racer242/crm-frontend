@@ -50,12 +50,21 @@ export function ComponentRenderer({
   appConfig,
   stateManager,
   elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: {
   component: Component;
   pageId?: string;
   appConfig?: App;
   stateManager?: any;
   elementIndex?: ElementIndex;
+  showToast?: (
+    message: string,
+    severity?: "success" | "info" | "warn" | "error",
+  ) => void;
+  navigate?: (url: string) => void;
+  confirm?: (message: string) => Promise<boolean>;
 }) {
   const { componentType, className, style } = component;
 
@@ -65,6 +74,9 @@ export function ComponentRenderer({
     appConfig,
     stateManager,
     elementIndex,
+    showToast,
+    navigate,
+    confirm,
   });
 
   // resolvedProps уже содержит value и все props с разрешёнными bindings

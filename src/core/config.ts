@@ -136,8 +136,8 @@ export async function executeServerDataFeeds(
     return [];
   }
 
-  // Get auth token from global state
-  const authToken = cachedConfig?.globalState?.auth?.token;
+  // Auth token is no longer used - globalState removed
+  const authToken: string | undefined = undefined;
 
   // Get API routes config
   const apiRoutes: ApiRouteConfig[] | undefined =

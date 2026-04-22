@@ -207,40 +207,6 @@ export class StateManager {
   }
 
   /**
-   * Получение глобального состояния
-   */
-  getGlobalState(): Record<string, any> {
-    return this.appConfig.globalState || {};
-  }
-
-  /**
-   * Получение поля из глобального состояния
-   */
-  getGlobalStateField(field: string): any {
-    return PathResolver.getValue(this.appConfig.globalState, field);
-  }
-
-  /**
-   * Обновление глобального состояния
-   */
-  setGlobalStateField(field: string, value: any): void {
-    const oldState = { ...this.appConfig.globalState };
-
-    if (!this.appConfig.globalState) {
-      this.appConfig.globalState = {};
-    }
-
-    PathResolver.setValue(this.appConfig.globalState, field, value);
-
-    this.notifyListeners(
-      `global.${field}`,
-      `global.${field}`,
-      PathResolver.getValue(oldState, field),
-      value,
-    );
-  }
-
-  /**
    * Получение страницы по ID
    */
   getPage(pageId: string): any | null {

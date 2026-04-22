@@ -78,22 +78,6 @@
     { "$ref": "./pages/settings.json" },
     { "$ref": "./pages/components.json" }
   ],
-  "globalState": {
-    "user": {
-      "id": "1",
-      "name": "Admin User",
-      "email": "admin@crm.com",
-      "role": "admin",
-      "permissions": ["read", "write", "delete"],
-      "avatar": "👤"
-    },
-    "auth": {
-      "isAuthenticated": true,
-      "token": "mock-jwt-token",
-      "expiresAt": 1735689600000
-    },
-    "cache": {}
-  },
   "config": {
     "name": "CRM Platform",
     "version": "1.0.0",

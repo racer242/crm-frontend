@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { App, Page, NavItem, DataFeedResult } from "@/types";
+import { App, Page, NavItem, DataFeedResult, Command } from "@/types";
 import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { StateManager, ElementIndex } from "@/core";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
 import { PathResolver } from "@/core/PathResolver";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 export function AppEngine({
   config,
@@ -106,6 +107,7 @@ export function AppEngine({
     return unsubscribe;
   }, [stateManager]);
 
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);
@@ -143,6 +145,43 @@ export function AppEngine({
   // Use the hook to display client-side errors
   useDataFeedErrors(toastRef, dataFeedErrors);
 
+  // Callbacks for command execution
+  const showToast = useCallback(
+    (message: string, severity?: "success" | "info" | "warn" | "error") => {
+      toastRef.current?.show({
+        severity: severity || "info",
+        summary:
+          severity === "error"
+            ? "Error"
+            : severity === "success"
+              ? "Success"
+              : "Info",
+        detail: message,
+        life: 5000,
+      });
+    },
+    [],
+  );
+
+  const navigate = useCallback(
+    (url: string) => {
+      router.push(url);
+    },
+    [router],
+  );
+
+  const confirm = useCallback((message: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      confirmDialog({
+        message,
+        header: "Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        accept: () => resolve(true),
+        reject: () => resolve(false),
+      });
+    });
+  }, []);
+
   if (!currentPage) {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
@@ -152,12 +191,13 @@ export function AppEngine({
   }
 
   const navItems: NavItem[] = config.navbar?.items || [];
-  const isAuthenticated = config.globalState?.auth?.isAuthenticated || false;
+  const isAuthenticated = true; // TODO: Replace with proper auth mechanism
   const title = config.title || "CRM Platform";
 
   return (
     <div className="flex flex-column md:flex-row min-h-screen surface-900">
       <Toast ref={toastRef} />
+      <ConfirmDialog />
       <DashboardHeader
         title={title}
         userMenu={config.userMenu}
@@ -184,6 +224,9 @@ export function AppEngine({
             appConfig={config}
             stateManager={stateManager}
             elementIndex={elementIndex}
+            showToast={showToast}
+            navigate={navigate}
+            confirm={confirm}
           />
         </div>
       </main>
