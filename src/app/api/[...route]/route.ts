@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { initApp } from "@/core/config";
 import { ApiRouteConfig, DataFeedMethod, MacroSources } from "@/types";
 import { MacroEngine } from "@/core";
+import { getServerEnv } from "@/utils/env";
 
 /**
  * Finds a route configuration by path name
@@ -90,13 +91,7 @@ async function handleRequest(
     // Resolve macros in the route URL
     const serverSources: MacroSources = {
       config: config.config,
-      env: Object.fromEntries(
-        Object.entries(process.env)
-          .filter(
-            ([key, val]) => key.startsWith("NEXT_PUBLIC_") && val !== undefined,
-          )
-          .map(([key, val]) => [key, val as string]),
-      ),
+      env: getServerEnv(),
     };
     const macroEngine = new MacroEngine(serverSources);
     const resolvedUrl = macroEngine.apply(routeConfig.url) as string;

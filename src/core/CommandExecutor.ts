@@ -28,6 +28,7 @@ import {
 import { ElementIndex } from "./ElementIndex";
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
+import { getServerEnv } from "@/utils/env";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -54,17 +55,7 @@ function createMacroSources(context: CommandExecutionContext): MacroSources {
     stateManager: context.stateManager,
     pageId: context.pageId,
     config: context.appConfig,
-    env:
-      typeof process !== "undefined"
-        ? Object.fromEntries(
-            Object.entries(process.env)
-              .filter(
-                ([key, val]) =>
-                  key.startsWith("NEXT_PUBLIC_") && val !== undefined,
-              )
-              .map(([key, val]) => [key, val as string]),
-          )
-        : undefined,
+    env: getServerEnv(),
   };
 }
 
