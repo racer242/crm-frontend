@@ -16,6 +16,7 @@ import { StateManager } from "./StateManager";
 import { ElementIndex } from "./ElementIndex";
 import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
+import { getServerEnv } from "@/utils/env";
 
 /**
  * Resolves the target element ID for a data feed request.
@@ -149,13 +150,7 @@ function createMacroSources(
     stateManager,
     pageId,
     config: appConfig,
-    env: Object.fromEntries(
-      Object.entries(typeof process !== "undefined" ? process.env : {})
-        .filter(
-          ([key, val]) => key.startsWith("NEXT_PUBLIC_") && val !== undefined,
-        )
-        .map(([key, val]) => [key, val as string]),
-    ),
+    env: getServerEnv(),
   };
 }
 

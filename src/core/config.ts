@@ -8,6 +8,7 @@ import {
   MacroSources,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
+import { getServerEnv } from "@/utils/env";
 
 /**
  * CRM Configuration Loader
@@ -155,17 +156,7 @@ export async function executeServerDataFeeds(
   // Server-side macro sources (no state manager, no client APIs)
   const serverSources: MacroSources = {
     config: appConfig,
-    env:
-      typeof process !== "undefined"
-        ? Object.fromEntries(
-            Object.entries(process.env)
-              .filter(
-                ([key, val]) =>
-                  key.startsWith("NEXT_PUBLIC_") && val !== undefined,
-              )
-              .map(([key, val]) => [key, val as string]),
-          )
-        : undefined,
+    env: getServerEnv(),
   };
 
   const macroEngine = new MacroEngine(serverSources);
