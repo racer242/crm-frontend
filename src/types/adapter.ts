@@ -7,11 +7,12 @@
  * Rule for a single property replacement
  */
 export interface ReplaceRule {
-  /** New name for the property */
-  name: string;
+  /** New name for the property. If not specified, original key is kept */
+  name?: string;
   /**
    * New value for the property.
    * Can be any type. May contain $value$ macro for the original value.
+   * If specified, the replacement value is used as-is (no recursion).
    */
   value?: any;
 }

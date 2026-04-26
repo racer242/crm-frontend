@@ -36,25 +36,19 @@ function applyReplace(data: any, rules: Record<string, ReplaceRule>): any {
     const rule = rules[key];
 
     if (rule) {
-      // Rule found: use new name and possibly new value
-      const newValue =
-        rule.value !== undefined ? replaceValueMacro(rule.value, value) : value;
+      // Rule found
+      const targetKey = rule.name !== undefined ? rule.name : key;
 
-      // Recursively process the new value (in case it's an object/array)
-      result[rule.name] =
-        typeof newValue === "object" &&
-        newValue !== null &&
-        !Array.isArray(newValue)
-          ? applyReplace(newValue, rules)
-          : Array.isArray(newValue)
-            ? applyReplace(newValue, rules)
-            : newValue;
+      if (rule.value !== undefined) {
+        // Value specified: apply $value$ macro, NO recursion
+        result[targetKey] = replaceValueMacro(rule.value, value);
+      } else {
+        // Value not specified: recurse into original value
+        result[targetKey] = applyReplace(value, rules);
+      }
     } else {
-      // No rule: keep original key, but recursively process if it's an object
-      result[key] =
-        typeof value === "object" && value !== null
-          ? applyReplace(value, rules)
-          : value;
+      // No rule: keep original key, recurse if object/array
+      result[key] = applyReplace(value, rules);
     }
   }
 

@@ -115,8 +115,7 @@
     "apiRoutes": [
       {
         "path": "get-dynamic-data",
-        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json",
-        "adapter": "stats.analytics.js"
+        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
       }
     ]
   }
