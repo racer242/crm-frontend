@@ -8,6 +8,46 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ComponentRendererProps } from "./types";
 
+function processMenuItems(
+  items: any[],
+  router: any,
+  handleEvent: (type: string, value: any) => void,
+  eventType: string,
+): any[] {
+  return items.map((item: any) => {
+    const processed: any = {
+      ...item,
+      template:
+        eventType === "menu" && item.route ? (
+          <Link
+            href={item.route}
+            className="p-menuitem-link flex align-items-center gap-2"
+          >
+            {item.icon && <i className={item.icon}></i>}
+            <span className="p-menuitem-text">{item.label}</span>
+          </Link>
+        ) : undefined,
+      command: item.command
+        ? () => handleEvent("onClick", { type: eventType, item })
+        : item.route
+          ? () => router.push(item.route)
+          : undefined,
+    };
+
+    // Recursively process submenu items
+    if (item.items && Array.isArray(item.items)) {
+      processed.items = processMenuItems(
+        item.items,
+        router,
+        handleEvent,
+        eventType,
+      );
+    }
+
+    return processed;
+  });
+}
+
 export function renderMenubar({
   props,
   className,
@@ -17,23 +57,12 @@ export function renderMenubar({
 }: ComponentRendererProps) {
   const router = useRouter();
 
-  const menuModel = (props.model || []).map((item: any) => ({
-    ...item,
-    template: item.route ? (
-      <Link
-        href={item.route}
-        className="p-menuitem-link flex align-items-center gap-2"
-      >
-        {item.icon && <i className={item.icon}></i>}
-        <span className="p-menuitem-text">{item.label}</span>
-      </Link>
-    ) : undefined,
-    command: item.useCommand
-      ? () => handleEvent("onClick", { type: "menu", item })
-      : item.route
-        ? () => router.push(item.route)
-        : undefined,
-  }));
+  const menuModel = processMenuItems(
+    props.model || [],
+    router,
+    handleEvent,
+    "menu",
+  );
 
   if (!isMounted) return <div className="h-3rem surface-800 border-round-md" />;
 
@@ -54,14 +83,12 @@ export function renderBreadcrumb({
 }: ComponentRendererProps) {
   const router = useRouter();
 
-  const breadcrumbModel = (props.model || []).map((item: any) => ({
-    ...item,
-    command: item.useCommand
-      ? () => handleEvent("onClick", { type: "breadcrumb", item })
-      : item.route
-        ? () => router.push(item.route)
-        : undefined,
-  }));
+  const breadcrumbModel = processMenuItems(
+    props.model || [],
+    router,
+    handleEvent,
+    "breadcrumb",
+  );
 
   return (
     <BreadCrumb
@@ -80,15 +107,12 @@ export function renderSteps({
 }: ComponentRendererProps) {
   const router = useRouter();
 
-  const stepsModel = (props.model || []).map((item: any) => ({
-    label: item.label,
-    icon: item.icon,
-    command: item.useCommand
-      ? () => handleEvent("onClick", { type: "steps", item })
-      : item.route
-        ? () => router.push(item.route)
-        : undefined,
-  }));
+  const stepsModel = processMenuItems(
+    props.model || [],
+    router,
+    handleEvent,
+    "steps",
+  );
 
   return (
     <Steps
