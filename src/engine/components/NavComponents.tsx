@@ -13,6 +13,7 @@ export function renderMenubar({
   className,
   style,
   isMounted,
+  handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
 
@@ -27,7 +28,11 @@ export function renderMenubar({
         <span className="p-menuitem-text">{item.label}</span>
       </Link>
     ) : undefined,
-    command: item.route ? () => router.push(item.route) : undefined,
+    command: item.command
+      ? () => handleEvent("onClick", { type: "menu", item })
+      : item.route
+        ? () => router.push(item.route)
+        : undefined,
   }));
 
   if (!isMounted) return <div className="h-3rem surface-800 border-round-md" />;
@@ -45,12 +50,17 @@ export function renderBreadcrumb({
   props,
   className,
   style,
+  handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
 
   const breadcrumbModel = (props.model || []).map((item: any) => ({
     ...item,
-    command: item.route ? () => router.push(item.route) : undefined,
+    command: item.command
+      ? () => handleEvent("onClick", { type: "breadcrumb", item })
+      : item.route
+        ? () => router.push(item.route)
+        : undefined,
   }));
 
   return (
@@ -66,13 +76,18 @@ export function renderSteps({
   props,
   className,
   style,
+  handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
 
   const stepsModel = (props.model || []).map((item: any) => ({
     label: item.label,
     icon: item.icon,
-    command: item.route ? () => router.push(item.route) : undefined,
+    command: item.command
+      ? () => handleEvent("onClick", { type: "steps", item })
+      : item.route
+        ? () => router.push(item.route)
+        : undefined,
   }));
 
   return (

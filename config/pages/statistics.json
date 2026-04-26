@@ -8,7 +8,7 @@
     "start": "",
     "end": "",
     "dynamicData": { "title": "Текст, который был динамически загружен" },
-    "analyticsMenu": []
+    "analytics": []
   },
   "meta": {
     "title": "Статистика — CRM Platform"
@@ -391,7 +391,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "model": "@state.analyticsMenu"
+                "model": "@state.analytics"
               },
               "state": {}
             }
