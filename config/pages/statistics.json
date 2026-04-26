@@ -276,6 +276,12 @@
                         "method": "GET",
                         "target": "state.dynamicData"
                       }
+                    },
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$state}"
+                      }
                     }
                   ]
                 }

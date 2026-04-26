@@ -416,7 +416,7 @@ export class CommandExecutor {
    */
   executeLog(params: Record<string, any>): void {
     const { level = "info", message } = params;
-    const resolvedMessage = this.macroEngine.apply(message) as string;
+    const resolvedMessage = this.macroEngine.apply(message);
     const levels: Record<string, (...args: any[]) => void> = {
       info: console.info,
       warn: console.warn,
@@ -425,7 +425,18 @@ export class CommandExecutor {
       log: console.log,
     };
     const logFn = levels[level] || console.log;
-    logFn(`[${level.toUpperCase()}] ${resolvedMessage}`);
+
+    if (typeof resolvedMessage === "string") {
+      logFn(`[${level.toUpperCase()}] ${resolvedMessage}`);
+    } else if (
+      typeof resolvedMessage === "object" &&
+      resolvedMessage !== null
+    ) {
+      logFn(`[${level.toUpperCase()}]`);
+      logFn(resolvedMessage);
+    } else {
+      logFn(`[${level.toUpperCase()}] ${resolvedMessage}`);
+    }
   }
 
   // ========== SOURCE VALUE ==========
