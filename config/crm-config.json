@@ -86,13 +86,15 @@
           "name": "label"
         },
         "url": {
-          "name": "command",
-          "value": {
-            "type": "download",
-            "params": {
-              "url": "$value$"
+          "name": "commands",
+          "value": [
+            {
+              "type": "navigate",
+              "params": {
+                "message": "$value$"
+              }
             }
-          }
+          ]
         }
       }
     },

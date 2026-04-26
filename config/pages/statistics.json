@@ -393,7 +393,13 @@
               "props": {
                 "model": "@state.analytics"
               },
-              "state": {}
+              "state": {},
+              "events": [
+                {
+                  "type": "onNavigate",
+                  "commands": []
+                }
+              ]
             }
           ]
         }

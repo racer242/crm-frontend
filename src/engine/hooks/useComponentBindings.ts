@@ -147,7 +147,13 @@ export function useComponentBindings({
       );
 
       for (const handler of eventHandlers) {
-        for (const cmd of handler.commands) {
+        //Если в значении события есть тип и он равен типу обработчика, объединить команды
+        let commands =
+          eventValue?.type === handler.type
+            ? [...handler.commands, ...eventValue?.commands]
+            : handler.commands;
+
+        for (const cmd of commands) {
           const { CommandExecutor } = require("@/core");
           const executor = new CommandExecutor(commandContextRef.current);
           executor.executeCommand(cmd.type, cmd.params, eventValue);

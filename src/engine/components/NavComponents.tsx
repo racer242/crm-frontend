@@ -12,13 +12,13 @@ function processMenuItems(
   items: any[],
   router: any,
   handleEvent: (type: string, value: any) => void,
-  eventType: string,
+  addLink: boolean,
 ): any[] {
   return items.map((item: any) => {
     const processed: any = {
       ...item,
       template:
-        eventType === "menu" && item.route ? (
+        addLink && item.route ? (
           <Link
             href={item.route}
             className="p-menuitem-link flex align-items-center gap-2"
@@ -27,8 +27,12 @@ function processMenuItems(
             <span className="p-menuitem-text">{item.label}</span>
           </Link>
         ) : undefined,
-      command: item.command
-        ? () => handleEvent("onClick", { type: eventType, item })
+      command: item.commands
+        ? () =>
+            handleEvent("onNavigate", {
+              type: "onNavigate",
+              commands: item.commands,
+            })
         : item.route
           ? () => router.push(item.route)
           : undefined,
@@ -40,7 +44,7 @@ function processMenuItems(
         item.items,
         router,
         handleEvent,
-        eventType,
+        addLink,
       );
     }
 
@@ -61,7 +65,7 @@ export function renderMenubar({
     props.model || [],
     router,
     handleEvent,
-    "menu",
+    true,
   );
 
   if (!isMounted) return <div className="h-3rem surface-800 border-round-md" />;
@@ -87,7 +91,7 @@ export function renderBreadcrumb({
     props.model || [],
     router,
     handleEvent,
-    "breadcrumb",
+    false,
   );
 
   return (
@@ -111,7 +115,7 @@ export function renderSteps({
     props.model || [],
     router,
     handleEvent,
-    "steps",
+    false,
   );
 
   return (

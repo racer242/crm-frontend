@@ -414,7 +414,7 @@ export class CommandExecutor {
   /**
    * log: логирование в консоль
    */
-  executeLog(params: Record<string, any>): void {
+  executeLog(params: Record<string, any>, eventData: any): void {
     const { level = "info", message } = params;
     const resolvedMessage = this.macroEngine.apply(message);
     const levels: Record<string, (...args: any[]) => void> = {
@@ -436,6 +436,9 @@ export class CommandExecutor {
       logFn(resolvedMessage);
     } else {
       logFn(`[${level.toUpperCase()}] ${resolvedMessage}`);
+    }
+    if (params.showExtra && eventData != null) {
+      logFn(eventData);
     }
   }
 
@@ -511,7 +514,7 @@ export class CommandExecutor {
         break;
 
       case "log":
-        this.executeLog(params);
+        this.executeLog(params, eventData);
         break;
 
       default:
