@@ -29,6 +29,11 @@ export interface DataFeedConfig {
   cache?: boolean;
   /** Cache time-to-live in milliseconds (not yet implemented) */
   cacheTTL?: number;
+  /**
+   * Adapter ID to transform the response data.
+   * References an adapter defined in the root `adapters` config.
+   */
+  adapter?: string;
 }
 
 /**
@@ -40,6 +45,11 @@ export interface ApiRouteConfig {
   path: string;
   /** Full URL of the external API endpoint */
   url: string;
+  /**
+   * Adapter ID to transform the response data.
+   * References an adapter defined in the root `adapters` config.
+   */
+  adapter?: string;
 }
 
 /**

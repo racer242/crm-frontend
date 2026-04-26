@@ -7,7 +7,8 @@
     "initialized": true,
     "start": "",
     "end": "",
-    "dynamicData": { "title": "Текст, который был динамически загружен" }
+    "dynamicData": { "title": "Текст, который был динамически загружен" },
+    "analyticsMenu": []
   },
   "meta": {
     "title": "Статистика — CRM Platform"
@@ -17,6 +18,12 @@
       "url": "{$config.baseURL}/mocks/api/get-stats.json",
       "method": "GET",
       "target": "state"
+    },
+    {
+      "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
+      "method": "GET",
+      "target": "state",
+      "adapter": "stats.analytics.replace"
     }
   ],
   "events": [
@@ -378,72 +385,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "model": [
-                  {
-                    "label": "Скачать данные",
-                    "items": [
-                      {
-                        "label": "Покупатели",
-                        "command": "downloadTable-customers"
-                      },
-                      {
-                        "label": "Заказы",
-                        "command": "downloadTable-orders"
-                      },
-                      {
-                        "label": "Продукты",
-                        "command": "downloadTable-products"
-                      }
-                    ]
-                  },
-                  {
-                    "label": "Скачать данные",
-                    "items": [
-                      {
-                        "label": "Покупатели",
-                        "command": "downloadTable-customers"
-                      },
-                      {
-                        "label": "Заказы",
-                        "command": "downloadTable-orders"
-                      },
-                      {
-                        "label": "Продукты",
-                        "command": "downloadTable-products"
-                      }
-                    ]
-                  },
-                  {
-                    "label": "Скачать данные",
-                    "items": [
-                      {
-                        "label": "Покупатели",
-                        "command": "downloadTable-customers"
-                      },
-                      {
-                        "label": "Заказы",
-                        "command": "downloadTable-orders"
-                      },
-                      {
-                        "label": "Продукты",
-                        "items": [
-                          {
-                            "label": "Покупатели",
-                            "command": "downloadTable-customers"
-                          },
-                          {
-                            "label": "Заказы",
-                            "command": "downloadTable-orders"
-                          },
-                          {
-                            "label": "Продукты",
-                            "command": "downloadTable-products"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                "model": "@state.analyticsMenu"
               },
               "state": {}
             }

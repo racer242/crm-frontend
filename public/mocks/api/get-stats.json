@@ -1,5 +1,76 @@
 {
   "loadedText": "Текст, который был подгружен",
   "start": "2026-04-13T23:30:00",
-  "end": "20.04.2026 8:30"
+  "end": "20.04.2026 8:30",
+  "_analytics": [
+    {
+      "label": "Скачать данные",
+      "items": [
+        {
+          "label": "Покупатели",
+          "command": {
+            "type": "download",
+            "params": {
+              "url": "Ссылка на скачивание 1.1."
+            }
+          }
+        },
+        {
+          "label": "Заказы",
+          "command": "downloadTable-orders"
+        },
+        {
+          "label": "Продукты",
+          "command": "downloadTable-products"
+        }
+      ]
+    },
+    {
+      "label": "Скачать данные",
+      "items": [
+        {
+          "label": "Покупатели",
+          "command": "downloadTable-customers"
+        },
+        {
+          "label": "Заказы",
+          "command": "downloadTable-orders"
+        },
+        {
+          "label": "Продукты",
+          "command": "downloadTable-products"
+        }
+      ]
+    },
+    {
+      "label": "Скачать данные",
+      "items": [
+        {
+          "label": "Покупатели",
+          "command": "downloadTable-customers"
+        },
+        {
+          "label": "Заказы",
+          "command": "downloadTable-orders"
+        },
+        {
+          "label": "Продукты",
+          "items": [
+            {
+              "label": "Покупатели",
+              "command": "downloadTable-customers"
+            },
+            {
+              "label": "Заказы",
+              "command": "downloadTable-orders"
+            },
+            {
+              "label": "Продукты",
+              "command": "downloadTable-products"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

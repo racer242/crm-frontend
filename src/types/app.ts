@@ -1,5 +1,6 @@
 import { BaseElement } from "./base";
 import { ApiRouteConfig } from "./datafeed";
+import { AdaptersConfig } from "./adapter";
 
 // Определяем типы локально чтобы избежать циклических импортов
 // Page и Command импортируются через barrel exports в index.ts
@@ -37,6 +38,8 @@ export interface App extends BaseElement {
   pages: PageStub[];
   navbar?: NavbarConfig;
   userMenu?: UserMenuConfig;
+  /** Data adapters indexed by ID */
+  adapters?: AdaptersConfig;
   config: AppConfig;
 }
 

@@ -16,6 +16,7 @@ import { initApp } from "@/core/config";
 import { ApiRouteConfig, DataFeedMethod, MacroSources } from "@/types";
 import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
+import { applyAdapter } from "@/core/DataAdapterEngine";
 
 /**
  * Finds a route configuration by path name
@@ -111,6 +112,25 @@ async function handleRequest(
       responseData = await externalResponse.json();
     } else {
       responseData = await externalResponse.text();
+    }
+
+    // Apply adapter if specified in the route config
+    if (routeConfig.adapter) {
+      try {
+        const adapter = config.adapters?.[routeConfig.adapter];
+        if (!adapter) {
+          return NextResponse.json(
+            { error: `Adapter not found: ${routeConfig.adapter}` },
+            { status: 500 },
+          );
+        }
+        responseData = await applyAdapter(responseData, adapter);
+      } catch (adapterError) {
+        return NextResponse.json(
+          { error: `Adapter error: ${(adapterError as Error).message}` },
+          { status: 500 },
+        );
+      }
     }
 
     // Return the response with the same status code

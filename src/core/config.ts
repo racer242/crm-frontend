@@ -9,6 +9,7 @@ import {
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
+import { applyAdapter } from "./DataAdapterEngine";
 
 /**
  * CRM Configuration Loader
@@ -220,6 +221,29 @@ export async function executeServerDataFeeds(
         responseData = await response.json();
       } else {
         responseData = await response.text();
+      }
+
+      // Apply adapter if specified
+      if (feed.adapter) {
+        try {
+          const adapter = cachedConfig?.adapters?.[feed.adapter];
+          if (!adapter) {
+            results.push({
+              success: false,
+              target: feed.target,
+              error: `Adapter not found: ${feed.adapter}`,
+            });
+            continue;
+          }
+          responseData = await applyAdapter(responseData, adapter);
+        } catch (adapterError) {
+          results.push({
+            success: false,
+            target: feed.target,
+            error: `Adapter error: ${(adapterError as Error).message}`,
+          });
+          continue;
+        }
       }
 
       results.push({

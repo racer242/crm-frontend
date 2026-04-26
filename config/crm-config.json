@@ -78,6 +78,29 @@
     { "$ref": "./pages/settings.json" },
     { "$ref": "./pages/components.json" }
   ],
+  "adapters": {
+    "stats.analytics.replace": {
+      "type": "replace",
+      "rules": {
+        "title": {
+          "name": "label"
+        },
+        "url": {
+          "name": "command",
+          "value": {
+            "type": "download",
+            "params": {
+              "url": "$value$"
+            }
+          }
+        }
+      }
+    },
+    "stats.analytics.js": {
+      "type": "js",
+      "script": "adapters/analytics2menu.js"
+    }
+  },
   "config": {
     "name": "CRM Platform",
     "version": "1.0.0",
@@ -92,7 +115,8 @@
     "apiRoutes": [
       {
         "path": "get-dynamic-data",
-        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
+        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json",
+        "adapter": "stats.analytics.js"
       }
     ]
   }
