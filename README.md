@@ -352,6 +352,107 @@ App (приложение)
 - При ошибке на сервере — Toast-уведомление при загрузке страницы
 - При ошибке на клиенте — ошибка сохраняется в `state.dataFeedErrors`
 
+## 5.1. Адаптеры данных
+
+Адаптеры преобразуют ответы API в формат, пригодный для CRM. Указываются в `dataFeed` и `apiRoutes` через поле `adapter`. Определяются в корне конфига (`adapters`).
+
+### Типы адаптеров
+
+| Тип       | Описание                                        |
+| --------- | ----------------------------------------------- |
+| `replace` | Словарная замена имён свойств и их значений     |
+| `js`      | JS-скрипт для произвольной трансформации данных |
+
+### Replace-адаптер
+
+Рекурсивно обходит данные. Если свойство найдено в `rules` — его имя заменяется на `name`, значение — на `value` (с поддержкой макроса `$value$` для исходного значения).
+
+```json
+{
+  "adapters": {
+    "stats.analytics.replace": {
+      "type": "replace",
+      "rules": {
+        "title": { "name": "label" },
+        "url": {
+          "name": "command",
+          "value": {
+            "type": "download",
+            "params": { "url": "$value$" }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### JS-адаптер
+
+Загружает и выполняет скрипт из `public/`. Скрипт должен содержать функцию `transform(data)`, которая принимает исходные данные и возвращает преобразованные.
+
+```json
+{
+  "adapters": {
+    "stats.analytics.js": {
+      "type": "js",
+      "script": "adapters/analytics2menu.js"
+    }
+  }
+}
+```
+
+Пример файла `public/adapters/analytics2menu.js`:
+
+```javascript
+function transform(data) {
+  if (!data || !data.items) return [];
+  return data.items.map((item) => ({
+    label: item.title,
+    command: { type: "navigate", params: { url: item.url } },
+    badge: item.count || 0,
+  }));
+}
+```
+
+### Использование
+
+**В dataFeed страницы:**
+
+```json
+{
+  "dataFeed": [
+    {
+      "url": "/api/get-stats",
+      "method": "GET",
+      "target": "state",
+      "adapter": "stats.analytics.replace"
+    }
+  ]
+}
+```
+
+**В apiRoutes:**
+
+```json
+{
+  "apiRoutes": [
+    {
+      "path": "get-stats",
+      "url": "https://api.example.com/stats",
+      "adapter": "stats.analytics.js"
+    }
+  ]
+}
+```
+
+### Особенности
+
+- Адаптация выполняется **только на сервере**
+- Если адаптер указан, но не найден — возвращается ошибка
+- Скрипты загружаются относительно `public/`
+- Макрос `$value$` в значениях правил заменяется на исходное значение свойства
+
 ## 6. Навигация
 
 - **Sidebar** — боковая панель на уровне приложения, НЕ перезагружается при переходах
