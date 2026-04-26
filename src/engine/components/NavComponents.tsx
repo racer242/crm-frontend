@@ -28,7 +28,7 @@ export function renderMenubar({
         <span className="p-menuitem-text">{item.label}</span>
       </Link>
     ) : undefined,
-    command: item.command
+    command: item.useCommand
       ? () => handleEvent("onClick", { type: "menu", item })
       : item.route
         ? () => router.push(item.route)
@@ -56,7 +56,7 @@ export function renderBreadcrumb({
 
   const breadcrumbModel = (props.model || []).map((item: any) => ({
     ...item,
-    command: item.command
+    command: item.useCommand
       ? () => handleEvent("onClick", { type: "breadcrumb", item })
       : item.route
         ? () => router.push(item.route)
@@ -83,7 +83,7 @@ export function renderSteps({
   const stepsModel = (props.model || []).map((item: any) => ({
     label: item.label,
     icon: item.icon,
-    command: item.command
+    command: item.useCommand
       ? () => handleEvent("onClick", { type: "steps", item })
       : item.route
         ? () => router.push(item.route)
