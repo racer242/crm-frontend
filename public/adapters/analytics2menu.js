@@ -40,7 +40,14 @@ function transform(data) {
 
       // If item has a URL, add it to the command for navigation
       if (item.url) {
-        menuItem.command = item.url;
+        menuItem.commands = [
+          {
+            type: "navigate",
+            params: {
+              url: item.url,
+            },
+          },
+        ];
       }
 
       return menuItem;

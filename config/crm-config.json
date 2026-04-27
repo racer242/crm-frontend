@@ -91,7 +91,7 @@
             {
               "type": "navigate",
               "params": {
-                "message": "$value$"
+                "url": "$value$"
               }
             }
           ]
