@@ -64,7 +64,7 @@ interface DashboardSidebarProps {
   onCollapseChange: () => void;
 }
 
-export function DashboardSidebar({
+export const DashboardSidebar = React.memo(function DashboardSidebar({
   items,
   title,
   userMenu,
@@ -229,4 +229,4 @@ export function DashboardSidebar({
       <div className="md:hidden h-4rem w-full flex-shrink-0" />
     </>
   );
-}
+});

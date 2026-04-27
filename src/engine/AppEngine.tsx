@@ -192,6 +192,10 @@ export function AppEngine({
     [router],
   );
 
+  const onCollapseChange = useCallback(() => {
+    setCollapsed((c) => !c);
+  }, []);
+
   const confirm = useCallback((message: string): Promise<boolean> => {
     return new Promise((resolve) => {
       confirmDialog({
@@ -235,7 +239,7 @@ export function AppEngine({
           mobileOpen={mobileMenuOpen}
           collapsed={collapsed}
           onMobileOpenChange={setMobileMenuOpen}
-          onCollapseChange={() => setCollapsed(!collapsed)}
+          onCollapseChange={onCollapseChange}
         />
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">
