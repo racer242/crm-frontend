@@ -1,35 +1,51 @@
 /**
- * Example JS Adapter: Analytics to Menu
+ * JS Adapter: Analytics to Menu
  *
- * Transforms analytics data (e.g., {items: [{title, url, count}]})
- * into a menu/navigation format compatible with CRM components.
+ * Transforms analytics data with nested sections and items
+ * into a menu/navigation format compatible with PrimeReact Menubar.
  *
- * Input:
+ * Input structure (public/mocks/api/stats/analytics.json):
  *   {
- *     items: [
- *       { title: "Dashboard", url: "/dashboard", count: 15 },
- *       { title: "Reports", url: "/reports", count: 8 }
+ *     analytics: [
+ *       {
+ *         title: "Section name",
+ *         items: [
+ *           { title: "Download item", url: "http://..." },
+ *           { title: "Subsection", items: [...] }  // nested sections
+ *         ]
+ *       }
  *     ]
  *   }
  *
- * Output:
- *   [
- *     { label: "Dashboard", command: { type: "navigate", params: { url: "/dashboard" } }, badge: 15 },
- *     { label: "Reports", command: { type: "navigate", params: { url: "/reports" } }, badge: 8 }
- *   ]
+ * Output: PrimeReact Menubar model with nested structure
  */
 
 function transform(data) {
-  if (!data || !data.items) {
+  if (!data || !data.analytics) {
     return [];
   }
 
-  return data.items.map((item) => ({
-    label: item.title,
-    command: {
-      type: "navigate",
-      params: { url: item.url },
-    },
-    badge: item.count || 0,
-  }));
+  function processItems(items) {
+    if (!Array.isArray(items)) return [];
+
+    return items.map((item) => {
+      const menuItem = {
+        label: item.title,
+      };
+
+      // If item has nested items, process them recursively
+      if (item.items && Array.isArray(item.items)) {
+        menuItem.items = processItems(item.items);
+      }
+
+      // If item has a URL, add it to the command for navigation
+      if (item.url) {
+        menuItem.command = item.url;
+      }
+
+      return menuItem;
+    });
+  }
+
+  return processItems(data.analytics);
 }

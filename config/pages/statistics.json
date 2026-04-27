@@ -23,7 +23,7 @@
       "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
       "method": "GET",
       "target": "state",
-      "adapter": "stats.analytics.replace"
+      "adapter": "stats.analytics.js"
     }
   ],
   "events": [
