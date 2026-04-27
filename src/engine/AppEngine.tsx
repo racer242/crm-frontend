@@ -112,6 +112,22 @@ export function AppEngine({
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);
 
+  // Page transition: opacity fade-in to hide FOUC
+  const [contentOpacity, setContentOpacity] = useState(1);
+  const prevPageIdRef2 = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (currentPage && prevPageIdRef2.current !== currentPage.id) {
+      prevPageIdRef2.current = currentPage.id;
+      setContentOpacity(0);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setContentOpacity(1);
+        });
+      });
+    }
+  }, [currentPage]);
+
   // Show server-side data feed errors on mount
   useEffect(() => {
     if (initialErrors && initialErrors.length > 0 && toastRef.current) {
@@ -217,7 +233,13 @@ export function AppEngine({
         />
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">
-        <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
+        <div
+          className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto"
+          style={{
+            opacity: contentOpacity,
+            transition: "opacity 150ms ease-in",
+          }}
+        >
           <PageRenderer
             key={currentPage.id}
             page={currentPage}
