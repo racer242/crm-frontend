@@ -22,7 +22,7 @@
 
 function transform(data) {
   if (!data || !data.analytics) {
-    return [];
+    return { analytics: [] };
   }
 
   function processItems(items) {
@@ -47,5 +47,5 @@ function transform(data) {
     });
   }
 
-  return processItems(data.analytics);
+  return { analytics: processItems(data.analytics) };
 }
