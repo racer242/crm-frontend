@@ -112,21 +112,27 @@ export function AppEngine({
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);
 
-  // Page transition: opacity fade-in to hide FOUC
-  const [contentOpacity, setContentOpacity] = useState(1);
+  // Page transition: use CSS visibility + transition to hide FOUC
+  // Container starts invisible, then becomes visible after content renders
+  const [pageKey, setPageKey] = useState<string>(currentPage?.id ?? "");
+  const [isVisible, setIsVisible] = useState(true);
   const prevPageIdRef2 = useRef<string | null>(null);
 
+  // Detect page change synchronously
+  if (currentPage && prevPageIdRef2.current !== currentPage.id) {
+    prevPageIdRef2.current = currentPage.id;
+    setPageKey(currentPage.id);
+    setIsVisible(false);
+  }
+
+  // After the new page is rendered, make it visible
   useEffect(() => {
-    if (currentPage && prevPageIdRef2.current !== currentPage.id) {
-      prevPageIdRef2.current = currentPage.id;
-      setContentOpacity(0);
-      const raf = requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setContentOpacity(1);
-        });
-      });
+    if (!isVisible) {
+      // Wait for content to be painted, then fade in
+      const timer = setTimeout(() => setIsVisible(true), 50);
+      return () => clearTimeout(timer);
     }
-  }, [currentPage]);
+  }, [isVisible]);
 
   // Show server-side data feed errors on mount
   useEffect(() => {
@@ -236,12 +242,13 @@ export function AppEngine({
         <div
           className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto"
           style={{
-            opacity: contentOpacity,
-            transition: "opacity 150ms ease-in",
+            visibility: isVisible ? "visible" : "hidden",
+            transition: "visibility 0s linear 50ms, opacity 150ms ease-in",
+            opacity: isVisible ? 1 : 0,
           }}
         >
           <PageRenderer
-            key={currentPage.id}
+            key={pageKey}
             page={currentPage}
             appConfig={config}
             stateManager={stateManager}
