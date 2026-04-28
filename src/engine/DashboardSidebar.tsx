@@ -7,6 +7,7 @@ import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import { classNames } from "primereact/utils";
 
 function buildMenuItems(
   items: NavItem[],
@@ -57,6 +58,7 @@ interface UserMenuSectionProps {
   collapsed: boolean;
   onNavigate: (route: string) => void;
   wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
+  collapsible?: boolean;
 }
 
 const UserMenuSection = React.memo(function UserMenuSection({
@@ -64,31 +66,50 @@ const UserMenuSection = React.memo(function UserMenuSection({
   collapsed,
   onNavigate,
   wrapperProps,
+  collapsible,
 }: UserMenuSectionProps) {
+  const [expanded, setExpanded] = useState(!collapsible);
   const userMenuModel = useMemo(
     () => buildUserMenuItems(userMenu, onNavigate),
     [userMenu, onNavigate],
   );
 
+  const handleToggle = useCallback(() => {
+    setExpanded((prev) => !prev);
+  }, []);
+
   return (
     <div {...wrapperProps}>
-      <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color">
+      <div
+        className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+        onClick={collapsible ? handleToggle : undefined}
+      >
         <Avatar
           icon="pi pi-user"
           shape="circle"
           className="flex-none pointer-events-none"
         />
         {!collapsed && (
-          <div className="flex flex-column align pointer-events-none">
+          <div className="flex flex-column align-items-start pointer-events-none">
             <span className="font-bold">{userMenu?.userName}</span>
             <span className="text-sm">{userMenu?.userRole}</span>
           </div>
         )}
+        {collapsible && !collapsed && (
+          <i
+            className={classNames(
+              "pi pointer-events-none ml-auto",
+              expanded ? "pi-angle-up" : "pi-angle-down",
+            )}
+          />
+        )}
       </div>
-      <Menu
-        model={userMenuModel}
-        className="w-full border-none flex-shrink-0"
-      />
+      {expanded && (
+        <Menu
+          model={userMenuModel}
+          className="w-full border-none flex-shrink-0"
+        />
+      )}
     </div>
   );
 });
@@ -191,6 +212,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               collapsed={collapsed}
               onNavigate={handleNav}
               wrapperProps={{ className: "p-3" }}
+              collapsible
             />
           ) : !isAuthenticated ? (
             <Button
