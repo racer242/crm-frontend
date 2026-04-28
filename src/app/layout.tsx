@@ -36,6 +36,11 @@ export const metadata: Metadata = {
   },
 };
 
+const primeReactConfig = {
+  ripple: true,
+  unstyled: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,7 +50,9 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <GlobalPreloader />
-        <PrimeReactProvider>{children}</PrimeReactProvider>
+        <PrimeReactProvider value={primeReactConfig}>
+          {children}
+        </PrimeReactProvider>
       </body>
     </html>
   );

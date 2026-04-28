@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
-import { Divider } from "primereact/divider";
-import { PanelMenu } from "primereact/panelmenu";
-import { TieredMenu } from "primereact/tieredmenu";
 import { Avatar } from "primereact/avatar";
-import { classNames } from "primereact/utils";
 
 function buildMenuItems(
   items: NavItem[],
@@ -52,6 +48,48 @@ function buildUserMenuItems(
     };
   });
 }
+
+/**
+ * UserMenuSection - shared between mobile and desktop sidebars
+ */
+interface UserMenuSectionProps {
+  userMenu: UserMenuConfig;
+  collapsed: boolean;
+  onNavigate: (route: string) => void;
+}
+
+const UserMenuSection = React.memo(function UserMenuSection({
+  userMenu,
+  collapsed,
+  onNavigate,
+}: UserMenuSectionProps) {
+  const userMenuModel = useMemo(
+    () => buildUserMenuItems(userMenu, onNavigate),
+    [userMenu, onNavigate],
+  );
+
+  return (
+    <>
+      <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color">
+        <Avatar
+          icon="pi pi-user"
+          shape="circle"
+          className="flex-none pointer-events-none"
+        />
+        {!collapsed && (
+          <div className="flex flex-column align pointer-events-none">
+            <span className="font-bold">{userMenu?.userName}</span>
+            <span className="text-sm">{userMenu?.userRole}</span>
+          </div>
+        )}
+      </div>
+      <Menu
+        model={userMenuModel}
+        className="w-full border-none flex-shrink-0"
+      />
+    </>
+  );
+});
 
 interface DashboardSidebarProps {
   items: NavItem[];
@@ -106,25 +144,11 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
           />
           <div className="flex-1"></div>
           {userMenu && (
-            <>
-              <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color">
-                <Avatar
-                  icon="pi pi-user"
-                  shape="circle"
-                  className="flex-none pointer-events-none"
-                />
-
-                <div className="flex flex-column align pointer-events-none">
-                  <span className="font-bold">{userMenu?.userName}</span>
-                  <span className="text-sm">{userMenu?.userRole}</span>
-                </div>
-              </div>
-
-              <Menu
-                model={buildUserMenuItems(userMenu, handleNav)}
-                className="w-full border-none flex-shrink-0"
-              />
-            </>
+            <UserMenuSection
+              userMenu={userMenu}
+              collapsed={false}
+              onNavigate={handleNav}
+            />
           )}
         </div>
       </Sidebar>
@@ -159,48 +183,13 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
         <div className="flex-1"></div>
         {/* User Section */}
         <div className="flex-shrink-0 p-1">
-          {isAuthenticated ? (
-            <TieredMenu
-              model={[
-                {
-                  label: collapsed ? "" : userMenu?.profileLabel,
-                  template: (item, options) => {
-                    return (
-                      <button
-                        className={classNames(
-                          options.className,
-                          "w-full p-link flex gap-3 align-items-center h-4rem text-color",
-                        )}
-                        style={{ paddingLeft: ".8rem" }}
-                      >
-                        <Avatar
-                          icon="pi pi-user"
-                          shape="circle"
-                          className="flex-none pointer-events-none"
-                        />
-                        {!collapsed && (
-                          <>
-                            <div className="flex flex-column align pointer-events-none">
-                              <span className="font-bold">
-                                {userMenu?.userName}
-                              </span>
-                              <span className="text-sm">
-                                {userMenu?.userRole}
-                              </span>
-                            </div>
-                            <div className="pi pi-angle-right pointer-events-none" />
-                          </>
-                        )}
-                      </button>
-                    );
-                  },
-
-                  items: buildUserMenuItems(userMenu, handleNav),
-                },
-              ]}
-              className="w-full border-none"
+          {isAuthenticated && userMenu ? (
+            <UserMenuSection
+              userMenu={userMenu}
+              collapsed={collapsed}
+              onNavigate={handleNav}
             />
-          ) : (
+          ) : !isAuthenticated ? (
             <Button
               icon="pi pi-sign-in"
               label={!collapsed ? userMenu?.loginLabel : undefined}
@@ -209,7 +198,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               }`}
               onClick={handleAuthClick}
             />
-          )}
+          ) : null}
         </div>
         <div className="h-3rem"></div>
 
@@ -220,7 +209,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               collapsed ? "pi pi-angle-double-right" : "pi pi-angle-double-left"
             }
             text
-            onClick={() => onCollapseChange()}
+            onClick={onCollapseChange}
           />
         </div>
       </aside>
