@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { TabView, TabPanel } from "primereact/tabview";
-import { Accordion, AccordionTab } from "primereact/accordion";
+import { TabView } from "primereact/tabview";
+import { Accordion } from "primereact/accordion";
 import { Carousel } from "primereact/carousel";
 import { ComponentRendererProps } from "./types";
 import { BlockRenderer } from "../BlockRenderer";
@@ -23,27 +23,26 @@ export function renderTabView({
 
   return (
     <TabView className={`mb-4 ${className || ""}`} style={style}>
-      {tabs.map((tab: any, index: number) => {
-        const tabProps = tab.props || {};
-        return (
-          <TabPanel key={tab.id || index} {...tabProps}>
-            <BlockRenderer
-              block={{
-                ...tab,
-                type: "block",
-                wrapper: undefined,
-              }}
-              pageId={pageId}
-              appConfig={appConfig}
-              stateManager={stateManager}
-              elementIndex={elementIndex}
-              showToast={showToast}
-              navigate={navigate}
-              confirm={confirm}
-            />
-          </TabPanel>
-        );
-      })}
+      {tabs.map((tab: any, index: number) => (
+        <BlockRenderer
+          key={tab.id || index}
+          block={{
+            ...tab,
+            type: "block",
+            wrapper: {
+              component: "TabPanel",
+              props: tab.props || {},
+            },
+          }}
+          pageId={pageId}
+          appConfig={appConfig}
+          stateManager={stateManager}
+          elementIndex={elementIndex}
+          showToast={showToast}
+          navigate={navigate}
+          confirm={confirm}
+        />
+      ))}
     </TabView>
   );
 }
@@ -68,27 +67,26 @@ export function renderAccordion({
       style={style}
       activeIndex={props.activeIndex}
     >
-      {tabs.map((tab: any, index: number) => {
-        const tabProps = tab.props || {};
-        return (
-          <AccordionTab key={tab.id || index} {...tabProps}>
-            <BlockRenderer
-              block={{
-                ...tab,
-                type: "block",
-                wrapper: undefined,
-              }}
-              pageId={pageId}
-              appConfig={appConfig}
-              stateManager={stateManager}
-              elementIndex={elementIndex}
-              showToast={showToast}
-              navigate={navigate}
-              confirm={confirm}
-            />
-          </AccordionTab>
-        );
-      })}
+      {tabs.map((tab: any, index: number) => (
+        <BlockRenderer
+          key={tab.id || index}
+          block={{
+            ...tab,
+            type: "block",
+            wrapper: {
+              component: "AccordionTab",
+              props: tab.props || {},
+            },
+          }}
+          pageId={pageId}
+          appConfig={appConfig}
+          stateManager={stateManager}
+          elementIndex={elementIndex}
+          showToast={showToast}
+          navigate={navigate}
+          confirm={confirm}
+        />
+      ))}
     </Accordion>
   );
 }

@@ -45,7 +45,7 @@ export function BlockRenderer({
   const content = (
     <div className="flex flex-column gap-3">
       {components
-        .filter((c) => c !== null && c !== undefined) // Фильтруем null/undefined компоненты
+        .filter((c) => c !== null && c !== undefined)
         .map((component) => (
           <ComponentRenderer
             key={component.id}
