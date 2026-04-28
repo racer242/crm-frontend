@@ -56,12 +56,14 @@ interface UserMenuSectionProps {
   userMenu: UserMenuConfig;
   collapsed: boolean;
   onNavigate: (route: string) => void;
+  wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 const UserMenuSection = React.memo(function UserMenuSection({
   userMenu,
   collapsed,
   onNavigate,
+  wrapperProps,
 }: UserMenuSectionProps) {
   const userMenuModel = useMemo(
     () => buildUserMenuItems(userMenu, onNavigate),
@@ -69,7 +71,7 @@ const UserMenuSection = React.memo(function UserMenuSection({
   );
 
   return (
-    <>
+    <div {...wrapperProps}>
       <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color">
         <Avatar
           icon="pi pi-user"
@@ -87,7 +89,7 @@ const UserMenuSection = React.memo(function UserMenuSection({
         model={userMenuModel}
         className="w-full border-none flex-shrink-0"
       />
-    </>
+    </div>
   );
 });
 
@@ -188,6 +190,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               userMenu={userMenu}
               collapsed={collapsed}
               onNavigate={handleNav}
+              wrapperProps={{ className: "p-3" }}
             />
           ) : !isAuthenticated ? (
             <Button
