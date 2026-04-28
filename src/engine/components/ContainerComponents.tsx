@@ -4,34 +4,46 @@ import React from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Carousel } from "primereact/carousel";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { ComponentRendererProps } from "./types";
+import { BlockRenderer } from "../BlockRenderer";
 
 export function renderTabView({
   props,
   className,
   style,
+  pageId,
+  appConfig,
+  stateManager,
+  elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: ComponentRendererProps) {
   const tabs = props.tabs || [];
 
   return (
     <TabView className={`mb-4 ${className || ""}`} style={style}>
-      {tabs.map((tab: any, index: number) => (
-        <TabPanel key={index} header={tab.label}>
-          <div className="p-3">
-            {tab.content?.type === "table" ? (
-              <DataTable value={tab.content.data || []} className="w-full">
-                {tab.content.columns?.map((col: any, i: number) => (
-                  <Column key={i} field={col.field} header={col.header} />
-                ))}
-              </DataTable>
-            ) : (
-              <p className="text-300 m-0">{tab.content}</p>
-            )}
-          </div>
-        </TabPanel>
-      ))}
+      {tabs.map((tab: any, index: number) => {
+        const tabProps = tab.props || {};
+        return (
+          <TabPanel key={tab.id || index} {...tabProps}>
+            <BlockRenderer
+              block={{
+                ...tab,
+                type: "block",
+                wrapper: undefined,
+              }}
+              pageId={pageId}
+              appConfig={appConfig}
+              stateManager={stateManager}
+              elementIndex={elementIndex}
+              showToast={showToast}
+              navigate={navigate}
+              confirm={confirm}
+            />
+          </TabPanel>
+        );
+      })}
     </TabView>
   );
 }
@@ -40,6 +52,13 @@ export function renderAccordion({
   props,
   className,
   style,
+  pageId,
+  appConfig,
+  stateManager,
+  elementIndex,
+  showToast,
+  navigate,
+  confirm,
 }: ComponentRendererProps) {
   const tabs = props.tabs || [];
 
@@ -49,11 +68,27 @@ export function renderAccordion({
       style={style}
       activeIndex={props.activeIndex}
     >
-      {tabs.map((tab: any, index: number) => (
-        <AccordionTab key={index} header={tab.header}>
-          <p className="text-300 m-0">{tab.content}</p>
-        </AccordionTab>
-      ))}
+      {tabs.map((tab: any, index: number) => {
+        const tabProps = tab.props || {};
+        return (
+          <AccordionTab key={tab.id || index} {...tabProps}>
+            <BlockRenderer
+              block={{
+                ...tab,
+                type: "block",
+                wrapper: undefined,
+              }}
+              pageId={pageId}
+              appConfig={appConfig}
+              stateManager={stateManager}
+              elementIndex={elementIndex}
+              showToast={showToast}
+              navigate={navigate}
+              confirm={confirm}
+            />
+          </AccordionTab>
+        );
+      })}
     </Accordion>
   );
 }

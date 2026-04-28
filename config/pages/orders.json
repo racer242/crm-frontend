@@ -20,7 +20,6 @@
         {
           "id": "ordersTitle",
           "type": "block",
-          "blockType": "header",
           "state": {},
           "components": [
             {
@@ -47,7 +46,6 @@
         {
           "id": "tabViewBlock",
           "type": "block",
-          "blockType": "tabs",
           "state": {},
           "components": [
             {
@@ -193,7 +191,6 @@
         {
           "id": "orderForm",
           "type": "block",
-          "blockType": "form",
           "state": {
             "formData": {}
           },
@@ -306,7 +303,6 @@
         {
           "id": "orderMessages",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",

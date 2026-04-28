@@ -7,6 +7,8 @@ import { Card } from "primereact/card";
 import { Panel } from "primereact/panel";
 import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
+import { TabPanel } from "primereact/tabview";
+import { AccordionTab } from "primereact/accordion";
 import { StateManager, ElementIndex } from "@/core";
 
 interface BlockRendererProps {
@@ -92,6 +94,18 @@ export function BlockRenderer({
               </div>
             }
           />
+        );
+      case "TabPanel":
+        return (
+          <TabPanel {...wrapperProps} style={style}>
+            {content}
+          </TabPanel>
+        );
+      case "AccordionTab":
+        return (
+          <AccordionTab {...wrapperProps} style={style}>
+            {content}
+          </AccordionTab>
         );
       default:
         return <div style={style}>{content}</div>;

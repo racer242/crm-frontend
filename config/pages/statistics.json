@@ -63,7 +63,6 @@
         {
           "id": "statsHeaderBlock",
           "type": "block",
-          "blockType": "header",
           "state": {},
           "components": [
             {
@@ -98,7 +97,6 @@
         {
           "id": "weekFilterBlock",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -292,7 +290,6 @@
         {
           "id": "dateRangeBlock",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -383,7 +380,6 @@
         {
           "id": "menuBarBlock",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "components": [
             {
@@ -415,7 +411,6 @@
         {
           "id": "tabViewBlock",
           "type": "block",
-          "blockType": "tabs",
           "state": {},
           "components": [
             {

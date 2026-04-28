@@ -22,7 +22,6 @@ export type BlockType =
 /** Блок - контейнер для компонентов */
 export interface Block extends BaseElement {
   type: "block";
-  blockType: BlockType;
   components: Component[];
   layout?: LayoutConfig;
   className?: string;
@@ -32,7 +31,14 @@ export interface Block extends BaseElement {
 
 /** Конфигурация обертки блока */
 export interface WrapperConfig {
-  component: "Card" | "Panel" | "Fieldset" | "Toolbar" | "div";
+  component:
+    | "Card"
+    | "Panel"
+    | "Fieldset"
+    | "Toolbar"
+    | "TabPanel"
+    | "AccordionTab"
+    | "div";
   props?: Record<string, any>;
 }
 

@@ -25,7 +25,6 @@
         {
           "id": "usersTitle",
           "type": "block",
-          "blockType": "header",
           "className": "col-12 lg:col-10",
           "state": {},
           "components": [
@@ -44,7 +43,6 @@
         {
           "id": "usersActions",
           "type": "block",
-          "blockType": "custom",
           "className": "col-12 lg:col-2",
           "state": {},
           "components": [
@@ -88,7 +86,6 @@
         {
           "id": "searchBlock",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -162,7 +159,6 @@
         {
           "id": "usersTableBlock",
           "type": "block",
-          "blockType": "table",
           "state": {},
           "wrapper": {
             "component": "Card",

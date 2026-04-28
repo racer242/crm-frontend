@@ -17,7 +17,6 @@
         {
           "id": "title",
           "type": "block",
-          "blockType": "header",
           "state": {},
           "components": [
             {
@@ -46,7 +45,6 @@
         {
           "id": "textB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -80,7 +78,6 @@
         {
           "id": "badgeB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -115,7 +112,6 @@
         {
           "id": "tagB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -161,7 +157,6 @@
         {
           "id": "inputTextB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -206,7 +201,6 @@
         {
           "id": "inputNumB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -242,7 +236,6 @@
         {
           "id": "textareaB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -267,7 +260,6 @@
         {
           "id": "pwdB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -301,7 +293,6 @@
         {
           "id": "dropB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -355,7 +346,6 @@
         {
           "id": "multiB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -415,7 +405,6 @@
         {
           "id": "autoB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -444,7 +433,6 @@
         {
           "id": "calB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -477,7 +465,6 @@
         {
           "id": "checkB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -525,7 +512,6 @@
         {
           "id": "radioB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -565,7 +551,6 @@
         {
           "id": "switchB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -602,7 +587,6 @@
         {
           "id": "sliderB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -640,7 +624,6 @@
         {
           "id": "ratingB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -675,7 +658,6 @@
         {
           "id": "colorB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -710,7 +692,6 @@
         {
           "id": "fileB",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -756,7 +737,6 @@
         {
           "id": "btnB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -811,7 +791,6 @@
         {
           "id": "avatarB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -849,7 +828,6 @@
         {
           "id": "chipB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -894,7 +872,6 @@
         {
           "id": "tableB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -939,7 +916,6 @@
         {
           "id": "timeB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -983,7 +959,6 @@
         {
           "id": "breadB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1016,7 +991,6 @@
         {
           "id": "stepsB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1050,7 +1024,6 @@
         {
           "id": "menuB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1101,7 +1074,6 @@
         {
           "id": "cardB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "components": [
             {
@@ -1121,7 +1093,6 @@
         {
           "id": "tabB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1154,7 +1125,6 @@
         {
           "id": "accB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1187,7 +1157,6 @@
         {
           "id": "carB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1237,7 +1206,6 @@
         {
           "id": "msgB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1292,7 +1260,6 @@
         {
           "id": "progB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1326,7 +1293,6 @@
         {
           "id": "spinB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1351,7 +1317,6 @@
         {
           "id": "skelB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1396,7 +1361,6 @@
         {
           "id": "toastB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -1420,7 +1384,6 @@
         {
           "id": "divB",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",

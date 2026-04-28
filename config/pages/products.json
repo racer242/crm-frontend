@@ -25,7 +25,6 @@
         {
           "id": "productsTitle",
           "type": "block",
-          "blockType": "header",
           "state": {},
           "components": [
             {
@@ -43,7 +42,6 @@
         {
           "id": "productsBreadcrumb",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "components": [
             {
@@ -81,7 +79,6 @@
         {
           "id": "searchBlock",
           "type": "block",
-          "blockType": "form",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -173,7 +170,6 @@
         {
           "id": "prodCard1",
           "type": "block",
-          "blockType": "card-grid",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -208,7 +204,6 @@
         {
           "id": "prodCard2",
           "type": "block",
-          "blockType": "card-grid",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -243,7 +238,6 @@
         {
           "id": "prodCard3",
           "type": "block",
-          "blockType": "card-grid",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -278,7 +272,6 @@
         {
           "id": "prodCard4",
           "type": "block",
-          "blockType": "card-grid",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -322,7 +315,6 @@
         {
           "id": "productsTableBlock",
           "type": "block",
-          "blockType": "table",
           "state": {},
           "wrapper": {
             "component": "Card",

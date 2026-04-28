@@ -39,7 +39,6 @@
         {
           "id": "statCard1",
           "type": "block",
-          "blockType": "stats",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -73,7 +72,6 @@
         {
           "id": "statCard2",
           "type": "block",
-          "blockType": "stats",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -107,7 +105,6 @@
         {
           "id": "statCard3",
           "type": "block",
-          "blockType": "stats",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -141,7 +138,6 @@
         {
           "id": "statCard4",
           "type": "block",
-          "blockType": "stats",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -189,7 +185,6 @@
         {
           "id": "toolbarBlock",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Toolbar",
@@ -252,7 +247,6 @@
         {
           "id": "recentOrders",
           "type": "block",
-          "blockType": "table",
           "state": {},
           "wrapper": {
             "component": "Card",
@@ -332,7 +326,6 @@
         {
           "id": "activityFeed",
           "type": "block",
-          "blockType": "custom",
           "state": {},
           "wrapper": {
             "component": "Card",
