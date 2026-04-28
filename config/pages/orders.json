@@ -55,119 +55,159 @@
               "props": {
                 "tabs": [
                   {
-                    "label": "All Orders",
-                    "content": {
-                      "type": "table",
-                      "data": [
-                        {
-                          "id": "ORD-001",
-                          "customer": "Alice Johnson",
-                          "total": 1250,
-                          "status": "Completed",
-                          "date": "2024-01-15"
-                        },
-                        {
-                          "id": "ORD-002",
-                          "customer": "Bob Smith",
-                          "total": 890,
-                          "status": "Pending",
-                          "date": "2024-01-14"
-                        },
-                        {
-                          "id": "ORD-003",
-                          "customer": "Carol White",
-                          "total": 2100,
-                          "status": "Shipped",
-                          "date": "2024-01-13"
+                    "id": "all_orders",
+                    "props": {
+                      "header": "All Orders"
+                    },
+                    "components": [
+                      {
+                        "id": "all_orders_table",
+                        "type": "component",
+                        "componentType": "DataTable",
+                        "props": {
+                          "value": [
+                            {
+                              "id": "ORD-001",
+                              "customer": "Alice Johnson",
+                              "total": 1250,
+                              "status": "Completed",
+                              "date": "2024-01-15"
+                            },
+                            {
+                              "id": "ORD-002",
+                              "customer": "Bob Smith",
+                              "total": 890,
+                              "status": "Pending",
+                              "date": "2024-01-14"
+                            },
+                            {
+                              "id": "ORD-003",
+                              "customer": "Carol White",
+                              "total": 2100,
+                              "status": "Shipped",
+                              "date": "2024-01-13"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID",
+                              "sortable": true
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer",
+                              "sortable": true
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total",
+                              "sortable": true
+                            },
+                            {
+                              "field": "status",
+                              "header": "Status",
+                              "sortable": true
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date",
+                              "sortable": true
+                            }
+                          ]
                         }
-                      ],
-                      "columns": [
-                        {
-                          "field": "id",
-                          "header": "Order ID"
-                        },
-                        {
-                          "field": "customer",
-                          "header": "Customer"
-                        },
-                        {
-                          "field": "total",
-                          "header": "Total"
-                        },
-                        {
-                          "field": "status",
-                          "header": "Status"
-                        },
-                        {
-                          "field": "date",
-                          "header": "Date"
-                        }
-                      ]
-                    }
+                      }
+                    ]
                   },
                   {
-                    "label": "Pending",
-                    "content": {
-                      "type": "table",
-                      "data": [
-                        {
-                          "id": "ORD-002",
-                          "customer": "Bob Smith",
-                          "total": 890,
-                          "date": "2024-01-14"
+                    "id": "pending",
+                    "props": {
+                      "header": "Pending"
+                    },
+                    "components": [
+                      {
+                        "id": "pending_table",
+                        "type": "component",
+                        "componentType": "DataTable",
+                        "props": {
+                          "value": [
+                            {
+                              "id": "ORD-002",
+                              "customer": "Bob Smith",
+                              "total": 890,
+                              "date": "2024-01-14"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID",
+                              "sortable": true
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer",
+                              "sortable": true
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total",
+                              "sortable": true
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date",
+                              "sortable": true
+                            }
+                          ]
                         }
-                      ],
-                      "columns": [
-                        {
-                          "field": "id",
-                          "header": "Order ID"
-                        },
-                        {
-                          "field": "customer",
-                          "header": "Customer"
-                        },
-                        {
-                          "field": "total",
-                          "header": "Total"
-                        },
-                        {
-                          "field": "date",
-                          "header": "Date"
-                        }
-                      ]
-                    }
+                      }
+                    ]
                   },
                   {
-                    "label": "Completed",
-                    "content": {
-                      "type": "table",
-                      "data": [
-                        {
-                          "id": "ORD-001",
-                          "customer": "Alice Johnson",
-                          "total": 1250,
-                          "date": "2024-01-15"
+                    "id": "completed",
+                    "props": {
+                      "header": "Completed"
+                    },
+                    "components": [
+                      {
+                        "id": "completed_table",
+                        "type": "component",
+                        "componentType": "DataTable",
+                        "props": {
+                          "value": [
+                            {
+                              "id": "ORD-001",
+                              "customer": "Alice Johnson",
+                              "total": 1250,
+                              "date": "2024-01-15"
+                            }
+                          ],
+                          "columns": [
+                            {
+                              "field": "id",
+                              "header": "Order ID",
+                              "sortable": true
+                            },
+                            {
+                              "field": "customer",
+                              "header": "Customer",
+                              "sortable": true
+                            },
+                            {
+                              "field": "total",
+                              "header": "Total",
+                              "sortable": true
+                            },
+                            {
+                              "field": "date",
+                              "header": "Date",
+                              "sortable": true
+                            }
+                          ]
                         }
-                      ],
-                      "columns": [
-                        {
-                          "field": "id",
-                          "header": "Order ID"
-                        },
-                        {
-                          "field": "customer",
-                          "header": "Customer"
-                        },
-                        {
-                          "field": "total",
-                          "header": "Total"
-                        },
-                        {
-                          "field": "date",
-                          "header": "Date"
-                        }
-                      ]
-                    }
+                      }
+                    ]
                   }
                 ]
               },

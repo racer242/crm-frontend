@@ -418,16 +418,25 @@
                 "activeIndex": 0,
                 "tabs": [
                   {
-                    "header": "How to reset my settings?",
-                    "content": "Go to Profile > Reset Settings. All changes will be reverted to defaults."
+                    "id": "accordion_tab_0",
+                    "props": {
+                      "header": "How to reset my settings?"
+                    },
+                    "components": []
                   },
                   {
-                    "header": "How to export my data?",
-                    "content": "Use the Export button in the toolbar to download your data as CSV or JSON."
+                    "id": "accordion_tab_1",
+                    "props": {
+                      "header": "How to export my data?"
+                    },
+                    "components": []
                   },
                   {
-                    "header": "How to enable dark mode?",
-                    "content": "Dark mode is enabled by default. Light mode coming soon."
+                    "id": "accordion_tab_2",
+                    "props": {
+                      "header": "How to enable dark mode?"
+                    },
+                    "components": []
                   }
                 ]
               },

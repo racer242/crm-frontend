@@ -1140,12 +1140,18 @@
               "props": {
                 "tabs": [
                   {
-                    "header": "Q1",
-                    "content": "A1"
+                    "id": "accordion_tab_0",
+                    "props": {
+                      "header": "Q1"
+                    },
+                    "components": []
                   },
                   {
-                    "header": "Q2",
-                    "content": "A2"
+                    "id": "accordion_tab_1",
+                    "props": {
+                      "header": "Q2"
+                    },
+                    "components": []
                   }
                 ]
               },
