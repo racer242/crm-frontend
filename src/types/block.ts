@@ -31,14 +31,7 @@ export interface Block extends BaseElement {
 
 /** Конфигурация обертки блока */
 export interface WrapperConfig {
-  component:
-    | "Card"
-    | "Panel"
-    | "Fieldset"
-    | "Toolbar"
-    | "TabPanel"
-    | "AccordionTab"
-    | "div";
+  component: "Card" | "Panel" | "Fieldset" | "Toolbar" | "div";
   props?: Record<string, any>;
 }
 

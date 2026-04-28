@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { TabView } from "primereact/tabview";
-import { Accordion } from "primereact/accordion";
+import { TabView, TabPanel } from "primereact/tabview";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { Carousel } from "primereact/carousel";
 import { ComponentRendererProps } from "./types";
-import { BlockRenderer } from "../BlockRenderer";
+import { ComponentRenderer } from "../ComponentRenderer";
+import { Component } from "@/types";
 
 export function renderTabView({
   props,
@@ -21,27 +22,32 @@ export function renderTabView({
 }: ComponentRendererProps) {
   const tabs = props.tabs || [];
 
+  const renderComponents = (components: Component[]) => (
+    <div className="flex flex-column gap-3">
+      {components
+        .filter((c) => c !== null && c !== undefined)
+        .map((component) => (
+          <ComponentRenderer
+            key={component.id}
+            component={component}
+            pageId={pageId || ""}
+            appConfig={appConfig}
+            stateManager={stateManager}
+            elementIndex={elementIndex}
+            showToast={showToast}
+            navigate={navigate}
+            confirm={confirm}
+          />
+        ))}
+    </div>
+  );
+
   return (
     <TabView className={`mb-4 ${className || ""}`} style={style}>
       {tabs.map((tab: any, index: number) => (
-        <BlockRenderer
-          key={tab.id || index}
-          block={{
-            ...tab,
-            type: "block",
-            wrapper: {
-              component: "TabPanel",
-              props: tab.props || {},
-            },
-          }}
-          pageId={pageId}
-          appConfig={appConfig}
-          stateManager={stateManager}
-          elementIndex={elementIndex}
-          showToast={showToast}
-          navigate={navigate}
-          confirm={confirm}
-        />
+        <TabPanel key={tab.id || index} {...(tab.props || {})}>
+          {tab.components ? renderComponents(tab.components) : null}
+        </TabPanel>
       ))}
     </TabView>
   );
@@ -61,6 +67,26 @@ export function renderAccordion({
 }: ComponentRendererProps) {
   const tabs = props.tabs || [];
 
+  const renderComponents = (components: Component[]) => (
+    <div className="flex flex-column gap-3">
+      {components
+        .filter((c) => c !== null && c !== undefined)
+        .map((component) => (
+          <ComponentRenderer
+            key={component.id}
+            component={component}
+            pageId={pageId || ""}
+            appConfig={appConfig}
+            stateManager={stateManager}
+            elementIndex={elementIndex}
+            showToast={showToast}
+            navigate={navigate}
+            confirm={confirm}
+          />
+        ))}
+    </div>
+  );
+
   return (
     <Accordion
       className={className || ""}
@@ -68,24 +94,9 @@ export function renderAccordion({
       activeIndex={props.activeIndex}
     >
       {tabs.map((tab: any, index: number) => (
-        <BlockRenderer
-          key={tab.id || index}
-          block={{
-            ...tab,
-            type: "block",
-            wrapper: {
-              component: "AccordionTab",
-              props: tab.props || {},
-            },
-          }}
-          pageId={pageId}
-          appConfig={appConfig}
-          stateManager={stateManager}
-          elementIndex={elementIndex}
-          showToast={showToast}
-          navigate={navigate}
-          confirm={confirm}
-        />
+        <AccordionTab key={tab.id || index} {...(tab.props || {})}>
+          {tab.components ? renderComponents(tab.components) : null}
+        </AccordionTab>
       ))}
     </Accordion>
   );

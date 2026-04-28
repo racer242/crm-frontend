@@ -422,13 +422,13 @@
               "props": {
                 "tabs": [
                   {
-                    "id": "покупатели",
+                    "id": "tab1",
                     "props": {
                       "header": "Покупатели"
                     },
                     "components": [
                       {
-                        "id": "покупатели_table",
+                        "id": "tab1_table",
                         "type": "component",
                         "componentType": "DataTable",
                         "props": {
@@ -556,13 +556,13 @@
                     ]
                   },
                   {
-                    "id": "заказы",
+                    "id": "tab2",
                     "props": {
                       "header": "Заказы"
                     },
                     "components": [
                       {
-                        "id": "заказы_table",
+                        "id": "tab2_table",
                         "type": "component",
                         "componentType": "DataTable",
                         "props": {
@@ -708,13 +708,13 @@
                     ]
                   },
                   {
-                    "id": "продукты",
+                    "id": "tab3",
                     "props": {
                       "header": "Продукты"
                     },
                     "components": [
                       {
-                        "id": "продукты_table",
+                        "id": "tab3_table",
                         "type": "component",
                         "componentType": "DataTable",
                         "props": {
