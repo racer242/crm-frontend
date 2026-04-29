@@ -6,7 +6,6 @@ import { Linkage, StateManager, ElementIndex } from "@/core";
 
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
-  isMounted: boolean;
   handleEvent: (eventType: string, eventValue: any) => void;
 }
 
@@ -32,7 +31,6 @@ export function useComponentBindings({
   navigate?: (url: string) => void;
   confirm?: (message: string) => Promise<boolean>;
 }): ComponentBindings {
-  const [isMounted, setIsMounted] = useState(false);
   const [resolvedProps, setResolvedProps] = useState<Record<string, any>>({});
 
   const commandContextRef = useRef<{
@@ -131,12 +129,6 @@ export function useComponentBindings({
     return unsubscribe;
   }, [linkage, allBindings, resolveAll]);
 
-  // Флаг монтирования
-  useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
-
   // Обработчик событий
   const handleEvent = useCallback(
     (eventType: string, eventValue: any) => {
@@ -165,7 +157,6 @@ export function useComponentBindings({
 
   return {
     resolvedProps,
-    isMounted,
     handleEvent,
   };
 }

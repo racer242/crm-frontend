@@ -68,7 +68,7 @@ export function ComponentRenderer({
 }) {
   const { componentType, className, style } = component;
 
-  const { resolvedProps, isMounted, handleEvent } = useComponentBindings({
+  const { resolvedProps, handleEvent } = useComponentBindings({
     component,
     pageId,
     appConfig,
