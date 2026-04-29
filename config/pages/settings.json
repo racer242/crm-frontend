@@ -415,28 +415,64 @@
               "type": "component",
               "componentType": "Accordion",
               "props": {
-                "activeIndex": 0,
+                "activeIndex": 1,
                 "tabs": [
                   {
                     "id": "accordion_tab_0",
                     "props": {
                       "header": "How to reset my settings?"
                     },
-                    "components": []
+                    "components": [
+                      {
+                        "id": "webhookUrl1",
+                        "type": "component",
+                        "componentType": "InputText",
+                        "props": {
+                          "placeholder": "Webhook URL 1"
+                        },
+                        "state": {
+                          "value": "https://hooks.example.com/crm"
+                        }
+                      }
+                    ]
                   },
                   {
                     "id": "accordion_tab_1",
                     "props": {
                       "header": "How to export my data?"
                     },
-                    "components": []
+                    "components": [
+                      {
+                        "id": "webhookUrl2",
+                        "type": "component",
+                        "componentType": "InputText",
+                        "props": {
+                          "placeholder": "Webhook URL 2"
+                        },
+                        "state": {
+                          "value": "https://hooks.example.com/crm"
+                        }
+                      }
+                    ]
                   },
                   {
                     "id": "accordion_tab_2",
                     "props": {
                       "header": "How to enable dark mode?"
                     },
-                    "components": []
+                    "components": [
+                      {
+                        "id": "webhookUrl3",
+                        "type": "component",
+                        "componentType": "InputText",
+                        "props": {
+                          "placeholder": "Webhook URL 3"
+                        },
+                        "state": {
+                          "value": "https://hooks.example.com/crm"
+                        }
+                      }
+                    ]
                   }
                 ]
               },

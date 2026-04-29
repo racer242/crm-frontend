@@ -89,6 +89,7 @@ export function renderAccordion({
 
   return (
     <Accordion
+      key={props.activeIndex}
       className={className || ""}
       style={style}
       activeIndex={props.activeIndex}

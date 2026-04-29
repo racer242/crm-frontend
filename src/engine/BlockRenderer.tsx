@@ -40,20 +40,6 @@ export function BlockRenderer({
     return <div className={className} style={style}></div>;
   }
 
-  console.log(
-    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-    block.id,
-    className,
-    style,
-    pageId,
-    appConfig,
-    stateManager,
-    elementIndex,
-    showToast,
-    navigate,
-    confirm,
-  );
-
   const content = (
     <div className="flex flex-column gap-3">
       {components
