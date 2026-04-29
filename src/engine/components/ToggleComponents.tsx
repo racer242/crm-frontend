@@ -9,23 +9,14 @@ import { Rating } from "primereact/rating";
 import { ComponentRendererProps } from "./types";
 
 export function renderCheckbox({
-  component,
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
-  resolvedVisible,
   handleEvent,
 }: ComponentRendererProps) {
   const checkboxProps = {
     ...props,
-    checked:
-      resolvedValue !== undefined
-        ? resolvedValue
-        : component.state?.value || false,
-    disabled: resolvedDisabled ?? props.disabled,
-    visible: resolvedVisible ?? props.visible,
+    checked: props.value ?? props.checked ?? false,
   };
 
   return (
@@ -47,14 +38,11 @@ export function renderRadioButton({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
   const radioButtonProps = {
     ...props,
-    value: resolvedValue !== undefined ? resolvedValue : props.value,
-    disabled: resolvedDisabled ?? props.disabled,
+    value: props.value,
   };
 
   return (
@@ -73,23 +61,14 @@ export function renderRadioButton({
 }
 
 export function renderInputSwitch({
-  component,
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
-  resolvedVisible,
   handleEvent,
 }: ComponentRendererProps) {
   const inputSwitchProps = {
     ...props,
-    checked:
-      resolvedValue !== undefined
-        ? resolvedValue
-        : component.state?.value || false,
-    disabled: resolvedDisabled ?? props.disabled,
-    visible: resolvedVisible ?? props.visible,
+    checked: props.value ?? props.checked ?? false,
   };
 
   return (
@@ -111,14 +90,11 @@ export function renderSlider({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
   const sliderProps = {
     ...props,
-    value: resolvedValue !== undefined ? resolvedValue : props.value,
-    disabled: resolvedDisabled ?? props.disabled,
+    value: props.value,
   };
 
   return (

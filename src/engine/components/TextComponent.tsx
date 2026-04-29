@@ -4,15 +4,12 @@ import React from "react";
 import { ComponentRendererProps } from "./types";
 
 export function renderText({
-  component,
   props,
   className,
   style,
-  resolvedValue,
 }: ComponentRendererProps) {
   const level = props.level as number | undefined;
-  const value =
-    resolvedValue !== undefined ? resolvedValue : (props.value as string);
+  const value = props.value as string;
 
   if (level === 1)
     return (

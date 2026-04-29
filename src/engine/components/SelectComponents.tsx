@@ -12,14 +12,11 @@ export function renderDropdown({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
   const dropdownProps = {
     ...props,
-    value: resolvedValue !== undefined ? resolvedValue : (props.value ?? null),
-    disabled: resolvedDisabled ?? props.disabled,
+    value: props.value ?? null,
   };
 
   return (
@@ -36,14 +33,11 @@ export function renderMultiSelect({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
   const multiSelectProps = {
     ...props,
-    value: resolvedValue !== undefined ? resolvedValue : (props.value ?? []),
-    disabled: resolvedDisabled ?? props.disabled,
+    value: props.value ?? [],
   };
 
   return (
@@ -60,14 +54,11 @@ export function renderAutoComplete({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
   const autoCompleteProps = {
     ...props,
-    value: resolvedValue !== undefined ? resolvedValue : (props.value ?? ""),
-    disabled: resolvedDisabled ?? props.disabled,
+    value: props.value ?? "",
   };
 
   return (
@@ -89,12 +80,9 @@ export function renderCalendar({
   props,
   className,
   style,
-  resolvedValue,
-  resolvedDisabled,
   handleEvent,
 }: ComponentRendererProps) {
-  let calendarValue: any =
-    resolvedValue !== undefined ? resolvedValue : props.value;
+  let calendarValue: any = props.value;
 
   if (typeof calendarValue === "string" && calendarValue.trim() !== "") {
     const parsedDate = parseDateString(calendarValue);
@@ -113,7 +101,6 @@ export function renderCalendar({
   const calendarProps = {
     ...props,
     value: calendarValue,
-    disabled: resolvedDisabled ?? props.disabled,
     dateFormat,
   };
 

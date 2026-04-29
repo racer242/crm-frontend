@@ -92,10 +92,6 @@ export function ComponentRenderer({
     showToast,
     navigate,
     confirm,
-    resolvedValue: resolvedProps.value,
-    resolvedVisible: resolvedProps.visible,
-    resolvedDisabled: resolvedProps.disabled,
-    isMounted,
     handleEvent,
   };
 

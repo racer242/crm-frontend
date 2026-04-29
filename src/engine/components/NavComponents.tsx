@@ -56,7 +56,6 @@ export function renderMenubar({
   props,
   className,
   style,
-  isMounted,
   handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
@@ -67,8 +66,6 @@ export function renderMenubar({
     handleEvent,
     true,
   );
-
-  if (!isMounted) return <div className="h-3rem surface-800 border-round-md" />;
 
   return (
     <Menubar
