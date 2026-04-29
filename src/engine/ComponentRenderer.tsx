@@ -84,6 +84,13 @@ export function ComponentRenderer({
     className,
     style,
     handleEvent,
+    pageId,
+    appConfig,
+    stateManager,
+    elementIndex,
+    showToast,
+    navigate,
+    confirm,
   };
 
   switch (componentType) {
