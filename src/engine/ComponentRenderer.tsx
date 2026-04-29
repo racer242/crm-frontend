@@ -68,6 +68,20 @@ export function ComponentRenderer({
 }) {
   const { componentType, className, style } = component;
 
+  console.log(
+    "1111111111111",
+    component.id,
+    className,
+    style,
+    pageId,
+    appConfig,
+    stateManager,
+    elementIndex,
+    showToast,
+    navigate,
+    confirm,
+  );
+
   const { resolvedProps, isMounted, handleEvent } = useComponentBindings({
     component,
     pageId,
@@ -79,12 +93,33 @@ export function ComponentRenderer({
     confirm,
   });
 
+  console.log(
+    "22222222222222",
+    component.id,
+    resolvedProps.className,
+    resolvedProps.style,
+    resolvedProps.pageId,
+    resolvedProps.appConfig,
+    resolvedProps.stateManager,
+    resolvedProps.elementIndex,
+    resolvedProps.showToast,
+    resolvedProps.navigate,
+    resolvedProps.confirm,
+  );
+
   // resolvedProps уже содержит value и все props с разрешёнными bindings
   const renderProps = {
     component,
     props: resolvedProps,
     className,
     style,
+    pageId,
+    appConfig,
+    stateManager,
+    elementIndex,
+    showToast,
+    navigate,
+    confirm,
     resolvedValue: resolvedProps.value,
     resolvedVisible: resolvedProps.visible,
     resolvedDisabled: resolvedProps.disabled,

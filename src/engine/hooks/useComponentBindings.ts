@@ -51,6 +51,14 @@ export function useComponentBindings({
 
   // Создаём Linkage instance
   const linkage = useMemo(() => {
+    console.log(
+      "333333333333333333333333",
+      component.id,
+      stateManager,
+      pageId,
+      elementIndex,
+    );
+
     if (!stateManager || !pageId || !elementIndex) return null;
     return new Linkage(stateManager, pageId, elementIndex);
   }, [stateManager, pageId, elementIndex]);
@@ -105,6 +113,7 @@ export function useComponentBindings({
 
   // Разрешаем props через Linkage
   const resolveAll = useCallback(() => {
+    console.log("44444444444444444444444444444", component.id, linkage);
     if (!linkage) return;
 
     const propsWithValues: Record<string, any> = {
@@ -112,6 +121,11 @@ export function useComponentBindings({
       ...(linkage.resolveDeep(component.props) || {}),
     };
 
+    console.log(
+      "555555555555555555555555555555",
+      component.id,
+      propsWithValues,
+    );
     setResolvedProps(propsWithValues);
   }, [linkage, component.value, component.props]);
 
