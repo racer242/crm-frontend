@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Component, App } from "@/types";
-import { ElementIndex } from "@/core";
 import { useComponentBindings } from "./hooks/useComponentBindings";
 import {
   renderText,
@@ -58,7 +57,7 @@ export function ComponentRenderer({
   pageId?: string;
   appConfig?: App;
   stateManager?: any;
-  elementIndex?: ElementIndex;
+  elementIndex?: any;
   showToast?: (
     message: string,
     severity?: "success" | "info" | "warn" | "error",
@@ -79,19 +78,11 @@ export function ComponentRenderer({
     confirm,
   });
 
-  // resolvedProps уже содержит value и все props с разрешёнными bindings
   const renderProps = {
     component,
     props: resolvedProps,
     className,
     style,
-    pageId,
-    appConfig,
-    stateManager,
-    elementIndex,
-    showToast,
-    navigate,
-    confirm,
     handleEvent,
   };
 

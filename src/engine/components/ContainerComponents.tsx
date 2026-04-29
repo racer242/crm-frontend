@@ -8,36 +8,18 @@ import { ComponentRendererProps } from "./types";
 import { ComponentRenderer } from "../ComponentRenderer";
 import { Component } from "@/types";
 
-export function renderTabView({
-  props,
-  className,
-  style,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: ComponentRendererProps) {
+export function renderTabView(
+  renderProps: ComponentRendererProps & Record<string, any>,
+) {
+  const { props, className, style, component, ...rest } = renderProps;
   const tabs = props.tabs || [];
 
   const renderComponents = (components: Component[]) => (
     <div className="flex flex-column gap-3">
       {components
         .filter((c) => c !== null && c !== undefined)
-        .map((component) => (
-          <ComponentRenderer
-            key={component.id}
-            component={component}
-            pageId={pageId || ""}
-            appConfig={appConfig}
-            stateManager={stateManager}
-            elementIndex={elementIndex}
-            showToast={showToast}
-            navigate={navigate}
-            confirm={confirm}
-          />
+        .map((comp) => (
+          <ComponentRenderer key={comp.id} component={comp} {...rest} />
         ))}
     </div>
   );
@@ -53,36 +35,18 @@ export function renderTabView({
   );
 }
 
-export function renderAccordion({
-  props,
-  className,
-  style,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: ComponentRendererProps) {
+export function renderAccordion(
+  renderProps: ComponentRendererProps & Record<string, any>,
+) {
+  const { props, className, style, component, ...rest } = renderProps;
   const tabs = props.tabs || [];
 
   const renderComponents = (components: Component[]) => (
     <div className="flex flex-column gap-3">
       {components
         .filter((c) => c !== null && c !== undefined)
-        .map((component) => (
-          <ComponentRenderer
-            key={component.id}
-            component={component}
-            pageId={pageId || ""}
-            appConfig={appConfig}
-            stateManager={stateManager}
-            elementIndex={elementIndex}
-            showToast={showToast}
-            navigate={navigate}
-            confirm={confirm}
-          />
+        .map((comp) => (
+          <ComponentRenderer key={comp.id} component={comp} {...rest} />
         ))}
     </div>
   );

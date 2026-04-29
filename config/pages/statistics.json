@@ -192,9 +192,9 @@
               "type": "component",
               "componentType": "InputText",
               "props": {
-                "placeholder": "Default"
+                "placeholder": "Default",
+                "value": "@filtersSection.state.textData.input"
               },
-              "value": "@filtersSection.state.textData.input",
               "events": [
                 {
                   "type": "onChange",
@@ -216,18 +216,18 @@
               "componentType": "InputText",
               "props": {
                 "placeholder": "Default",
-                "disabled": true
-              },
-              "value": "@state.loadedText"
+                "disabled": true,
+                "value": "@state.loadedText"
+              }
             },
             {
               "id": "chh1",
               "type": "component",
               "componentType": "Checkbox",
               "props": {
-                "label": "Accept terms"
+                "label": "Accept terms",
+                "value": "@filtersSection.state.acceptTerms"
               },
-              "value": "@filtersSection.state.acceptTerms",
               "events": [
                 {
                   "type": "onChange",
@@ -308,9 +308,9 @@
                 "placeholder": "Дата начала",
                 "showIcon": true,
                 "icondisplay": "input",
-                "dateFormat": "dd.mm.yy"
+                "dateFormat": "dd.mm.yy",
+                "value": "@state.start"
               },
-              "value": "@state.start",
               "events": [
                 {
                   "type": "onChange",
@@ -335,9 +335,9 @@
                 "showIcon": true,
                 "icondisplay": "input",
                 "dateFormat": "dd.mm.yy",
-                "showTime": true
+                "showTime": true,
+                "value": "@state.end"
               },
-              "value": "@state.end",
               "events": [
                 {
                   "type": "onChange",
@@ -359,9 +359,9 @@
               "componentType": "InputText",
               "props": {
                 "placeholder": "Default",
-                "disabled": true
-              },
-              "value": "@state.dynamicData.title"
+                "disabled": true,
+                "value": "@state.dynamicData.title"
+              }
             }
           ]
         }
