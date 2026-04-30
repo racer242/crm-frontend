@@ -1,123 +1,67 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback } from "react";
-import { Page, App } from "@/types";
+import React, { useEffect } from "react";
+import { Page } from "@/types";
 import { SectionRenderer } from "./SectionRenderer";
-import { StateManager, ElementIndex } from "@/core";
+import { useComponentContext } from "./ComponentContext";
 
 interface PageRendererProps {
   page: Page;
-  appConfig?: App;
-  stateManager?: StateManager;
-  elementIndex?: ElementIndex;
-  showToast?: (
-    message: string,
-    severity?: "success" | "info" | "warn" | "error",
-  ) => void;
-  navigate?: (url: string) => void;
-  confirm?: (message: string) => Promise<boolean>;
 }
 
-export function PageRenderer({
-  page,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: PageRendererProps) {
+export function PageRenderer({ page }: PageRendererProps) {
   const { sections, layout, meta } = page;
-
-  // Контекст для исполнения команд страницы
-  const commandContextRef = useRef<{
-    pageId: string;
-    triggerComponentId: string;
-    appConfig: App;
-    stateManager: StateManager;
-    elementIndex: ElementIndex;
-    showToast?: (
-      message: string,
-      severity?: "success" | "info" | "warn" | "error",
-    ) => void;
-    navigate?: (url: string) => void;
-    confirm?: (message: string) => Promise<boolean>;
-  } | null>(null);
-
-  useEffect(() => {
-    if (appConfig && stateManager && elementIndex) {
-      commandContextRef.current = {
-        pageId: page.id || "",
-        triggerComponentId: page.id || "",
-        appConfig,
-        stateManager,
-        elementIndex,
-        showToast,
-        navigate,
-        confirm,
-      };
-    }
-  }, [
-    appConfig,
-    stateManager,
-    page.id,
-    elementIndex,
-    showToast,
-    navigate,
-    confirm,
-  ]);
-
-  const executeCommands = (commands: any[]) => {
-    commands.forEach((cmd) => {
-      // Выполняем команду если есть контекст
-      if (commandContextRef.current) {
-        import("@/core")
-          .then(({ CommandExecutor }) => {
-            const executor = new CommandExecutor(commandContextRef.current!);
-            executor.executeCommand(cmd.type, cmd.params, {});
-          })
-          .catch(() => {
-            console.warn("CommandExecutor not available");
-          });
-      }
-    });
-  };
-
-  // Получить команды для указанного типа события
-  const getEventCommands = (eventType: string): any[] => {
-    const pageEvents = (page as any).events || [];
-    const event = pageEvents.find((e: any) => e.type === eventType);
-    return event ? event.commands || [] : [];
-  };
+  const ctx = useComponentContext();
 
   const layoutClass = layout ? getLayoutClass(layout) : "flex flex-column";
   const sectionsList = sections || [];
 
   useEffect(() => {
-    // Поддержка нового формата через events
-    const onLoadCommands = getEventCommands("onLoad");
-    // Поддержка старого формата (deprecated)
-    const legacyOnLoadCommands = page.onLoad || [];
-    const commandsToExecute =
-      onLoadCommands.length > 0 ? onLoadCommands : legacyOnLoadCommands;
+    const pageEvents = (page as any).events || [];
+    const onLoadEvent = pageEvents.find((e: any) => e.type === "onLoad");
+    const onLoadCommands = onLoadEvent?.commands || page.onLoad || [];
 
-    if (commandsToExecute.length > 0) {
-      executeCommands(commandsToExecute);
+    if (onLoadCommands.length > 0 && ctx.stateManager) {
+      import("@/core").then(({ CommandExecutor }) => {
+        const executor = new CommandExecutor({
+          pageId: page.id,
+          triggerComponentId: page.id,
+          appConfig: ctx.appConfig!,
+          stateManager: ctx.stateManager!,
+          elementIndex: ctx.elementIndex!,
+          showToast: ctx.showToast,
+          navigate: ctx.navigate,
+          confirm: ctx.confirm,
+        });
+        onLoadCommands.forEach((cmd: any) => {
+          executor.executeCommand(cmd.type, cmd.params, {});
+        });
+      });
     }
 
     return () => {
-      // Поддержка нового формата через events
-      const onUnloadCommands = getEventCommands("onUnload");
-      // Поддержка старого формата (deprecated)
-      const legacyOnUnloadCommands = page.onUnload || [];
-      const unloadCommands =
-        onUnloadCommands.length > 0 ? onUnloadCommands : legacyOnUnloadCommands;
+      const onUnloadEvent = pageEvents.find((e: any) => e.type === "onUnload");
+      const onUnloadCommands = onUnloadEvent?.commands || page.onUnload || [];
 
-      if (unloadCommands.length > 0) {
-        executeCommands(unloadCommands);
+      if (onUnloadCommands.length > 0 && ctx.stateManager) {
+        import("@/core").then(({ CommandExecutor }) => {
+          const executor = new CommandExecutor({
+            pageId: page.id,
+            triggerComponentId: page.id,
+            appConfig: ctx.appConfig!,
+            stateManager: ctx.stateManager!,
+            elementIndex: ctx.elementIndex!,
+            showToast: ctx.showToast,
+            navigate: ctx.navigate,
+            confirm: ctx.confirm,
+          });
+          onUnloadCommands.forEach((cmd: any) => {
+            executor.executeCommand(cmd.type, cmd.params, {});
+          });
+        });
       }
     };
-  }, [page]);
+  }, [page, ctx]);
 
   useEffect(() => {
     if (meta?.title) {
@@ -128,14 +72,7 @@ export function PageRenderer({
   return (
     <div className={layoutClass}>
       {sectionsList.map((section) => (
-        <SectionRenderer
-          key={section.id}
-          section={section}
-          pageId={page.id || ""}
-          appConfig={appConfig}
-          stateManager={stateManager}
-          elementIndex={elementIndex}
-        />
+        <SectionRenderer key={section.id} section={section} />
       ))}
     </div>
   );

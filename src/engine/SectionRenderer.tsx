@@ -1,34 +1,14 @@
 "use client";
 
 import React from "react";
-import { Section, App } from "@/types";
+import { Section } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
-import { StateManager, ElementIndex } from "@/core";
 
 interface SectionRendererProps {
   section: Section;
-  pageId?: string;
-  appConfig?: App;
-  stateManager?: StateManager;
-  elementIndex?: ElementIndex;
-  showToast?: (
-    message: string,
-    severity?: "success" | "info" | "warn" | "error",
-  ) => void;
-  navigate?: (url: string) => void;
-  confirm?: (message: string) => Promise<boolean>;
 }
 
-export function SectionRenderer({
-  section,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: SectionRendererProps) {
+export function SectionRenderer({ section }: SectionRendererProps) {
   const { layout, className, visibility } = section;
 
   if (visibility && visibility.defaultVisible === false) {
@@ -45,16 +25,7 @@ export function SectionRenderer({
           key={block.id}
           className={block.className || getBlockWrapperClass(layout)}
         >
-          <BlockRenderer
-            block={block}
-            pageId={pageId || ""}
-            appConfig={appConfig}
-            stateManager={stateManager}
-            elementIndex={elementIndex}
-            showToast={showToast}
-            navigate={navigate}
-            confirm={confirm}
-          />
+          <BlockRenderer block={block} />
         </div>
       ))}
     </section>

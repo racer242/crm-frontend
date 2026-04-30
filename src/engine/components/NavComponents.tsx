@@ -57,7 +57,7 @@ export function renderMenubar({
   className,
   style,
   handleEvent,
-}: ComponentRendererProps & { component?: any; pageId?: string }) {
+}: ComponentRendererProps) {
   const router = useRouter();
 
   const menuModel = processMenuItems(
@@ -81,7 +81,7 @@ export function renderBreadcrumb({
   className,
   style,
   handleEvent,
-}: ComponentRendererProps & { component?: any }) {
+}: ComponentRendererProps) {
   const router = useRouter();
 
   const breadcrumbModel = processMenuItems(
@@ -105,7 +105,7 @@ export function renderSteps({
   className,
   style,
   handleEvent,
-}: ComponentRendererProps & { component?: any }) {
+}: ComponentRendererProps) {
   const router = useRouter();
 
   const stepsModel = processMenuItems(

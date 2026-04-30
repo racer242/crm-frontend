@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { Component, App } from "@/types";
-import { Linkage, StateManager, ElementIndex } from "@/core";
+import { Component } from "@/types";
+import { Linkage } from "@/core";
+import { useComponentContext } from "../ComponentContext";
 
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
@@ -11,34 +12,18 @@ export interface ComponentBindings {
 
 export function useComponentBindings({
   component,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
 }: {
   component: Component;
-  pageId?: string;
-  appConfig?: App;
-  stateManager?: StateManager;
-  elementIndex?: ElementIndex;
-  showToast?: (
-    message: string,
-    severity?: "success" | "info" | "warn" | "error",
-  ) => void;
-  navigate?: (url: string) => void;
-  confirm?: (message: string) => Promise<boolean>;
 }): ComponentBindings {
+  const ctx = useComponentContext();
   const [resolvedProps, setResolvedProps] = useState<Record<string, any>>({});
 
   const commandContextRef = useRef<{
     pageId: string;
     triggerComponentId: string;
-    appConfig: App;
-    stateManager: StateManager;
-    elementIndex: ElementIndex;
+    appConfig: any;
+    stateManager: any;
+    elementIndex: any;
     showToast?: (
       message: string,
       severity?: "success" | "info" | "warn" | "error",
@@ -46,6 +31,8 @@ export function useComponentBindings({
     navigate?: (url: string) => void;
     confirm?: (message: string) => Promise<boolean>;
   } | null>(null);
+
+  const { stateManager, pageId, elementIndex } = ctx;
 
   // Создаём Linkage instance
   const linkage = useMemo(() => {
@@ -55,27 +42,27 @@ export function useComponentBindings({
 
   // Создаём контекст для CommandExecutor
   useEffect(() => {
-    if (pageId && appConfig && stateManager && elementIndex) {
+    if (pageId && ctx.appConfig && stateManager && elementIndex) {
       commandContextRef.current = {
         pageId,
         triggerComponentId: component.id || "",
-        appConfig,
+        appConfig: ctx.appConfig,
         stateManager,
         elementIndex,
-        showToast,
-        navigate,
-        confirm,
+        showToast: ctx.showToast,
+        navigate: ctx.navigate,
+        confirm: ctx.confirm,
       };
     }
   }, [
     pageId,
-    appConfig,
+    ctx.appConfig,
     stateManager,
     component.id,
     elementIndex,
-    showToast,
-    navigate,
-    confirm,
+    ctx.showToast,
+    ctx.navigate,
+    ctx.confirm,
   ]);
 
   // Собираем все binding-строки из value и props

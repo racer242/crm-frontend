@@ -43,39 +43,11 @@ import {
   renderChart,
 } from "./components";
 
-export function ComponentRenderer({
-  component,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: {
-  component: Component;
-  pageId?: string;
-  appConfig?: App;
-  stateManager?: any;
-  elementIndex?: any;
-  showToast?: (
-    message: string,
-    severity?: "success" | "info" | "warn" | "error",
-  ) => void;
-  navigate?: (url: string) => void;
-  confirm?: (message: string) => Promise<boolean>;
-}) {
+export function ComponentRenderer({ component }: { component: Component }) {
   const { componentType, className, style } = component;
 
   const { resolvedProps, handleEvent } = useComponentBindings({
     component,
-    pageId,
-    appConfig,
-    stateManager,
-    elementIndex,
-    showToast,
-    navigate,
-    confirm,
   });
 
   const renderProps = {
@@ -84,13 +56,6 @@ export function ComponentRenderer({
     className,
     style,
     handleEvent,
-    pageId,
-    appConfig,
-    stateManager,
-    elementIndex,
-    showToast,
-    navigate,
-    confirm,
   };
 
   switch (componentType) {

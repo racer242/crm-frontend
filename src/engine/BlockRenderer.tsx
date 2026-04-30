@@ -1,38 +1,18 @@
 "use client";
 
 import React from "react";
-import { Block, App } from "@/types";
+import { Block } from "@/types";
 import { ComponentRenderer } from "./ComponentRenderer";
 import { Card } from "primereact/card";
 import { Panel } from "primereact/panel";
 import { Fieldset } from "primereact/fieldset";
 import { Toolbar } from "primereact/toolbar";
-import { StateManager, ElementIndex } from "@/core";
 
 interface BlockRendererProps {
   block: Block;
-  pageId?: string;
-  appConfig?: App;
-  stateManager?: StateManager;
-  elementIndex?: ElementIndex;
-  showToast?: (
-    message: string,
-    severity?: "success" | "info" | "warn" | "error",
-  ) => void;
-  navigate?: (url: string) => void;
-  confirm?: (message: string) => Promise<boolean>;
 }
 
-export function BlockRenderer({
-  block,
-  pageId,
-  appConfig,
-  stateManager,
-  elementIndex,
-  showToast,
-  navigate,
-  confirm,
-}: BlockRendererProps) {
+export function BlockRenderer({ block }: BlockRendererProps) {
   const { wrapper, components, style, className } = block;
 
   // Проверка на наличие компонентов
@@ -45,17 +25,7 @@ export function BlockRenderer({
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((component) => (
-          <ComponentRenderer
-            key={component.id}
-            component={component}
-            pageId={pageId || ""}
-            appConfig={appConfig}
-            stateManager={stateManager}
-            elementIndex={elementIndex}
-            showToast={showToast}
-            navigate={navigate}
-            confirm={confirm}
-          />
+          <ComponentRenderer key={component.id} component={component} />
         ))}
     </div>
   );

@@ -11,7 +11,7 @@ import { Component } from "@/types";
 export function renderTabView(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
-  const { props, className, style, component, ...rest } = renderProps;
+  const { props, className, style } = renderProps;
   const tabs = props.tabs || [];
 
   const renderComponents = (components: Component[]) => (
@@ -19,7 +19,7 @@ export function renderTabView(
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((comp) => (
-          <ComponentRenderer key={comp.id} component={comp} {...rest} />
+          <ComponentRenderer key={comp.id} component={comp} />
         ))}
     </div>
   );
@@ -38,7 +38,7 @@ export function renderTabView(
 export function renderAccordion(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
-  const { props, className, style, component, ...rest } = renderProps;
+  const { props, className, style } = renderProps;
   const tabs = props.tabs || [];
 
   const renderComponents = (components: Component[]) => (
@@ -46,7 +46,7 @@ export function renderAccordion(
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((comp) => (
-          <ComponentRenderer key={comp.id} component={comp} {...rest} />
+          <ComponentRenderer key={comp.id} component={comp} />
         ))}
     </div>
   );

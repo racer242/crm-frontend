@@ -11,6 +11,7 @@ import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
 import { PathResolver } from "@/core/PathResolver";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ComponentProvider } from "./ComponentContext";
 
 export function AppEngine({
   config,
@@ -251,16 +252,17 @@ export function AppEngine({
             opacity: isVisible ? 1 : 0,
           }}
         >
-          <PageRenderer
-            key={pageKey}
-            page={currentPage}
+          <ComponentProvider
+            pageId={currentPage.id}
             appConfig={config}
             stateManager={stateManager}
             elementIndex={elementIndex}
             showToast={showToast}
             navigate={navigate}
             confirm={confirm}
-          />
+          >
+            <PageRenderer key={pageKey} page={currentPage} />
+          </ComponentProvider>
         </div>
       </main>
     </div>
