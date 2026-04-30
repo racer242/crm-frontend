@@ -61,7 +61,7 @@ export function PageRenderer({ page }: PageRendererProps) {
         });
       }
     };
-  }, [page, ctx]);
+  }, [page]);
 
   useEffect(() => {
     if (meta?.title) {
