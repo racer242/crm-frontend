@@ -25,7 +25,11 @@ export function renderTabView(
   );
 
   return (
-    <TabView className={`mb-4 ${className || ""}`} style={style}>
+    <TabView
+      className={`mb-4 ${className || ""}`}
+      style={style}
+      renderActiveOnly={props.renderActiveOnly}
+    >
       {tabs.map((tab: any, index: number) => (
         <TabPanel key={tab.id || index} {...(tab.props || {})}>
           {tab.components ? renderComponents(tab.components) : null}
