@@ -4,11 +4,10 @@
   "route": "/statistics",
   "state": {
     "loading": false,
-    "initialized": true,
     "start": "",
     "end": "",
     "dynamicData": {
-      "title": "Текст, который был динамически загружен"
+      "title": "Текст"
     },
     "analytics": []
   },
@@ -53,14 +52,7 @@
     {
       "id": "statsTitleSection",
       "type": "section",
-      "state": {
-        "visible": true
-      },
-      "layout": {
-        "type": "flex",
-        "direction": "row",
-        "justifyContent": "between"
-      },
+      "state": {},
       "blocks": [
         {
           "id": "statsHeaderBlock",
@@ -78,6 +70,41 @@
               "state": {}
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "inputs",
+      "type": "section",
+      "state": {},
+      "layout": {
+        "type": "grid",
+        "columns": 3
+      },
+      "blocks": [
+        {
+          "id": "fileB",
+          "type": "block",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "FileUpload"
+            }
+          },
+          "components": [
+            {
+              "id": "f1",
+              "type": "component",
+              "componentType": "FileUpload",
+              "props": {
+                "mode": "basic",
+                "chooseLabel": "Select"
+              },
+              "state": {}
+            }
+          ],
+          "className": "col-12 md:col-4"
         }
       ]
     },

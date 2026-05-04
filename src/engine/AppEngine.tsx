@@ -12,6 +12,7 @@ import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
 import { PathResolver } from "@/core/PathResolver";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { ComponentProvider } from "./ComponentContext";
+import { FileUpload } from "primereact/fileupload";
 
 export function AppEngine({
   config,
@@ -112,28 +113,6 @@ export function AppEngine({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);
-
-  // Page transition: use CSS visibility + transition to hide FOUC
-  // Container starts invisible, then becomes visible after content renders
-  const [pageKey, setPageKey] = useState<string>(currentPage?.id ?? "");
-  const [isVisible, setIsVisible] = useState(true);
-  const prevPageIdRef2 = useRef<string | null>(null);
-
-  // Detect page change synchronously
-  if (currentPage && prevPageIdRef2.current !== currentPage.id) {
-    prevPageIdRef2.current = currentPage.id;
-    setPageKey(currentPage.id);
-    setIsVisible(false);
-  }
-
-  // After the new page is rendered, make it visible
-  useEffect(() => {
-    if (!isVisible) {
-      // Wait for content to be painted, then fade in
-      const timer = setTimeout(() => setIsVisible(true), 50);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible]);
 
   // Show server-side data feed errors on mount
   useEffect(() => {
@@ -244,14 +223,7 @@ export function AppEngine({
         />
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">
-        <div
-          className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto"
-          style={{
-            visibility: isVisible ? "visible" : "hidden",
-            transition: "visibility 0s linear 50ms, opacity 150ms ease-in",
-            opacity: isVisible ? 1 : 0,
-          }}
-        >
+        <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
           <ComponentProvider
             pageId={currentPage.id}
             appConfig={config}
@@ -261,7 +233,8 @@ export function AppEngine({
             navigate={navigate}
             confirm={confirm}
           >
-            <PageRenderer key={pageKey} page={currentPage} />
+            <PageRenderer page={currentPage} />
+            <FileUpload mode="basic" style={{ display: "none" }} />
           </ComponentProvider>
         </div>
       </main>

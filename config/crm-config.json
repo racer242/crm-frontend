@@ -45,6 +45,11 @@
         "label": "Components",
         "icon": "pi pi-th-large",
         "route": "/components"
+      },
+      {
+        "label": "Testing",
+        "icon": "pi pi-th-large",
+        "route": "/testing"
       }
     ]
   },
@@ -76,7 +81,8 @@
     { "$ref": "./pages/products.json" },
     { "$ref": "./pages/reports.json" },
     { "$ref": "./pages/settings.json" },
-    { "$ref": "./pages/components.json" }
+    { "$ref": "./pages/components.json" },
+    { "$ref": "./pages/testing.json" }
   ],
   "adapters": {
     "stats.analytics.replace": {

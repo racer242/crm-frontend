@@ -1,0 +1,426 @@
+{
+  "id": "testing",
+  "type": "page",
+  "route": "/testing",
+  "state": {
+    "loading": false,
+    "dynamicData": {
+      "title": "Текст"
+    }
+  },
+  "meta": {
+    "title": "Testing FOUC"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/mocks/api/get-stats.json",
+      "method": "GET",
+      "target": "state"
+    },
+    {
+      "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
+      "method": "GET",
+      "target": "state",
+      "adapter": "stats.analytics.js"
+    }
+  ],
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "Statistics page loaded"
+          }
+        },
+        {
+          "type": "setProperty",
+          "params": {
+            "value": "Simply Text",
+            "target": "filtersSection.state.textData.input"
+          }
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "header",
+      "type": "section",
+      "state": {},
+      "blocks": [
+        {
+          "id": "title",
+          "type": "block",
+          "state": {},
+          "components": [
+            {
+              "id": "t",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Testing FOUC",
+                "level": 1
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "statsTitleSection",
+      "type": "section",
+      "state": {},
+      "blocks": [
+        {
+          "id": "statsHeaderBlock",
+          "type": "block",
+          "state": {},
+          "components": [
+            {
+              "id": "pageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Статистика",
+                "level": 1
+              },
+              "state": {}
+            },
+            {
+              "id": "f155555",
+              "type": "component",
+              "componentType": "FileUpload"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filtersSection",
+      "type": "section",
+      "state": {
+        "visible": true,
+        "textData": {
+          "input": "Тестовая строка"
+        }
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "gap": 20
+      },
+      "blocks": [
+        {
+          "id": "weekFilterBlock",
+          "type": "block",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Выбор недели"
+            }
+          },
+          "components": [
+            {
+              "id": "weekDropdown",
+              "type": "component",
+              "componentType": "Dropdown",
+              "props": {
+                "options": [
+                  {
+                    "label": "Неделя 11 - 16.03.2026 - 23.03.2026",
+                    "value": {
+                      "week": 11,
+                      "start": "16.03.2026",
+                      "end": "23.03.2026"
+                    }
+                  },
+                  {
+                    "label": "Неделя 12 - 23.03.2026 - 30.03.2026",
+                    "value": {
+                      "week": 12,
+                      "start": "23.03.2026",
+                      "end": "30.03.2026"
+                    }
+                  },
+                  {
+                    "label": "Неделя 13 - 30.03.2026 - 06.04.2026",
+                    "value": {
+                      "week": 13,
+                      "start": "30.03.2026",
+                      "end": "06.04.2026"
+                    }
+                  },
+                  {
+                    "label": "Неделя 14 - 06.04.2026 - 13.04.2026",
+                    "value": {
+                      "week": 14,
+                      "start": "06.04.2026",
+                      "end": "13.04.2026"
+                    }
+                  },
+                  {
+                    "label": "Неделя 15 - 13.04.2026 - 20.04.2026",
+                    "value": {
+                      "week": 15,
+                      "start": "13.04.2026",
+                      "end": "20.04.2026"
+                    }
+                  },
+                  {
+                    "label": "Неделя 16 - 20.04.2026 - 27.04.2026",
+                    "value": {
+                      "week": 16,
+                      "start": "20.04.2026",
+                      "end": "27.04.2026"
+                    }
+                  }
+                ],
+                "placeholder": "Выберите неделю",
+                "showClear": true
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value.start",
+                        "target": "state.start"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value.end",
+                        "target": "state.end"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "itt1",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "value": "@filtersSection.state.textData.input"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "filtersSection.state.textData.input"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "itt2",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "disabled": true,
+                "value": "@state.loadedText"
+              }
+            },
+            {
+              "id": "chh1",
+              "type": "component",
+              "componentType": "Checkbox",
+              "props": {
+                "label": "Accept terms",
+                "value": "@filtersSection.state.acceptTerms"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "filtersSection.state.acceptTerms"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btt1",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Primary",
+                "severity": "primary"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "value": true,
+                        "target": "filtersSection.state.acceptTerms"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "state.end",
+                        "target": "state.start"
+                      }
+                    },
+                    {
+                      "type": "sendRequest",
+                      "params": {
+                        "url": "/api/get-dynamic-data",
+                        "method": "GET",
+                        "target": "state.dynamicData"
+                      }
+                    },
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$state}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dateRangeBlock",
+          "type": "block",
+          "state": {},
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Диапазон дат"
+            }
+          },
+          "components": [
+            {
+              "id": "startDatePicker",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Дата начала",
+                "showIcon": true,
+                "icondisplay": "input",
+                "dateFormat": "dd.mm.yy",
+                "value": "@state.start"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.start"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "endDatePicker",
+              "type": "component",
+              "componentType": "Calendar",
+              "props": {
+                "placeholder": "Дата окончания",
+                "showIcon": true,
+                "icondisplay": "input",
+                "dateFormat": "dd.mm.yy",
+                "showTime": true,
+                "value": "@state.end"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.end"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "itt3",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "disabled": true,
+                "value": "@state.dynamicData.title"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuBarSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex",
+        "direction": "column",
+        "gap": 20
+      },
+      "blocks": [
+        {
+          "id": "menuBarBlock",
+          "type": "block",
+          "state": {},
+          "components": [
+            {
+              "id": "downloadMenuBar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "model": "@state.analytics"
+              },
+              "state": {},
+              "events": [
+                {
+                  "type": "onNavigate",
+                  "commands": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
