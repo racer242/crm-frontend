@@ -455,10 +455,29 @@
                     },
                     "components": [
                       {
-                        "id": "tab1_table",
+                        "id": "tab_customers",
                         "type": "component",
                         "componentType": "DataTable",
+                        "events": [
+                          {
+                            "type": "onPage",
+                            "commands": [
+                              {
+                                "type": "log",
+                                "params": {
+                                  "level": "info",
+                                  "message": "{$event}"
+                                }
+                              }
+                            ]
+                          }
+                        ],
                         "props": {
+                          "paginator": true,
+                          "lazy": true,
+                          "first": 0,
+                          "rows": 8,
+                          "totalRecords": 1000,
                           "value": [
                             {
                               "id": "CUST-001",

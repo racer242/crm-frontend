@@ -120,9 +120,18 @@ function parseMacro(content: string): {
 /**
  * Разрешить один макрос
  */
-function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
+function resolveSingleMacro(
+  macroContent: string,
+  sources: MacroSources,
+  extraSources?: Record<string, any>,
+): any {
   const { prefix, parts } = parseMacro(macroContent);
   const fullPath = parts.join(".");
+
+  // Сначала проверяем extraSources (например, $event)
+  if (extraSources && extraSources[prefix]) {
+    return getNestedValue(extraSources[prefix], fullPath);
+  }
 
   switch (prefix) {
     // === State ===
@@ -294,24 +303,29 @@ export class MacroEngine {
 
   /**
    * Применить макросы к значению (рекурсивно)
+   * @param extraSources - дополнительные источники макросов (например, { event: eventData })
    */
-  apply(value: any, depth: number = 0): any {
+  apply(
+    value: any,
+    depth: number = 0,
+    extraSources?: Record<string, any>,
+  ): any {
     if (depth > this.maxRecursion) return value;
 
     if (value === null || value === undefined) return value;
 
     if (typeof value === "string") {
-      return this.resolveString(value, depth);
+      return this.resolveString(value, depth, extraSources);
     }
 
     if (Array.isArray(value)) {
-      return value.map((item) => this.apply(item, depth + 1));
+      return value.map((item) => this.apply(item, depth + 1, extraSources));
     }
 
     if (typeof value === "object") {
       const result: Record<string, any> = {};
       for (const [key, val] of Object.entries(value)) {
-        result[key] = this.apply(val, depth + 1);
+        result[key] = this.apply(val, depth + 1, extraSources);
       }
       return result;
     }
@@ -322,26 +336,34 @@ export class MacroEngine {
   /**
    * Разрешить макросы в строке
    */
-  resolveString(str: string, depth: number = 0): any {
+  resolveString(
+    str: string,
+    depth: number = 0,
+    extraSources?: Record<string, any>,
+  ): any {
     if (depth > this.maxRecursion) return str;
 
     // Проверяем: вся строка — один макрос?
     const singleMatch = str.match(/^\{\$([^}]+)\}$/);
     if (singleMatch) {
-      const resolved = resolveSingleMacro(singleMatch[1], this.sources);
+      const resolved = resolveSingleMacro(
+        singleMatch[1],
+        this.sources,
+        extraSources,
+      );
       // Рекурсивно обрабатываем если результат — строка с макросами
       if (typeof resolved === "string" && hasMacro(resolved)) {
-        return this.resolveString(resolved, depth + 1);
+        return this.resolveString(resolved, depth + 1, extraSources);
       }
       return resolved;
     }
 
     // Несколько макросов или текст + макросы — заменяем в строке
     return str.replace(MACRO_PATTERN, (match, content) => {
-      const resolved = resolveSingleMacro(content, this.sources);
+      const resolved = resolveSingleMacro(content, this.sources, extraSources);
       // Рекурсия
       if (typeof resolved === "string" && hasMacro(resolved)) {
-        return this.resolveString(resolved, depth + 1) ?? match;
+        return this.resolveString(resolved, depth + 1, extraSources) ?? match;
       }
       return resolved !== undefined ? String(resolved) : match;
     });

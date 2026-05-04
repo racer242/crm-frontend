@@ -112,7 +112,7 @@ export class CommandExecutor {
           ? this.getSourceValue(source, eventData)
           : undefined;
 
-    const value = this.macroEngine.apply(rawValue);
+    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
     const { elementPath, fieldPath } = parseTargetPath(
       target,
       this.context.pageId,
@@ -145,7 +145,7 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    const value = this.macroEngine.apply(rawValue);
+    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
 
     const { elementPath } = parseTargetPath(
       target,
@@ -175,7 +175,7 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    const value = this.macroEngine.apply(rawValue);
+    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
 
     if (typeof value !== "object" || value === null) {
       console.warn("mergeState: value must be an object");
@@ -269,9 +269,14 @@ export class CommandExecutor {
       return;
     }
 
-    const resolvedUrl = this.macroEngine.apply(url) as string;
+    const resolvedUrl = this.macroEngine.apply(url, 0, {
+      event: eventData,
+    }) as string;
     const resolvedData = data
-      ? (this.macroEngine.apply(data) as Record<string, any>)
+      ? (this.macroEngine.apply(data, 0, { event: eventData }) as Record<
+          string,
+          any
+        >)
       : undefined;
 
     const requestParams: SendRequestParams = {
@@ -317,10 +322,12 @@ export class CommandExecutor {
    */
   async executeShowToast(
     params: Record<string, any>,
-    _eventData: any,
+    eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "";
-    const message = this.macroEngine.apply(rawMessage) as string;
+    const message = this.macroEngine.apply(rawMessage, 0, {
+      event: eventData,
+    }) as string;
     const severity = params.severity || "info";
 
     if (this.context.showToast) {
@@ -337,10 +344,12 @@ export class CommandExecutor {
    */
   async executeNavigate(
     params: Record<string, any>,
-    _eventData: any,
+    eventData: any,
   ): Promise<void> {
     const rawUrl = params.url || "";
-    const url = this.macroEngine.apply(rawUrl) as string;
+    const url = this.macroEngine.apply(rawUrl, 0, {
+      event: eventData,
+    }) as string;
 
     if (this.context.navigate) {
       this.context.navigate(url);
@@ -363,7 +372,9 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "Подтвердите действие";
-    const message = this.macroEngine.apply(rawMessage) as string;
+    const message = this.macroEngine.apply(rawMessage, 0, {
+      event: eventData,
+    }) as string;
     const onConfirm: Command[] = params.onConfirm || [];
     const onCancel: Command[] = params.onCancel || [];
 
@@ -416,7 +427,9 @@ export class CommandExecutor {
    */
   executeLog(params: Record<string, any>, eventData: any): void {
     const { level = "info", message } = params;
-    const resolvedMessage = this.macroEngine.apply(message);
+    const resolvedMessage = this.macroEngine.apply(message, 0, {
+      event: eventData,
+    });
     const levels: Record<string, (...args: any[]) => void> = {
       info: console.info,
       warn: console.warn,
