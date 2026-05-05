@@ -37,3 +37,8 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(128, 128, 128, 0.8);
 }
+
+.p-icon-field,
+input.p-inputtext {
+  width: 100%;
+}

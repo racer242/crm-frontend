@@ -76,7 +76,7 @@ async function handleRequest(
     const routeName = routeSegments.join("/");
 
     // Load the app config to get apiRoutes
-    const config = await initApp();
+    const { config } = await initApp();
     const apiRoutes = config.config?.apiRoutes;
 
     // Find the route configuration

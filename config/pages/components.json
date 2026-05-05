@@ -110,7 +110,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "badgeB",
@@ -144,7 +144,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "tagB",
@@ -178,7 +178,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         }
       ]
     },
@@ -233,7 +233,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "inputNumB",
@@ -268,7 +268,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "textareaB",
@@ -292,7 +292,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "pwdB",
@@ -325,7 +325,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "dropB",
@@ -378,7 +378,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "multiB",
@@ -435,7 +435,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "autoB",
@@ -459,7 +459,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "calB",
@@ -491,7 +491,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "checkB",
@@ -536,7 +536,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "radioB",
@@ -575,7 +575,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "switchB",
@@ -611,7 +611,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "sliderB",
@@ -645,7 +645,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "ratingB",
@@ -679,7 +679,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "colorB",
@@ -713,7 +713,7 @@
               }
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "fileB",
@@ -747,7 +747,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         }
       ]
     },
@@ -812,7 +812,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "avatarB",
@@ -850,7 +850,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "chipB",
@@ -883,7 +883,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         }
       ]
     },
@@ -1288,7 +1288,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "progB",
@@ -1321,7 +1321,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "spinB",
@@ -1345,7 +1345,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "skelB",
@@ -1389,7 +1389,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "toastB",
@@ -1412,7 +1412,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         },
         {
           "id": "divB",
@@ -1444,7 +1444,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 md:col-4"
+          "className": ""
         }
       ]
     },

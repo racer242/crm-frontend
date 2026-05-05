@@ -247,11 +247,7 @@
               "componentType": "AutoComplete",
               "props": {
                 "placeholder": "Search customer...",
-                "suggestions": [
-                  "Alice Johnson",
-                  "Bob Smith",
-                  "Carol White"
-                ]
+                "suggestions": ["Alice Johnson", "Bob Smith", "Carol White"]
               },
               "state": {
                 "value": ""
@@ -338,7 +334,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 lg:col-8"
+          "className": ""
         },
         {
           "id": "orderMessages",
@@ -372,7 +368,7 @@
               "state": {}
             }
           ],
-          "className": "col-12 lg:col-4"
+          "className": ""
         }
       ]
     }
