@@ -33,6 +33,8 @@ export interface Block extends BaseElement {
 export interface WrapperConfig {
   component: "Card" | "Panel" | "Fieldset" | "Toolbar" | "div";
   props?: Record<string, any>;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 /** Состояние блока */

@@ -1,0 +1,47 @@
+Надо сделать составной компонент, который предназначен для отображения таблиц в табах, на основании вложенной структуры данных. 
+
+Структура основана на вложенном определении компонентов:
+
+{
+  "type": "component",
+  "componentType": "TabbedTablesView",
+  "props": {
+    "tabs": [
+      {
+        "props": {
+          "header": "Покупатели"
+        },
+        "table": [
+          {
+            "props": {
+              "value": [
+                {
+                  "id": "CUST-001",
+                  "name": "Алексей Иванов",
+                  "email": "alex.ivanov@example.com",
+                  "phone": "+7 (999) 123-45-67",
+                  "company": "ООО \"Вектор\"",
+                  "totalOrders": 24,
+                  "totalSpent": 125000,
+                  "lastOrderDate": "2026-04-10"
+                },
+                ...
+              ],
+              "columns": [
+                {
+                  "field": "name",
+                  "header": "ФИО",
+                  "sortable": true
+                },
+                ...
+              ]
+            }
+          }
+        ]
+      },
+      ...
+    ]
+  }
+}
+
+Компонент 

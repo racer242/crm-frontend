@@ -21,10 +21,7 @@ export function SectionRenderer({ section }: SectionRendererProps) {
   return (
     <section className={`mb-5 ${layoutClass} ${className || ""}`}>
       {blocks.map((block) => (
-        <div
-          key={block.id}
-          className={block.className || getBlockWrapperClass(layout)}
-        >
+        <div key={block.id} className={getBlockWrapperClass(layout)}>
           <BlockRenderer block={block} />
         </div>
       ))}

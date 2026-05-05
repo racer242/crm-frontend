@@ -113,6 +113,7 @@ export class CommandExecutor {
           : undefined;
 
     const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+
     const { elementPath, fieldPath } = parseTargetPath(
       target,
       this.context.pageId,

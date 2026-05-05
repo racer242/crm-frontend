@@ -107,6 +107,10 @@
     "stats.analytics.js": {
       "type": "js",
       "script": "adapters/analytics2menu.js"
+    },
+    "stats.review.js": {
+      "type": "js",
+      "script": "adapters/stats-review-2-tabview.js"
     }
   },
   "config": {

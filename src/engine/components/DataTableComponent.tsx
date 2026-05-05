@@ -17,7 +17,7 @@ export function renderDataTable({
       value={props.value || []}
       className={`w-full ${className || ""}`}
       style={style}
-      onPage={(e) => handleEvent("onPage", e)}
+      {...(props.lazy ? { onPage: (e) => handleEvent("onPage", e) } : {})}
     >
       {props.columns?.map((col: any, index: number) => (
         <Column key={index} field={col.field} header={col.header} />

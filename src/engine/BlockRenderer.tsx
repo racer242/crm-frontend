@@ -13,7 +13,15 @@ interface BlockRendererProps {
 }
 
 export function BlockRenderer({ block }: BlockRendererProps) {
-  const { wrapper, components, style, className } = block;
+  const {
+    wrapper,
+    components,
+    style,
+    className = "flex flex-column gap-2",
+  } = block;
+
+  const { style: wrapperStyle, className: wrapperClassName = "" } =
+    wrapper || {};
 
   // Проверка на наличие компонентов
   if (!components || components.length === 0) {
@@ -21,7 +29,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
   }
 
   const content = (
-    <div className="flex flex-column gap-3">
+    <div className={className} style={style}>
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((component) => (
@@ -36,26 +44,39 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     switch (wrapper.component) {
       case "Card":
         return (
-          <Card title={wrapperProps.header} style={style}>
+          <Card
+            title={wrapperProps.header}
+            className={wrapperClassName}
+            style={wrapperStyle}
+          >
             {content}
           </Card>
         );
       case "Panel":
         return (
-          <Panel header={wrapperProps.header} style={style}>
+          <Panel
+            header={wrapperProps.header}
+            className={wrapperClassName}
+            style={wrapperStyle}
+          >
             {content}
           </Panel>
         );
       case "Fieldset":
         return (
-          <Fieldset legend={wrapperProps.header} style={style}>
+          <Fieldset
+            legend={wrapperProps.header}
+            className={wrapperClassName}
+            style={wrapperStyle}
+          >
             {content}
           </Fieldset>
         );
       case "Toolbar":
         return (
           <Toolbar
-            style={style}
+            className={wrapperClassName}
+            style={wrapperStyle}
             start={
               <div className="flex align-items-center gap-2 flex-wrap">
                 {content}
@@ -63,13 +84,11 @@ export function BlockRenderer({ block }: BlockRendererProps) {
             }
           />
         );
-      default:
-        return <div style={style}>{content}</div>;
     }
   }
 
   return (
-    <div className={className} style={style}>
+    <div className={wrapperClassName} style={wrapperStyle}>
       {content}
     </div>
   );

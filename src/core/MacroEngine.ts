@@ -312,6 +312,8 @@ export class MacroEngine {
   ): any {
     if (depth > this.maxRecursion) return value;
 
+    if (value instanceof Date) return value;
+
     if (value === null || value === undefined) return value;
 
     if (typeof value === "string") {

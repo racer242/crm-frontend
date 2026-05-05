@@ -237,7 +237,7 @@
                   }
                 ],
                 "paginator": true,
-                "rows": 10,
+                "rows": 3,
                 "tableStyle": {
                   "minWidth": "50rem"
                 },

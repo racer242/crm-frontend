@@ -90,11 +90,6 @@
                 "level": 1
               },
               "state": {}
-            },
-            {
-              "id": "f155555",
-              "type": "component",
-              "componentType": "FileUpload"
             }
           ]
         }
