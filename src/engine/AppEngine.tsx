@@ -6,6 +6,7 @@ import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { StateManager, ElementIndex } from "@/core";
+import { PageIndex } from "@/core/config";
 import { usePathname, useRouter } from "next/navigation";
 import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
@@ -22,19 +23,26 @@ export function AppEngine({
   initialPageId,
 }: {
   config: App;
-  elementIndex: ElementIndex;
+  elementIndex: PageIndex;
   dataFeedErrors?: string[];
   initialDataFeed?: DataFeedResult[];
   initialPageId?: string | null;
 }) {
   const pathname = usePathname();
 
+  // Create ElementIndex from per-page plain object (no rebuild needed)
+  const elementIndexRef = useRef<ElementIndex | null>(null);
+  if (!elementIndexRef.current) {
+    elementIndexRef.current = new ElementIndex(elementIndex);
+  }
+  const resolvedIndex = elementIndexRef.current!;
+
   const stateManagerRef = useRef<StateManager | null>(null);
   const prevPageIdRef = useRef<string | null>(null);
   if (!stateManagerRef.current) {
     stateManagerRef.current = new StateManager(
       config,
-      elementIndex,
+      resolvedIndex,
       initialDataFeed,
       initialPageId || undefined,
     );
@@ -225,7 +233,7 @@ export function AppEngine({
             pageId={currentPage.id}
             appConfig={config}
             stateManager={stateManager}
-            elementIndex={elementIndex}
+            elementIndex={resolvedIndex}
             showToast={showToast}
             navigate={navigate}
             confirm={confirm}

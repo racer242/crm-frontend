@@ -6,11 +6,11 @@ import {
   DataFeedResult,
   ApiRouteConfig,
   MacroSources,
+  BaseElement,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "./DataAdapterEngine";
-import { ElementIndex } from "./ElementIndex";
 
 /**
  * CRM Configuration Loader
@@ -36,21 +36,83 @@ export interface CrmConfig {
   [key: string]: any;
 }
 
+/**
+ * Index structure: { pageId: { elementId: element, ... }, ... }
+ */
+export type PageIndex = Record<string, BaseElement>;
+export type FullIndex = Record<string, PageIndex>;
+
 export interface AppInitResult {
   config: CrmConfig;
-  elementIndex: ElementIndex;
+  elementIndex: FullIndex;
 }
 
 let cachedConfig: CrmConfig | null = null;
-let cachedIndex: ElementIndex | null = null;
+let cachedIndex: FullIndex | null = null;
 let initPromise: Promise<AppInitResult> | null = null;
 let isInitialized = false;
+
+// ==================== Index Building ====================
+
+/**
+ * Build index for all pages
+ */
+function buildFullIndex(config: CrmConfig): FullIndex {
+  const index: FullIndex = {};
+  for (const page of config.pages) {
+    index[page.id] = buildPageIndex(page);
+  }
+  return index;
+}
+
+/**
+ * Build index for a single page
+ */
+function buildPageIndex(page: BaseElement): PageIndex {
+  const index: PageIndex = {};
+  addSubtreeToIndex(page, index);
+  return index;
+}
+
+/**
+ * Recursively add all elements of a subtree to the index
+ */
+function addSubtreeToIndex(element: BaseElement, index: PageIndex) {
+  if (element.id) {
+    index[element.id] = element;
+  }
+
+  const children = getChildren(element);
+  for (const child of children) {
+    addSubtreeToIndex(child, index);
+  }
+}
+
+/**
+ * Get child elements
+ */
+function getChildren(element: BaseElement): BaseElement[] {
+  const el = element as any;
+  const children: BaseElement[] = [];
+
+  // Sections (in page)
+  if (Array.isArray(el.sections)) children.push(...el.sections);
+  // Blocks (in section)
+  if (Array.isArray(el.blocks)) children.push(...el.blocks);
+  // Components (in block)
+  if (Array.isArray(el.components)) children.push(...el.components);
+  // Pages (in app)
+  if (Array.isArray(el.pages)) children.push(...el.pages);
+
+  return children;
+}
+
+// ==================== App Initialization ====================
 
 /**
  * Application Singleton Initialization
  * Loads configuration only once per application lifetime
  */
-
 export async function initApp(): Promise<AppInitResult> {
   // Return immediately if already initialized
   if (cachedConfig && cachedIndex) {
@@ -75,7 +137,7 @@ export async function initApp(): Promise<AppInitResult> {
       )) as CrmConfig;
 
       cachedConfig = resolvedConfig;
-      cachedIndex = new ElementIndex(resolvedConfig);
+      cachedIndex = buildFullIndex(resolvedConfig);
 
       // Print banner only once per process lifetime
       if (!isInitialized) {
@@ -118,6 +180,7 @@ export function getConfig(): CrmConfig {
  */
 export function clearConfigCache(): void {
   cachedConfig = null;
+  cachedIndex = null;
 }
 
 /**

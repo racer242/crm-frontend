@@ -1,61 +1,20 @@
 /**
- * ElementIndex - индекс всех элементов приложения
+ * ElementIndex - индекс элементов страницы
  *
- * Строится один раз при загрузке приложения.
+ * Принимает готовый индекс (plain object) со сервера.
  * Позволяет находить элементы по уникальному ID за O(1).
- * Все элементы в иерархии имеют уникальные ID.
  */
 
 import { BaseElement } from "@/types";
 
 export class ElementIndex {
-  private index: Map<string, BaseElement> = new Map();
-
-  constructor(appConfig: { pages: any[] }) {
-    this.buildIndex(appConfig);
-  }
+  private index: Map<string, BaseElement>;
 
   /**
-   * Построить индекс всех элементов в приложении
+   * @param pageIndex - готовый индекс элементов страницы (plain object)
    */
-  private buildIndex(appConfig: { pages: any[] }) {
-    for (const page of appConfig.pages) {
-      this.addSubtree(page);
-    }
-  }
-
-  /**
-   * Рекурсивно добавить все элементы поддерева в индекс
-   */
-  private addSubtree(element: BaseElement) {
-    if (element.id) {
-      this.index.set(element.id, element);
-    }
-
-    // Обходим всех потомков
-    const children = this.getChildren(element);
-    for (const child of children) {
-      this.addSubtree(child);
-    }
-  }
-
-  /**
-   * Получает дочерние элементы
-   */
-  private getChildren(element: BaseElement): BaseElement[] {
-    const el = element as any;
-    const children: BaseElement[] = [];
-
-    // Секции (в page)
-    if (Array.isArray(el.sections)) children.push(...el.sections);
-    // Блоки (в section)
-    if (Array.isArray(el.blocks)) children.push(...el.blocks);
-    // Компоненты (в block)
-    if (Array.isArray(el.components)) children.push(...el.components);
-    // Страницы (в app)
-    if (Array.isArray(el.pages)) children.push(...el.pages);
-
-    return children;
+  constructor(pageIndex: Record<string, BaseElement>) {
+    this.index = new Map(Object.entries(pageIndex));
   }
 
   /**

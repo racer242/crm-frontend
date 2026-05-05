@@ -4,6 +4,7 @@ import {
   initApp,
   getPageConfigByRoute,
   executeServerDataFeeds,
+  PageIndex,
 } from "@/core/config";
 
 export default async function Page({
@@ -43,10 +44,20 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
+  // Create minimal config with only current page
+  const minimalConfig = {
+    ...config,
+    pages: pageConfig ? [pageConfig] : [],
+  };
+
+  // Get per-page index (plain object, serializable)
+  const pageIndex: PageIndex =
+    pageConfig && elementIndex ? elementIndex[pageConfig.id] || {} : {};
+
   return (
     <AppEngine
-      config={config as unknown as App}
-      elementIndex={elementIndex}
+      config={minimalConfig as unknown as App}
+      elementIndex={pageIndex}
       dataFeedErrors={dataFeedErrors}
       initialDataFeed={successResults}
       initialPageId={initialPageId}
