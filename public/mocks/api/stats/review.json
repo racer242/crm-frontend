@@ -1,0 +1,410 @@
+[
+  {
+    "title": "Активные пользователи",
+    "table": {
+      "columns": [
+        {
+          "id": "id",
+          "title": "ID пользователя",
+          "type": "string",
+          "props": {}
+        },
+        { "id": "fullName", "title": "ФИО", "type": "string", "props": {} },
+        { "id": "email", "title": "Email", "type": "string", "props": {} },
+        {
+          "id": "registrationDate",
+          "title": "Дата регистрации",
+          "type": "date",
+          "props": {}
+        },
+        {
+          "id": "codesActivated",
+          "title": "Активации кодов",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "czMarksActivated",
+          "title": "Честный ЗНАК",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "receiptsCount",
+          "title": "Зарегистрированные чеки",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "gamesPlayed",
+          "title": "Участие в играх",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "lastActive",
+          "title": "Последняя активность",
+          "type": "date",
+          "props": {}
+        }
+      ],
+      "rows": [
+        {
+          "id": "USR-1001",
+          "values": {
+            "id": "USR-1001",
+            "fullName": "Анна Смирнова",
+            "email": "a.smirnova@mail.ru",
+            "registrationDate": "2025-11-15",
+            "codesActivated": 5,
+            "czMarksActivated": 12,
+            "receiptsCount": 8,
+            "gamesPlayed": 3,
+            "lastActive": "2026-05-04"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1002",
+          "values": {
+            "id": "USR-1002",
+            "fullName": "Борис Козлов",
+            "email": "b.kozlov@gmail.com",
+            "registrationDate": "2025-12-02",
+            "codesActivated": 2,
+            "czMarksActivated": 0,
+            "receiptsCount": 15,
+            "gamesPlayed": 7,
+            "lastActive": "2026-05-05"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1003",
+          "values": {
+            "id": "USR-1003",
+            "fullName": "Виктория Лебедева",
+            "email": "v.lebedeva@yandex.ru",
+            "registrationDate": "2026-01-10",
+            "codesActivated": 10,
+            "czMarksActivated": 5,
+            "receiptsCount": 20,
+            "gamesPlayed": 12,
+            "lastActive": "2026-05-03"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1004",
+          "values": {
+            "id": "USR-1004",
+            "fullName": "Григорий Попов",
+            "email": "g.popov@inbox.ru",
+            "registrationDate": "2025-10-20",
+            "codesActivated": 1,
+            "czMarksActivated": 3,
+            "receiptsCount": 4,
+            "gamesPlayed": 1,
+            "lastActive": "2026-05-01"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1005",
+          "values": {
+            "id": "USR-1005",
+            "fullName": "Дарья Волкова",
+            "email": "d.volkova@outlook.com",
+            "registrationDate": "2026-02-14",
+            "codesActivated": 8,
+            "czMarksActivated": 15,
+            "receiptsCount": 11,
+            "gamesPlayed": 6,
+            "lastActive": "2026-05-05"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1006",
+          "values": {
+            "id": "USR-1006",
+            "fullName": "Евгений Морозов",
+            "email": "e.morozov@rambler.ru",
+            "registrationDate": "2025-09-05",
+            "codesActivated": 3,
+            "czMarksActivated": 7,
+            "receiptsCount": 9,
+            "gamesPlayed": 4,
+            "lastActive": "2026-04-30"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1007",
+          "values": {
+            "id": "USR-1007",
+            "fullName": "Жанна Кузнецова",
+            "email": "z.kuznetsova@mail.ru",
+            "registrationDate": "2026-03-01",
+            "codesActivated": 6,
+            "czMarksActivated": 9,
+            "receiptsCount": 14,
+            "gamesPlayed": 8,
+            "lastActive": "2026-05-02"
+          },
+          "props": {}
+        },
+        {
+          "id": "USR-1008",
+          "values": {
+            "id": "USR-1008",
+            "fullName": "Игорь Новиков",
+            "email": "i.novikov@gmail.com",
+            "registrationDate": "2025-12-18",
+            "codesActivated": 4,
+            "czMarksActivated": 2,
+            "receiptsCount": 6,
+            "gamesPlayed": 2,
+            "lastActive": "2026-05-04"
+          },
+          "props": {}
+        }
+      ]
+    }
+  },
+  {
+    "title": "Свод по призам",
+    "table": {
+      "columns": [
+        { "id": "id", "title": "ID приза", "type": "string", "props": {} },
+        {
+          "id": "name",
+          "title": "Название приза",
+          "type": "string",
+          "props": {}
+        },
+        { "id": "type", "title": "Тип", "type": "string", "props": {} },
+        { "id": "value", "title": "Номинал", "type": "number", "props": {} },
+        {
+          "id": "total",
+          "title": "Всего в пуле",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "awarded",
+          "title": "Получили пользователей",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "remaining",
+          "title": "Остаток",
+          "type": "number",
+          "props": {}
+        },
+        {
+          "id": "claimRate",
+          "title": "Процент выдачи",
+          "type": "number",
+          "props": {}
+        }
+      ],
+      "rows": [
+        {
+          "id": "PRZ-001",
+          "values": {
+            "id": "PRZ-001",
+            "name": "Скидка 10%",
+            "type": "promo",
+            "value": 10,
+            "total": 5000,
+            "awarded": 3241,
+            "remaining": 1759,
+            "claimRate": 64.82
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-002",
+          "values": {
+            "id": "PRZ-002",
+            "name": "Скидка 25%",
+            "type": "promo",
+            "value": 25,
+            "total": 2000,
+            "awarded": 1876,
+            "remaining": 124,
+            "claimRate": 93.8
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-003",
+          "values": {
+            "id": "PRZ-003",
+            "name": "Бесплатная доставка",
+            "type": "service",
+            "value": 0,
+            "total": 3000,
+            "awarded": 2105,
+            "remaining": 895,
+            "claimRate": 70.17
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-004",
+          "values": {
+            "id": "PRZ-004",
+            "name": "Подарочный набор",
+            "type": "physical",
+            "value": 1500,
+            "total": 500,
+            "awarded": 487,
+            "remaining": 13,
+            "claimRate": 97.4
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-005",
+          "values": {
+            "id": "PRZ-005",
+            "name": "Бонусные баллы 100",
+            "type": "points",
+            "value": 100,
+            "total": 10000,
+            "awarded": 7832,
+            "remaining": 2168,
+            "claimRate": 78.32
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-006",
+          "values": {
+            "id": "PRZ-006",
+            "name": "Бонусные баллы 500",
+            "type": "points",
+            "value": 500,
+            "total": 2000,
+            "awarded": 1654,
+            "remaining": 346,
+            "claimRate": 82.7
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-007",
+          "values": {
+            "id": "PRZ-007",
+            "name": "Сертификат 1000₽",
+            "type": "voucher",
+            "value": 1000,
+            "total": 300,
+            "awarded": 298,
+            "remaining": 2,
+            "claimRate": 99.33
+          },
+          "props": {}
+        },
+        {
+          "id": "PRZ-008",
+          "values": {
+            "id": "PRZ-008",
+            "name": "Джекпот (10 000₽)",
+            "type": "jackpot",
+            "value": 10000,
+            "total": 10,
+            "awarded": 7,
+            "remaining": 3,
+            "claimRate": 70
+          },
+          "props": {}
+        }
+      ]
+    }
+  },
+  {
+    "title": "Свод по кодам",
+    "table": {
+      "columns": [
+        { "id": "metric", "title": "Метрика", "type": "string", "props": {} },
+        { "id": "value", "title": "Значение", "type": "number", "props": {} }
+      ],
+      "rows": [
+        {
+          "id": "usersRegistered",
+          "values": {
+            "id": "usersRegistered",
+            "metric": "Пользователей зарегистрировало",
+            "value": 15422
+          },
+          "props": {}
+        },
+        {
+          "id": "accepted",
+          "values": {
+            "id": "accepted",
+            "metric": "Принято",
+            "value": 19591
+          },
+          "props": {}
+        },
+        {
+          "id": "rejected",
+          "values": {
+            "id": "rejected",
+            "metric": "Отклонено",
+            "value": 2090
+          },
+          "props": {}
+        }
+      ]
+    }
+  },
+  {
+    "title": "Честный знак",
+    "table": {
+      "columns": [
+        { "id": "metric", "title": "Метрика", "type": "string", "props": {} },
+        { "id": "value", "title": "Значение", "type": "number", "props": {} }
+      ],
+      "rows": [
+        {
+          "id": "czRegistered",
+          "values": {
+            "metric": "Зарегистрировано пользователями",
+            "value": 28456
+          },
+          "props": {}
+        },
+        {
+          "id": "czVerified",
+          "values": {
+            "metric": "Верифицировано",
+            "value": 26891
+          },
+          "props": {}
+        },
+        {
+          "id": "czAccepted",
+          "values": {
+            "metric": "Принято",
+            "value": 26234
+          },
+          "props": {}
+        },
+        {
+          "id": "czRejected",
+          "values": {
+            "metric": "Отклонено",
+            "value": 657
+          },
+          "props": {}
+        }
+      ]
+    }
+  }
+]

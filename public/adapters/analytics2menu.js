@@ -5,8 +5,7 @@
  * into a menu/navigation format compatible with PrimeReact Menubar.
  *
  * Input structure (public/mocks/api/stats/analytics.json):
- *   {
- *     analytics: [
+ *   [
  *       {
  *         title: "Section name",
  *         items: [
@@ -14,14 +13,14 @@
  *           { title: "Subsection", items: [...] }  // nested sections
  *         ]
  *       }
- *     ]
- *   }
+ *   ]
+ *
  *
  * Output: PrimeReact Menubar model with nested structure
  */
 
 function transform(data) {
-  if (!data || !data.analytics) {
+  if (!data) {
     return { analytics: [] };
   }
 
@@ -54,5 +53,5 @@ function transform(data) {
     });
   }
 
-  return { analytics: processItems(data.analytics) };
+  return processItems(data);
 }

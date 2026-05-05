@@ -23,7 +23,7 @@
     {
       "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
       "method": "GET",
-      "target": "state",
+      "target": "state.analytics",
       "adapter": "stats.analytics.js"
     }
   ],
