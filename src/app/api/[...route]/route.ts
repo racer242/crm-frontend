@@ -117,7 +117,7 @@ async function handleRequest(
     // Apply adapter if specified in the route config
     if (routeConfig.adapter) {
       try {
-        const adapter = config.adapters?.[routeConfig.adapter];
+        const adapter = config.config.adapters?.[routeConfig.adapter];
         if (!adapter) {
           return NextResponse.json(
             { error: `Adapter not found: ${routeConfig.adapter}` },

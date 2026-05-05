@@ -12,7 +12,7 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
 }) {
   // Initialize CRM App Singleton (loads config once per application lifetime)
-  const config = await initApp();
+  const { config, elementIndex } = await initApp();
 
   // Resolve the route from params
   const resolvedParams = await params;
@@ -46,6 +46,7 @@ export default async function Page({
   return (
     <AppEngine
       config={config as unknown as App}
+      elementIndex={elementIndex}
       dataFeedErrors={dataFeedErrors}
       initialDataFeed={successResults}
       initialPageId={initialPageId}

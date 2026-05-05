@@ -10,6 +10,7 @@ import {
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "./DataAdapterEngine";
+import { ElementIndex } from "./ElementIndex";
 
 /**
  * CRM Configuration Loader
@@ -35,18 +36,25 @@ export interface CrmConfig {
   [key: string]: any;
 }
 
+export interface AppInitResult {
+  config: CrmConfig;
+  elementIndex: ElementIndex;
+}
+
 let cachedConfig: CrmConfig | null = null;
-let initPromise: Promise<CrmConfig> | null = null;
+let cachedIndex: ElementIndex | null = null;
+let initPromise: Promise<AppInitResult> | null = null;
 let isInitialized = false;
 
 /**
  * Application Singleton Initialization
  * Loads configuration only once per application lifetime
  */
-export async function initApp(): Promise<CrmConfig> {
+
+export async function initApp(): Promise<AppInitResult> {
   // Return immediately if already initialized
-  if (cachedConfig) {
-    return cachedConfig;
+  if (cachedConfig && cachedIndex) {
+    return { config: cachedConfig, elementIndex: cachedIndex };
   }
 
   // Prevent parallel loading during concurrent requests
@@ -67,6 +75,7 @@ export async function initApp(): Promise<CrmConfig> {
       )) as CrmConfig;
 
       cachedConfig = resolvedConfig;
+      cachedIndex = new ElementIndex(resolvedConfig);
 
       // Print banner only once per process lifetime
       if (!isInitialized) {
@@ -74,7 +83,7 @@ export async function initApp(): Promise<CrmConfig> {
         isInitialized = true;
       }
 
-      return resolvedConfig;
+      return { config: cachedConfig, elementIndex: cachedIndex };
     } catch (error) {
       initPromise = null;
 

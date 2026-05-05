@@ -6,19 +6,19 @@
  * Все элементы в иерархии имеют уникальные ID.
  */
 
-import { BaseElement, App } from "@/types";
+import { BaseElement } from "@/types";
 
 export class ElementIndex {
   private index: Map<string, BaseElement> = new Map();
 
-  constructor(appConfig: App) {
+  constructor(appConfig: { pages: any[] }) {
     this.buildIndex(appConfig);
   }
 
   /**
    * Построить индекс всех элементов в приложении
    */
-  private buildIndex(appConfig: App) {
+  private buildIndex(appConfig: { pages: any[] }) {
     for (const page of appConfig.pages) {
       this.addSubtree(page);
     }

@@ -16,33 +16,30 @@ import { FileUpload } from "primereact/fileupload";
 
 export function AppEngine({
   config,
+  elementIndex,
   dataFeedErrors: initialErrors,
   initialDataFeed,
   initialPageId,
 }: {
   config: App;
+  elementIndex: ElementIndex;
   dataFeedErrors?: string[];
   initialDataFeed?: DataFeedResult[];
   initialPageId?: string | null;
 }) {
   const pathname = usePathname();
-  const elementIndexRef = useRef<ElementIndex | null>(null);
-  if (!elementIndexRef.current) {
-    elementIndexRef.current = new ElementIndex(config);
-  }
 
   const stateManagerRef = useRef<StateManager | null>(null);
   const prevPageIdRef = useRef<string | null>(null);
   if (!stateManagerRef.current) {
     stateManagerRef.current = new StateManager(
       config,
-      elementIndexRef.current,
+      elementIndex,
       initialDataFeed,
       initialPageId || undefined,
     );
   }
   const stateManager = stateManagerRef.current!;
-  const elementIndex = elementIndexRef.current!;
 
   // On client-side navigation, re-apply initialDataFeed for the new page
   useEffect(() => {
