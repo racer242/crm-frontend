@@ -234,7 +234,12 @@ export function AppEngine({
             confirm={confirm}
           >
             <PageRenderer page={currentPage} />
-            <FileUpload mode="basic" style={{ display: "none" }} />
+            {/* Убирает FOUC при переходе между страницами */}
+            <FileUpload
+              mode="basic"
+              disabled={true}
+              style={{ display: "none" }}
+            />
           </ComponentProvider>
         </div>
       </main>

@@ -17,34 +17,23 @@ export function GlobalPreloader() {
     // Используем событие 'load', которое срабатывает после полной загрузки всех ресурсов.
     // Это предотвращает мигание и FOUC только при старте сессии.
     const handleLoad = () => {
-      // Небольшая задержка для плавности, чтобы браузер успел отрисовать фрейм
       setIsVisible(false);
-      setTimeout(() => setIsRemoved(true), 500);
     };
-
-    // Если документ уже загружен (например, при быстрой навигации), сразу скрываем
-    if (document.readyState === "complete") {
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-    }
-
-    return () => {
-      window.removeEventListener("load", handleLoad);
-    };
+    handleLoad();
   }, []);
 
   if (isRemoved) return null;
 
   return (
     <div
-      className="w-full h-full fixed inset-0 z-5 flex align-items-center justify-content-center transition-all transition-duration-500 transition-ease-in-out"
+      className="w-full h-full fixed inset-0 z-5 flex align-items-center justify-content-center"
       style={{
-        opacity: isVisible ? 1 : 0,
         background: "var(--surface-ground)",
+        transition: "opacity 1000ms ease-in 1000ms",
+        opacity: isVisible ? 1 : 0,
       }}
+      onTransitionEnd={() => setIsRemoved(true)}
     >
-      {/* Здесь можно разместить спиннер или логотип */}
       <div className="flex flex-column align-items-center gap-3">
         <i className="pi pi-spin pi-spinner text-4xl text-primary"></i>
         <span className="text-lg font-medium text-500">Загрузка CRM...</span>

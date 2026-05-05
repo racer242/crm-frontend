@@ -1,5 +1,12 @@
-/* CRM Platform — PrimeFlex + PrimeReact theme only */
+@import "primereact/resources/themes/lara-light-purple/theme.css";
+/* @import "primereact/resources/themes/lara-light-purple/theme.css";
+@import "primereact/resources/themes/lara-dark-purple/theme.css";
+@import "primereact/resources/themes/viva-dark/theme.css"; */
 
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+/* CRM Platform — PrimeFlex + PrimeReact theme only */
 body {
   margin: 0;
   padding: 0;
