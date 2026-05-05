@@ -14,7 +14,6 @@
 
 import { StateManager } from "./StateManager";
 import { BindingRef, parseBinding, isBinding } from "@/types";
-import { ElementIndex } from "./ElementIndex";
 
 /** Callback для уведомлений об изменениях bindings */
 export type LinkageChangeListener = () => void;
@@ -22,16 +21,10 @@ export type LinkageChangeListener = () => void;
 export class Linkage {
   private stateManager: StateManager;
   private pageId: string;
-  private elementIndex: ElementIndex;
 
-  constructor(
-    stateManager: StateManager,
-    pageId: string,
-    elementIndex: ElementIndex,
-  ) {
+  constructor(stateManager: StateManager, pageId: string) {
     this.stateManager = stateManager;
     this.pageId = pageId;
-    this.elementIndex = elementIndex;
   }
 
   /**

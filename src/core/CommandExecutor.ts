@@ -25,7 +25,6 @@ import {
   MacroSources,
   Command,
 } from "@/types";
-import { ElementIndex } from "./ElementIndex";
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
@@ -35,7 +34,6 @@ export interface CommandExecutionContext {
   triggerComponentId: string;
   appConfig: App;
   stateManager: StateManager;
-  elementIndex: ElementIndex;
   /** Callback для показа toast-уведомлений */
   showToast?: (
     message: string,

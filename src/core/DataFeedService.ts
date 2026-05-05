@@ -13,7 +13,6 @@ import {
   MacroSources,
 } from "@/types";
 import { StateManager } from "./StateManager";
-import { ElementIndex } from "./ElementIndex";
 import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
 import { getServerEnv } from "@/utils/env";

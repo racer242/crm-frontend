@@ -36,9 +36,9 @@ export function useComponentBindings({
 
   // Создаём Linkage instance
   const linkage = useMemo(() => {
-    if (!stateManager || !pageId || !elementIndex) return null;
-    return new Linkage(stateManager, pageId, elementIndex);
-  }, [stateManager, pageId, elementIndex]);
+    if (!stateManager || !pageId) return null;
+    return new Linkage(stateManager, pageId);
+  }, [stateManager, pageId]);
 
   // Создаём контекст для CommandExecutor
   useEffect(() => {
