@@ -8,7 +8,7 @@
     "dynamicData": {
       "title": "Текст"
     },
-    "location": "{$location.params.param3}"
+    "location": "{$location.params.param1}"
   },
   "meta": {
     "title": "Testing FOUC"
@@ -21,6 +21,10 @@
     },
     {
       "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
+      "data": {
+        "start": "{$location.params.start}",
+        "end": "{$location.params.end}"
+      },
       "method": "GET",
       "target": "state.analytics",
       "adapter": "stats.analytics.js"

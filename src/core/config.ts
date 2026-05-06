@@ -333,12 +333,7 @@ export function resolveElementStateMacros(
 ): void {
   if (!element) return;
 
-  const serverSources: MacroSources = {
-    config: cachedConfig?.config,
-    env: getServerEnv(),
-    ...sources,
-  };
-  const macroEngine = new MacroEngine(serverSources);
+  const macroEngine = new MacroEngine(sources);
 
   resolveStateRecursive(element, macroEngine);
 }
