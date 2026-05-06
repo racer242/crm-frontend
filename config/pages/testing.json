@@ -8,7 +8,7 @@
     "dynamicData": {
       "title": "Текст"
     },
-    "location": "{$now}"
+    "location": "{$location.href}"
   },
   "meta": {
     "title": "Testing FOUC"

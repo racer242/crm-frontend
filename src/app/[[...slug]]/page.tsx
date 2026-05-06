@@ -8,11 +8,14 @@ import {
   resolveElementStateMacros,
   buildPageIndex,
 } from "@/core/config";
+import { getServerLocation } from "@/utils/location";
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string[] }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Initialize CRM App Singleton (loads config once per application lifetime)
   const { config } = await initApp();
@@ -28,19 +31,13 @@ export default async function Page({
   // Build element index for current page only
   const elementIndex: PageIndex = pageConfig ? buildPageIndex(pageConfig) : {};
 
+  // Get server location with URL params
+  const resolvedSearchParams = await searchParams;
+  const location = await getServerLocation(resolvedSearchParams, route);
+
   // Resolve macros in all element states (page, sections, blocks, components)
   resolveElementStateMacros(pageConfig, {
-    location: {
-      pathname: route,
-      search: "",
-      href: route,
-      origin: "",
-      protocol: "",
-      host: "",
-      hostname: "",
-      port: "",
-      hash: "",
-    } as Location,
+    location,
   });
 
   // Execute server-side data feeds if page has dataFeed config

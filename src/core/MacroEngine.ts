@@ -148,7 +148,7 @@ function resolveSingleMacro(
 
     // === Location ===
     case "location": {
-      if (!sources.location || !isClient()) return undefined;
+      if (!sources.location) return undefined;
       if (parts[0] === "query") {
         const params = new URLSearchParams(sources.location.search);
         return params.get(parts[1]) ?? undefined;
