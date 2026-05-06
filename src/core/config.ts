@@ -199,6 +199,7 @@ export function getPageConfigByRoute(route: string): any | null {
 export async function executeServerDataFeeds(
   pageId: string,
   pageConfig: any,
+  serverSources: MacroSources,
 ): Promise<DataFeedResult[]> {
   const dataFeeds: DataFeedConfig[] | undefined = pageConfig?.dataFeed;
 
@@ -218,15 +219,6 @@ export async function executeServerDataFeeds(
   // without actually updating state (state will be updated on the client)
 
   const results: DataFeedResult[] = [];
-
-  // Get app config for macro resolution
-  const appConfig = cachedConfig?.config;
-
-  // Server-side macro sources (no state manager, no client APIs)
-  const serverSources: MacroSources = {
-    config: appConfig,
-    env: getServerEnv(),
-  };
 
   const macroEngine = new MacroEngine(serverSources);
 

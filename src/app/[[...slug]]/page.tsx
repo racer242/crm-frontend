@@ -1,4 +1,4 @@
-import { App, DataFeedResult } from "@/types";
+import { App, DataFeedResult, MacroSources } from "@/types";
 import { AppEngine } from "@/engine";
 import {
   initApp,
@@ -9,6 +9,7 @@ import {
   buildPageIndex,
 } from "@/core/config";
 import { getServerLocation } from "@/utils/location";
+import { getServerEnv } from "@/utils/env";
 
 export default async function Page({
   params,
@@ -35,10 +36,15 @@ export default async function Page({
   const resolvedSearchParams = await searchParams;
   const location = await getServerLocation(resolvedSearchParams, route);
 
-  // Resolve macros in all element states (page, sections, blocks, components)
-  resolveElementStateMacros(pageConfig, {
+  // Create shared server sources for macros
+  const serverSources: MacroSources = {
+    config: config.config,
+    env: getServerEnv(),
     location,
-  });
+  };
+
+  // Resolve macros in all element states (page, sections, blocks, components)
+  resolveElementStateMacros(pageConfig, serverSources);
 
   // Execute server-side data feeds if page has dataFeed config
   let dataFeedErrors: string[] = [];
@@ -51,6 +57,7 @@ export default async function Page({
     const results: DataFeedResult[] = await executeServerDataFeeds(
       pageId,
       pageConfig,
+      serverSources,
     );
 
     // Separate errors from successful results
