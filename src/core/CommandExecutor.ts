@@ -14,6 +14,9 @@
  * - delay: пауза в последовательности команд
  * - log: логирование в консоль
  * - sequence: последовательное выполнение команд
+ * - setUrlParams: заменяет все URL параметры { params: { key: value } }
+ * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
+ * - removeUrlParam: удаляет URL параметр { name: "key" }
  */
 
 import { StateManager } from "./StateManager";
@@ -420,6 +423,104 @@ export class CommandExecutor {
     }
   }
 
+  // ========== SET URL PARAMS ==========
+  /**
+   * setUrlParams: заменяет все URL параметры
+   * params: { params: { key: value, ... } }
+   */
+  async executeSetUrlParams(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawParams = params.params || {};
+    const resolvedParams = this.macroEngine.apply(rawParams, 0, {
+      event: eventData,
+    }) as Record<string, any>;
+
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(resolvedParams)) {
+      if (value !== undefined && value !== null) {
+        searchParams.set(key, String(value));
+      }
+    }
+
+    const queryString = searchParams.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
+
+    window.history.pushState({}, "", newUrl);
+  }
+
+  // ========== SET URL PARAM ==========
+  /**
+   * setUrlParam: изменяет один URL параметр
+   * params: { name: "key", value: "value" }
+   */
+  async executeSetUrlParam(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawName = params.name || "";
+    const rawValue = params.value;
+
+    const name = this.macroEngine.apply(rawName, 0, {
+      event: eventData,
+    }) as string;
+    const value = this.macroEngine.apply(rawValue, 0, {
+      event: eventData,
+    });
+
+    if (!name) return;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (value !== undefined && value !== null) {
+      searchParams.set(name, String(value));
+    } else {
+      searchParams.delete(name);
+    }
+
+    const queryString = searchParams.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
+
+    window.history.pushState({}, "", newUrl);
+  }
+
+  // ========== REMOVE URL PARAM ==========
+  /**
+   * removeUrlParam: удаляет URL параметр
+   * params: { name: "key" }
+   */
+  async executeRemoveUrlParam(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawName = params.name || "";
+    const name = this.macroEngine.apply(rawName, 0, {
+      event: eventData,
+    }) as string;
+
+    if (!name) return;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete(name);
+
+    const queryString = searchParams.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
+
+    window.history.pushState({}, "", newUrl);
+  }
+
   // ========== LOG ==========
   /**
    * log: логирование в консоль
@@ -527,6 +628,18 @@ export class CommandExecutor {
 
       case "log":
         this.executeLog(params, eventData);
+        break;
+
+      case "setUrlParams":
+        await this.executeSetUrlParams(params, eventData);
+        break;
+
+      case "setUrlParam":
+        await this.executeSetUrlParam(params, eventData);
+        break;
+
+      case "removeUrlParam":
+        await this.executeRemoveUrlParam(params, eventData);
         break;
 
       default:

@@ -30,7 +30,10 @@ export type CommandType =
   | "throttle"
   | "log"
   | "emit"
-  | "custom";
+  | "custom"
+  | "setUrlParams"
+  | "setUrlParam"
+  | "removeUrlParam";
 
 /** Триггер выполнения команды */
 export interface CommandTrigger {

@@ -10,3 +10,7 @@
 2. page.tsx, сразу после const pageConfig = structuredClone(getPageConfigByRoute(route) ?? {}); создаем const elementIndex = buildFullIndex(config);
 
 Таким образом, elementIndex становится актуальным
+
+Обновление параметров.
+1. Надо добавить команду, которая будет устанавливать параметры url-строки. 
+2. Надо добавить команду, которая будет модифицировать определенный параметр url-строки. 
