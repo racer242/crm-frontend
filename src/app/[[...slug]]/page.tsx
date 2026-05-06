@@ -6,7 +6,7 @@ import {
   executeServerDataFeeds,
   PageIndex,
   resolveElementStateMacros,
-  buildFullIndex,
+  buildPageIndex,
 } from "@/core/config";
 
 export default async function Page({
@@ -17,9 +17,6 @@ export default async function Page({
   // Initialize CRM App Singleton (loads config once per application lifetime)
   const { config } = await initApp();
 
-  // Build element index from the full config
-  const elementIndex = buildFullIndex(config);
-
   // Resolve the route from params
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
@@ -27,6 +24,9 @@ export default async function Page({
 
   // Get page configuration (deep copy to avoid mutating global config)
   const pageConfig = structuredClone(getPageConfigByRoute(route) ?? {});
+
+  // Build element index for current page only
+  const elementIndex: PageIndex = pageConfig ? buildPageIndex(pageConfig) : {};
 
   // Resolve macros in all element states (page, sections, blocks, components)
   resolveElementStateMacros(pageConfig, {
@@ -70,14 +70,10 @@ export default async function Page({
     pages: pageConfig ? [pageConfig] : [],
   };
 
-  // Get per-page index (plain object, serializable)
-  const pageIndex: PageIndex =
-    pageConfig && elementIndex ? elementIndex[pageConfig.id] || {} : {};
-
   return (
     <AppEngine
       config={minimalConfig as unknown as App}
-      elementIndex={pageIndex}
+      elementIndex={elementIndex}
       dataFeedErrors={dataFeedErrors}
       initialDataFeed={successResults}
       initialPageId={initialPageId}

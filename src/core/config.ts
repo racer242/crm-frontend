@@ -66,7 +66,7 @@ export function buildFullIndex(config: CrmConfig): FullIndex {
 /**
  * Build index for a single page
  */
-function buildPageIndex(page: BaseElement): PageIndex {
+export function buildPageIndex(page: BaseElement): PageIndex {
   const index: PageIndex = {};
   addSubtreeToIndex(page, index);
   return index;
