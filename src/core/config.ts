@@ -44,11 +44,9 @@ export type FullIndex = Record<string, PageIndex>;
 
 export interface AppInitResult {
   config: CrmConfig;
-  elementIndex: FullIndex;
 }
 
 let cachedConfig: CrmConfig | null = null;
-let cachedIndex: FullIndex | null = null;
 let initPromise: Promise<AppInitResult> | null = null;
 let isInitialized = false;
 
@@ -57,7 +55,7 @@ let isInitialized = false;
 /**
  * Build index for all pages
  */
-function buildFullIndex(config: CrmConfig): FullIndex {
+export function buildFullIndex(config: CrmConfig): FullIndex {
   const index: FullIndex = {};
   for (const page of config.pages) {
     index[page.id] = buildPageIndex(page);
@@ -115,8 +113,8 @@ function getChildren(element: BaseElement): BaseElement[] {
  */
 export async function initApp(): Promise<AppInitResult> {
   // Return immediately if already initialized
-  if (cachedConfig && cachedIndex) {
-    return { config: cachedConfig, elementIndex: cachedIndex };
+  if (cachedConfig) {
+    return { config: cachedConfig };
   }
 
   // Prevent parallel loading during concurrent requests
@@ -137,7 +135,6 @@ export async function initApp(): Promise<AppInitResult> {
       )) as CrmConfig;
 
       cachedConfig = resolvedConfig;
-      cachedIndex = buildFullIndex(resolvedConfig);
 
       // Print banner only once per process lifetime
       if (!isInitialized) {
@@ -145,7 +142,7 @@ export async function initApp(): Promise<AppInitResult> {
         isInitialized = true;
       }
 
-      return { config: cachedConfig, elementIndex: cachedIndex };
+      return { config: cachedConfig };
     } catch (error) {
       initPromise = null;
 
@@ -180,7 +177,6 @@ export function getConfig(): CrmConfig {
  */
 export function clearConfigCache(): void {
   cachedConfig = null;
-  cachedIndex = null;
 }
 
 /**

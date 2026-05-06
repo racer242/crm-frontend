@@ -3,3 +3,10 @@
 1. src\app\[[...slug]]\page.tsx: pageConfig нужно скопировать "глубоко", чтобы изменения не коснулись глобальной конфигурации.
 2. Сразу после получения pageConfig, нужно пройти по всем свойствам state в pageConfig, найти в значениях макросы и подставить их.
 
+Багфикс.
+Теперь elementIndex стал неверным.
+Нам нужно:
+1. config.ts,  initApp - убираем elementIndex из результата функции. Там остается только config.
+2. page.tsx, сразу после const pageConfig = structuredClone(getPageConfigByRoute(route) ?? {}); создаем const elementIndex = buildFullIndex(config);
+
+Таким образом, elementIndex становится актуальным

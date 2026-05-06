@@ -6,6 +6,7 @@ import {
   executeServerDataFeeds,
   PageIndex,
   resolveElementStateMacros,
+  buildFullIndex,
 } from "@/core/config";
 
 export default async function Page({
@@ -14,7 +15,10 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
 }) {
   // Initialize CRM App Singleton (loads config once per application lifetime)
-  const { config, elementIndex } = await initApp();
+  const { config } = await initApp();
+
+  // Build element index from the full config
+  const elementIndex = buildFullIndex(config);
 
   // Resolve the route from params
   const resolvedParams = await params;
