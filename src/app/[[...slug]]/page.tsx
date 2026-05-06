@@ -5,6 +5,7 @@ import {
   getPageConfigByRoute,
   executeServerDataFeeds,
   PageIndex,
+  resolveElementStateMacros,
 } from "@/core/config";
 
 export default async function Page({
@@ -20,8 +21,23 @@ export default async function Page({
   const slug = resolvedParams.slug;
   const route = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
 
-  // Get page configuration
-  const pageConfig = getPageConfigByRoute(route);
+  // Get page configuration (deep copy to avoid mutating global config)
+  const pageConfig = structuredClone(getPageConfigByRoute(route) ?? {});
+
+  // Resolve macros in all element states (page, sections, blocks, components)
+  resolveElementStateMacros(pageConfig, {
+    location: {
+      pathname: route,
+      search: "",
+      href: route,
+      origin: "",
+      protocol: "",
+      host: "",
+      hostname: "",
+      port: "",
+      hash: "",
+    } as Location,
+  });
 
   // Execute server-side data feeds if page has dataFeed config
   let dataFeedErrors: string[] = [];

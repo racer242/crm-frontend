@@ -7,7 +7,8 @@
     "analytics": [],
     "dynamicData": {
       "title": "Текст"
-    }
+    },
+    "location": "{$now}"
   },
   "meta": {
     "title": "Testing FOUC"
@@ -376,6 +377,15 @@
                 "placeholder": "Default",
                 "disabled": true,
                 "value": "@state.dynamicData.title"
+              }
+            },
+            {
+              "id": "itt4",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Default",
+                "value": "@state.location"
               }
             }
           ]

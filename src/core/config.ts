@@ -336,6 +336,37 @@ export async function executeServerDataFeeds(
 }
 
 /**
+ * Resolve macros in element state recursively (server-side)
+ * Traverses all elements and applies macro substitution to their state
+ */
+export function resolveElementStateMacros(
+  element: any,
+  sources: Partial<MacroSources>,
+): void {
+  if (!element) return;
+
+  const serverSources: MacroSources = {
+    config: cachedConfig?.config,
+    env: getServerEnv(),
+    ...sources,
+  };
+  const macroEngine = new MacroEngine(serverSources);
+
+  resolveStateRecursive(element, macroEngine);
+}
+
+function resolveStateRecursive(element: any, macroEngine: MacroEngine) {
+  if (element.state) {
+    element.state = macroEngine.apply(element.state);
+  }
+
+  const children = getChildren(element);
+  for (const child of children) {
+    resolveStateRecursive(child, macroEngine);
+  }
+}
+
+/**
  * Print startup banner with configuration info
  */
 function printStartupBanner(config: CrmConfig, configPath: string): void {
