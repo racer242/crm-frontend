@@ -84,12 +84,7 @@
       "id": "filtersSection",
       "type": "section",
       "className": "flex flex-column lg:flex-row gap-3",
-      "state": {
-        "visible": true,
-        "textData": {
-          "input": "Тестовая строка"
-        }
-      },
+      "state": {},
       "blocks": [
         {
           "id": "weekFilterBlock",

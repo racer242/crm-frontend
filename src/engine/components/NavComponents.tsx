@@ -70,7 +70,7 @@ export function renderMenubar({
   return (
     <Menubar
       model={menuModel}
-      className={`w-full mb-4 ${className || ""}`}
+      className={`w-full mb-4 ${className || ""} ${props.allowMobile === true ? "" : "custom-menubar-fixed"}`}
       style={style}
     />
   );

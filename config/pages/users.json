@@ -25,7 +25,6 @@
         {
           "id": "usersTitle",
           "type": "block",
-          "className": "col-12 lg:col-10",
           "state": {},
           "components": [
             {
@@ -43,7 +42,8 @@
         {
           "id": "usersActions",
           "type": "block",
-          "className": "col-12 lg:col-2",
+          "className": "flex flex-column gap-3 max-w-max",
+          "wrapper": { "className": "flex flex-row justify-content-end" },
           "state": {},
           "components": [
             {

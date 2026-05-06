@@ -42,3 +42,29 @@ html {
 input.p-inputtext {
   width: 100%;
 }
+
+/* MenyBar: Управление доступностью бургер-меню */
+
+/* 1. Скрываем кнопку бутерброда */
+.p-menubar.custom-menubar-fixed .p-menubar-button {
+  display: none !important;
+}
+
+/* 2. Принудительно показываем список на мобильных (до 960px) */
+@media screen and (max-width: 960px) {
+  .p-menubar.custom-menubar-fixed .p-menubar-root-list {
+    display: flex !important;
+    position: static !important;
+    flex-direction: row !important;
+    gap: 0.5rem; /* Опционально: отступ между кнопками */
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    background: transparent !important;
+  }
+
+  /* Сбрасываем ширину элементов списка, чтобы они не растягивались на весь экран */
+  .p-menubar.custom-menubar-fixed .p-menubar-root-list > .p-menuitem {
+    width: auto !important;
+  }
+}

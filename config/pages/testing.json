@@ -4,6 +4,7 @@
   "route": "/testing",
   "state": {
     "loading": false,
+    "analytics": [],
     "dynamicData": {
       "title": "Текст"
     }
@@ -20,7 +21,7 @@
     {
       "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
       "method": "GET",
-      "target": "state",
+      "target": "state.analytics",
       "adapter": "stats.analytics.js"
     }
   ],
@@ -403,7 +404,8 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "model": "@state.analytics"
+                "model": "@state.analytics",
+                "allowMobile": true
               },
               "state": {},
               "events": [
