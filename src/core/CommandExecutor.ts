@@ -158,7 +158,8 @@ export class CommandExecutor {
           ? this.getSourceValue(source, eventData)
           : undefined;
 
-    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    value = this.applyFormatToValue(value, params, eventData);
 
     const { elementPath, fieldPath } = parseTargetPath(
       target,
@@ -192,7 +193,8 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    value = this.applyFormatToValue(value, params, eventData);
 
     const { elementPath } = parseTargetPath(
       target,
