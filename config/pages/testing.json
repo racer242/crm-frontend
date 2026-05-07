@@ -382,7 +382,39 @@
                       "params": {
                         "name": "end",
                         "value": "{$event.value}",
-                        "format": [{ "prop": "value", "type": "Time" }]
+                        "format": [
+                          {
+                            "prop": "value",
+                            "type": "Time",
+                            "params": {
+                              "year": "numeric",
+                              "month": "2-digit",
+                              "day": "2-digit",
+                              "hour": "2-digit",
+                              "minute": "2-digit"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.location",
+                        "format": [
+                          {
+                            "prop": "value",
+                            "type": "Time",
+                            "params": {
+                              "year": "numeric",
+                              "month": "2-digit",
+                              "day": "2-digit",
+                              "hour": "2-digit",
+                              "minute": "2-digit"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]

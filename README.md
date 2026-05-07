@@ -386,6 +386,61 @@ App (приложение)
 }
 ```
 
+**setUrlParams — замена всех URL параметров:**
+
+```json
+{
+  "type": "setUrlParams",
+  "params": {
+    "values": {
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "status": "active"
+    }
+  }
+}
+```
+
+Результат: `?start=2025-01-01&end=2025-12-31&status=active`
+
+**setUrlParams с макросами:**
+
+```json
+{
+  "type": "setUrlParams",
+  "params": {
+    "values": {
+      "start": "{$filterForm.state.startDate}",
+      "end": "{$filterForm.state.endDate}",
+      "category": "{$filterForm.state.category}"
+    }
+  }
+}
+```
+
+**setUrlParam — изменить один параметр:**
+
+```json
+{
+  "type": "setUrlParam",
+  "params": {
+    "name": "page",
+    "value": 2
+  }
+}
+```
+
+**removeUrlParam — удалить параметр:**
+
+```json
+{
+  "type": "removeUrlParam",
+  "params": {
+    "name": "filter"
+  }
+}
+```
+
 #### Локаль
 
 Локаль задаётся в конфигурации приложения (`config.locale`):

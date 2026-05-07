@@ -4,8 +4,8 @@
   "route": "/statistics",
   "state": {
     "loading": false,
-    "start": "",
-    "end": "",
+    "start": "{$location.params.start}",
+    "end": "{$location.params.end}",
     "dynamicData": {
       "title": "Текст"
     },
@@ -182,6 +182,21 @@
                         "source": "event.value.end",
                         "target": "state.end"
                       }
+                    },
+                    {
+                      "type": "setUrlParams",
+                      "params": {
+                        "values": [
+                          {
+                            "name": "start",
+                            "value": "{$event.value}"
+                          },
+                          {
+                            "name": "end",
+                            "value": "{$event.value}"
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -222,6 +237,19 @@
                         "source": "event.value",
                         "target": "state.start"
                       }
+                    },
+                    {
+                      "type": "setUrlParam",
+                      "params": {
+                        "name": "start",
+                        "value": "{$event.value}",
+                        "format": [
+                          {
+                            "prop": "value",
+                            "type": "Date"
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -247,6 +275,19 @@
                       "params": {
                         "source": "event.value",
                         "target": "state.end"
+                      }
+                    },
+                    {
+                      "type": "setUrlParam",
+                      "params": {
+                        "name": "end",
+                        "value": "{$event.value}",
+                        "format": [
+                          {
+                            "prop": "value",
+                            "type": "Date"
+                          }
+                        ]
                       }
                     }
                   ]

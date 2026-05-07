@@ -14,7 +14,7 @@
  * - delay: пауза в последовательности команд
  * - log: логирование в консоль
  * - sequence: последовательное выполнение команд
- * - setUrlParams: заменяет все URL параметры { params: { key: value } }
+ * - setUrlParams: заменяет все URL параметры { values: { key: value } }
  * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
  * - removeUrlParam: удаляет URL параметр { name: "key" }
  */
@@ -482,7 +482,7 @@ export class CommandExecutor {
   // ========== SET URL PARAMS ==========
   /**
    * setUrlParams: заменяет все URL параметры
-   * params: { params: { key: value, ... } }
+   * params: { values: { key: value, ... } }
    */
   async executeSetUrlParams(
     params: Record<string, any>,
@@ -490,11 +490,11 @@ export class CommandExecutor {
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
-    const rawParams = params.params || {};
+    const rawParams = params.values || {};
     let resolvedParams = this.macroEngine.apply(rawParams, 0, {
       event: eventData,
     }) as Record<string, any>;
-    resolvedParams = this.applyFormatToValue(resolvedParams, "params", params);
+    resolvedParams = this.applyFormatToValue(resolvedParams, "values", params);
 
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(resolvedParams)) {
