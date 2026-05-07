@@ -15,6 +15,7 @@
  * - log: логирование в консоль
  * - sequence: последовательное выполнение команд
  * - setUrlParams: заменяет все URL параметры { values: { key: value } }
+ * - mergeUrlParams: обновляет/добавляет URL параметры { values: { key: value } }
  * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
  * - removeUrlParam: удаляет URL параметр { name: "key" }
  */
@@ -514,6 +515,41 @@ export class CommandExecutor {
     window.history.pushState({}, "", newUrl);
   }
 
+  // ========== MERGE URL PARAMS ==========
+  /**
+   * mergeUrlParams: обновляет/добавляет URL параметры (сохраняет существующие)
+   * params: { values: { key: value, ... } }
+   */
+  async executeMergeUrlParams(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawValues = params.values || {};
+    let resolvedValues = this.macroEngine.apply(rawValues, 0, {
+      event: eventData,
+    }) as Record<string, any>;
+    resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
+
+    // Берём ТЕКУЩИЕ параметры и добавляем/обновляем новые
+    const searchParams = new URLSearchParams(window.location.search);
+    for (const [key, value] of Object.entries(resolvedValues)) {
+      if (value !== undefined && value !== null) {
+        searchParams.set(key, String(value));
+      } else {
+        searchParams.delete(key);
+      }
+    }
+
+    const queryString = searchParams.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
+
+    window.history.pushState({}, "", newUrl);
+  }
+
   // ========== SET URL PARAM ==========
   /**
    * setUrlParam: изменяет один URL параметр
@@ -699,6 +735,10 @@ export class CommandExecutor {
 
       case "setUrlParams":
         await this.executeSetUrlParams(params, eventData);
+        break;
+
+      case "mergeUrlParams":
+        await this.executeMergeUrlParams(params, eventData);
         break;
 
       case "setUrlParam":

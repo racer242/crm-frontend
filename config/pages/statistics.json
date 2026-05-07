@@ -228,20 +228,22 @@
                   "type": "onChange",
                   "commands": [
                     {
-                      "type": "setProperty",
+                      "type": "mergeState",
                       "params": {
-                        "source": "event.value",
-                        "target": "state.start"
+                        "source": { "start": "{$event.value}", "week": null },
+                        "target": "state"
                       }
                     },
                     {
-                      "type": "setUrlParam",
+                      "type": "setUrlParams",
                       "params": {
-                        "name": "start",
-                        "value": "{$event.value}",
+                        "values": {
+                          "week": "",
+                          "start": "{$event.value}"
+                        },
                         "format": [
                           {
-                            "prop": "value",
+                            "prop": "values.start",
                             "type": "Date"
                           }
                         ]

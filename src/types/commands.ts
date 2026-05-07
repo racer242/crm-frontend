@@ -32,6 +32,7 @@ export type CommandType =
   | "emit"
   | "custom"
   | "setUrlParams"
+  | "mergeUrlParams"
   | "setUrlParam"
   | "removeUrlParam";
 

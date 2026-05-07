@@ -148,7 +148,7 @@ export class StateManager {
     const oldState = { ...(element.state || {}) };
     element.state = { ...oldState, ...updates };
     // Notify with "state" as changedPath so bindings can match
-    this.notifyListeners(elementPath, "state", oldState, element.state);
+    this.notifyListeners(elementPath, null, oldState, element.state);
   }
 
   /**
@@ -183,7 +183,7 @@ export class StateManager {
     }
     const oldState = element.state || {};
     element.state = {};
-    this.notifyListeners(elementPath, elementPath, oldState, {});
+    this.notifyListeners(elementPath, null, oldState, {});
   }
 
   /**
