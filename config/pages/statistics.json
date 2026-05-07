@@ -235,10 +235,10 @@
                       }
                     },
                     {
-                      "type": "setUrlParams",
+                      "type": "mergeUrlParams",
                       "params": {
                         "values": {
-                          "week": "",
+                          "week": null,
                           "start": "{$event.value}"
                         },
                         "format": [
@@ -276,13 +276,15 @@
                       }
                     },
                     {
-                      "type": "setUrlParam",
+                      "type": "mergeUrlParams",
                       "params": {
-                        "name": "end",
-                        "value": "{$event.value}",
+                        "values": {
+                          "week": null,
+                          "end": "{$event.value}"
+                        },
                         "format": [
                           {
-                            "prop": "value",
+                            "prop": "values.end",
                             "type": "Date"
                           }
                         ]

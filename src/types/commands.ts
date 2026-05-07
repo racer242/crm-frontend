@@ -34,7 +34,8 @@ export type CommandType =
   | "setUrlParams"
   | "mergeUrlParams"
   | "setUrlParam"
-  | "removeUrlParam";
+  | "removeUrlParam"
+  | "refresh";
 
 /** Триггер выполнения команды */
 export interface CommandTrigger {

@@ -15,6 +15,7 @@ export interface ComponentContextValue {
   ) => void;
   navigate?: (url: string) => void;
   confirm?: (message: string) => Promise<boolean>;
+  refresh?: (mode: string) => void;
 }
 
 export const ComponentContext = createContext<ComponentContextValue>({
@@ -36,6 +37,7 @@ export interface ComponentProviderProps {
   ) => void;
   navigate?: (url: string) => void;
   confirm?: (message: string) => Promise<boolean>;
+  refresh?: (mode: string) => void;
   children: React.ReactNode;
 }
 
@@ -47,6 +49,7 @@ export function ComponentProvider({
   showToast,
   navigate,
   confirm,
+  refresh,
   children,
 }: ComponentProviderProps) {
   return (
@@ -59,6 +62,7 @@ export function ComponentProvider({
         showToast,
         navigate,
         confirm,
+        refresh,
       }}
     >
       {children}

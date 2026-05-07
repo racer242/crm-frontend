@@ -48,6 +48,8 @@ export interface CommandExecutionContext {
   navigate?: (url: string) => void;
   /** Callback для подтверждения (вызывает callback с true/false) */
   confirm?: (message: string) => Promise<boolean>;
+  /** Callback для обновления страницы без перезагрузки */
+  refresh?: (mode: string) => void;
 }
 
 export class CommandExecutor {
@@ -762,8 +764,31 @@ export class CommandExecutor {
         await this.executeRemoveUrlParam(params, eventData);
         break;
 
+      case "refresh":
+        await this.executeRefresh(params, eventData);
+        break;
+
       default:
         console.warn(`Command type not implemented: ${type}`);
+    }
+  }
+
+  // ========== REFRESH ==========
+  /**
+   * refresh: обновление страницы без перезагрузки
+   * params: { mode?: "refresh" | "replace" | "reload" } (по умолчанию "refresh")
+   */
+  async executeRefresh(
+    params: Record<string, any>,
+    _eventData: any,
+  ): Promise<void> {
+    const mode = params.mode || "refresh";
+
+    if (this.context.refresh) {
+      this.context.refresh(mode);
+    } else if (typeof window !== "undefined") {
+      // Fallback
+      window.location.reload();
     }
   }
 }

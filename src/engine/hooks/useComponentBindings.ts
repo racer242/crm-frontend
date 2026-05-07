@@ -30,6 +30,7 @@ export function useComponentBindings({
     ) => void;
     navigate?: (url: string) => void;
     confirm?: (message: string) => Promise<boolean>;
+    refresh?: (mode: string) => void;
   } | null>(null);
 
   const { stateManager, pageId, elementIndex } = ctx;
@@ -52,6 +53,7 @@ export function useComponentBindings({
         showToast: ctx.showToast,
         navigate: ctx.navigate,
         confirm: ctx.confirm,
+        refresh: ctx.refresh,
       };
     }
   }, [
@@ -63,6 +65,7 @@ export function useComponentBindings({
     ctx.showToast,
     ctx.navigate,
     ctx.confirm,
+    ctx.refresh,
   ]);
 
   // Собираем все binding-строки из value и props

@@ -193,6 +193,22 @@ export function AppEngine({
     });
   }, []);
 
+  const refresh = useCallback(
+    (mode: string) => {
+      switch (mode) {
+        case "replace":
+          router.replace(window.location.pathname + window.location.search);
+          break;
+        case "reload":
+          window.location.reload();
+          break;
+        default: // "refresh"
+          router.refresh();
+      }
+    },
+    [router],
+  );
+
   if (!currentPage) {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
@@ -237,6 +253,7 @@ export function AppEngine({
             showToast={showToast}
             navigate={navigate}
             confirm={confirm}
+            refresh={refresh}
           >
             <PageRenderer page={currentPage} />
             {/* Убирает FOUC при переходе между страницами */}
