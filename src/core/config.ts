@@ -7,6 +7,7 @@ import {
   ApiRouteConfig,
   MacroSources,
   BaseElement,
+  LocaleConfig,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
@@ -33,6 +34,8 @@ export interface CrmConfig {
     baseUrl?: string;
     timeout?: number;
   };
+  /** Настройки локали */
+  locale?: LocaleConfig;
   [key: string]: any;
 }
 

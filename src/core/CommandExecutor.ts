@@ -31,6 +31,7 @@ import {
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
+import { FormatEngine, FormatRule } from "./FormatEngine";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -87,9 +88,53 @@ function parseTargetPath(
 
 export class CommandExecutor {
   private macroEngine: MacroEngine;
+  private formatEngine: FormatEngine;
 
   constructor(private context: CommandExecutionContext) {
     this.macroEngine = new MacroEngine(createMacroSources(context));
+    // Get locale from config or default to ru-RU
+    const locale = context.appConfig?.config?.locale?.default || "ru-RU";
+    this.formatEngine = new FormatEngine(locale);
+  }
+
+  // ========== FORMAT HELPERS ==========
+  /**
+   * Apply formatting to a single value if format rules are provided
+   */
+  private applyFormatToValue(
+    value: any,
+    params: Record<string, any>,
+    _eventData: any,
+  ): any {
+    if (!params.format || !Array.isArray(params.format)) {
+      return value;
+    }
+
+    const formatRules: FormatRule[] = params.format;
+    const formatted = this.formatEngine.formatValue(value, {
+      ...formatRules[0],
+      prop: "",
+    });
+
+    return formatted;
+  }
+
+  /**
+   * Apply formatting to params object (for multi-property formats)
+   */
+  private applyFormatToParams(
+    params: Record<string, any>,
+  ): Record<string, any> {
+    if (!params.format || !Array.isArray(params.format)) {
+      return params;
+    }
+
+    const formatRules: FormatRule[] = params.format;
+    const result = this.formatEngine.applyFormat(params, formatRules);
+
+    // Remove format from result (it's config, not data)
+    const { format, ...rest } = result;
+    return rest;
   }
 
   // ========== SET PROPERTY ==========

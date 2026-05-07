@@ -60,6 +60,16 @@ export interface UserMenuConfig {
   userRole?: string;
 }
 
+/** Конфигурация локали */
+export interface LocaleConfig {
+  default: string;
+  fallback?: string;
+  options?: {
+    numberingSystem?: string;
+    calendar?: string;
+  };
+}
+
 /** Конфигурация приложения */
 export interface AppConfig {
   name: string;
@@ -69,6 +79,8 @@ export interface AppConfig {
   routes?: RouteConfig[];
   /** API router configurations: maps short route names to external API URLs */
   apiRoutes?: ApiRouteConfig[];
+  /** Настройки локали */
+  locale?: LocaleConfig;
 }
 
 /** Конфигурация API */
