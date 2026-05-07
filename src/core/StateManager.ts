@@ -138,6 +138,20 @@ export class StateManager {
   }
 
   /**
+   * Слияние с текущим состоянием (частичное обновление — верхнеуровневые ключи)
+   */
+  mergeState(elementPath: ElementPath, updates: Record<string, any>): void {
+    const element = this.getElement(elementPath);
+    if (!element) {
+      return;
+    }
+    const oldState = { ...(element.state || {}) };
+    element.state = { ...oldState, ...updates };
+    // Notify with "state" as changedPath so bindings can match
+    this.notifyListeners(elementPath, "state", oldState, element.state);
+  }
+
+  /**
    * Установка значения поля в состоянии (поддержка вложенных путей через точку)
    */
   setStateField(elementPath: ElementPath, field: string, value: any): void {
@@ -157,19 +171,6 @@ export class StateManager {
       oldState,
       element.state,
     );
-  }
-
-  /**
-   * Слияние с текущим состоянием (частичное обновление — верхнеуровневые ключи)
-   */
-  mergeState(elementPath: ElementPath, updates: Record<string, any>): void {
-    const element = this.getElement(elementPath);
-    if (!element) {
-      return;
-    }
-    const oldState = element.state || {};
-    element.state = { ...oldState, ...updates };
-    this.notifyListeners(elementPath, elementPath, oldState, element.state);
   }
 
   /**

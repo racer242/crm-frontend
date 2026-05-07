@@ -267,10 +267,10 @@
                   "type": "onChange",
                   "commands": [
                     {
-                      "type": "setProperty",
+                      "type": "mergeState",
                       "params": {
-                        "source": "event.value",
-                        "target": "state.end"
+                        "source": { "end": "{$event.value}", "week": null },
+                        "target": "state"
                       }
                     },
                     {
