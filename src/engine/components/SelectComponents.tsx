@@ -24,15 +24,15 @@ export function renderDropdown({
     typeof dropdownValue !== "object" &&
     Array.isArray(options) &&
     options.length > 0 &&
-    typeof options[0] === "object" &&
-    "id" in options[0]
+    options[0].value &&
+    typeof options[0].value === "object" &&
+    "id" in options[0].value
   ) {
-    const found = options.find((opt: any) => opt.id === dropdownValue);
+    const found = options.find((opt: any) => opt.value?.id == dropdownValue);
     if (found) {
-      dropdownValue = found;
+      dropdownValue = found.value;
     }
   }
-
   const dropdownProps = {
     ...props,
     value: dropdownValue,

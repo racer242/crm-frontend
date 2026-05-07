@@ -4,6 +4,7 @@
   "route": "/statistics",
   "state": {
     "loading": false,
+    "week": "{$location.params.week}",
     "start": "{$location.params.start}",
     "end": "{$location.params.end}",
     "dynamicData": {
@@ -104,8 +105,6 @@
               "componentType": "Dropdown",
               "className": "w-full",
               "props": {
-                "optionLabel": "label",
-                "_optionValue": "week",
                 "placeholder": "Выберите неделю",
                 "showClear": true,
                 "value": "@state.week",
@@ -113,7 +112,7 @@
                   {
                     "label": "Неделя 11 - 16.03.2026 - 23.03.2026",
                     "value": {
-                      "week": 11,
+                      "id": 11,
                       "start": "16.03.2026",
                       "end": "23.03.2026"
                     }
@@ -121,7 +120,7 @@
                   {
                     "label": "Неделя 12 - 23.03.2026 - 30.03.2026",
                     "value": {
-                      "week": 12,
+                      "id": 12,
                       "start": "23.03.2026",
                       "end": "30.03.2026"
                     }
@@ -129,7 +128,7 @@
                   {
                     "label": "Неделя 13 - 30.03.2026 - 06.04.2026",
                     "value": {
-                      "week": 13,
+                      "id": 13,
                       "start": "30.03.2026",
                       "end": "06.04.2026"
                     }
@@ -137,7 +136,7 @@
                   {
                     "label": "Неделя 14 - 06.04.2026 - 13.04.2026",
                     "value": {
-                      "week": 14,
+                      "id": 14,
                       "start": "06.04.2026",
                       "end": "13.04.2026"
                     }
@@ -145,7 +144,7 @@
                   {
                     "label": "Неделя 15 - 13.04.2026 - 20.04.2026",
                     "value": {
-                      "week": 15,
+                      "id": 15,
                       "start": "13.04.2026",
                       "end": "20.04.2026"
                     }
@@ -153,7 +152,7 @@
                   {
                     "label": "Неделя 16 - 20.04.2026 - 27.04.2026",
                     "value": {
-                      "week": 16,
+                      "id": 16,
                       "start": "20.04.2026",
                       "end": "27.04.2026"
                     }
@@ -167,7 +166,7 @@
                     {
                       "type": "setProperty",
                       "params": {
-                        "source": "event.value",
+                        "source": "event.value.id",
                         "target": "state.week"
                       }
                     },
@@ -189,7 +188,7 @@
                       "type": "setUrlParams",
                       "params": {
                         "values": {
-                          "week": "{$event.value.week}",
+                          "week": "{$event.value.id}",
                           "start": "{$event.value.start}",
                           "end": "{$event.value.end}"
                         }

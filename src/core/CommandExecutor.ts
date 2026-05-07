@@ -2,9 +2,9 @@
  * CommandExecutor - выполнение команд
  *
  * Доступные команды:
- * - setProperty: записывает значение из source в target
- * - setState: полная замена состояния элемента
- * - mergeState: слияние с текущим состоянием
+ * - setProperty: записывает значение из source в target (source может быть строкой или объектом)
+ * - setState: полная замена состояния элемента (source может быть строкой или объектом)
+ * - mergeState: слияние с текущим состоянием (source может быть строкой или объектом)
  * - clearState: очистка состояния элемента
  * - toggleProperty: инвертирует boolean значение
  * - sendRequest: HTTP-запрос к API
@@ -616,8 +616,14 @@ export class CommandExecutor {
   // ========== SOURCE VALUE ==========
   /**
    * Получить значение из источника
+   * source может быть строкой (путь) или объектом с парами "prop":"value"
    */
-  private getSourceValue(source: string, eventData: any): any {
+  private getSourceValue(source: string | object, eventData: any): any {
+    // Если source уже объект — возвращаем как есть (макросы и формат применяются позже)
+    if (typeof source === "object" && source !== null) {
+      return source;
+    }
+
     // Если начинается с "event." - читаем из eventData
     if (source.startsWith("event.")) {
       const field = source.slice(6);
