@@ -193,7 +193,8 @@
                           "end": "{$event.value.end}"
                         }
                       }
-                    }
+                    },
+                    { "type": "refresh" }
                   ]
                 }
               ]
