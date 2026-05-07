@@ -83,8 +83,11 @@ export class CommandExecutor {
     const stateIndex = target.indexOf("state.");
 
     if (stateIndex === 0) {
-      // "state.field" — state страницы
+      // "state.field" — state страницы с полем
       return { elementPath: this.context.pageId, fieldPath: target.slice(6) };
+    } else if (target === "state") {
+      // "state" — корневой state страницы
+      return { elementPath: this.context.pageId, fieldPath: "" };
     } else if (stateIndex > 0) {
       // "elementId.state.field" — state элемента
       return {
