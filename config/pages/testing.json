@@ -381,7 +381,8 @@
                       "type": "setUrlParam",
                       "params": {
                         "name": "end",
-                        "value": "{$event.value}"
+                        "value": "{$event.value}",
+                        "format": [{ "prop": "value", "type": "Time" }]
                       }
                     }
                   ]

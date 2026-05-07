@@ -179,6 +179,229 @@ App (приложение)
 | `delay`          | Пауза в последовательности команд (мс)                 |
 | `sequence`       | Последовательное выполнение нескольких команд          |
 | `log`            | Логирование в консоль (info, warn, error, debug)       |
+| `setUrlParams`   | Заменяет все URL параметры                             |
+| `setUrlParam`    | Изменяет один URL параметр                             |
+| `removeUrlParam` | Удаляет URL параметр                                   |
+
+### Форматирование данных
+
+Все команды поддерживают форматирование значений через свойство `format` в `params`. Форматирование применяется **после разрешения макросов** и **перед записью в state**.
+
+```json
+{
+  "type": "setProperty",
+  "params": {
+    "value": "2025-01-15T10:30:00",
+    "target": "state.date",
+    "format": [
+      {
+        "prop": "value",
+        "type": "Date",
+        "func": "DateTimeFormat",
+        "params": { "dateStyle": "full", "timeStyle": "medium" }
+      }
+    ]
+  }
+}
+```
+
+#### Поддерживаемые типы форматирования
+
+| Тип            | Описание                            | Функция              | Входной тип                |
+| -------------- | ----------------------------------- | -------------------- | -------------------------- |
+| `Date`         | Форматирование даты                 | `DateTimeFormat`     | `Date`, `string`, `number` |
+| `Time`         | Форматирование времени              | `DateTimeFormat`     | `Date`, `string`, `number` |
+| `Number`       | Форматирование чисел                | `NumberFormat`       | `number`                   |
+| `Currency`     | Форматирование валюты               | `NumberFormat`       | `number`                   |
+| `RelativeTime` | Относительное время (вчера, завтра) | `RelativeTimeFormat` | `number`                   |
+| `List`         | Форматирование списков              | `ListFormat`         | `string[]`                 |
+| `Plural`       | Правила множественных чисел         | `PluralRules`        | `number`                   |
+
+#### Опции форматирования по типам
+
+**DateTimeFormat (Date, Time):**
+
+| Опция          | Возможные значения                                        | Описание      |
+| -------------- | --------------------------------------------------------- | ------------- |
+| `dateStyle`    | `"full"`, `"long"`, `"medium"`, `"short"`                 | Стиль даты    |
+| `timeStyle`    | `"full"`, `"long"`, `"medium"`, `"short"`                 | Стиль времени |
+| `weekday`      | `"long"`, `"short"`, `"narrow"`                           | День недели   |
+| `year`         | `"numeric"`, `"2-digit"`                                  | Год           |
+| `month`        | `"numeric"`, `"2-digit"`, `"long"`, `"short"`, `"narrow"` | Месяц         |
+| `day`          | `"numeric"`, `"2-digit"`                                  | День          |
+| `hour`         | `"numeric"`, `"2-digit"`                                  | Час           |
+| `minute`       | `"numeric"`, `"2-digit"`                                  | Минута        |
+| `second`       | `"numeric"`, `"2-digit"`                                  | Секунда       |
+| `timeZoneName` | `"short"`, `"long"`                                       | Часовой пояс  |
+
+Пример:
+
+```json
+{
+  "type": "Date",
+  "func": "DateTimeFormat",
+  "params": { "dateStyle": "full", "timeStyle": "short" }
+}
+// → "15 января 2025 г., 10:30"
+```
+
+**NumberFormat (Number):**
+
+| Опция                   | Возможные значения                           | Описание                    |
+| ----------------------- | -------------------------------------------- | --------------------------- |
+| `style`                 | `"decimal"`, `"percent"`, `"unit"`           | Стиль числа                 |
+| `currency`              | `"RUB"`, `"USD"`, `"EUR"`                    | Валюта (для style=currency) |
+| `minimumIntegerDigits`  | `1`, `2`, `3`...                             | Мин. цифр целой части       |
+| `minimumFractionDigits` | `0`, `1`, `2`...                             | Мин. цифр дробной части     |
+| `maximumFractionDigits` | `0`, `1`, `2`...                             | Макс. цифр дробной части    |
+| `useGrouping`           | `true`, `false`                              | Разделитель тысяч           |
+| `unit`                  | `"kilometer-per-hour"`, `"meter"`, `"liter"` | Единица измерения           |
+
+Пример:
+
+```json
+{
+  "type": "Number",
+  "func": "NumberFormat",
+  "params": { "minimumFractionDigits": 2, "useGrouping": true }
+}
+// → 1 234,56
+```
+
+**Currency (через NumberFormat):**
+
+| Опция                   | Возможные значения                          | Описание                  |
+| ----------------------- | ------------------------------------------- | ------------------------- |
+| `currency`              | `"RUB"`, `"USD"`, `"EUR"`, `"GBP"`, `"JPY"` | Код валюты                |
+| `currencyDisplay`       | `"symbol"`, `"code"`, `"name"`              | Отображение валюты        |
+| `minimumFractionDigits` | `0`, `1`, `2`...                            | Мин. знаков после запятой |
+
+Пример:
+
+```json
+{
+  "type": "Currency",
+  "func": "NumberFormat",
+  "params": { "currency": "RUB", "currencyDisplay": "symbol" }
+}
+// → 1 234,56 ₽
+```
+
+**RelativeTimeFormat (RelativeTime):**
+
+| Опция     | Возможные значения                                                       | Описание                                     |
+| --------- | ------------------------------------------------------------------------ | -------------------------------------------- |
+| `unit`    | `"year"`, `"month"`, `"week"`, `"day"`, `"hour"`, `"minute"`, `"second"` | Единица времени                              |
+| `numeric` | `"always"`, `"auto"`                                                     | Всегда показывать число или "вчера"/"завтра" |
+| `style`   | `"long"`, `"short"`, `"narrow"`                                          | Стиль вывода                                 |
+
+Пример:
+
+```json
+{
+  "type": "RelativeTime",
+  "func": "RelativeTimeFormat",
+  "params": { "unit": "day", "numeric": "auto" }
+}
+// → -5 → "5 дн. назад", 1 → "завтра"
+```
+
+**ListFormat (List):**
+
+| Опция   | Возможные значения                         | Описание       |
+| ------- | ------------------------------------------ | -------------- |
+| `type`  | `"conjunction"`, `"disjunction"`, `"unit"` | Тип соединения |
+| `style` | `"long"`, `"short"`, `"narrow"`            | Стиль вывода   |
+
+Пример:
+
+```json
+{
+  "type": "List",
+  "func": "ListFormat",
+  "params": { "type": "conjunction", "style": "long" }
+}
+// → ["яблоки", "груши", "сливы"] → "яблоки, груши и сливы"
+```
+
+**PluralRules (Plural):**
+
+| Опция  | Возможные значения        | Описание  |
+| ------ | ------------------------- | --------- |
+| `type` | `"cardinal"`, `"ordinal"` | Тип числа |
+
+Пример:
+
+```json
+{ "type": "Plural", "func": "PluralRules" }
+// → 1 → "one", 2 → "other", 3 → "other" (для ru-RU)
+```
+
+#### Форматирование объектов и массивов
+
+Форматирование поддерживает вложенные свойства через точку:
+
+**Объект:**
+
+```json
+{
+  "type": "setState",
+  "params": {
+    "source": "event.data",
+    "format": [
+      {
+        "prop": "data.amount",
+        "type": "Currency",
+        "func": "NumberFormat",
+        "params": { "currency": "USD" }
+      },
+      {
+        "prop": "data.createdAt",
+        "type": "Date",
+        "func": "DateTimeFormat",
+        "params": { "dateStyle": "long" }
+      }
+    ]
+  }
+}
+```
+
+**Массив:**
+
+```json
+{
+  "type": "setState",
+  "params": {
+    "source": "event.items",
+    "format": [
+      { "prop": "items.price", "type": "Currency", "func": "NumberFormat" },
+      {
+        "prop": "items.date",
+        "type": "Date",
+        "func": "DateTimeFormat",
+        "params": { "dateStyle": "medium" }
+      }
+    ]
+  }
+}
+```
+
+#### Локаль
+
+Локаль задаётся в конфигурации приложения (`config.locale`):
+
+```json
+{
+  "config": {
+    "name": "CRM Platform",
+    "version": "1.0.0",
+    "locale": {
+      "default": "ru-RU",
+      "fallback": "en-US"
+    }
+  }
+}
+```
 
 ### Источники данных (source)
 
