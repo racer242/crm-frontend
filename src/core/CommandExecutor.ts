@@ -101,38 +101,62 @@ export class CommandExecutor {
   }
 
   /**
-   * Apply formatting to a single value if format rules are provided
+   * Apply formatting to a value if format rules are provided
+   * Supports primitives, objects, and arrays
    */
-  private applyFormatToValue(value: any, params: Record<string, any>): any {
+  private applyFormatToValue(
+    value: any,
+    name: string,
+    params: Record<string, any>,
+  ): any {
     if (!params.format || !Array.isArray(params.format)) {
       return value;
     }
 
     const formatRules: FormatRule[] = params.format;
-    const formatted = this.formatEngine.formatValue(value, {
-      ...formatRules[0],
-      prop: "",
-    });
 
-    return formatted;
-  }
+    // Filter rules that match this name (either "name" or "name.subpath")
+    const matchingRules = formatRules.filter(
+      (r) => r.prop === name || r.prop.startsWith(name + "."),
+    );
 
-  /**
-   * Apply formatting to params object (for multi-property formats)
-   */
-  private applyFormatToParams(
-    params: Record<string, any>,
-  ): Record<string, any> {
-    if (!params.format || !Array.isArray(params.format)) {
-      return params;
+    if (matchingRules.length === 0) return value;
+
+    // Primitive or Date - apply matching rule directly
+    if (
+      value === null ||
+      value === undefined ||
+      typeof value !== "object" ||
+      value instanceof Date
+    ) {
+      const rule = matchingRules.find((r) => r.prop === name);
+      if (rule) {
+        return this.formatEngine.formatValue(value, { ...rule, prop: "" });
+      }
+      return value;
     }
 
-    const formatRules: FormatRule[] = params.format;
-    const result = this.formatEngine.applyFormat(params, formatRules);
+    // Array - format each element
+    if (Array.isArray(value)) {
+      return value.map((item) => {
+        const itemRules = matchingRules.map((r) => ({
+          ...r,
+          prop: r.prop.startsWith(name + ".")
+            ? r.prop.slice(name.length + 1)
+            : r.prop,
+        }));
+        return this.formatEngine.applyFormat(item, itemRules);
+      });
+    }
 
-    // Remove format from result (it's config, not data)
-    const { format, ...rest } = result;
-    return rest;
+    // Object - format its properties
+    const objectRules = matchingRules.map((r) => ({
+      ...r,
+      prop: r.prop.startsWith(name + ".")
+        ? r.prop.slice(name.length + 1)
+        : r.prop,
+    }));
+    return this.formatEngine.applyFormat(value, objectRules);
   }
 
   // ========== SET PROPERTY ==========
@@ -157,7 +181,7 @@ export class CommandExecutor {
           : undefined;
 
     let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
-    value = this.applyFormatToValue(value, params);
+    value = this.applyFormatToValue(value, "value", params);
 
     const { elementPath, fieldPath } = this.parseTargetPath(target);
 
@@ -188,7 +212,7 @@ export class CommandExecutor {
       ? this.getSourceValue(source, eventData)
       : undefined;
     let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
-    value = this.applyFormatToValue(value, params);
+    value = this.applyFormatToValue(value, "data", params);
 
     const { elementPath } = this.parseTargetPath(target);
 
