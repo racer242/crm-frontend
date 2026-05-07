@@ -109,11 +109,13 @@ export class CommandExecutor {
     name: string,
     params: Record<string, any>,
   ): any {
-    if (!params.format || !Array.isArray(params.format)) {
+    if (!params.format) {
       return value;
     }
 
-    const formatRules: FormatRule[] = params.format;
+    const formatRules: FormatRule[] = Array.isArray(params.format)
+      ? params.format
+      : [params.format];
 
     // Filter rules that match this name (either "name" or "name.subpath")
     const matchingRules = formatRules.filter(
@@ -238,7 +240,8 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    const value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    value = this.applyFormatToValue(value, "data", params);
 
     if (typeof value !== "object" || value === null) {
       console.warn("mergeState: value must be an object");
@@ -323,12 +326,13 @@ export class CommandExecutor {
     const resolvedUrl = this.macroEngine.apply(url, 0, {
       event: eventData,
     }) as string;
-    const resolvedData = data
+    let resolvedData = data
       ? (this.macroEngine.apply(data, 0, { event: eventData }) as Record<
           string,
           any
         >)
       : undefined;
+    resolvedData = this.applyFormatToValue(resolvedData, "data", params);
 
     const requestParams: SendRequestParams = {
       url: resolvedUrl,
@@ -376,9 +380,10 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "";
-    const message = this.macroEngine.apply(rawMessage, 0, {
+    let message = this.macroEngine.apply(rawMessage, 0, {
       event: eventData,
     }) as string;
+    message = this.applyFormatToValue(message, "message", params);
     const severity = params.severity || "info";
 
     if (this.context.showToast) {
@@ -398,9 +403,10 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawUrl = params.url || "";
-    const url = this.macroEngine.apply(rawUrl, 0, {
+    let url = this.macroEngine.apply(rawUrl, 0, {
       event: eventData,
     }) as string;
+    url = this.applyFormatToValue(url, "url", params);
 
     if (this.context.navigate) {
       this.context.navigate(url);
@@ -423,9 +429,10 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "Подтвердите действие";
-    const message = this.macroEngine.apply(rawMessage, 0, {
+    let message = this.macroEngine.apply(rawMessage, 0, {
       event: eventData,
     }) as string;
+    message = this.applyFormatToValue(message, "message", params);
     const onConfirm: Command[] = params.onConfirm || [];
     const onCancel: Command[] = params.onCancel || [];
 
@@ -484,9 +491,10 @@ export class CommandExecutor {
     if (typeof window === "undefined") return;
 
     const rawParams = params.params || {};
-    const resolvedParams = this.macroEngine.apply(rawParams, 0, {
+    let resolvedParams = this.macroEngine.apply(rawParams, 0, {
       event: eventData,
     }) as Record<string, any>;
+    resolvedParams = this.applyFormatToValue(resolvedParams, "params", params);
 
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(resolvedParams)) {
@@ -515,14 +523,15 @@ export class CommandExecutor {
     if (typeof window === "undefined") return;
 
     const rawName = params.name || "";
-    const rawValue = params.value;
+    let rawValue = params.value;
 
     const name = this.macroEngine.apply(rawName, 0, {
       event: eventData,
     }) as string;
-    const value = this.macroEngine.apply(rawValue, 0, {
+    let value = this.macroEngine.apply(rawValue, 0, {
       event: eventData,
     });
+    value = this.applyFormatToValue(value, "value", params);
 
     if (!name) return;
 

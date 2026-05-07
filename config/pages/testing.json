@@ -347,7 +347,7 @@
                       "params": {
                         "name": "start",
                         "value": "{$event.value}",
-                        "format": "Date"
+                        "format": [{ "prop": "value", "type": "Date" }]
                       }
                     }
                   ]
