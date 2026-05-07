@@ -14,9 +14,28 @@ export function renderDropdown({
   style,
   handleEvent,
 }: ComponentRendererProps) {
+  let dropdownValue = props.value ?? null;
+  const options = props.options || [];
+
+  // If value is a primitive (id) and options are objects with id, resolve to object
+  if (
+    dropdownValue !== null &&
+    dropdownValue !== undefined &&
+    typeof dropdownValue !== "object" &&
+    Array.isArray(options) &&
+    options.length > 0 &&
+    typeof options[0] === "object" &&
+    "id" in options[0]
+  ) {
+    const found = options.find((opt: any) => opt.id === dropdownValue);
+    if (found) {
+      dropdownValue = found;
+    }
+  }
+
   const dropdownProps = {
     ...props,
-    value: props.value ?? null,
+    value: dropdownValue,
   };
 
   return (

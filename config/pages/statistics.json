@@ -104,6 +104,11 @@
               "componentType": "Dropdown",
               "className": "w-full",
               "props": {
+                "optionLabel": "label",
+                "_optionValue": "week",
+                "placeholder": "Выберите неделю",
+                "showClear": true,
+                "value": "@state.week",
                 "options": [
                   {
                     "label": "Неделя 11 - 16.03.2026 - 23.03.2026",
@@ -153,10 +158,7 @@
                       "end": "27.04.2026"
                     }
                   }
-                ],
-                "placeholder": "Выберите неделю",
-                "showClear": true,
-                "value": "@state.week"
+                ]
               },
               "events": [
                 {
@@ -186,16 +188,11 @@
                     {
                       "type": "setUrlParams",
                       "params": {
-                        "values": [
-                          {
-                            "name": "start",
-                            "value": "{$event.value}"
-                          },
-                          {
-                            "name": "end",
-                            "value": "{$event.value}"
-                          }
-                        ]
+                        "values": {
+                          "week": "{$event.value.week}",
+                          "start": "{$event.value.start}",
+                          "end": "{$event.value.end}"
+                        }
                       }
                     }
                   ]

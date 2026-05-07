@@ -490,14 +490,14 @@ export class CommandExecutor {
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
-    const rawParams = params.values || {};
-    let resolvedParams = this.macroEngine.apply(rawParams, 0, {
+    const rawValues = params.values || {};
+    let resolvedValues = this.macroEngine.apply(rawValues, 0, {
       event: eventData,
     }) as Record<string, any>;
-    resolvedParams = this.applyFormatToValue(resolvedParams, "values", params);
+    resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
 
     const searchParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(resolvedParams)) {
+    for (const [key, value] of Object.entries(resolvedValues)) {
       if (value !== undefined && value !== null) {
         searchParams.set(key, String(value));
       }
