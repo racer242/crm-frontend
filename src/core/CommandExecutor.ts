@@ -49,63 +49,61 @@ export interface CommandExecutionContext {
   confirm?: (message: string) => Promise<boolean>;
 }
 
-/**
- * Create MacroSources from command context
- */
-function createMacroSources(context: CommandExecutionContext): MacroSources {
-  return {
-    stateManager: context.stateManager,
-    pageId: context.pageId,
-    config: context.appConfig,
-    env: getServerEnv(),
-  };
-}
-
-/**
- * Распарсить target и вернуть путь элемента + путь к полю
- */
-function parseTargetPath(
-  target: string,
-  defaultPageId: string,
-  triggerComponentId: string,
-): { elementPath: string; fieldPath: string } {
-  const stateIndex = target.indexOf("state.");
-
-  if (stateIndex === 0) {
-    // "state.field" — state страницы
-    return { elementPath: defaultPageId, fieldPath: target.slice(6) };
-  } else if (stateIndex > 0) {
-    // "elementId.state.field" — state элемента
-    return {
-      elementPath: target.slice(0, stateIndex - 1),
-      fieldPath: target.slice(stateIndex + 6),
-    };
-  } else {
-    // Просто "field" — state триггер-компонента
-    return { elementPath: triggerComponentId, fieldPath: target };
-  }
-}
-
 export class CommandExecutor {
   private macroEngine: MacroEngine;
   private formatEngine: FormatEngine;
 
   constructor(private context: CommandExecutionContext) {
-    this.macroEngine = new MacroEngine(createMacroSources(context));
+    this.macroEngine = new MacroEngine(this.createMacroSources());
     // Get locale from config or default to ru-RU
     const locale = context.appConfig?.config?.locale?.default || "ru-RU";
     this.formatEngine = new FormatEngine(locale);
   }
 
-  // ========== FORMAT HELPERS ==========
+  // ========== PRIVATE HELPERS ==========
+  /**
+   * Create MacroSources from command context
+   */
+  private createMacroSources(): MacroSources {
+    return {
+      stateManager: this.context.stateManager,
+      pageId: this.context.pageId,
+      config: this.context.appConfig,
+      env: getServerEnv(),
+    };
+  }
+
+  /**
+   * Распарсить target и вернуть путь элемента + путь к полю
+   */
+  private parseTargetPath(target: string): {
+    elementPath: string;
+    fieldPath: string;
+  } {
+    const stateIndex = target.indexOf("state.");
+
+    if (stateIndex === 0) {
+      // "state.field" — state страницы
+      return { elementPath: this.context.pageId, fieldPath: target.slice(6) };
+    } else if (stateIndex > 0) {
+      // "elementId.state.field" — state элемента
+      return {
+        elementPath: target.slice(0, stateIndex - 1),
+        fieldPath: target.slice(stateIndex + 6),
+      };
+    } else {
+      // Просто "field" — state триггер-компонента
+      return {
+        elementPath: this.context.triggerComponentId,
+        fieldPath: target,
+      };
+    }
+  }
+
   /**
    * Apply formatting to a single value if format rules are provided
    */
-  private applyFormatToValue(
-    value: any,
-    params: Record<string, any>,
-    _eventData: any,
-  ): any {
+  private applyFormatToValue(value: any, params: Record<string, any>): any {
     if (!params.format || !Array.isArray(params.format)) {
       return value;
     }
@@ -159,13 +157,9 @@ export class CommandExecutor {
           : undefined;
 
     let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
-    value = this.applyFormatToValue(value, params, eventData);
+    value = this.applyFormatToValue(value, params);
 
-    const { elementPath, fieldPath } = parseTargetPath(
-      target,
-      this.context.pageId,
-      this.context.triggerComponentId,
-    );
+    const { elementPath, fieldPath } = this.parseTargetPath(target);
 
     if (fieldPath) {
       this.context.stateManager.setStateField(elementPath, fieldPath, value);
@@ -194,13 +188,9 @@ export class CommandExecutor {
       ? this.getSourceValue(source, eventData)
       : undefined;
     let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
-    value = this.applyFormatToValue(value, params, eventData);
+    value = this.applyFormatToValue(value, params);
 
-    const { elementPath } = parseTargetPath(
-      target,
-      this.context.pageId,
-      this.context.triggerComponentId,
-    );
+    const { elementPath } = this.parseTargetPath(target);
 
     this.context.stateManager.setState(elementPath, value);
   }
@@ -231,11 +221,7 @@ export class CommandExecutor {
       return;
     }
 
-    const { elementPath } = parseTargetPath(
-      target,
-      this.context.pageId,
-      this.context.triggerComponentId,
-    );
+    const { elementPath } = this.parseTargetPath(target);
 
     this.context.stateManager.mergeState(elementPath, value);
   }
@@ -255,11 +241,7 @@ export class CommandExecutor {
       return;
     }
 
-    const { elementPath } = parseTargetPath(
-      target,
-      this.context.pageId,
-      this.context.triggerComponentId,
-    );
+    const { elementPath } = this.parseTargetPath(target);
 
     this.context.stateManager.clearState(elementPath);
   }
@@ -279,11 +261,7 @@ export class CommandExecutor {
       return;
     }
 
-    const { elementPath, fieldPath } = parseTargetPath(
-      target,
-      this.context.pageId,
-      this.context.triggerComponentId,
-    );
+    const { elementPath, fieldPath } = this.parseTargetPath(target);
 
     if (!fieldPath) {
       console.warn("toggleProperty: field path required");
