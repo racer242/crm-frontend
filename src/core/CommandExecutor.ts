@@ -122,9 +122,22 @@ export class CommandExecutor {
       : [params.format];
 
     // Filter rules that match this name (either "name" or "name.subpath")
-    const matchingRules = formatRules.filter(
+    let matchingRules = formatRules.filter(
       (r) => r.prop === name || r.prop.startsWith(name + "."),
     );
+
+    // If value is an object and no prefix-matched rules, try direct property matching
+    if (
+      matchingRules.length === 0 &&
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
+      const props = Object.keys(value);
+      matchingRules = formatRules.filter((r) =>
+        props.some((p) => r.prop === p || r.prop.startsWith(p + ".")),
+      );
+    }
 
     if (matchingRules.length === 0) return value;
 
