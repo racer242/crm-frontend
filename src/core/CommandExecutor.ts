@@ -689,6 +689,8 @@ export class CommandExecutor {
       0,
       this.createExtraSources(eventData),
     );
+    console.log("+++", message, resolvedMessage);
+
     const levels: Record<string, (...args: any[]) => void> = {
       info: console.info,
       warn: console.warn,

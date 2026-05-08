@@ -120,20 +120,16 @@ function parseMacro(content: string): {
 /**
  * Разрешить один макрос
  */
-function resolveSingleMacro(
-  macroContent: string,
-  sources: MacroSources,
-  extraSources?: Record<string, any>,
-): any {
+function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
   const { prefix, parts } = parseMacro(macroContent);
   const fullPath = parts.join(".");
 
-  // Сначала проверяем extraSources (например, $event)
-  if (extraSources && extraSources[prefix]) {
-    return getNestedValue(extraSources[prefix], fullPath);
-  }
-
   switch (prefix) {
+    // === Event ===
+    case "event": {
+      return getNestedValue((sources as any).event, fullPath);
+    }
+
     // === State ===
     case "state": {
       if (!sources.stateManager || !sources.pageId) return undefined;
@@ -347,14 +343,19 @@ export class MacroEngine {
   ): any {
     if (depth > this.maxRecursion) return str;
 
+    // Создаём mergedSources — объединяем основные sources с extraSources
+    // Это позволяет extraSources (например, event, location) попадать
+    // в resolveSingleMacro как часть единого объекта MacroSources, не перехватывая
+    // стандартные case'ы через общую проверку extraSources[prefix].
+    const mergedSources: any = { ...this.sources };
+    if (extraSources) {
+      Object.assign(mergedSources, extraSources);
+    }
+
     // Проверяем: вся строка — один макрос?
     const singleMatch = str.match(/^\{\$([^}]+)\}$/);
     if (singleMatch) {
-      const resolved = resolveSingleMacro(
-        singleMatch[1],
-        this.sources,
-        extraSources,
-      );
+      const resolved = resolveSingleMacro(singleMatch[1], mergedSources);
       // Рекурсивно обрабатываем если результат — строка с макросами
       if (typeof resolved === "string" && hasMacro(resolved)) {
         return this.resolveString(resolved, depth + 1, extraSources);
@@ -364,7 +365,7 @@ export class MacroEngine {
 
     // Несколько макросов или текст + макросы — заменяем в строке
     return str.replace(MACRO_PATTERN, (match, content) => {
-      const resolved = resolveSingleMacro(content, this.sources, extraSources);
+      const resolved = resolveSingleMacro(content, mergedSources);
       // Рекурсия
       if (typeof resolved === "string" && hasMacro(resolved)) {
         return this.resolveString(resolved, depth + 1, extraSources) ?? match;
