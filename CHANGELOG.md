@@ -7,7 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - **bfcache disabled** — page now fully reloads when navigating back via browser buttons
-  - Added `pageshow` event listener in layout that triggers `window.location.reload()` when page is restored from bfcache (`e.persisted === true`)
+  - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation
+  - Triggers `window.location.reload()` when `navType === 'back_forward'`
   - Prevents broken styles and preloader hang issues when returning to the page
 
 ### Added
