@@ -44,44 +44,15 @@ App (приложение)
 │   └── api/                     # Конфигурации API-маршрутов
 ├── src/
 │   ├── types/                   # Система типов
-│   │   ├── base.ts              # Базовые типы (BaseElement, Condition, LayoutConfig)
-│   │   ├── app.ts               # App, NavbarConfig, AppConfig
-│   │   ├── page.ts              # Page, PageMeta, AccessControl
-│   │   ├── section.ts           # Section, SectionState
-│   │   ├── block.ts             # Block, BlockType, WrapperConfig
-│   │   ├── component.ts         # Component, ComponentType, DataBinding
-│   │   ├── commands.ts          # Command, CommandType, Condition
-│   │   ├── datafeed.ts          # DataFeedConfig, SendRequestParams
-│   │   ├── linkage.ts           # Linkage types
-│   │   ├── macro.ts             # MacroSources, MacroOptions
-│   │   └── index.ts
-│   ├── core/                    # Ядро платформы
-│   │   ├── StateManager.ts      # Управление состояниями элементов
-│   │   ├── CommandExecutor.ts   # Исполнитель команд
-│   │   ├── MacroEngine.ts       # Система макросов (24 типа)
-│   │   ├── Linkage.ts           # Система линковки (реактивные связи)
-│   │   ├── ElementIndex.ts      # Индекс элементов по ID
-│   │   ├── PathResolver.ts      # Разрешение путей и парсинг target
-│   │   ├── config.ts            # Загрузчик конфигурации
-│   │   └── index.ts
-│   ├── engine/                  # Рендер-движок
-│   │   ├── AppEngine.tsx        # Главный компонент, роутинг, sidebar
-│   │   ├── PageRenderer.tsx     # Рендер страницы с секциями
-│   │   ├── SectionRenderer.tsx  # Рендер секции с layout
-│   │   ├── BlockRenderer.tsx    # Рендер блока с обёрткой
-│   │   ├── ComponentRenderer.tsx# Рендер PrimeReact компонентов
-│   │   ├── components/          # Render-функции компонентов (16 файлов)
-│   │   ├── hooks/               # React-хуки
-│   │   │   └── useComponentBindings.ts # Подписка на state + binding logic
-│   │   └── index.ts
+│   ├── core/                    # Ядро платформы (StateManager, CommandExecutor, MacroEngine, Linkage...)
+│   ├── engine/                  # Рендер-движок (AppEngine, PageRenderer, ComponentRenderer...)
 │   ├── utils/                   # Общие утилиты
-│   │   └── date.ts              # Парсинг и конвертация дат
 │   └── app/
 │       ├── layout.tsx           # Корневой layout с PrimeReactProvider
 │       ├── globals.css          # Минимальные CSS-reset
 │       ├── [[...slug]]/page.tsx # Динамический роутер
 │       └── api/[...route]/route.ts # API Router (проксирование запросов)
-└── docs/                        # Документация и ТЗ
+└── docs/                        # Документация
 ```
 
 ---
@@ -90,648 +61,171 @@ App (приложение)
 
 ## 1. Система состояний (StateManager)
 
-Каждый элемент имеет собственное состояние (`state`).
+Каждый элемент имеет собственное состояние (`state`), доступное по пути: `dashboard.mainContent.statsCard.state.data`.
 
-| Возможность                                | Описание                                                        |
-| ------------------------------------------ | --------------------------------------------------------------- |
-| `getState(elementPath)`                    | Получить полное состояние элемента                              |
-| `getStateField(elementPath, field)`        | Получить поле состояния (поддержка вложенных путей через точку) |
-| `setState(elementPath, newState)`          | Полная замена состояния                                         |
-| `setStateField(elementPath, field, value)` | Установка поля состояния                                        |
-| `mergeState(elementPath, updates)`         | Частичное обновление (слияние с существующим)                   |
-| `clearState(elementPath)`                  | Очистка состояния                                               |
-| `toggleStateField(elementPath, field)`     | Переключение boolean-поля                                       |
-| `subscribe(listener)`                      | Подписка на изменения состояний                                 |
+| Возможность                       | Описание                                 |
+| --------------------------------- | ---------------------------------------- |
+| `getState` / `getStateField`      | Чтение состояния (вложенные через точку) |
+| `setState` / `setStateField`      | Полная замена / установка поля           |
+| `mergeState`                      | Частичное обновление (shallow merge)     |
+| `clearState` / `toggleStateField` | Очистка / переключение boolean           |
+| `subscribe`                       | Подписка на изменения                    |
 
-Доступ к состоянию: `dashboard.mainContent.statsCard.state.data`
+→ Полное описание: [docs/architecture-reference.md](docs/architecture-reference.md#statemanager--управление-состоянием)
 
 ## 2. Система линковки (Linkage)
 
-Реактивная связь свойств элементов с состояниями. При изменении state автоматически обновляются все привязанные элементы.
+Реактивная связь свойств компонентов с состояниями через формат `@ELEMENT_ID.state.PATH`.
 
-| Формат                                       | Описание                           |
-| -------------------------------------------- | ---------------------------------- |
-| `"value": "@ELEMENT_ID.state.PATH.TO.FIELD"` | Линковка параметра к state         |
-| `"@state.PATH"`                              | Линковка к state текущей страницы  |
-| `"@.state.PATH"`                             | Линковка к state текущего элемента |
+| Формат                   | Описание                           |
+| ------------------------ | ---------------------------------- |
+| `@ELEMENT_ID.state.PATH` | Линковка к state элемента          |
+| `@state.PATH`            | Линковка к state текущей страницы  |
+| `@.state.PATH`           | Линковка к state текущего элемента |
 
-- Изменение state влечёт рендер только линкованных элементов
-- Линковка работает в рамках страницы
-- Поддержка вложенных путей: `@form.state.textData.input`
+Изменение state автоматически обновляет привязанные компоненты.
+
+→ Полное описание: [docs/linkage-reference.md](docs/linkage-reference.md)
 
 ## 3. Система макросов (MacroEngine)
 
-Динамическая подстановка данных в параметры команд, конфигурации, URL и data запросов.
+Динамическая подстановка данных в URL, команды, данные запросов.
 
-Формат: `{$PREFIX.PATH.TO.FIELD}`
+**Формат:** `{$PREFIX.PATH.TO.FIELD}`
 
-### Типы макросов
+| Префикс                        | Описание               | Сервер | Клиент |
+| ------------------------------ | ---------------------- | :----: | :----: |
+| `{$ELEMENT_ID.state.PATH}`     | State элемента         |   ✅   |   ✅   |
+| `{$state.PATH}`                | State страницы         |   ✅   |   ✅   |
+| `{$config.PATH}`               | Конфиг приложения      |   ✅   |   ✅   |
+| `{$location.*}`                | URL, pathParams, query |   ❌   |   ✅   |
+| `{$now.*}`                     | Дата/время             |   ✅   |   ✅   |
+| `{$math.*}`                    | random, GUID, UUID     |   ✅   |   ✅   |
+| `{$device.*}` / `{$browser.*}` | Платформа, User-Agent  |   ✅   |   ✅   |
+| `{$env.VAR}`                   | Переменные окружения   |   ✅   |   ✅   |
 
-| Префикс                      | Описание                                                   | Сервер | Клиент |
-| ---------------------------- | ---------------------------------------------------------- | :----: | :----: |
-| `{$ELEMENT_ID.state.PATH}`   | State элемента                                             |   ✅   |   ✅   |
-| `{$state.PATH}`              | State страницы                                             |   ✅   |   ✅   |
-| `{$config.PATH}`             | Конфиг приложения                                          |   ✅   |   ✅   |
-| `{$location.PROP}`           | URL (href, protocol, host, pathname, search, hash, origin) |   ❌   |   ✅   |
-| `{$location.query.PARAM}`    | Query-параметры URL                                        |   ❌   |   ✅   |
-| `{$location.slug.N}`         | Сегменты пути URL                                          |   ❌   |   ✅   |
-| `{$now.iso}`                 | Текущая дата ISO                                           |   ✅   |   ✅   |
-| `{$now.timestamp}`           | Timestamp (ms)                                             |   ✅   |   ✅   |
-| `{$now.DD.MM.YY}`            | Дата в формате ДД.ММ.ГГ                                    |   ✅   |   ✅   |
-| `{$now.DD.MM.YYYY HH:mm:ss}` | Дата+время                                                 |   ✅   |   ✅   |
-| `{$session.PROP}`            | sessionStorage                                             |   ❌   |   ✅   |
-| `{$localStorage.PROP}`       | localStorage (авто-JSON parse)                             |   ❌   |   ✅   |
-| `{$cookie.PROP}`             | document.cookie                                            |   ❌   |   ✅   |
-| `{$window.PROP}`             | Любое свойство window                                      |   ❌   |   ✅   |
-| `{$user.PROP}`               | Данные пользователя (заглушка)                             |   ❌   |   ❌   |
-| `{$auth.PROP}`               | Данные авторизации (заглушка)                              |   ❌   |   ❌   |
-| `{$math.random}`             | Случайное число 0-1                                        |   ✅   |   ✅   |
-| `{$math.randomInt.MIN.MAX}`  | Случайное целое                                            |   ✅   |   ✅   |
-| `{$math.guid}`               | GUID                                                       |   ✅   |   ✅   |
-| `{$device.platform}`         | Платформа (win32, linux...)                                |   ✅   |   ✅   |
-| `{$device.mobile}`           | Мобильное устройство (boolean)                             |   ✅   |   ✅   |
-| `{$browser.userAgent}`       | User-Agent                                                 |   ✅   |   ✅   |
-| `{$env.VAR}`                 | NEXT*PUBLIC*\* переменные окружения                        |   ✅   |   ✅   |
+**Особенности:**
 
-### Особенности макросов
+- Одиночный макрос сохраняет тип (Object, Boolean, Number, String)
+- Несколько макросов в строке — конкатенация
+- Рекурсивная подстановка (лимит `maxRecursion`)
+- Обработка вложенных объектов и массивов
 
-- **Одиночный макрос** — возвращает оригинальный тип (Object, Boolean, Number, String)
-- **Несколько макросов в строке** — приводятся к строке и конкатенируются
-- **Рекурсивная подстановка** — если результат макроса содержит макрос, он тоже разрешается
-- **Лимит рекурсии** — настраиваемый параметр `maxRecursion` (по умолчанию 3)
-- **Объекты и массивы** — рекурсивная обработка каждого поля/элемента
+→ Полное описание: [docs/macros-reference.md](docs/macros-reference.md)
 
 ## 4. Система команд (CommandExecutor)
 
-Команды привязываются к событиям компонентов и выполняют действия.
+Команды привязываются к событиям компонентов (`onClick`, `onChange`, `onLoad`) и выполняют действия.
 
-| Команда          | Описание                                               |
-| ---------------- | ------------------------------------------------------ |
-| `setProperty`    | Запись значения из source в target                     |
-| `setState`       | Полная замена состояния элемента                       |
-| `mergeState`     | Слияние данных с текущим состоянием                    |
-| `clearState`     | Очистка состояния элемента                             |
-| `toggleProperty` | Инвертирование boolean-поля                            |
-| `sendRequest`    | HTTP-запрос к API с записью результата в state         |
-| `showToast`      | Показ Toast-уведомления                                |
-| `navigate`       | Переход по URL                                         |
-| `confirm`        | Диалог подтверждения с ветвлением (onConfirm/onCancel) |
-| `delay`          | Пауза в последовательности команд (мс)                 |
-| `sequence`       | Последовательное выполнение нескольких команд          |
-| `log`            | Логирование в консоль (info, warn, error, debug)       |
-| `setUrlParams`   | Заменяет все URL параметры                             |
-| `setUrlParam`    | Изменяет один URL параметр                             |
-| `removeUrlParam` | Удаляет URL параметр                                   |
+| Команда                                           | Описание                                  |
+| ------------------------------------------------- | ----------------------------------------- |
+| `setProperty` / `setState` / `mergeState`         | Запись / замена / слияние state           |
+| `clearState` / `toggleProperty`                   | Очистка / переключение boolean            |
+| `sendRequest`                                     | HTTP-запрос к API                         |
+| `showToast`                                       | Toast-уведомление                         |
+| `navigate`                                        | Переход по URL                            |
+| `confirm`                                         | Диалог подтверждения (onConfirm/onCancel) |
+| `sequence` / `delay`                              | Последовательность / пауза                |
+| `log`                                             | Логирование                               |
+| `setUrlParams` / `setUrlParam` / `removeUrlParam` | Управление URL параметрами                |
+| `refresh`                                         | Обновление страницы                       |
 
-### Форматирование данных
+**Источники данных:** `event.value`, `event.field`, `elementId.state.field`, `state.field`
 
-Все команды поддерживают форматирование значений через свойство `format` в `params`. Форматирование применяется **после разрешения макросов** и **перед записью в state**.
+**Целевые пути:** `state.field`, `elementId.state.field`, `field` (триггер)
 
-```json
-{
-  "type": "setProperty",
-  "params": {
-    "value": "2025-01-15T10:30:00",
-    "target": "state.date",
-    "format": [
-      {
-        "prop": "value",
-        "type": "Date",
-        "func": "DateTimeFormat",
-        "params": { "dateStyle": "full", "timeStyle": "medium" }
-      }
-    ]
-  }
-}
-```
+→ Полное описание: [docs/commands-reference.md](docs/commands-reference.md)
 
-#### Поддерживаемые типы форматирования
+## 5. Форматирование данных
 
-| Тип            | Описание                            | Функция              | Входной тип                |
-| -------------- | ----------------------------------- | -------------------- | -------------------------- |
-| `Date`         | Форматирование даты                 | `DateTimeFormat`     | `Date`, `string`, `number` |
-| `Time`         | Форматирование времени              | `DateTimeFormat`     | `Date`, `string`, `number` |
-| `Number`       | Форматирование чисел                | `NumberFormat`       | `number`                   |
-| `Currency`     | Форматирование валюты               | `NumberFormat`       | `number`                   |
-| `RelativeTime` | Относительное время (вчера, завтра) | `RelativeTimeFormat` | `number`                   |
-| `List`         | Форматирование списков              | `ListFormat`         | `string[]`                 |
-| `Plural`       | Правила множественных чисел         | `PluralRules`        | `number`                   |
+Команды поддерживают форматирование через `format` в `params` (после макросов, перед записью в state).
 
-#### Опции форматирования по типам
+| Тип             | Функция              | Входной тип          | Пример                     |
+| --------------- | -------------------- | -------------------- | -------------------------- |
+| `Date` / `Time` | `DateTimeFormat`     | Date, string, number | `"15 января 2025 г."`      |
+| `Number`        | `NumberFormat`       | number               | `"1 234,56"`               |
+| `Currency`      | `NumberFormat`       | number               | `"1 234,56 ₽"`             |
+| `RelativeTime`  | `RelativeTimeFormat` | number               | `"вчера"`                  |
+| `List`          | `ListFormat`         | string[]             | `"A, B и C"`               |
+| `Plural`        | `PluralRules`        | number               | `"one"`, `"few"`, `"many"` |
 
-**DateTimeFormat (Date, Time):**
+Поддержка вложенных свойств: `data.amount`, `items.date`.
 
-| Опция          | Возможные значения                                        | Описание      |
-| -------------- | --------------------------------------------------------- | ------------- |
-| `dateStyle`    | `"full"`, `"long"`, `"medium"`, `"short"`                 | Стиль даты    |
-| `timeStyle`    | `"full"`, `"long"`, `"medium"`, `"short"`                 | Стиль времени |
-| `weekday`      | `"long"`, `"short"`, `"narrow"`                           | День недели   |
-| `year`         | `"numeric"`, `"2-digit"`                                  | Год           |
-| `month`        | `"numeric"`, `"2-digit"`, `"long"`, `"short"`, `"narrow"` | Месяц         |
-| `day`          | `"numeric"`, `"2-digit"`                                  | День          |
-| `hour`         | `"numeric"`, `"2-digit"`                                  | Час           |
-| `minute`       | `"numeric"`, `"2-digit"`                                  | Минута        |
-| `second`       | `"numeric"`, `"2-digit"`                                  | Секунда       |
-| `timeZoneName` | `"short"`, `"long"`                                       | Часовой пояс  |
+→ Полное описание: [docs/data-format-reference.md](docs/data-format-reference.md)
 
-Пример:
-
-```json
-{
-  "type": "Date",
-  "func": "DateTimeFormat",
-  "params": { "dateStyle": "full", "timeStyle": "short" }
-}
-// → "15 января 2025 г., 10:30"
-```
-
-**NumberFormat (Number):**
-
-| Опция                   | Возможные значения                           | Описание                    |
-| ----------------------- | -------------------------------------------- | --------------------------- |
-| `style`                 | `"decimal"`, `"percent"`, `"unit"`           | Стиль числа                 |
-| `currency`              | `"RUB"`, `"USD"`, `"EUR"`                    | Валюта (для style=currency) |
-| `minimumIntegerDigits`  | `1`, `2`, `3`...                             | Мин. цифр целой части       |
-| `minimumFractionDigits` | `0`, `1`, `2`...                             | Мин. цифр дробной части     |
-| `maximumFractionDigits` | `0`, `1`, `2`...                             | Макс. цифр дробной части    |
-| `useGrouping`           | `true`, `false`                              | Разделитель тысяч           |
-| `unit`                  | `"kilometer-per-hour"`, `"meter"`, `"liter"` | Единица измерения           |
-
-Пример:
-
-```json
-{
-  "type": "Number",
-  "func": "NumberFormat",
-  "params": { "minimumFractionDigits": 2, "useGrouping": true }
-}
-// → 1 234,56
-```
-
-**Currency (через NumberFormat):**
-
-| Опция                   | Возможные значения                          | Описание                  |
-| ----------------------- | ------------------------------------------- | ------------------------- |
-| `currency`              | `"RUB"`, `"USD"`, `"EUR"`, `"GBP"`, `"JPY"` | Код валюты                |
-| `currencyDisplay`       | `"symbol"`, `"code"`, `"name"`              | Отображение валюты        |
-| `minimumFractionDigits` | `0`, `1`, `2`...                            | Мин. знаков после запятой |
-
-Пример:
-
-```json
-{
-  "type": "Currency",
-  "func": "NumberFormat",
-  "params": { "currency": "RUB", "currencyDisplay": "symbol" }
-}
-// → 1 234,56 ₽
-```
-
-**RelativeTimeFormat (RelativeTime):**
-
-| Опция     | Возможные значения                                                       | Описание                                     |
-| --------- | ------------------------------------------------------------------------ | -------------------------------------------- |
-| `unit`    | `"year"`, `"month"`, `"week"`, `"day"`, `"hour"`, `"minute"`, `"second"` | Единица времени                              |
-| `numeric` | `"always"`, `"auto"`                                                     | Всегда показывать число или "вчера"/"завтра" |
-| `style`   | `"long"`, `"short"`, `"narrow"`                                          | Стиль вывода                                 |
-
-Пример:
-
-```json
-{
-  "type": "RelativeTime",
-  "func": "RelativeTimeFormat",
-  "params": { "unit": "day", "numeric": "auto" }
-}
-// → -5 → "5 дн. назад", 1 → "завтра"
-```
-
-**ListFormat (List):**
-
-| Опция   | Возможные значения                         | Описание       |
-| ------- | ------------------------------------------ | -------------- |
-| `type`  | `"conjunction"`, `"disjunction"`, `"unit"` | Тип соединения |
-| `style` | `"long"`, `"short"`, `"narrow"`            | Стиль вывода   |
-
-Пример:
-
-```json
-{
-  "type": "List",
-  "func": "ListFormat",
-  "params": { "type": "conjunction", "style": "long" }
-}
-// → ["яблоки", "груши", "сливы"] → "яблоки, груши и сливы"
-```
-
-**PluralRules (Plural):**
-
-| Опция  | Возможные значения        | Описание  |
-| ------ | ------------------------- | --------- |
-| `type` | `"cardinal"`, `"ordinal"` | Тип числа |
-
-Пример:
-
-```json
-{ "type": "Plural", "func": "PluralRules" }
-// → 1 → "one", 2 → "other", 3 → "other" (для ru-RU)
-```
-
-#### Форматирование объектов и массивов
-
-Форматирование поддерживает вложенные свойства через точку:
-
-**Объект:**
-
-```json
-{
-  "type": "setState",
-  "params": {
-    "source": "event.data",
-    "format": [
-      {
-        "prop": "data.amount",
-        "type": "Currency",
-        "func": "NumberFormat",
-        "params": { "currency": "USD" }
-      },
-      {
-        "prop": "data.createdAt",
-        "type": "Date",
-        "func": "DateTimeFormat",
-        "params": { "dateStyle": "long" }
-      }
-    ]
-  }
-}
-```
-
-**Массив:**
-
-```json
-{
-  "type": "setState",
-  "params": {
-    "source": "event.items",
-    "format": [
-      { "prop": "items.price", "type": "Currency", "func": "NumberFormat" },
-      {
-        "prop": "items.date",
-        "type": "Date",
-        "func": "DateTimeFormat",
-        "params": { "dateStyle": "medium" }
-      }
-    ]
-  }
-}
-```
-
-**setUrlParams — замена всех URL параметров:**
-
-```json
-{
-  "type": "setUrlParams",
-  "params": {
-    "values": {
-      "start": "2025-01-01",
-      "end": "2025-12-31",
-      "status": "active"
-    }
-  }
-}
-```
-
-Результат: `?start=2025-01-01&end=2025-12-31&status=active`
-
-**setUrlParams с макросами:**
-
-```json
-{
-  "type": "setUrlParams",
-  "params": {
-    "values": {
-      "start": "{$filterForm.state.startDate}",
-      "end": "{$filterForm.state.endDate}",
-      "category": "{$filterForm.state.category}"
-    }
-  }
-}
-```
-
-**setUrlParam — изменить один параметр:**
-
-```json
-{
-  "type": "setUrlParam",
-  "params": {
-    "name": "page",
-    "value": 2
-  }
-}
-```
-
-**removeUrlParam — удалить параметр:**
-
-```json
-{
-  "type": "removeUrlParam",
-  "params": {
-    "name": "filter"
-  }
-}
-```
-
-#### Локаль
-
-Локаль задаётся в конфигурации приложения (`config.locale`):
-
-```json
-{
-  "config": {
-    "name": "CRM Platform",
-    "version": "1.0.0",
-    "locale": {
-      "default": "ru-RU",
-      "fallback": "en-US"
-    }
-  }
-}
-```
-
-### Источники данных (source)
-
-| Формат                    | Описание                        |
-| ------------------------- | ------------------------------- |
-| `"event.value"`           | Значение из события (eventData) |
-| `"event.field.subfield"`  | Вложенное поле из eventData     |
-| `"elementId.state.field"` | State другого элемента          |
-| `"state.field"`           | State текущей страницы          |
-
-### Целевые пути (target)
-
-| Формат                    | Описание                           |
-| ------------------------- | ---------------------------------- |
-| `"state.field"`           | Запись в state страницы (pageId)   |
-| `"elementId.state.field"` | Запись в state указанного элемента |
-| `"field"`                 | Запись в state компонента-триггера |
-
-### Триггеры команд
-
-`onClick`, `onChange`, `onLoad`, `onTimer`, `onCondition`
-
-### Примеры команд
-
-**showToast:**
-
-```json
-{
-  "type": "showToast",
-  "params": {
-    "message": "Данные сохранены",
-    "severity": "success"
-  }
-}
-```
-
-**navigate:**
-
-```json
-{
-  "type": "navigate",
-  "params": {
-    "url": "/users"
-  }
-}
-```
-
-**confirm:**
-
-```json
-{
-  "type": "confirm",
-  "params": {
-    "message": "Удалить запись?",
-    "onConfirm": [
-      {
-        "type": "sendRequest",
-        "params": {
-          "url": "/api/delete",
-          "method": "POST",
-          "data": { "id": 1 },
-          "target": "state.result"
-        }
-      }
-    ],
-    "onCancel": []
-  }
-}
-```
-
-**sequence:**
-
-```json
-{
-  "type": "sequence",
-  "params": {
-    "commands": [
-      {
-        "type": "setProperty",
-        "params": {
-          "source": "event.value",
-          "target": "state.loading",
-          "value": true
-        }
-      },
-      {
-        "type": "sendRequest",
-        "params": {
-          "url": "/api/data",
-          "method": "GET",
-          "target": "state.data"
-        }
-      },
-      {
-        "type": "setProperty",
-        "params": { "target": "state.loading", "value": false }
-      }
-    ]
-  }
-}
-```
-
-## 5. External API Data Feed
+## 6. External API Data Feed
 
 Загрузка данных из внешних API при загрузке страницы и по событиям.
 
-| Режим                                                | Описание                                                   |
-| ---------------------------------------------------- | ---------------------------------------------------------- |
-| **Server-side** (`dataFeed` в конфигурации страницы) | Запросы API при загрузке страницы на сервере               |
-| **Client-side** (`sendRequest` команда)              | Запросы API из событий (onClick, onLoad, и т.д.)           |
-| **API Router** (`/api/[route]`)                      | Проксирование запросов через сервер с разрешением макросов |
+| Режим                                           | Описание                            |
+| ----------------------------------------------- | ----------------------------------- |
+| **Server-side** (`dataFeed` в конфиге страницы) | Запросы API при загрузке на сервере |
+| **Client-side** (`sendRequest` команда)         | Запросы API из событий              |
+| **API Router** (`/api/[route]`)                 | Проксирование через сервер          |
 
-### Формат запроса
+**Формат запроса:**
 
 ```json
 {
   "url": "URL/TO/API/ENDPOINT",
   "method": "GET/POST/PUT/PATCH/DELETE",
-  "data": { "data1": "value1", "data2": "value2" },
+  "data": { "key": "value" },
   "target": "[ELEMENT_ID.]state[.PATH.TO.FIELD]",
-  "cache": true,
-  "cacheTTL": 60000
+  "adapter": "stats.replace"
 }
 ```
 
-### Макросы в запросах
+→ Полное описание: [docs/data-feed-reference.md](docs/data-feed-reference.md)
 
-В любые поля (url, data) могут быть вставлены макросы `{$ELEMENT_ID.state.PATH.TO.FIELD}`:
+## 7. Адаптеры данных
 
-```json
-{
-  "url": "https://api.example.com/users/{$userPage.state.selectedId}/",
-  "method": "GET",
-  "target": "userData.state.profile"
-}
-```
+Преобразуют ответы API в формат, пригодный для CRM.
 
-Можно передать всё состояние элемента:
+| Тип       | Описание                                                   |
+| --------- | ---------------------------------------------------------- |
+| `replace` | Словарная замена имён свойств и значений (макро `$value$`) |
+| `js`      | JS-скрипт `transform(data)` из `public/`                   |
 
-```json
-{
-  "url": "https://api.example.com/search",
-  "method": "POST",
-  "data": {$form.state},
-  "target": "results.state.items"
-}
-```
-
-### Конфигурация dataFeed (серверная часть)
-
-При загрузке страницы сервер обрабатывает раздел `dataFeed`:
+**Пример replace:**
 
 ```json
 {
-  "dataFeed": [
-    {
-      "url": "/api/get-dynamic-data",
-      "method": "POST",
-      "data": { "filter": "{$form.state.selectedItems}" },
-      "target": "dataTable.state.data"
-    }
-  ]
-}
-```
-
-### Особенности
-
-- Макросы в URL и data разрешаются перед выполнением запроса
-- API-маршруты (`/api/ROUTE_NAME`) резолвятся из `config.apiRoutes` с применением макросов
-- Успешные данные записываются в state по адресу target
-- При ошибке на сервере — Toast-уведомление при загрузке страницы
-- При ошибке на клиенте — ошибка сохраняется в `state.dataFeedErrors`
-
-## 5.1. Адаптеры данных
-
-Адаптеры преобразуют ответы API в формат, пригодный для CRM. Указываются в `dataFeed` и `apiRoutes` через поле `adapter`. Определяются в корне конфига (`adapters`).
-
-### Типы адаптеров
-
-| Тип       | Описание                                        |
-| --------- | ----------------------------------------------- |
-| `replace` | Словарная замена имён свойств и их значений     |
-| `js`      | JS-скрипт для произвольной трансформации данных |
-
-### Replace-адаптер
-
-Рекурсивно обходит данные. Если свойство найдено в `rules` — его имя заменяется на `name`, значение — на `value` (с поддержкой макроса `$value$` для исходного значения).
-
-```json
-{
-  "adapters": {
-    "stats.analytics.replace": {
-      "type": "replace",
-      "rules": {
-        "title": { "name": "label" },
-        "url": {
-          "name": "command",
-          "value": {
-            "type": "download",
-            "params": { "url": "$value$" }
-          }
-        }
-      }
-    }
+  "title": { "name": "label" },
+  "url": {
+    "name": "command",
+    "value": { "type": "navigate", "params": { "url": "$value$" } }
   }
 }
 ```
 
-### JS-адаптер
-
-Загружает и выполняет скрипт из `public/`. Скрипт должен содержать функцию `transform(data)`, которая принимает исходные данные и возвращает преобразованные.
-
-```json
-{
-  "adapters": {
-    "stats.analytics.js": {
-      "type": "js",
-      "script": "adapters/analytics2menu.js"
-    }
-  }
-}
-```
-
-Пример файла `public/adapters/analytics2menu.js`:
+**Пример JS:**
 
 ```javascript
+// public/adapters/analytics2menu.js
 function transform(data) {
-  if (!data || !data.items) return [];
   return data.items.map((item) => ({
     label: item.title,
     command: { type: "navigate", params: { url: item.url } },
-    badge: item.count || 0,
   }));
 }
 ```
 
-### Использование
+→ Полное описание: [docs/data-adapter-reference.md](docs/data-adapter-reference.md)
 
-**В dataFeed страницы:**
+## 8. API Router
 
-```json
-{
-  "dataFeed": [
-    {
-      "url": "/api/get-stats",
-      "method": "GET",
-      "target": "state",
-      "adapter": "stats.analytics.replace"
-    }
-  ]
-}
-```
+Next.js API Route (`/api/[...route]`) проксирует запросы клиента к внешним API через сервер.
 
-**В apiRoutes:**
+- Безопасность: внешние URL скрыты от клиента
+- Разрешение макросов на сервере
+- Применение адаптеров к ответам
+- Проброс заголовков (Authorization, Cookie)
 
-```json
-{
-  "apiRoutes": [
-    {
-      "path": "get-stats",
-      "url": "https://api.example.com/stats",
-      "adapter": "stats.analytics.js"
-    }
-  ]
-}
-```
+→ Полное описание: [docs/api-router-reference.md](docs/api-router-reference.md)
 
-### Особенности
+---
 
-- Адаптация выполняется **только на сервере**
-- Если адаптер указан, но не найден — возвращается ошибка
-- Скрипты загружаются относительно `public/`
-- Макрос `$value$` в значениях правил заменяется на исходное значение свойства
-
-## 6. Навигация
+# Навигация
 
 - **Sidebar** — боковая панель на уровне приложения, НЕ перезагружается при переходах
 - **Desktop** — сворачивается до иконок кнопкой внизу
@@ -739,12 +233,11 @@ function transform(data) {
 - Активный раздел подсвечивается
 - Поддержка кнопок «Назад/Вперёд» браузера
 
-## 7. Производительность
+# Производительность
 
-- Фильтрация подписок на изменения state — компоненты обновляются только при изменении их binding-ов
+- Фильтрация подписок — компоненты обновляются только при изменении relevant binding-ов
 - Исключены лишние ре-рендеры при вводе в поля
 - `setStateField` для вложенных путей через точку
-- `isMounted` через `useState` для SSR-совместимости
 
 ---
 
@@ -817,117 +310,62 @@ npm run build     # Production-билд
 | `config.features`    | Флаги функциональности                            |
 | `config.apiRoutes`   | Маршруты API (path → url) с поддержкой макросов   |
 
+→ Полное описание: [docs/config-reference.md](docs/config-reference.md)
+
+---
+
 # Справочники
 
 ## Конфигурация
 
-Полное описание всех параметров элементов конфигурации с примерами:
 → [docs/config-reference.md](docs/config-reference.md)
 
-Разделы справочника:
-
-1. [App](docs/config-reference.md#1-app-приложение) — корневой элемент, навбар, глобальное состояние
-2. [Page](docs/config-reference.md#2-page-страница) — страницы, мета-данные, контроль доступа
-3. [Section](docs/config-reference.md#3-section-секция) — секции, макет, видимость
-4. [Block](docs/config-reference.md#4-block-блок) — блоки, типы, обёртки
-5. [Component](docs/config-reference.md#5-component-компонент) — компоненты, привязки, события
-6. [Command](docs/config-reference.md#6-command-команда) — команды, триггеры, условия
-7. [Общие типы](docs/config-reference.md#7-общие-типы) — LayoutConfig, ElementMeta, адресация
+App, Page, Section, Block, Component, Command, LayoutConfig, ElementMeta.
 
 ## Макросы
 
-Полное описание системы макросов с примерами использования:
 → [docs/macros-reference.md](docs/macros-reference.md)
 
-Разделы справочника:
-
-1. [State элемента](docs/macros-reference.md#1-state-элемента) — `{$ELEMENT_ID.state.PATH}`
-2. [State страницы](docs/macros-reference.md#2-state-страницы) — `{$state.PATH}`
-3. [Конфиг приложения](docs/macros-reference.md#3-конфиг-приложения) — `{$config.PATH}`
-4. [Location](docs/macros-reference.md#4-location-url) — URL, pathParams, query-параметры
-5. [Date/Time](docs/macros-reference.md#5-datetime-текущее-время) — `{$now.*}`
-6. [Session/LocalStorage](docs/macros-reference.md#6-session--localstorage)
-7. [Cookie](docs/macros-reference.md#7-cookie)
-8. [Window](docs/macros-reference.md#8-window)
-9. [Math](docs/macros-reference.md#9-math-генераторы) — random, GUID, UUID
-10. [Device/Browser](docs/macros-reference.md#10-device--browser)
-11. [Environment](docs/macros-reference.md#11-environment-variables) — `{$env.*}`
+13 типов макросов: state, config, location, now, session/localStorage, cookie, window, math, device/browser, env.
 
 ## Линковка
 
-Полное описание системы реактивной привязки свойств к state:
 → [docs/linkage-reference.md](docs/linkage-reference.md)
 
-Разделы справочника:
-
-1. [Что такое линковка](docs/linkage-reference.md#что-такое-линковка) — реактивная привязка `@...`
-2. [Формат binding-строки](docs/linkage-reference.md#формат-binding-строки) — `@ELEMENT_ID.source.PATH`
-3. [Типы binding-строк](docs/linkage-reference.md#типы-binding-строк) — полная, краткая, config/props
-4. [Где используется](docs/linkage-reference.md#где-используется-линковка) — value, props, model
-5. [Реактивность](docs/linkage-reference.md#реактивность) — подписка и уведомления
-6. [Отличие от макросов](docs/linkage-reference.md#отличие-линковки-от-макросов) — таблица сравнения
+Реактивная привязка `@...`, binding-строки, подписка, отличие от макросов.
 
 ## Форматирование данных
 
-Полное описание системы форматирования значений с Intl API:
 → [docs/data-format-reference.md](docs/data-format-reference.md)
 
-Разделы справочника:
-
-1. [Date/Time](docs/data-format-reference.md#1-date--time--datetimeformat) — форматирование даты и времени
-2. [Number](docs/data-format-reference.md#2-number--numberformat) — форматирование чисел
-3. [Currency](docs/data-format-reference.md#3-currency--numberformat) — форматирование валюты
-4. [RelativeTime](docs/data-format-reference.md#4-relativetime--relativetimeformat) — относительное время
-5. [List](docs/data-format-reference.md#5-list--listformat) — форматирование списков
-6. [Plural](docs/data-format-reference.md#6-plural--pluralrules) — правила множественных чисел
-7. [Locale](docs/data-format-reference.md#locale-локаль) — настройка локали, fallback
+7 типов: Date, Time, Number, Currency, RelativeTime, List, Plural.
 
 ## Команды
 
-Полное описание всех типов команд с параметрами и примерами:
 → [docs/commands-reference.md](docs/commands-reference.md)
 
-Разделы справочника:
-
-1. [setProperty](docs/commands-reference.md#1-setproperty) — запись значения
-2. [setState](docs/commands-reference.md#2-setstate) — полная замена state
-3. [mergeState](docs/commands-reference.md#3-mergestate) — слияние с state
-4. [clearState](docs/commands-reference.md#4-clearstate) — очистка state
-5. [toggleProperty](docs/commands-reference.md#5-toggleproperty) — инвертирование boolean
-6. [sendRequest](docs/commands-reference.md#6-sendrequest) — HTTP-запрос
-7. [showToast](docs/commands-reference.md#7-showtoast) — Toast-уведомление
-8. [navigate](docs/commands-reference.md#8-navigate) — переход по URL
-9. [confirm](docs/commands-reference.md#9-confirm) — диалог подтверждения
-10. [delay](docs/commands-reference.md#10-delay) — пауза
-11. [sequence](docs/commands-reference.md#11-sequence) — последовательность
-12. [log](docs/commands-reference.md#12-log) — логирование
-13. [URL команды](docs/commands-reference.md#url-команды) — setUrlParams, mergeUrlParams, setUrlParam, removeUrlParam
-14. [refresh](docs/commands-reference.md#17-refresh) — обновление страницы
+17 типов команд: setProperty, setState, sendRequest, showToast, navigate, confirm, sequence, URL params, refresh.
 
 ## Data Adapter
 
-Описание адаптеров трансформации API-ответов:
 → [docs/data-adapter-reference.md](docs/data-adapter-reference.md)
 
-Разделы: Replace-адаптер, JS-адаптер, макрос `$value$`, примеры.
+Replace-адаптер (макро `$value$`), JS-адаптер (`transform(data)`).
 
 ## Data Feed
 
-Описание сервиса выполнения data feed запросов:
 → [docs/data-feed-reference.md](docs/data-feed-reference.md)
 
-Разделы: DataFeedConfig, серверный/клиентский data feed, обработка ошибок.
+DataFeedConfig, серверный/клиентский режимы, обработка ошибок.
 
 ## API Router
 
-Описание серверного прокси-роутера:
 → [docs/api-router-reference.md](docs/api-router-reference.md)
 
-Разделы: конфигурация apiRoutes, разрешение макросов, безопасность, примеры.
+`/api/[...route]`, apiRoutes, безопасность, проброс заголовков.
 
 ## Архитектура
 
-Описание ключевых модулей архитектуры:
 → [docs/architecture-reference.md](docs/architecture-reference.md)
 
-Разделы: StateManager, ElementIndex, PathResolver, Component Rendering, Event System, взаимодействие модулей.
+StateManager, ElementIndex, PathResolver, Component Rendering, Event System.
