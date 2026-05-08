@@ -44,6 +44,18 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body>
+        {/* Отключает bfcache — при возврате назад страница перезагружается */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('pageshow', function(e) {
+                if (e.persisted) {
+                  window.location.reload();
+                }
+              });
+            `,
+          }}
+        />
         <GlobalPreloader />
         <PrimeReactProvider value={primeReactConfig}>
           {children}

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **bfcache disabled** — page now fully reloads when navigating back via browser buttons
+  - Added `pageshow` event listener in layout that triggers `window.location.reload()` when page is restored from bfcache (`e.persisted === true`)
+  - Prevents broken styles and preloader hang issues when returning to the page
+
 ### Added
 
 - **External API Data Feed** — server-side and client-side data fetching with macro resolution
