@@ -866,3 +866,18 @@ npm run build     # Production-билд
 4. [Где используется](docs/linkage-reference.md#где-используется-линковка) — value, props, model
 5. [Реактивность](docs/linkage-reference.md#реактивность) — подписка и уведомления
 6. [Отличие от макросов](docs/linkage-reference.md#отличие-линковки-от-макросов) — таблица сравнения
+
+## Форматирование данных
+
+Полное описание системы форматирования значений с Intl API:
+→ [docs/data-format-reference.md](docs/data-format-reference.md)
+
+Разделы справочника:
+
+1. [Date/Time](docs/data-format-reference.md#1-date--time--datetimeformat) — форматирование даты и времени
+2. [Number](docs/data-format-reference.md#2-number--numberformat) — форматирование чисел
+3. [Currency](docs/data-format-reference.md#3-currency--numberformat) — форматирование валюты
+4. [RelativeTime](docs/data-format-reference.md#4-relativetime--relativetimeformat) — относительное время
+5. [List](docs/data-format-reference.md#5-list--listformat) — форматирование списков
+6. [Plural](docs/data-format-reference.md#6-plural--pluralrules) — правила множественных чисел
+7. [Locale](docs/data-format-reference.md#locale-локаль) — настройка локали, fallback
