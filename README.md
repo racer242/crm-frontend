@@ -817,7 +817,9 @@ npm run build     # Production-билд
 | `config.features`    | Флаги функциональности                            |
 | `config.apiRoutes`   | Маршруты API (path → url) с поддержкой макросов   |
 
-# Справочник конфигурации
+# Справочники
+
+## Конфигурация
 
 Полное описание всех параметров элементов конфигурации с примерами:
 → [docs/config-reference.md](docs/config-reference.md)
@@ -831,3 +833,22 @@ npm run build     # Production-билд
 5. [Component](docs/config-reference.md#5-component-компонент) — компоненты, привязки, события
 6. [Command](docs/config-reference.md#6-command-команда) — команды, триггеры, условия
 7. [Общие типы](docs/config-reference.md#7-общие-типы) — LayoutConfig, ElementMeta, адресация
+
+## Макросы
+
+Полное описание системы макросов с примерами использования:
+→ [docs/macros-reference.md](docs/macros-reference.md)
+
+Разделы справочника:
+
+1. [State элемента](docs/macros-reference.md#1-state-элемента) — `{$ELEMENT_ID.state.PATH}`
+2. [State страницы](docs/macros-reference.md#2-state-страницы) — `{$state.PATH}`
+3. [Конфиг приложения](docs/macros-reference.md#3-конфиг-приложения) — `{$config.PATH}`
+4. [Location](docs/macros-reference.md#4-location-url) — URL, pathParams, query-параметры
+5. [Date/Time](docs/macros-reference.md#5-datetime-текущее-время) — `{$now.*}`
+6. [Session/LocalStorage](docs/macros-reference.md#6-session--localstorage)
+7. [Cookie](docs/macros-reference.md#7-cookie)
+8. [Window](docs/macros-reference.md#8-window)
+9. [Math](docs/macros-reference.md#9-math-генераторы) — random, GUID, UUID
+10. [Device/Browser](docs/macros-reference.md#10-device--browser)
+11. [Environment](docs/macros-reference.md#11-environment-variables) — `{$env.*}`
