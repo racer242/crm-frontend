@@ -48,11 +48,13 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              window.addEventListener('pageshow', function(e) {
-                if (e.persisted) {
+              const entries = performance.getEntriesByType('navigation');
+              if (entries.length > 0) {
+                const navType = entries[0].type;
+                if (navType === 'back_forward') {
                   window.location.reload();
                 }
-              });
+              }
             `,
           }}
         />
