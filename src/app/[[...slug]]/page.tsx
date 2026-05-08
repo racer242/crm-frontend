@@ -99,6 +99,7 @@ export default async function Page({
       dataFeedErrors={dataFeedErrors}
       initialDataFeed={successResults}
       initialPageId={initialPageId}
+      route={route}
     />
   );
 }

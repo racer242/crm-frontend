@@ -21,12 +21,14 @@ export function AppEngine({
   dataFeedErrors: initialErrors,
   initialDataFeed,
   initialPageId,
+  route: initialRoute,
 }: {
   config: App;
   elementIndex: PageIndex;
   dataFeedErrors?: string[];
   initialDataFeed?: DataFeedResult[];
   initialPageId?: string | null;
+  route?: string;
 }) {
   const pathname = usePathname();
 
@@ -49,11 +51,28 @@ export function AppEngine({
   }
   const stateManager = stateManagerRef.current!;
 
+  // Resolve route with fallback matching for client-side navigation
+  const resolveRouteWithFallback = useCallback(
+    (path: string): string => {
+      const slug = path.split("/").filter(Boolean);
+      for (let i = slug.length; i >= 0; i--) {
+        const testRoute = i > 0 ? "/" + slug.slice(0, i).join("/") : "/";
+        if (stateManager.getPageByRoute(testRoute)) return testRoute;
+      }
+      return "/";
+    },
+    [stateManager],
+  );
+
+  // Use initialRoute from server (with fallback matching already applied)
+  // or resolve on client-side with fallback
+  const route = initialRoute || resolveRouteWithFallback(pathname);
+
   // On client-side navigation, re-apply initialDataFeed for the new page
   useEffect(() => {
-    // Resolve page to get its ID
-    const route = pathname || "/";
-    const page = stateManager.getPageByRoute(route);
+    // Resolve page to get its ID (with fallback matching)
+    const resolvedRoute = resolveRouteWithFallback(pathname);
+    const page = stateManager.getPageByRoute(resolvedRoute);
     const newPageId = page?.id || null;
 
     // If page changed and we have new dataFeed results, apply them
@@ -82,29 +101,21 @@ export function AppEngine({
       }
     }
     prevPageIdRef.current = newPageId;
-  }, [pathname, initialDataFeed, stateManager]);
+  }, [pathname, initialDataFeed, stateManager, resolveRouteWithFallback]);
 
-  const resolvePage = useCallback(
-    (currentPath: string | null): Page | null => {
-      const route = currentPath || "/";
-      return stateManager.getPageByRoute(route);
-    },
-    [stateManager],
-  );
-
-  const [currentPage, setCurrentPage] = useState<Page | null>(() =>
-    resolvePage(pathname),
-  );
+  const [currentPage, setCurrentPage] = useState<Page | null>(() => {
+    return stateManager.getPageByRoute(route);
+  });
 
   useEffect(() => {
-    const page = resolvePage(pathname);
+    const page = stateManager.getPageByRoute(route);
     if (page) {
       setCurrentPage(page);
     } else {
-      console.warn(`Page not found for route: ${pathname}`);
+      console.warn(`Page not found for route: ${route}`);
       setCurrentPage(null);
     }
-  }, [pathname, resolvePage]);
+  }, [route, stateManager]);
 
   const [, forceUpdate] = useState(0);
   useEffect(() => {
