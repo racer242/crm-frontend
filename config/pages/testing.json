@@ -302,6 +302,12 @@
                       "params": {
                         "message": "{$state}"
                       }
+                    },
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$location.slug.0}"
+                      }
                     }
                   ]
                 }

@@ -55,8 +55,10 @@ export async function getServerLocation(
 /**
  * Get location object on client side
  * Returns window.location with parsed params
+ * @param route - Current page route (e.g. "/users") to compute pathParams correctly
+ *                Path params are segments after the route prefix in URL
  */
-export function getClientLocation(): ParsedLocation {
+export function getClientLocation(route?: string): ParsedLocation {
   if (typeof window === "undefined") {
     throw new Error("getClientLocation can only be called on the client");
   }
@@ -70,7 +72,15 @@ export function getClientLocation(): ParsedLocation {
 
   // Parse path params from remaining pathname after route
   const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const pathParams = pathParts.slice(1); // skip first segment (could be route)
+  let pathParams: string[] = [];
+  if (route) {
+    // route = "/users/:id", computed from page config
+    const routeSegments = route.split("/").filter(Boolean);
+    pathParams = pathParts.slice(routeSegments.length);
+  } else {
+    // Fallback: skip first segment
+    pathParams = pathParts.slice(1);
+  }
 
   return {
     ...window.location,

@@ -6,6 +6,7 @@ import { StateManager, ElementIndex } from "@/core";
 
 export interface ComponentContextValue {
   pageId: string;
+  pageRoute?: string;
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
@@ -28,6 +29,7 @@ export const useComponentContext = (): ComponentContextValue => {
 
 export interface ComponentProviderProps {
   pageId: string;
+  pageRoute?: string;
   appConfig?: App;
   stateManager?: StateManager;
   elementIndex?: ElementIndex;
@@ -43,6 +45,7 @@ export interface ComponentProviderProps {
 
 export function ComponentProvider({
   pageId,
+  pageRoute,
   appConfig,
   stateManager,
   elementIndex,
@@ -56,6 +59,7 @@ export function ComponentProvider({
     <ComponentContext.Provider
       value={{
         pageId,
+        pageRoute,
         appConfig,
         stateManager,
         elementIndex,

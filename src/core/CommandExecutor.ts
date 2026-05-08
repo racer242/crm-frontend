@@ -32,10 +32,12 @@ import {
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
 import { getServerEnv } from "@/utils/env";
+import { getClientLocation } from "@/utils/location";
 import { FormatEngine, FormatRule } from "./FormatEngine";
 
 export interface CommandExecutionContext {
   pageId: string;
+  pageRoute?: string;
   triggerComponentId: string;
   appConfig: App;
   stateManager: StateManager;
@@ -180,6 +182,18 @@ export class CommandExecutor {
     return this.formatEngine.applyFormat(value, objectRules);
   }
 
+  /**
+   * Create extra sources for macro resolution with current client location
+   * Вычисляется каждый раз перед применением макросов, чтобы использовать актуальный URL
+   */
+  private createExtraSources(eventData: any): Record<string, any> {
+    const extra: Record<string, any> = { event: eventData };
+    if (typeof window !== "undefined" && this.context.pageRoute) {
+      extra.location = getClientLocation(this.context.pageRoute);
+    }
+    return extra;
+  }
+
   // ========== SET PROPERTY ==========
   /**
    * setProperty: записывает значение из source в target
@@ -201,7 +215,11 @@ export class CommandExecutor {
           ? this.getSourceValue(source, eventData)
           : undefined;
 
-    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(
+      rawValue,
+      0,
+      this.createExtraSources(eventData),
+    );
     value = this.applyFormatToValue(value, "value", params);
 
     const { elementPath, fieldPath } = this.parseTargetPath(target);
@@ -232,7 +250,11 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(
+      rawValue,
+      0,
+      this.createExtraSources(eventData),
+    );
     value = this.applyFormatToValue(value, "data", params);
 
     const { elementPath } = this.parseTargetPath(target);
@@ -259,7 +281,11 @@ export class CommandExecutor {
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    let value = this.macroEngine.apply(rawValue, 0, { event: eventData });
+    let value = this.macroEngine.apply(
+      rawValue,
+      0,
+      this.createExtraSources(eventData),
+    );
     value = this.applyFormatToValue(value, "data", params);
 
     if (typeof value !== "object" || value === null) {
@@ -342,14 +368,17 @@ export class CommandExecutor {
       return;
     }
 
-    const resolvedUrl = this.macroEngine.apply(url, 0, {
-      event: eventData,
-    }) as string;
+    const resolvedUrl = this.macroEngine.apply(
+      url,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
     let resolvedData = data
-      ? (this.macroEngine.apply(data, 0, { event: eventData }) as Record<
-          string,
-          any
-        >)
+      ? (this.macroEngine.apply(
+          data,
+          0,
+          this.createExtraSources(eventData),
+        ) as Record<string, any>)
       : undefined;
     resolvedData = this.applyFormatToValue(resolvedData, "data", params);
 
@@ -399,9 +428,11 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "";
-    let message = this.macroEngine.apply(rawMessage, 0, {
-      event: eventData,
-    }) as string;
+    let message = this.macroEngine.apply(
+      rawMessage,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
     message = this.applyFormatToValue(message, "message", params);
     const severity = params.severity || "info";
 
@@ -422,9 +453,11 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawUrl = params.url || "";
-    let url = this.macroEngine.apply(rawUrl, 0, {
-      event: eventData,
-    }) as string;
+    let url = this.macroEngine.apply(
+      rawUrl,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
     url = this.applyFormatToValue(url, "url", params);
 
     if (this.context.navigate) {
@@ -448,9 +481,11 @@ export class CommandExecutor {
     eventData: any,
   ): Promise<void> {
     const rawMessage = params.message || "Подтвердите действие";
-    let message = this.macroEngine.apply(rawMessage, 0, {
-      event: eventData,
-    }) as string;
+    let message = this.macroEngine.apply(
+      rawMessage,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
     message = this.applyFormatToValue(message, "message", params);
     const onConfirm: Command[] = params.onConfirm || [];
     const onCancel: Command[] = params.onCancel || [];
@@ -510,9 +545,11 @@ export class CommandExecutor {
     if (typeof window === "undefined") return;
 
     const rawValues = params.values || {};
-    let resolvedValues = this.macroEngine.apply(rawValues, 0, {
-      event: eventData,
-    }) as Record<string, any>;
+    let resolvedValues = this.macroEngine.apply(
+      rawValues,
+      0,
+      this.createExtraSources(eventData),
+    ) as Record<string, any>;
     resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
 
     const searchParams = new URLSearchParams();
@@ -542,9 +579,11 @@ export class CommandExecutor {
     if (typeof window === "undefined") return;
 
     const rawValues = params.values || {};
-    let resolvedValues = this.macroEngine.apply(rawValues, 0, {
-      event: eventData,
-    }) as Record<string, any>;
+    let resolvedValues = this.macroEngine.apply(
+      rawValues,
+      0,
+      this.createExtraSources(eventData),
+    ) as Record<string, any>;
     resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
 
     // Берём ТЕКУЩИЕ параметры и добавляем/обновляем новые
@@ -579,12 +618,16 @@ export class CommandExecutor {
     const rawName = params.name || "";
     let rawValue = params.value;
 
-    const name = this.macroEngine.apply(rawName, 0, {
-      event: eventData,
-    }) as string;
-    let value = this.macroEngine.apply(rawValue, 0, {
-      event: eventData,
-    });
+    const name = this.macroEngine.apply(
+      rawName,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
+    let value = this.macroEngine.apply(
+      rawValue,
+      0,
+      this.createExtraSources(eventData),
+    );
     value = this.applyFormatToValue(value, "value", params);
 
     if (!name) return;
@@ -616,9 +659,11 @@ export class CommandExecutor {
     if (typeof window === "undefined") return;
 
     const rawName = params.name || "";
-    const name = this.macroEngine.apply(rawName, 0, {
-      event: eventData,
-    }) as string;
+    const name = this.macroEngine.apply(
+      rawName,
+      0,
+      this.createExtraSources(eventData),
+    ) as string;
 
     if (!name) return;
 
@@ -639,9 +684,11 @@ export class CommandExecutor {
    */
   executeLog(params: Record<string, any>, eventData: any): void {
     const { level = "info", message } = params;
-    const resolvedMessage = this.macroEngine.apply(message, 0, {
-      event: eventData,
-    });
+    const resolvedMessage = this.macroEngine.apply(
+      message,
+      0,
+      this.createExtraSources(eventData),
+    );
     const levels: Record<string, (...args: any[]) => void> = {
       info: console.info,
       warn: console.warn,

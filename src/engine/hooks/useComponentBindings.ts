@@ -20,6 +20,7 @@ export function useComponentBindings({
 
   const commandContextRef = useRef<{
     pageId: string;
+    pageRoute?: string;
     triggerComponentId: string;
     appConfig: any;
     stateManager: any;
@@ -46,6 +47,7 @@ export function useComponentBindings({
     if (pageId && ctx.appConfig && stateManager && elementIndex) {
       commandContextRef.current = {
         pageId,
+        pageRoute: ctx.pageRoute,
         triggerComponentId: component.id || "",
         appConfig: ctx.appConfig,
         stateManager,
@@ -58,6 +60,7 @@ export function useComponentBindings({
     }
   }, [
     pageId,
+    ctx.pageRoute,
     ctx.appConfig,
     stateManager,
     component.id,

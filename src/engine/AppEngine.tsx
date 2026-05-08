@@ -264,6 +264,7 @@ export function AppEngine({
         <div className="px-4 py-5 md:px-6 lg:px-8 max-w-screen-xl mx-auto">
           <ComponentProvider
             pageId={currentPage.id}
+            pageRoute={route}
             appConfig={config}
             stateManager={stateManager}
             elementIndex={resolvedIndex}
