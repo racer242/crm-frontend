@@ -60,10 +60,41 @@
 | `name`        | `string`                  | Имя приложения                       |
 | `version`     | `string`                  | Версия приложения                    |
 | `indexPageId` | `string`                  | ID страницы для маршру `/`           |
-| `api`         | `ApiConfig`               | Настройки API (baseURL, timeout)     |
+| `baseURL`     | `string`                  | Базовый URL для API-запросов         |
+| `timeout`     | `number`                  | Таймаут запросов в мс                |
 | `features`    | `Record<string, boolean>` | Флаги функциональности               |
 | `apiRoutes`   | `ApiRouteConfig[]`        | Маршруты API (path → url)            |
 | `locale`      | `LocaleConfig`            | Настройки локали (default, fallback) |
+
+> **Важно:** Поля `baseURL` и `timeout` находятся на уровне `config`, а не внутри вложенного `api` (структура плоская, см. пример ниже).
+
+### Пример AppConfig
+
+```json
+{
+  "config": {
+    "name": "CRM Platform",
+    "version": "1.0.0",
+    "indexPageId": "dashboard",
+    "baseURL": "http://localhost:3000",
+    "timeout": 10000,
+    "features": {
+      "darkMode": true,
+      "apiAccess": true
+    },
+    "apiRoutes": [
+      {
+        "path": "get-stats",
+        "url": "https://api.example.com/{$config.baseURL}/mocks/stats.json"
+      }
+    ],
+    "locale": {
+      "default": "ru-RU",
+      "fallback": "en-US"
+    }
+  }
+}
+```
 
 ### indexPageId
 
@@ -358,24 +389,23 @@ UI-компонент PrimeReact.
 
 Формат: `{$PREFIX.PATH.TO.FIELD}`
 
-| Префикс                     | Описание                               |
-| --------------------------- | -------------------------------------- |
-| `{$ELEMENT_ID.state.PATH}`  | State элемента                         |
-| `{$state.PATH}`             | State страницы                         |
-| `{$config.PATH}`            | Конфиг приложения                      |
-| `{$location.PATH_PARAMS.N}` | N-й сегмент path (после matched route) |
-| `{$location.params.KEY}`    | Query-параметр URL                     |
-| `{$env.VAR}`                | Переменная окружения                   |
+| Префикс                    | Описание                        |
+| -------------------------- | ------------------------------- |
+| `{$ELEMENT_ID.state.PATH}` | State элемента                  |
+| `{$state.PATH}`            | State страницы                  |
+| `{$config.PATH}`           | Конфиг приложения               |
+| `{$location.slug.N}`       | N-й сегмент пути после маршрута |
+| `{$location.params.KEY}`   | Query-параметр URL              |
+| `{$env.VAR}`               | Переменная окружения            |
 
-### location.pathParams
+### location.slug
 
-При использовании fallback route matching, pathParams содержат сегменты пути после найденного маршрута.
+При использовании fallback route matching, slug содержит сегменты пути после найденного маршрута.
 
 **Пример:**
 
 - URL: `/users/312`
 - Page route: `/users`
-- `{$location.pathParams.0}` → `"312"`
 
 ---
 

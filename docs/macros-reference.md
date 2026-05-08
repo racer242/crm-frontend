@@ -91,7 +91,7 @@
 
 ```
 {$location.PROP}
-{$location.pathParams.N}
+{$location.slug.N}
 {$location.params.KEY}
 ```
 
@@ -109,20 +109,20 @@
 | `hash`     | Хэш           | `#section1`                                |
 | `origin`   | Origin        | `http://localhost:3000`                    |
 
-#### pathParams (сегменты пути)
+#### slug (сегменты пути после маршрута)
 
-Массив сегментов пути после найденного маршрута (fallback route matching).
+Массив сегментов пути после найденного маршрута (fallback route matching):
 
 ```
 // URL: /users/312/settings
 // Page route: /users
-// pathParams: ["312", "settings"]
+// slug: ["312", "settings"]
 ```
 
-| Макрос                     | Значение     |
-| -------------------------- | ------------ |
-| `{$location.pathParams.0}` | `"312"`      |
-| `{$location.pathParams.1}` | `"settings"` |
+| Макрос               | Значение     |
+| -------------------- | ------------ |
+| `{$location.slug.0}` | `"312"`      |
+| `{$location.slug.1}` | `"settings"` |
 
 #### params (query-параметры)
 
@@ -137,7 +137,7 @@
 {
   "dataFeed": [
     {
-      "url": "https://api.example.com/users/{$location.pathParams.0}",
+      "url": "https://api.example.com/users/{$location.slug.0}",
       "method": "GET",
       "target": "state.userData"
     }
@@ -407,12 +407,14 @@
 
 ## Таблица поддержки
 
-| Макрос                     | Сервер | Клиент |
-| -------------------------- | :----: | :----: |
-| `{$ELEMENT_ID.state.PATH}` |   ✅   |   ✅   |
-| `{$state.PATH}`            |   ✅   |   ✅   |
-| `{$config.PATH}`           |   ✅   |   ✅   |
-| `{$location.*}`            |   ❌   |   ✅   |
+| Макрос                     | Сервер | Клиент | Примечание                           |
+| -------------------------- | :----: | :----: | ------------------------------------ |
+| `{$ELEMENT_ID.state.PATH}` |   ✅   |   ✅   |                                      |
+| `{$state.PATH}`            |   ✅   |   ✅   |                                      |
+| `{$config.PATH}`           |   ✅   |   ✅   |                                      |
+| `{$location.*}`            |   ✅   |   ✅   | `location.slug.N` для сегментов пути |
+| `{$location.slug.N}`       |   ✅   |   ✅   | Сегменты пути после маршрута         |
+| `{$location.params.KEY}`   |   ✅   |   ✅   | Query-параметры URL                  |
 | `{$now.*}`                 |   ✅   |   ✅   |
 | `{$session.*}`             |   ❌   |   ✅   |
 | `{$localStorage.*}`        |   ❌   |   ✅   |

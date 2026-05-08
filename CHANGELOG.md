@@ -7,137 +7,282 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - **bfcache disabled** — page now fully reloads when navigating back via browser buttons
-  - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation
+  - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation (commit `a7cdf84`, `7940e51`, `d16f99e`)
   - Triggers `window.location.reload()` when `navType === 'back_forward'`
   - Prevents broken styles and preloader hang issues when returning to the page
+- **Hidden img onload** — alternative bfcache detection using hidden img element (commit `f0cdc81`)
 
 ### Added
 
-- **External API Data Feed** — server-side and client-side data fetching with macro resolution
-  - `dataFeed` configuration in page configs defines API requests at page load
-  - `sendRequest` command for client-side API calls from events (onLoad, onClick, etc.)
-  - Macro substitution `{$ELEMENT_ID.state.PATH.TO.FIELD}` and `{$config.*}` in URLs and data
-  - Server-side execution in `page.tsx` — data fetched before HTML is sent to client
-  - Successful results merged into element state (preserves existing fields)
-  - Error handling with Toast notifications for failed requests
-  - Client-side navigation support — dataFeed re-applied on page transitions
-
-### Refactored
-
-- **ComponentRenderer modularization** — split monolithic `ComponentRenderer.tsx` (~850 lines) into modular structure (~160 lines)
-  - Extracted `useComponentBindings` hook for binding logic and state subscription
-  - Split component renderers into 16 separate files grouped by type:
-    - `TextComponent` — Text: H1, H2, H3, P
-    - `InputComponents` — InputText, InputNumber, InputTextarea, Password
-    - `SelectComponents` — Dropdown, MultiSelect, AutoComplete, Calendar
-    - `ToggleComponents` — Checkbox, RadioButton, InputSwitch, Slider, Rating
-    - `MiscInputComponents` — ColorPicker, FileUpload
-    - `ButtonComponent` — Button
-    - `DataTableComponent` — DataTable
-    - `CardComponent` — Card
-    - `ToastComponent` — Toast
-    - `NavComponents` — Menubar, Breadcrumb, Steps
-    - `ContainerComponents` — TabView, Accordion, Carousel
-    - `DisplayComponents` — Skeleton, Chip, Avatar, Badge, Tag
-    - `ProgressComponents` — ProgressBar, ProgressSpinner
-    - `FeedbackComponents` — Message, Divider, Timeline
-    - `ChartComponent` — Chart
-  - Barrel export via `components/index.ts`
-  - Type definitions moved to `components/types.ts`
-
-### Added
-
-- Statistics page with date filters and data export functionality
-  - Week selector dropdown (ascending order)
-  - Date range picker (start/end dates)
-  - Menubar download menu with tabs for Customers, Orders, Products tables
-
-### Component Binding System
-
-- Data binding support via `valueBinding`, `visibleBinding`, `disabledBinding` properties
-- Command-based event handling: `setProperty` command to update state from components
-- Link resolver for relative (`@ELEMENT_ID.state.FIELD`) and absolute (`@state.field`) references
-- Cross-component communication through shared application state
-
-### State Management
-
-- StateManager constructor accepts `initialDataFeed` for server-side data preloading
-- Successful dataFeed results are merged into state (not replaced) preserving existing fields
-- `setStateField(elementPath, field, value)` — set nested state fields with dot notation
-  - Example: `setStateField("statistics", "textData.input", "hello")` → `{ textData: { input: "hello" } }`
-  - Uses `PathResolver.setValue` for proper nested path support
-- `StateChangeListener` now receives `changedPath` parameter for filtering updates
-  - `changedPath: string | null` — path of the changed field (null for full state replacement)
-  - Enables components to subscribe only to relevant state changes
-
-### Performance Optimizations
-
-- Filtered state subscriptions in `ComponentRenderer`
-  - Components now check if a state change affects their specific bindings before re-rendering
-  - Eliminates unnecessary re-renders on every state change
-  - Improves input field responsiveness (no lag during typing)
-  - Binding path comparison handles multiple formats:
-    - `@state.field` — short form (relative to current page)
-    - `@pageId.state.field` — full form with page ID
-    - `@componentId.prop` — cross-component references
-
-### Date Utilities
-
-- Created `src/utils/date.ts` with date parsing utilities:
-  - `isIsoDateLike()` — check ISO date format
-  - `parseDateString()` — parse custom formats (dd.mm.yyyy HH:mm)
-  - `isoToCustomFormat()` — convert ISO to custom format
-- Support for multiple date formats in Calendar component:
-  - ISO: `2026-04-13T23:30:00`
-  - Custom: `13.04.2026 23:30`, `13.04.2026`
-
-### Component Fixes
-
-- Fixed `EventHandler.type` property (was incorrectly named `event`)
-- Fixed `isMounted` for Menubar/Chart: changed from `useRef` to `useState`
-  - `useRef` doesn't trigger re-render, causing components to show skeleton placeholders forever
-  - `useState` properly triggers re-render after hydration, fixing SSR hydration mismatch
-
-### Changed
-
-- API configuration split: endpoints moved to separate `config/api/endpoints.json` file
-- Week dropdown format: consistent object value structure `{week, start, finish}`
-- `CommandExecutor.setProperty` now uses `setStateField` instead of `mergeState`
-  - Properly handles nested paths like `textData.input`
+- 9 comprehensive reference docs in `docs/` (commits `0e8bb11`–`cbbea6d`):
+  - `config-reference.md`, `macros-reference.md`, `linkage-reference.md`
+  - `data-format-reference.md`, `commands-reference.md`
+  - `api-router-reference.md`, `architecture-reference.md`
+  - `data-feed-reference.md`, `data-adapter-reference.md`
+- README compressed from 933 to 280 lines (commit `cbbea6d`)
 
 ---
 
-## [0.1.0] - Initial Release
+## [1.0.0] — Documentation & Polish
+
+### Added
+
+- Comprehensive config-reference.md with App, Page, Section, Block, Component, Command specs (commit `0e8bb11`)
+- macros-reference.md with 13 macro types and cross-platform support table (commit `8bf2abd`)
+- linkage-reference.md — reactive `@...` binding system (commit `cdd19eb`)
+- data-format-reference.md — 7 formatting types via Intl API (commit `73d6d69`)
+- commands-reference.md — 17 command types with params (commit `97d2cbb`)
+- api-router-reference.md, architecture-reference.md, data-feed-reference.md, data-adapter-reference.md (commit `784f3d4`)
+
+---
+
+## [0.9.0] — Routing, Navigation & 404
+
+### Added
+
+- **Fallback route matching** — segment-based page resolution with path parameters (commit `627c624`)
+  - `{$location.slug.N}` macro for path segments after matched route
+  - Path params support in server-side macro sources
+- **404 page** — redirect on route not found (commits `19c2cbe`, `7bcac81`)
+- **indexPageId** config — root route `/` maps to configured page ID (commit `4bddbc7`)
+- Resolved route passed from server to AppEngine to prevent client-side mismatch (commit `f0f400a`)
+- `p-ripple` class removed from sidebar items for performance (commit `95c3acd`)
+
+---
+
+## [0.8.0] — FormatEngine & URL Commands
+
+### Added
+
+- **FormatEngine** — data formatting with Intl API (commit `a8b0605`)
+  - 7 types: Date, Time, Number, Currency, RelativeTime, List, Plural
+  - 5 functions: DateTimeFormat, NumberFormat, RelativeTimeFormat, ListFormat, PluralRules
+  - Fallback to `en-US` on error
+  - Configurable locale from CRM config
+- Format support integrated into all command types (commits `742868c`, `500c3c9`)
+  - `setProperty`, `setState`, `mergeState` — format via `format` param
+  - `sendRequest`, `showToast`, `navigate` — format support
+  - Object and array property matching
+- **URL parameter manipulation commands** (commits `ecddd70`, `fa3f7f8`):
+  - `setUrlParams` — replace all params
+  - `mergeUrlParams` — update/add params (preserves existing)
+  - `setUrlParam` — change single param
+  - `removeUrlParam` — delete param
+- **refresh command** — page refresh without full reload (commit `bee62ec`)
+  - Modes: `refresh` (router.refresh), `replace`, `reload`
+
+### Refactored
+
+- Command params renamed from `keys` to `values` for URL commands (commit `f29032f`)
+- Format matching improved for nested objects in `applyFormatToValue` (commit `68c5ef5`)
+
+### Fixed
+
+- `mergeState` not notifying listeners properly (commit `ca622e5`)
+- `parseTargetPath` treats `'state'` as page root state (commit `b37010f`)
+- Dropdown auto-resolves value by `id` from options (commit `eabccce`)
+- Allow object `source` in `setState` and `mergeState` commands (commit `d15e9d8`)
+
+---
+
+## [0.7.0] — Location Utilities & Server-Side Macros
+
+### Added
+
+- **Location utilities** — `getServerLocation()` and `ParsedLocation` type (commit `1bac07f`)
+  - Server-side URL parsing with params and pathParams
+  - Client-side `getClientLocation()` for browser context
+- **Server-side macro resolution** for element states (commit `f833f50`)
+  - `resolveElementStateMacros()` traverses page hierarchy and resolves macros in state
+  - Macro sources include `config`, `env`, `location`
+- URL parameter manipulation foundation (commit `5eb8cbf`)
+
+### Refactored
+
+- `executeServerDataFeeds` now accepts `serverSources` as parameter (commit `67d4a8a`)
+- `resolveElementStateMacros` simplified to use sources directly (commit `025b96a`)
+
+---
+
+## [0.6.0] — ElementIndex Optimization & Component Architecture
+
+### Added
+
+- **React Context for cross-cutting params** (commit `e8558cf`)
+  - `ComponentProvider` wraps render tree with context
+  - Eliminates prop drilling for `showToast`, `navigate`, `confirm`, `appConfig`, etc.
+- **`$event` macro support** — access event data in commands (commit `dce1999`)
+- **TabView `renderActiveOnly` prop** — configurable tab rendering (commit `07513a1`)
+- **Stats analytics data format** update with review mock data (commit `896b32d`)
+- Section/block layout improvements and adapter updates (commit `985e6b9`)
+- **Hidden FileUpload FOUC fix** — workaround for page transition flicker (commit `9fa612b`)
+- **UserMenuSection** — collapsible user section for desktop sidebar (commits `98d362d`, `3cbf6a2`)
+
+### Refactored
+
+- ElementIndex created once at initApp — per-page index passed to AppEngine (commits `7e08e0f`, `beb4f3d`)
+- Removed ElementIndex from Linkage and CommandExecutor (commit `7e08e0f`)
+- TabView/Accordion converted to block-based format (commits `6608096`–`4949772`)
+- `isMounted` removed from useComponentBindings (commit `f9a4476`)
+
+### Fixed
+
+- Sidebar user section flicker on page navigation (commit `98d362d`)
+- Accordion `activeIndex` reactivity and TabView/Accordion props flow (commit `62a7ae4`)
+- FOUC handling across initial load and page transitions (commit `2621f35`)
+
+---
+
+## [0.5.0] — Data Adapters & Nav Components
+
+### Added
+
+- **Data adapter system** — `DataAdapterEngine` (commit `f1fff7d`)
+  - Replace adapter: dictionary-based property name/value replacement
+  - JS adapter: custom `transform(data)` scripts from `public/adapters/`
+  - `$value$` macro for value substitution in replace rules
+  - Server-side only execution
+- **Command event support** for Menubar, Breadcrumb, Steps (commits `6d49835`, `299cbd8`)
+- **onNavigate event** for nav components with command merging (commit `ee7c8b3`)
+- **`getServerEnv()` utility** — filtered NEXT*PUBLIC*\* environment variables (commits `3408c58`, `0cc375a`)
+
+### Fixed
+
+- Replace adapter recursion prevented from entering replacement values (commit `1ac9396`)
+- `executeLog` handles non-string `resolvedMessage` (objects/arrays) (commit `001df56`)
+- `analytics2menu.js` adapter updated to match actual analytics data structure (commits `1e690dc`, `608c097`)
+- `useCommand` flag to avoid PrimeReact `command` prop conflict (commit `eccc385`)
+
+---
+
+## [0.4.0] — MacroEngine, Linkage & Full README
+
+### Added
+
+- **MacroEngine** with 24 macro types (commit `2f84c28`)
+  - State, config, location, now, session/localStorage, cookie, window, math, device, browser, env
+  - Server + client support where applicable
+  - Recursive resolution with configurable max depth
+- **Linkage system** — property-to-state bindings (commit `6529334`)
+  - `@ELEMENT_ID.state.PATH` format
+  - Reactive subscription via `Linkage.subscribe()`
+  - `resolveDeep()` for recursive binding resolution
+- **External API Data Feed** (commit `3253b4f`)
+  - `dataFeed` config in pages for server-side data fetching
+  - `sendRequest` command for client-side API calls
+  - Macro substitution in URLs and data
+  - Server-side execution in `page.tsx`
+  - Error collection with Toast notifications
+- **URL parameter commands** — `setUrlParams`, `setUrlParam`, `removeUrlParam` (commit `ecddd70`)
+- **New state commands** — `clearState`, `toggleProperty` (commit `9503980`)
+- **globalState removed** — state management simplified (commit `9503980`)
+- README fully rewritten with platform capabilities (commit `e5d1d58`)
+
+### Fixed
+
+- Macro resolution in `apiRoutes` URLs (commits `cb59b67`, `c7ddba2`)
+
+---
+
+## [0.3.0] — Component Binding System & Performance
+
+### Added
+
+- **Component binding system** (commit `270e099`)
+  - `valueBinding`, `visibleBinding`, `disabledBinding` properties
+  - Link resolver for relative/absolute state references
+  - Cross-component communication via shared state
+- **Date utilities** — `src/utils/date.ts` (commit `270e099`)
+  - `isIsoDateLike()`, `parseDateString()`, `isoToCustomFormat()`
+  - Calendar supports ISO and custom date formats (`dd.mm.yyyy HH:mm`)
+- **`setProperty` `value` parameter** — direct value without `source` (commit `9e98573`)
+- **`log` command support** in CommandExecutor (commit `05b54c2`)
+- **ElementIndex** — O(1) element lookups (commit `e25f919`)
+
+### Performance
+
+- **Filtered state subscriptions** (commit `eba0ddd`)
+  - Components check if state change affects specific bindings before re-rendering
+  - Eliminates unnecessary re-renders on every state change
+  - Improves input field responsiveness during typing
+
+### Refactored
+
+- **ComponentRenderer modularization** (commit `56d271f`)
+  - Monolithic ~850 lines → modular structure (~160 lines)
+  - 16 separate component files grouped by type
+  - Barrel export via `components/index.ts`
+- **Event format unified** — `events` array replaces `onLoad`/`onChange` (commit `f8d14d5`)
+- `parseTarget` moved to `PathResolver` (commit `73998f2`)
+
+### Fixed
+
+- `EventHandler.type` property (was incorrectly `event`) (commit `30e9c98`)
+- `isMounted` changed from `useRef` to `useState` for Menubar/Chart (commit `8019e9a`)
+- `setStateField` supports nested paths in `mergeState` (commit `6687556`)
+
+---
+
+## [0.2.0] — Statistics Page & Configuration Refactoring
+
+### Added
+
+- **Statistics page** with date filters and data export (commit `d107c62`)
+  - Week selector dropdown (ascending order)
+  - Date range picker (start/end dates)
+  - Menubar download menu with tabs (Customers, Orders, Products)
+- **Components showcase page** — 37 PrimeReact components demo (commits `0c20844`, `e37cdd8`)
+- **Singleton config loader** — `initApp()` pattern with caching (commit `5bd0799`)
+  - Loads config once per application lifetime
+  - Prevents parallel loading during concurrent requests
+- **nodemon auto-restart** on config file changes (commits `3049779`, `836f318`)
+
+### Refactored
+
+- Config split into separate page files with `$ref` references (commit `53afe30`)
+- API endpoints split into separate `config/api/endpoints.json` (commit `d8aad05`)
+- `[[...slug]]/page.tsx` converted to Server Component (commit `30b5a91`)
+
+### Fixed
+
+- Week sorting ascending, TabView tabs prop, Menubar iconDisplay (commits `576d12d`, `288702c`)
+- Week dropdown: consistent object value format `{week, start, finish}` (commits `ab09d2b`, `595143f`)
+
+---
+
+## [0.1.0] — Initial Release
 
 ### Added
 
 - Metadata-driven UI architecture (Blueprint + Engine pattern)
 - Dynamic routing with `[[...slug]]` Next.js app router
-- Configurable navbar with icons and routes
-- Global state management system
-- Command-based event handling
 - PrimeReact component integration (40+ components)
 - Dark theme support (lara-dark-blue)
-- Mock authentication and user data
+- State management — `StateManager` with `getState`, `setState`, `mergeState`, `subscribe`
+- Command-based event handling — `CommandExecutor` with `setProperty`, `setState`, `sendRequest`, `showToast`, `navigate`, `confirm`, `sequence`, `delay`
+- JSON-based configuration with `$ref` support via `@apidevtools/json-schema-ref-parser`
+- PrimeFlex CSS utility system + PrimeIcons
 
 ### Pages
 
-- Dashboard — statistics cards, recent orders, activity timeline
-- Users — users table, profile view, progress indicators
-- Orders — TabView with filterable orders, order creation form
-- Products — product search, catalog cards, product table, edit form
-- Reports — date filters, charts (line/pie), skeleton placeholders
-- Settings — Steps wizard, profile, notifications, security, integrations, FAQ accordion
+- **Dashboard** (`/`) — statistics cards, recent orders, activity timeline
+- **Users** (`/users`) — users table, profile view, progress indicators
+- **Orders** (`/orders`) — TabView with filterable orders, order creation form
+- **Products** (`/products`) — product search, catalog cards, product table, edit form
+- **Reports** (`/reports`) — date filters, charts (line/pie), skeleton placeholders
+- **Settings** (`/settings`) — Steps wizard, profile, notifications, security, integrations, FAQ accordion
 
-### Configuration
+### UI Components
 
-- JSON-based configuration with `$ref` support
-- Modular config files (pages, API endpoints)
+- **Sidebar** — PrimeReact Menu + Sidebar with desktop/mobile responsive layout
+- **Header** — mobile header with burger menu, user avatar dropdown
+- **User Menu** — profile link, logout with SplitButton on desktop
+- **GlobalPreloader** — prevents FOUC during page load
+- **DashboardSidebar** — navigation icons, collapsible user section, active route highlighting
 
-### Data Feed
+### Infrastructure
 
-- `dataFeed` section in page configuration for server-side API data fetching
-- `sendRequest` command for client-side API requests
-- Macro support: `{$config.baseURL}`, `{$ELEMENT_ID.state.field}`
-- Target addressing: `"target": "state"`, `"target": "elementId.state.field"`
-- Error handling via Toast notifications
+- Path alias `@/` → `./src/*`
+- ESLint configuration
+- TypeScript strict mode
+- Dev server with `next dev --turbo`

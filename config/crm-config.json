@@ -49,7 +49,7 @@
       {
         "label": "Testing",
         "icon": "pi pi-th-large",
-        "route": "/testing"
+        "route": "/stats/testing"
       }
     ]
   },
@@ -111,6 +111,10 @@
     "stats.review.js": {
       "type": "js",
       "script": "adapters/stats-review-2-tabview.js"
+    },
+    "stats.week.js": {
+      "type": "js",
+      "script": "adapters/weeks-2-select-list.js"
     }
   },
   "config": {

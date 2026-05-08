@@ -192,27 +192,39 @@ AppEngine
       └── SectionRenderer
            └── BlockRenderer
                 └── ComponentRenderer
-                     └── PrimeReact Component
+                     └── Component модули (16 файлов)
+                          └── PrimeReact Component
 ```
 
 ### ComponentRenderer
 
-Определяет тип компонента и вызывает соответствующую render-функцию:
+ComponentRenderer определяет тип компонента и делегирует рендеринг специализированным модулям.
 
-```
-ComponentRenderer
- ├── renderInputText
- ├── renderInputNumber
- ├── renderButton
- ├── renderDataTable
- ├── renderCard
- ├── renderChart
- └── ... (40+ типов)
-```
+**Модульная структура (`src/engine/components/`):**
 
-### Binding-подписка
+| Модуль                | Компоненты                                         |
+| --------------------- | -------------------------------------------------- |
+| `TextComponent`       | Text: H1, H2, H3, P                                |
+| `InputComponents`     | InputText, InputNumber, InputTextarea, Password    |
+| `SelectComponents`    | Dropdown, MultiSelect, AutoComplete, Calendar      |
+| `ToggleComponents`    | Checkbox, RadioButton, InputSwitch, Slider, Rating |
+| `MiscInputComponents` | ColorPicker, FileUpload                            |
+| `ButtonComponent`     | Button                                             |
+| `DataTableComponent`  | DataTable                                          |
+| `CardComponent`       | Card                                               |
+| `ToastComponent`      | Toast                                              |
+| `NavComponents`       | Menubar, Breadcrumb, Steps                         |
+| `ContainerComponents` | TabView, Accordion, Carousel                       |
+| `DisplayComponents`   | Skeleton, Chip, Avatar, Badge, Tag                 |
+| `ProgressComponents`  | ProgressBar, ProgressSpinner                       |
+| `FeedbackComponents`  | Message, Divider, Timeline                         |
+| `ChartComponent`      | Chart (line, pie, bar, doughnut, radar, polarArea) |
 
-Компоненты с линковкой (`@...`) подписываются на изменения state через `useComponentBindings` hook:
+**Всего:** 16 модулей, покрывающих 40+ типов компонентов PrimeReact.
+
+### Хук useComponentBindings
+
+Для реактивной подписки на изменения state используется хук:
 
 ```typescript
 function useComponentBindings(
@@ -221,18 +233,32 @@ function useComponentBindings(
 ): { needsReRender: boolean };
 ```
 
-**Как работает:**
+Хук парсит binding-строки (`@ELEMENT_ID.state.PATH`), подписывается через `Linkage.subscribe()`, и возвращает `needsReRender: true` при изменении зависимого state. React перерендеривает только этот компонент.
 
-1. Парсит binding-строки в BindingRef
-2. Подписывается через `Linkage.subscribe()`
-3. При изменении зависимого state → `needsReRender = true`
-4. React перерендеривает только этот компонент
+### ComponentContext
+
+Провайдер контекста, передающий необходимые зависимости компонентам:
+
+```typescript
+// ComponentProvider оборачивает всё дерево рендеринга
+<ComponentProvider
+  pageId={currentPage.id}
+  appConfig={config}
+  stateManager={stateManager}
+  elementIndex={resolvedIndex}
+  showToast={showToast}
+  navigate={navigate}
+  confirm={confirm}
+  refresh={refresh}
+>
+  <PageRenderer page={currentPage} />
+</ComponentProvider>
+```
 
 ### Оптимизация
 
 - Компоненты без bindings не подписываются
 - Фильтрация подписок — только изменения relevant bindings
-- Исключены лишние ре-рендеры при вводе в поля
 
 ---
 
