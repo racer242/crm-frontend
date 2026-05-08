@@ -45,19 +45,13 @@ export default function RootLayout({
     >
       <body>
         {/* Отключает bfcache — при возврате назад страница перезагружается */}
-        <script
+        <div
+          style={{ display: "none" }}
           dangerouslySetInnerHTML={{
-            __html: `
-              const entries = performance.getEntriesByType('navigation');
-              if (entries.length > 0) {
-                const navType = entries[0].type;
-                if (navType === 'back_forward') {
-                  window.location.reload();
-                }
-              }
-            `,
+            __html: `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="performance.getEntriesByType('navigation')[0]?.type=='back_forward'&&location.reload()">`,
           }}
         />
+
         <GlobalPreloader />
         <PrimeReactProvider value={primeReactConfig}>
           {children}
