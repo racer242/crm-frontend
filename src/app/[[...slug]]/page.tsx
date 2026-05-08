@@ -21,20 +21,38 @@ export default async function Page({
   // Initialize CRM App Singleton (loads config once per application lifetime)
   const { config } = await initApp();
 
-  // Resolve the route from params
+  // Resolve the route from params with fallback matching
   const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-  const route = slug && slug.length > 0 ? `/${slug.join("/")}` : "/";
+  const slug = resolvedParams.slug || [];
+  let route = slug.length > 0 ? `/${slug.join("/")}` : "/";
+  let pathParams: string[] = [];
 
-  // Get page configuration (deep copy to avoid mutating global config)
-  const pageConfig = structuredClone(getPageConfigByRoute(route) ?? {});
+  // Fallback matching: try to find page by route, starting from full path
+  let pageConfig: any = null;
+  for (let i = slug.length; i >= 0; i--) {
+    const testRoute = i > 0 ? "/" + slug.slice(0, i).join("/") : "/";
+    const cfg = getPageConfigByRoute(testRoute);
+    if (cfg) {
+      pageConfig = cfg;
+      route = testRoute;
+      pathParams = slug.slice(i);
+      break;
+    }
+  }
 
   // Build element index for current page only
-  const elementIndex: PageIndex = pageConfig ? buildPageIndex(pageConfig) : {};
+  const clonedPageConfig = structuredClone(pageConfig ?? {});
+  const elementIndex: PageIndex = clonedPageConfig
+    ? buildPageIndex(clonedPageConfig)
+    : {};
 
-  // Get server location with URL params
+  // Get server location with URL params and path params
   const resolvedSearchParams = await searchParams;
-  const location = await getServerLocation(resolvedSearchParams, route);
+  const location = await getServerLocation(
+    resolvedSearchParams,
+    route,
+    pathParams,
+  );
 
   // Create shared server sources for macros
   const serverSources: MacroSources = {
@@ -44,19 +62,19 @@ export default async function Page({
   };
 
   // Resolve macros in all element states (page, sections, blocks, components)
-  resolveElementStateMacros(pageConfig, serverSources);
+  resolveElementStateMacros(clonedPageConfig, serverSources);
 
   // Execute server-side data feeds if page has dataFeed config
   let dataFeedErrors: string[] = [];
   let successResults: DataFeedResult[] = [];
   let initialPageId: string | null = null;
 
-  if (pageConfig && pageConfig.dataFeed) {
-    const pageId = pageConfig.id || "";
+  if (clonedPageConfig && clonedPageConfig.dataFeed) {
+    const pageId = clonedPageConfig.id || "";
     initialPageId = pageId;
     const results: DataFeedResult[] = await executeServerDataFeeds(
       pageId,
-      pageConfig,
+      clonedPageConfig,
       serverSources,
     );
 
@@ -71,7 +89,7 @@ export default async function Page({
   // Create minimal config with only current page
   const minimalConfig = {
     ...config,
-    pages: pageConfig ? [pageConfig] : [],
+    pages: clonedPageConfig ? [clonedPageConfig] : [],
   };
 
   return (

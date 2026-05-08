@@ -1,7 +1,7 @@
 {
   "id": "testing",
   "type": "page",
-  "route": "/testing",
+  "route": "/stats/testing",
   "state": {
     "loading": false,
     "analytics": [],

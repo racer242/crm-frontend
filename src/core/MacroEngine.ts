@@ -170,6 +170,7 @@ function resolveSingleMacro(
           hash: sources.location.hash,
           origin: sources.location.origin,
           params: (sources.location as any).params,
+          pathParams: (sources.location as any).pathParams,
         },
         fullPath,
       );

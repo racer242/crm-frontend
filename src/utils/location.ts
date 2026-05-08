@@ -3,20 +3,23 @@
  */
 
 /**
- * Parsed location with URL params
+ * Parsed location with URL params and path params
  */
 export interface ParsedLocation extends Location {
-  params: Record<string, string>;
+  params: Record<string, string>; // search params (?key=value)
+  pathParams: string[]; // path segments (/users/312 -> ['312'])
 }
 
 /**
  * Get location object on server side
  * @param searchParams - URL search parameters
  * @param pathname - Current path
+ * @param pathParams - Path segments after the matched route
  */
 export async function getServerLocation(
   searchParams: Record<string, string | string[] | undefined>,
   pathname?: string,
+  pathParams: string[] = [],
 ): Promise<ParsedLocation> {
   const { headers } = await import("next/headers");
   const headerList = await headers();
@@ -45,6 +48,7 @@ export async function getServerLocation(
     href: `${origin}${pathname || "/"}${search}`,
     hash: "",
     params,
+    pathParams,
   } as ParsedLocation;
 }
 
@@ -64,8 +68,13 @@ export function getClientLocation(): ParsedLocation {
     params[key] = value;
   }
 
+  // Parse path params from remaining pathname after route
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const pathParams = pathParts.slice(1); // skip first segment (could be route)
+
   return {
     ...window.location,
     params,
+    pathParams,
   } as ParsedLocation;
 }
