@@ -74,6 +74,8 @@ export interface LocaleConfig {
 export interface AppConfig {
   name: string;
   version: string;
+  /** ID страницы для корневой маршру "/" */
+  indexPageId?: string;
   api: ApiConfig;
   features?: FeatureFlags;
   routes?: RouteConfig[];

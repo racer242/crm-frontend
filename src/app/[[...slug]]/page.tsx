@@ -27,18 +27,33 @@ export default async function Page({
   const slug = resolvedParams.slug || [];
   let route: string | null = null;
   let pathParams: string[] = [];
+  let pageConfig: any = null;
+
+  // If accessing "/" and indexPageId is configured, redirect to that page
+  if (slug.length === 0 && config.config?.indexPageId) {
+    const indexPage = config.pages?.find(
+      (p: any) => p.id === config.config.indexPageId,
+    );
+    if (indexPage && indexPage.route) {
+      pageConfig = getPageConfigByRoute(indexPage.route);
+      if (pageConfig) {
+        route = indexPage.route;
+      }
+    }
+  }
 
   // Fallback matching: try to find page by route, starting from full path
-  let pageConfig: any = null;
-  for (let i = slug.length; i >= 0; i--) {
-    const testRoute: string | null =
-      i > 0 ? "/" + slug.slice(0, i).join("/") : null;
-    const cfg = getPageConfigByRoute(testRoute);
-    if (cfg) {
-      pageConfig = cfg;
-      route = testRoute;
-      pathParams = slug.slice(i);
-      break;
+  if (!pageConfig) {
+    for (let i = slug.length; i >= 0; i--) {
+      const testRoute: string | null =
+        i > 0 ? "/" + slug.slice(0, i).join("/") : null;
+      const cfg = getPageConfigByRoute(testRoute);
+      if (cfg) {
+        pageConfig = cfg;
+        route = testRoute;
+        pathParams = slug.slice(i);
+        break;
+      }
     }
   }
 

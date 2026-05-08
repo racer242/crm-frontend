@@ -116,6 +116,7 @@
   "config": {
     "name": "CRM Platform",
     "version": "1.0.0",
+    "indexPageId": "dashboard",
     "baseURL": "http://localhost:3000",
     "timeout": 10000,
     "features": {
