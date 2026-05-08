@@ -881,3 +881,25 @@ npm run build     # Production-билд
 5. [List](docs/data-format-reference.md#5-list--listformat) — форматирование списков
 6. [Plural](docs/data-format-reference.md#6-plural--pluralrules) — правила множественных чисел
 7. [Locale](docs/data-format-reference.md#locale-локаль) — настройка локали, fallback
+
+## Команды
+
+Полное описание всех типов команд с параметрами и примерами:
+→ [docs/commands-reference.md](docs/commands-reference.md)
+
+Разделы справочника:
+
+1. [setProperty](docs/commands-reference.md#1-setproperty) — запись значения
+2. [setState](docs/commands-reference.md#2-setstate) — полная замена state
+3. [mergeState](docs/commands-reference.md#3-mergestate) — слияние с state
+4. [clearState](docs/commands-reference.md#4-clearstate) — очистка state
+5. [toggleProperty](docs/commands-reference.md#5-toggleproperty) — инвертирование boolean
+6. [sendRequest](docs/commands-reference.md#6-sendrequest) — HTTP-запрос
+7. [showToast](docs/commands-reference.md#7-showtoast) — Toast-уведомление
+8. [navigate](docs/commands-reference.md#8-navigate) — переход по URL
+9. [confirm](docs/commands-reference.md#9-confirm) — диалог подтверждения
+10. [delay](docs/commands-reference.md#10-delay) — пауза
+11. [sequence](docs/commands-reference.md#11-sequence) — последовательность
+12. [log](docs/commands-reference.md#12-log) — логирование
+13. [URL команды](docs/commands-reference.md#url-команды) — setUrlParams, mergeUrlParams, setUrlParam, removeUrlParam
+14. [refresh](docs/commands-reference.md#17-refresh) — обновление страницы
