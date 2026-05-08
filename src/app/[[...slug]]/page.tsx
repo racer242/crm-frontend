@@ -10,6 +10,7 @@ import {
 } from "@/core/config";
 import { getServerLocation } from "@/utils/location";
 import { getServerEnv } from "@/utils/env";
+import { notFound } from "next/navigation";
 
 export default async function Page({
   params,
@@ -30,7 +31,8 @@ export default async function Page({
   // Fallback matching: try to find page by route, starting from full path
   let pageConfig: any = null;
   for (let i = slug.length; i >= 0; i--) {
-    const testRoute = i > 0 ? "/" + slug.slice(0, i).join("/") : "/";
+    const testRoute: string | null =
+      i > 0 ? "/" + slug.slice(0, i).join("/") : null;
     const cfg = getPageConfigByRoute(testRoute);
     if (cfg) {
       pageConfig = cfg;
@@ -40,7 +42,10 @@ export default async function Page({
     }
   }
 
-  // If no page found, route stays null - AppEngine will show 404
+  // If no page found, show 404
+  if (!pageConfig) {
+    notFound();
+  }
 
   // Build element index for current page only
   const clonedPageConfig = structuredClone(pageConfig ?? {});

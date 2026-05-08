@@ -111,9 +111,6 @@ export function AppEngine({
     const page = stateManager.getPageByRoute(route);
     if (page) {
       setCurrentPage(page);
-    } else {
-      console.warn(`Page not found for route: ${route}`);
-      setCurrentPage(null);
     }
   }, [route, stateManager]);
 
@@ -126,6 +123,15 @@ export function AppEngine({
   }, [stateManager]);
 
   const router = useRouter();
+
+  // Redirect to 404 on client-side navigation (separate effect after router declaration)
+  useEffect(() => {
+    const page = stateManager.getPageByRoute(route);
+    if (!page) {
+      router.replace("/404");
+    }
+  }, [route, stateManager, router]);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);

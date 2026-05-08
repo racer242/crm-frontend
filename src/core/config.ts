@@ -185,7 +185,7 @@ export function clearConfigCache(): void {
 /**
  * Get page configuration by route
  */
-export function getPageConfigByRoute(route: string): any | null {
+export function getPageConfigByRoute(route: string | null): any | null {
   if (!cachedConfig) {
     return null;
   }
