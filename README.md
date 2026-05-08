@@ -852,3 +852,17 @@ npm run build     # Production-билд
 9. [Math](docs/macros-reference.md#9-math-генераторы) — random, GUID, UUID
 10. [Device/Browser](docs/macros-reference.md#10-device--browser)
 11. [Environment](docs/macros-reference.md#11-environment-variables) — `{$env.*}`
+
+## Линковка
+
+Полное описание системы реактивной привязки свойств к state:
+→ [docs/linkage-reference.md](docs/linkage-reference.md)
+
+Разделы справочника:
+
+1. [Что такое линковка](docs/linkage-reference.md#что-такое-линковка) — реактивная привязка `@...`
+2. [Формат binding-строки](docs/linkage-reference.md#формат-binding-строки) — `@ELEMENT_ID.source.PATH`
+3. [Типы binding-строк](docs/linkage-reference.md#типы-binding-строк) — полная, краткая, config/props
+4. [Где используется](docs/linkage-reference.md#где-используется-линковка) — value, props, model
+5. [Реактивность](docs/linkage-reference.md#реактивность) — подписка и уведомления
+6. [Отличие от макросов](docs/linkage-reference.md#отличие-линковки-от-макросов) — таблица сравнения
