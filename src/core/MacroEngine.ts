@@ -154,6 +154,12 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
         const idx = parseInt(parts[1], 10);
         return pathParts[idx] ?? undefined;
       }
+      if (parts[0] === "param") {
+        const pathParams = (sources.location as any).pathParams;
+        if (!Array.isArray(pathParams)) return undefined;
+        const idx = parseInt(parts[1], 10);
+        return pathParams[idx] ?? undefined;
+      }
       return getNestedValue(
         {
           href: sources.location.href,

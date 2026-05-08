@@ -92,6 +92,7 @@
 ```
 {$location.PROP}
 {$location.slug.N}
+{$location.param.N}
 {$location.params.KEY}
 ```
 
@@ -109,20 +110,35 @@
 | `hash`     | Хэш           | `#section1`                                |
 | `origin`   | Origin        | `http://localhost:3000`                    |
 
-#### slug (сегменты пути после маршрута)
+#### slug (сегменты полного pathname)
 
-Массив сегментов пути после найденного маршрута (fallback route matching):
+Массив сегментов полного pathname (без учёта маршрута):
 
 ```
 // URL: /users/312/settings
-// Page route: /users
-// slug: ["312", "settings"]
+// slug: ["users", "312", "settings"]
 ```
 
 | Макрос               | Значение     |
 | -------------------- | ------------ |
-| `{$location.slug.0}` | `"312"`      |
-| `{$location.slug.1}` | `"settings"` |
+| `{$location.slug.0}` | `"users"`    |
+| `{$location.slug.1}` | `"312"`      |
+| `{$location.slug.2}` | `"settings"` |
+
+#### param (сегменты после маршрута)
+
+Массив сегментов пути ПОСЛЕ найденного маршрута (pathParams):
+
+```
+// URL: /users/312/settings
+// Page route: /users
+// pathParams: ["312", "settings"]
+```
+
+| Макрос                | Значение     |
+| --------------------- | ------------ |
+| `{$location.param.0}` | `"312"`      |
+| `{$location.param.1}` | `"settings"` |
 
 #### params (query-параметры)
 
@@ -137,7 +153,7 @@
 {
   "dataFeed": [
     {
-      "url": "https://api.example.com/users/{$location.slug.0}",
+      "url": "https://api.example.com/users/{$location.param.0}",
       "method": "GET",
       "target": "state.userData"
     }
@@ -407,20 +423,21 @@
 
 ## Таблица поддержки
 
-| Макрос                     | Сервер | Клиент | Примечание                           |
-| -------------------------- | :----: | :----: | ------------------------------------ |
-| `{$ELEMENT_ID.state.PATH}` |   ✅   |   ✅   |                                      |
-| `{$state.PATH}`            |   ✅   |   ✅   |                                      |
-| `{$config.PATH}`           |   ✅   |   ✅   |                                      |
-| `{$location.*}`            |   ✅   |   ✅   | `location.slug.N` для сегментов пути |
-| `{$location.slug.N}`       |   ✅   |   ✅   | Сегменты пути после маршрута         |
-| `{$location.params.KEY}`   |   ✅   |   ✅   | Query-параметры URL                  |
-| `{$now.*}`                 |   ✅   |   ✅   |
-| `{$session.*}`             |   ❌   |   ✅   |
-| `{$localStorage.*}`        |   ❌   |   ✅   |
-| `{$cookie.*}`              |   ❌   |   ✅   |
-| `{$window.*}`              |   ❌   |   ✅   |
-| `{$math.*}`                |   ✅   |   ✅   |
-| `{$device.*}`              |   ✅   |   ✅   |
-| `{$browser.*}`             |   ✅   |   ✅   |
-| `{$env.*}`                 |   ✅   |   ✅   |
+| Макрос                     | Сервер | Клиент | Примечание                                                   |
+| -------------------------- | :----: | :----: | ------------------------------------------------------------ |
+| `{$ELEMENT_ID.state.PATH}` |   ✅   |   ✅   |                                                              |
+| `{$state.PATH}`            |   ✅   |   ✅   |                                                              |
+| `{$config.PATH}`           |   ✅   |   ✅   |                                                              |
+| `{$location.*}`            |   ✅   |   ✅   | `location.slug.N`, `location.param.N`, `location.params.KEY` |
+| `{$location.slug.N}`       |   ✅   |   ✅   | N-й сегмент полного pathname                                 |
+| `{$location.param.N}`      |   ✅   |   ✅   | N-й сегмент после маршрута (pathParams)                      |
+| `{$location.params.KEY}`   |   ✅   |   ✅   | Query-параметры URL                                          |
+| `{$now.*}`                 |   ✅   |   ✅   |                                                              |
+| `{$session.*}`             |   ❌   |   ✅   |                                                              |
+| `{$localStorage.*}`        |   ❌   |   ✅   |                                                              |
+| `{$cookie.*}`              |   ❌   |   ✅   |                                                              |
+| `{$window.*}`              |   ❌   |   ✅   |                                                              |
+| `{$math.*}`                |   ✅   |   ✅   |                                                              |
+| `{$device.*}`              |   ✅   |   ✅   |                                                              |
+| `{$browser.*}`             |   ✅   |   ✅   |                                                              |
+| `{$env.*}`                 |   ✅   |   ✅   |                                                              |
