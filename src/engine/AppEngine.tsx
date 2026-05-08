@@ -66,7 +66,7 @@ export function AppEngine({
 
   // Use initialRoute from server (with fallback matching already applied)
   // or resolve on client-side with fallback
-  const route = initialRoute || resolveRouteWithFallback(pathname);
+  const route = initialRoute ?? resolveRouteWithFallback(pathname);
 
   // On client-side navigation, re-apply initialDataFeed for the new page
   useEffect(() => {
@@ -223,7 +223,7 @@ export function AppEngine({
   if (!currentPage) {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
-        <p className="text-500">Page not found: {pathname}</p>
+        <p className="text-500">Page not found: {route || pathname}</p>
       </div>
     );
   }

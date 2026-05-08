@@ -24,7 +24,7 @@ export default async function Page({
   // Resolve the route from params with fallback matching
   const resolvedParams = await params;
   const slug = resolvedParams.slug || [];
-  let route = slug.length > 0 ? `/${slug.join("/")}` : "/";
+  let route: string | null = null;
   let pathParams: string[] = [];
 
   // Fallback matching: try to find page by route, starting from full path
@@ -40,6 +40,8 @@ export default async function Page({
     }
   }
 
+  // If no page found, route stays null - AppEngine will show 404
+
   // Build element index for current page only
   const clonedPageConfig = structuredClone(pageConfig ?? {});
   const elementIndex: PageIndex = clonedPageConfig
@@ -50,7 +52,7 @@ export default async function Page({
   const resolvedSearchParams = await searchParams;
   const location = await getServerLocation(
     resolvedSearchParams,
-    route,
+    route ?? undefined,
     pathParams,
   );
 
@@ -99,7 +101,7 @@ export default async function Page({
       dataFeedErrors={dataFeedErrors}
       initialDataFeed={successResults}
       initialPageId={initialPageId}
-      route={route}
+      route={route ?? undefined}
     />
   );
 }
