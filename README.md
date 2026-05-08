@@ -903,3 +903,31 @@ npm run build     # Production-билд
 12. [log](docs/commands-reference.md#12-log) — логирование
 13. [URL команды](docs/commands-reference.md#url-команды) — setUrlParams, mergeUrlParams, setUrlParam, removeUrlParam
 14. [refresh](docs/commands-reference.md#17-refresh) — обновление страницы
+
+## Data Adapter
+
+Описание адаптеров трансформации API-ответов:
+→ [docs/data-adapter-reference.md](docs/data-adapter-reference.md)
+
+Разделы: Replace-адаптер, JS-адаптер, макрос `$value$`, примеры.
+
+## Data Feed
+
+Описание сервиса выполнения data feed запросов:
+→ [docs/data-feed-reference.md](docs/data-feed-reference.md)
+
+Разделы: DataFeedConfig, серверный/клиентский data feed, обработка ошибок.
+
+## API Router
+
+Описание серверного прокси-роутера:
+→ [docs/api-router-reference.md](docs/api-router-reference.md)
+
+Разделы: конфигурация apiRoutes, разрешение макросов, безопасность, примеры.
+
+## Архитектура
+
+Описание ключевых модулей архитектуры:
+→ [docs/architecture-reference.md](docs/architecture-reference.md)
+
+Разделы: StateManager, ElementIndex, PathResolver, Component Rendering, Event System, взаимодействие модулей.
