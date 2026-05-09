@@ -7,14 +7,33 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - **bfcache disabled** — page now fully reloads when navigating back via browser buttons
-  - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation (commit `a7cdf84`, `7940e51`, `d16f99e`)
-  - Triggers `window.location.reload()` when `navType === 'back_forward'`
+  - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation (commits `d16f99e`, `7940e51`, `a7cdf84`)
+  - Uses hidden `<img onload>` instead of `<script>` to avoid React script tag warning (commit `f0cdc81`)
   - Prevents broken styles and preloader hang issues when returning to the page
-- **Hidden img onload** — alternative bfcache detection using hidden img element (commit `f0cdc81`)
+- **CommandExecutor refactored** — `eventData` replaced with `extraSources:` in all `execute*` methods (commit `324cb2c`)
+  - `extraSources` built once in `executeCommand` via `createExtraSources(eventData)`, passed to all command methods
+  - Eliminates duplicate calls to `createExtraSources()` inside each command
+- **MacroEngine intercept fix** — removed generic `extraSources[prefix]` check that was intercepting standard macro prefixes (commit `2eb9990`)
+  - Added dedicated `case "event"` for `{$event.*}` macro resolution
+  - `resolveString` now merges `this.sources` with `extraSources` into a single `MacroSources` object
+  - Ensures `{$location.query.*}` and `{$location.slug.*}` resolve correctly through standard switch-case
+- **Location missing in command macros** — added `getClientLocation(route)` call in `CommandExecutor.createExtraSources()` (commit `7ea1ab8`)
+  - Client `location` now passed to `MacroEngine` on every command execution
+  - Requires `pageRoute` propagation through `ComponentContext`, `ComponentProvider`, and `useComponentBindings`
+- **`getClientLocation(route?)`** — `pathParams` now computed as segments AFTER the route prefix (commit `7ea1ab8`)
 
 ### Added
 
-- 9 comprehensive reference docs in `docs/` (commits `0e8bb11`–`cbbea6d`):
+- **PathParam commands** — 4 new commands for path segment manipulation (commit `e294a51`):
+  - `setPathParams` — replaces all path params: `{ values: ["val1", "val2"] }`
+  - `mergePathParams` — updates path params by index: `{ values: { "2": "val2", "4": null } }`
+  - `setPathParam` — sets/removes single param by index: `{ index: 1, value: "val2" }`
+  - `removePathParam` — removes param by index: `{ index: 0 }`
+  - Uses `pageRoute` to compute path segments after route, formats URL as `/{route}/{pathParams}?{search}`
+- **`{$location.param.N}` macro** — new macro for accessing pathParams by index (commit `69fcc51`)
+  - PathParams are segments after the page route (e.g., `/users/312/settings` with route `/users` → `param.0="312"`, `param.1="settings"`)
+  - Updated `docs/macros-reference.md` with param documentation and corrected slug description (commit `69fcc51`)
+- **9 comprehensive reference docs** in `docs/` (commits `0e8bb11`–`cbbea6d`):
   - `config-reference.md`, `macros-reference.md`, `linkage-reference.md`
   - `data-format-reference.md`, `commands-reference.md`
   - `api-router-reference.md`, `architecture-reference.md`

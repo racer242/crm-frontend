@@ -586,9 +586,121 @@ HTTP-запрос к API с записью результата в state.
 
 ---
 
+## PathParam команды
+
+Команды для манипуляции сегментами пути (pathParams) — частью URL после маршрута страницы.
+
+Требуют `pageRoute` в `CommandExecutionContext` для корректного вычисления сегментов.
+
+### 17. setPathParams
+
+Заменяет **все** path-параметры.
+
+**Params:**
+
+| Параметр | Тип     | Описание              | Обязательно |
+| -------- | ------- | --------------------- | :---------: |
+| `values` | `any[]` | Массив новых значений |     ✅      |
+
+**Примеры:**
+
+```json
+// URL: /users/old/edit → /users/new/detail
+{
+  "type": "setPathParams",
+  "params": {
+    "values": ["new", "detail"]
+  }
+}
+
+// С макросами
+{
+  "type": "setPathParams",
+  "params": {
+    "values": ["{$state.id}", "{$state.tab}"]
+  }
+}
+```
+
+---
+
+### 18. mergePathParams
+
+Обновляет/удаляет отдельные path-параметры по индексу.
+
+**Params:**
+
+| Параметр | Тип      | Описание                          | Обязательно |
+| -------- | -------- | --------------------------------- | :---------: |
+| `values` | `object` | `{ "index": value }` null удаляет |     ✅      |
+
+**Примеры:**
+
+```json
+// URL: /users/a/b/c → /users/x/y
+{
+  "type": "mergePathParams",
+  "params": {
+    "values": { "0": "x", "1": "y", "2": null }
+  }
+}
+```
+
+---
+
+### 19. setPathParam
+
+Изменяет/удаляет один path-параметр по индексу.
+
+**Params:**
+
+| Параметр | Тип      | Описание                  | Обязательно |
+| -------- | -------- | ------------------------- | :---------: |
+| `index`  | `number` | Индекс параметра          |     ✅      |
+| `value`  | `any`    | Значение (null — удаляет) |     ✅      |
+
+**Примеры:**
+
+```json
+// Установить
+{
+  "type": "setPathParam",
+  "params": { "index": 1, "value": "detail" }
+}
+
+// Удалить
+{
+  "type": "setPathParam",
+  "params": { "index": 0, "value": null }
+}
+```
+
+---
+
+### 20. removePathParam
+
+Удаляет path-параметр по индексу.
+
+**Params:**
+
+| Параметр | Тип      | Описание         | Обязательно |
+| -------- | -------- | ---------------- | :---------: |
+| `index`  | `number` | Индекс параметра |     ✅      |
+
+**Примеры:**
+
+```json
+{
+  "type": "removePathParam",
+  "params": { "index": 0 }
+}
+```
+
+---
+
 ## URL команды
 
-### 13. setUrlParams
+### 21. setUrlParams
 
 Заменяет **все** URL параметры.
 
@@ -628,7 +740,7 @@ HTTP-запрос к API с записью результата в state.
 
 ---
 
-### 14. mergeUrlParams
+### 22. mergeUrlParams
 
 Обновляет/добавляет URL параметры (**сохраняет существующие**).
 
@@ -663,7 +775,7 @@ HTTP-запрос к API с записью результата в state.
 
 ---
 
-### 15. setUrlParam
+### 23. setUrlParam
 
 Изменяет **один** URL параметр.
 
@@ -689,7 +801,7 @@ HTTP-запрос к API с записью результата в state.
 
 ---
 
-### 16. removeUrlParam
+### 24. removeUrlParam
 
 Удаляет URL параметр.
 
@@ -714,7 +826,7 @@ HTTP-запрос к API с записью результата в state.
 
 ## Команды обновления
 
-### 17. refresh
+### 25. refresh
 
 Обновление страницы без перезагрузки.
 
@@ -745,25 +857,29 @@ HTTP-запрос к API с записью результата в state.
 
 ## Сводная таблица команд
 
-| Команда          | Описание                   | Сервер | Клиент |
-| ---------------- | -------------------------- | :----: | :----: |
-| `setProperty`    | Запись значения            |   ✅   |   ✅   |
-| `setState`       | Полная замена state        |   ✅   |   ✅   |
-| `mergeState`     | Слияние с state            |   ✅   |   ✅   |
-| `clearState`     | Очистка state              |   ✅   |   ✅   |
-| `toggleProperty` | Инвертирование boolean     |   ✅   |   ✅   |
-| `sendRequest`    | HTTP-запрос                |   ❌   |   ✅   |
-| `showToast`      | Toast-уведомление          |   ❌   |   ✅   |
-| `navigate`       | Переход по URL             |   ❌   |   ✅   |
-| `confirm`        | Диалог подтверждения       |   ❌   |   ✅   |
-| `delay`          | Пауза                      |   ✅   |   ✅   |
-| `sequence`       | Последовательность         |   ✅   |   ✅   |
-| `log`            | Логирование                |   ✅   |   ✅   |
-| `setUrlParams`   | Замена всех URL params     |   ❌   |   ✅   |
-| `mergeUrlParams` | Добавление URL params      |   ❌   |   ✅   |
-| `setUrlParam`    | Изменение одного URL param |   ❌   |   ✅   |
-| `removeUrlParam` | Удаление URL param         |   ❌   |   ✅   |
-| `refresh`        | Обновление страницы        |   ❌   |   ✅   |
+| Команда           | Описание                    | Сервер | Клиент |
+| ----------------- | --------------------------- | :----: | :----: |
+| `setProperty`     | Запись значения             |   ✅   |   ✅   |
+| `setState`        | Полная замена state         |   ✅   |   ✅   |
+| `mergeState`      | Слияние с state             |   ✅   |   ✅   |
+| `clearState`      | Очистка state               |   ✅   |   ✅   |
+| `toggleProperty`  | Инвертирование boolean      |   ✅   |   ✅   |
+| `sendRequest`     | HTTP-запрос                 |   ❌   |   ✅   |
+| `showToast`       | Toast-уведомление           |   ❌   |   ✅   |
+| `navigate`        | Переход по URL              |   ❌   |   ✅   |
+| `confirm`         | Диалог подтверждения        |   ❌   |   ✅   |
+| `delay`           | Пауза                       |   ✅   |   ✅   |
+| `sequence`        | Последовательность          |   ✅   |   ✅   |
+| `log`             | Логирование                 |   ✅   |   ✅   |
+| `setPathParams`   | Замена всех path params     |   ❌   |   ✅   |
+| `mergePathParams` | Обновление path params      |   ❌   |   ✅   |
+| `setPathParam`    | Изменение одного path param |   ❌   |   ✅   |
+| `removePathParam` | Удаление path param         |   ❌   |   ✅   |
+| `setUrlParams`    | Замена всех URL params      |   ❌   |   ✅   |
+| `mergeUrlParams`  | Добавление URL params       |   ❌   |   ✅   |
+| `setUrlParam`     | Изменение одного URL param  |   ❌   |   ✅   |
+| `removeUrlParam`  | Удаление URL param          |   ❌   |   ✅   |
+| `refresh`         | Обновление страницы         |   ❌   |   ✅   |
 
 ---
 
@@ -774,6 +890,7 @@ HTTP-запрос к API с записью результата в state.
 ```typescript
 interface CommandExecutionContext {
   pageId: string; // ID текущей страницы
+  pageRoute?: string; // Маршрут страницы (для pathParams)
   triggerComponentId: string; // ID компонента-триггера
   appConfig: App; // Конфигурация приложения
   stateManager: StateManager; // Менеджер состояний
