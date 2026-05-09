@@ -1,11 +1,23 @@
+"use client";
+
+import React from "react";
+import { Button } from "primereact/button";
+import { useRouter } from "next/navigation";
+
 export default function NotFound() {
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen surface-900">
-      <h1 className="text-9xl font-bold text-primary">404</h1>
-      <p className="text-2xl text-500 mt-4">Page Not Found</p>
-      <a href="/" className="mt-6 text-primary hover:underline">
-        Go back to home
-      </a>
+    <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
+      <div className="flex flex-column align-items-center gap-4">
+        <h1 className="text-9xl font-bold text-primary">404</h1>
+        <p className="text-2xl text-600">Page Not Found</p>
+        <Button
+          label="Go back to home"
+          icon="pi pi-home"
+          onClick={() => router.push("/")}
+        />
+      </div>
     </div>
   );
 }

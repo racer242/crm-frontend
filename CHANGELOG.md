@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **404 page restyled** — converted `not-found.tsx` to Client Component to fix RSC `performance.measure()` negative timestamp error; restyled with PrimeReact `Button` and PrimeFlex centering to match app design (commit `[to-be-added]`)
 - **bfcache disabled** — page now fully reloads when navigating back via browser buttons
   - Uses `performance.getEntriesByType('navigation')` to detect back/forward navigation (commits `d16f99e`, `7940e51`, `a7cdf84`)
   - Uses hidden `<img onload>` instead of `<script>` to avoid React script tag warning (commit `f0cdc81`)
