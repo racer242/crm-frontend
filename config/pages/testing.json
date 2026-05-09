@@ -312,6 +312,28 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "btt2",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Secondary",
+                "severity": "secondary"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "setPathParams",
+                      "params": {
+                        "values": ["1", "2", "3", "4"]
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

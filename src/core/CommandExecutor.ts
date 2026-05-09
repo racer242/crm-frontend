@@ -19,7 +19,7 @@
  * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
  * - removeUrlParam: удаляет URL параметр { name: "key" }
  * - setPathParams: заменяет все path-параметры { values: ["val1", "val2"] }
- * - mergePathParams: обновляет отдельные path-параметры { values: ["val1", null, "val3"] }
+ * - mergePathParams: обновляет отдельные path-параметры { values: { "2": "val2", "4": "val4", "5": null } }
  * - setPathParam: изменяет один path-параметр { index: 1, value: "val2" }
  * - removePathParam: удаляет path-параметр { index: 0 }
  */
@@ -693,7 +693,7 @@ export class CommandExecutor {
   // ========== MERGE PATH PARAMS ==========
   /**
    * mergePathParams: обновляет отдельные path-параметры по индексу
-   * params: { values: ["val1", null, "val3"] }
+   * params: { values: { "2": "val2", "4": "val4", "5": null } }
    * null/undefined — удаляет элемент по индексу
    */
   async executeMergePathParams(
@@ -702,31 +702,36 @@ export class CommandExecutor {
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
-    const rawValues = params.values || [];
+    const rawValues = params.values || {};
     let resolvedValues = this.macroEngine.apply(
       rawValues,
       0,
       extraSources,
-    ) as any[];
+    ) as Record<string, any>;
 
     let pathParams = this.getCurrentPathParams();
 
-    for (let i = 0; i < resolvedValues.length; i++) {
-      const val = resolvedValues[i];
+    // Сортируем индексы по возрастанию для корректного удаления
+    const indices = Object.keys(resolvedValues)
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    for (const idx of indices) {
+      const val = resolvedValues[String(idx)];
       if (val === null || val === undefined) {
         // Удалить элемент по индексу
-        if (i < pathParams.length) {
-          pathParams.splice(i, 1);
-          // После удаления все последующие индексы сдвигаются,
-          // поэтому корректируем i, чтобы следующий элемент попал на правильную позицию
-          i--;
-          resolvedValues.splice(i + 1, 0, undefined);
+        if (idx < pathParams.length) {
+          pathParams.splice(idx, 1);
         }
       } else {
         // Установить значение по индексу
-        if (i < pathParams.length) {
-          pathParams[i] = String(val);
+        if (idx < pathParams.length) {
+          pathParams[idx] = String(val);
         } else {
+          // Добавить новые элементы, если индекс выходит за границы
+          while (pathParams.length < idx) {
+            pathParams.push("");
+          }
           pathParams.push(String(val));
         }
       }
