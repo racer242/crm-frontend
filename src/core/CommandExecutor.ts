@@ -204,7 +204,7 @@ export class CommandExecutor {
    */
   async executeSetProperty(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const { source, target, value: directValue } = params;
     if (!target) {
@@ -212,6 +212,7 @@ export class CommandExecutor {
       return;
     }
 
+    const eventData = extraSources?.event;
     let rawValue =
       directValue !== undefined
         ? directValue
@@ -219,11 +220,7 @@ export class CommandExecutor {
           ? this.getSourceValue(source, eventData)
           : undefined;
 
-    let value = this.macroEngine.apply(
-      rawValue,
-      0,
-      this.createExtraSources(eventData),
-    );
+    let value = this.macroEngine.apply(rawValue, 0, extraSources);
     value = this.applyFormatToValue(value, "value", params);
 
     const { elementPath, fieldPath } = this.parseTargetPath(target);
@@ -243,7 +240,7 @@ export class CommandExecutor {
    */
   async executeSetState(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const { source, target } = params;
     if (!target) {
@@ -251,14 +248,11 @@ export class CommandExecutor {
       return;
     }
 
+    const eventData = extraSources?.event;
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    let value = this.macroEngine.apply(
-      rawValue,
-      0,
-      this.createExtraSources(eventData),
-    );
+    let value = this.macroEngine.apply(rawValue, 0, extraSources);
     value = this.applyFormatToValue(value, "data", params);
 
     const { elementPath } = this.parseTargetPath(target);
@@ -274,7 +268,7 @@ export class CommandExecutor {
    */
   async executeMergeState(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const { source, target } = params;
     if (!target) {
@@ -282,14 +276,11 @@ export class CommandExecutor {
       return;
     }
 
+    const eventData = extraSources?.event;
     const rawValue = source
       ? this.getSourceValue(source, eventData)
       : undefined;
-    let value = this.macroEngine.apply(
-      rawValue,
-      0,
-      this.createExtraSources(eventData),
-    );
+    let value = this.macroEngine.apply(rawValue, 0, extraSources);
     value = this.applyFormatToValue(value, "data", params);
 
     if (typeof value !== "object" || value === null) {
@@ -309,7 +300,7 @@ export class CommandExecutor {
    */
   async executeClearState(
     params: Record<string, any>,
-    _eventData: any,
+    _extraSources: any,
   ): Promise<void> {
     const { target } = params;
     if (!target) {
@@ -329,7 +320,7 @@ export class CommandExecutor {
    */
   async executeToggleProperty(
     params: Record<string, any>,
-    _eventData: any,
+    _extraSources: any,
   ): Promise<void> {
     const { target } = params;
     if (!target) {
@@ -364,7 +355,7 @@ export class CommandExecutor {
    */
   async executeSendRequest(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const { url, method, data, target } = params;
     if (!url || !target) {
@@ -372,17 +363,9 @@ export class CommandExecutor {
       return;
     }
 
-    const resolvedUrl = this.macroEngine.apply(
-      url,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
+    const resolvedUrl = this.macroEngine.apply(url, 0, extraSources) as string;
     let resolvedData = data
-      ? (this.macroEngine.apply(
-          data,
-          0,
-          this.createExtraSources(eventData),
-        ) as Record<string, any>)
+      ? (this.macroEngine.apply(data, 0, extraSources) as Record<string, any>)
       : undefined;
     resolvedData = this.applyFormatToValue(resolvedData, "data", params);
 
@@ -429,14 +412,10 @@ export class CommandExecutor {
    */
   async executeShowToast(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const rawMessage = params.message || "";
-    let message = this.macroEngine.apply(
-      rawMessage,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
+    let message = this.macroEngine.apply(rawMessage, 0, extraSources) as string;
     message = this.applyFormatToValue(message, "message", params);
     const severity = params.severity || "info";
 
@@ -454,14 +433,10 @@ export class CommandExecutor {
    */
   async executeNavigate(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const rawUrl = params.url || "";
-    let url = this.macroEngine.apply(
-      rawUrl,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
+    let url = this.macroEngine.apply(rawUrl, 0, extraSources) as string;
     url = this.applyFormatToValue(url, "url", params);
 
     if (this.context.navigate) {
@@ -482,14 +457,10 @@ export class CommandExecutor {
    */
   async executeConfirm(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const rawMessage = params.message || "Подтвердите действие";
-    let message = this.macroEngine.apply(
-      rawMessage,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
+    let message = this.macroEngine.apply(rawMessage, 0, extraSources) as string;
     message = this.applyFormatToValue(message, "message", params);
     const onConfirm: Command[] = params.onConfirm || [];
     const onCancel: Command[] = params.onCancel || [];
@@ -503,7 +474,7 @@ export class CommandExecutor {
     const commands = confirmed ? onConfirm : onCancel;
 
     for (const cmd of commands) {
-      await this.executeCommand(cmd.type, cmd.params, eventData);
+      await this.executeCommand(cmd.type, cmd.params, extraSources);
     }
   }
 
@@ -514,7 +485,7 @@ export class CommandExecutor {
    */
   async executeDelay(
     params: Record<string, any>,
-    _eventData: any,
+    _extraSources: any,
   ): Promise<void> {
     const duration = params.duration || 1000;
 
@@ -528,12 +499,12 @@ export class CommandExecutor {
    */
   async executeSequence(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     const commands: Command[] = params.commands || [];
 
     for (const cmd of commands) {
-      await this.executeCommand(cmd.type, cmd.params, eventData);
+      await this.executeCommand(cmd.type, cmd.params, extraSources);
     }
   }
 
@@ -544,7 +515,7 @@ export class CommandExecutor {
    */
   async executeSetUrlParams(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
@@ -552,7 +523,7 @@ export class CommandExecutor {
     let resolvedValues = this.macroEngine.apply(
       rawValues,
       0,
-      this.createExtraSources(eventData),
+      extraSources,
     ) as Record<string, any>;
     resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
 
@@ -578,7 +549,7 @@ export class CommandExecutor {
    */
   async executeMergeUrlParams(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
@@ -586,7 +557,7 @@ export class CommandExecutor {
     let resolvedValues = this.macroEngine.apply(
       rawValues,
       0,
-      this.createExtraSources(eventData),
+      extraSources,
     ) as Record<string, any>;
     resolvedValues = this.applyFormatToValue(resolvedValues, "values", params);
 
@@ -615,23 +586,15 @@ export class CommandExecutor {
    */
   async executeSetUrlParam(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
     const rawName = params.name || "";
     let rawValue = params.value;
 
-    const name = this.macroEngine.apply(
-      rawName,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
-    let value = this.macroEngine.apply(
-      rawValue,
-      0,
-      this.createExtraSources(eventData),
-    );
+    const name = this.macroEngine.apply(rawName, 0, extraSources) as string;
+    let value = this.macroEngine.apply(rawValue, 0, extraSources);
     value = this.applyFormatToValue(value, "value", params);
 
     if (!name) return;
@@ -658,16 +621,12 @@ export class CommandExecutor {
    */
   async executeRemoveUrlParam(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
     const rawName = params.name || "";
-    const name = this.macroEngine.apply(
-      rawName,
-      0,
-      this.createExtraSources(eventData),
-    ) as string;
+    const name = this.macroEngine.apply(rawName, 0, extraSources) as string;
 
     if (!name) return;
 
@@ -712,7 +671,7 @@ export class CommandExecutor {
    */
   async executeSetPathParams(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
@@ -720,7 +679,7 @@ export class CommandExecutor {
     let resolvedValues = this.macroEngine.apply(
       rawValues,
       0,
-      this.createExtraSources(eventData),
+      extraSources,
     ) as any[];
 
     const pathParams = resolvedValues
@@ -739,7 +698,7 @@ export class CommandExecutor {
    */
   async executeMergePathParams(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
@@ -747,7 +706,7 @@ export class CommandExecutor {
     let resolvedValues = this.macroEngine.apply(
       rawValues,
       0,
-      this.createExtraSources(eventData),
+      extraSources,
     ) as any[];
 
     let pathParams = this.getCurrentPathParams();
@@ -785,23 +744,15 @@ export class CommandExecutor {
    */
   async executeSetPathParam(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
     const rawIndex = params.index;
     let rawValue = params.value;
 
-    const index = this.macroEngine.apply(
-      rawIndex,
-      0,
-      this.createExtraSources(eventData),
-    ) as number;
-    let value = this.macroEngine.apply(
-      rawValue,
-      0,
-      this.createExtraSources(eventData),
-    );
+    const index = this.macroEngine.apply(rawIndex, 0, extraSources) as number;
+    let value = this.macroEngine.apply(rawValue, 0, extraSources);
     value = this.applyFormatToValue(value, "value", params);
 
     if (index === undefined || index === null || isNaN(Number(index))) return;
@@ -838,16 +789,12 @@ export class CommandExecutor {
    */
   async executeRemovePathParam(
     params: Record<string, any>,
-    eventData: any,
+    extraSources: any,
   ): Promise<void> {
     if (typeof window === "undefined") return;
 
     const rawIndex = params.index;
-    const index = this.macroEngine.apply(
-      rawIndex,
-      0,
-      this.createExtraSources(eventData),
-    ) as number;
+    const index = this.macroEngine.apply(rawIndex, 0, extraSources) as number;
 
     if (index === undefined || index === null || isNaN(Number(index))) return;
 
@@ -866,13 +813,9 @@ export class CommandExecutor {
   /**
    * log: логирование в консоль
    */
-  executeLog(params: Record<string, any>, eventData: any): void {
+  executeLog(params: Record<string, any>, extraSources: any): void {
     const { level = "info", message } = params;
-    const resolvedMessage = this.macroEngine.apply(
-      message,
-      0,
-      this.createExtraSources(eventData),
-    );
+    const resolvedMessage = this.macroEngine.apply(message, 0, extraSources);
     const levels: Record<string, (...args: any[]) => void> = {
       info: console.info,
       warn: console.warn,
@@ -893,6 +836,7 @@ export class CommandExecutor {
     } else {
       logFn(`[${level.toUpperCase()}] ${resolvedMessage}`);
     }
+    const eventData = extraSources?.event;
     if (params.showExtra && eventData != null) {
       logFn(eventData);
     }
@@ -928,7 +872,7 @@ export class CommandExecutor {
    */
   async executeRefresh(
     params: Record<string, any>,
-    _eventData: any,
+    _extraSources: any,
   ): Promise<void> {
     const mode = params?.mode || "refresh";
 
@@ -949,89 +893,91 @@ export class CommandExecutor {
     params: Record<string, any>,
     eventData: any,
   ): Promise<void> {
+    const extraSources = this.createExtraSources(eventData);
+
     switch (type) {
       case "setProperty":
-        await this.executeSetProperty(params, eventData);
+        await this.executeSetProperty(params, extraSources);
         break;
 
       case "setState":
-        await this.executeSetState(params, eventData);
+        await this.executeSetState(params, extraSources);
         break;
 
       case "mergeState":
-        await this.executeMergeState(params, eventData);
+        await this.executeMergeState(params, extraSources);
         break;
 
       case "clearState":
-        await this.executeClearState(params, eventData);
+        await this.executeClearState(params, extraSources);
         break;
 
       case "toggleProperty":
-        await this.executeToggleProperty(params, eventData);
+        await this.executeToggleProperty(params, extraSources);
         break;
 
       case "sendRequest":
-        await this.executeSendRequest(params, eventData);
+        await this.executeSendRequest(params, extraSources);
         break;
 
       case "showToast":
-        await this.executeShowToast(params, eventData);
+        await this.executeShowToast(params, extraSources);
         break;
 
       case "navigate":
-        await this.executeNavigate(params, eventData);
+        await this.executeNavigate(params, extraSources);
         break;
 
       case "confirm":
-        await this.executeConfirm(params, eventData);
+        await this.executeConfirm(params, extraSources);
         break;
 
       case "delay":
-        await this.executeDelay(params, eventData);
+        await this.executeDelay(params, extraSources);
         break;
 
       case "sequence":
-        await this.executeSequence(params, eventData);
+        await this.executeSequence(params, extraSources);
         break;
 
       case "log":
-        this.executeLog(params, eventData);
+        this.executeLog(params, extraSources);
         break;
 
       case "setUrlParams":
-        await this.executeSetUrlParams(params, eventData);
+        await this.executeSetUrlParams(params, extraSources);
         break;
 
       case "mergeUrlParams":
-        await this.executeMergeUrlParams(params, eventData);
+        await this.executeMergeUrlParams(params, extraSources);
         break;
 
       case "setUrlParam":
-        await this.executeSetUrlParam(params, eventData);
+        await this.executeSetUrlParam(params, extraSources);
         break;
 
       case "removeUrlParam":
-        await this.executeRemoveUrlParam(params, eventData);
+        await this.executeRemoveUrlParam(params, extraSources);
         break;
 
       case "setPathParams":
-        await this.executeSetPathParams(params, eventData);
+        await this.executeSetPathParams(params, extraSources);
         break;
 
       case "mergePathParams":
-        await this.executeMergePathParams(params, eventData);
+        await this.executeMergePathParams(params, extraSources);
         break;
 
       case "setPathParam":
-        await this.executeSetPathParam(params, eventData);
+        await this.executeSetPathParam(params, extraSources);
         break;
 
       case "removePathParam":
-        await this.executeRemovePathParam(params, eventData);
+        await this.executeRemovePathParam(params, extraSources);
         break;
 
       case "refresh":
-        await this.executeRefresh(params, eventData);
+        await this.executeRefresh(params, extraSources);
         break;
 
       default:
