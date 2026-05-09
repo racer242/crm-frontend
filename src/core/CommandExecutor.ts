@@ -18,6 +18,10 @@
  * - mergeUrlParams: обновляет/добавляет URL параметры { values: { key: value } }
  * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
  * - removeUrlParam: удаляет URL параметр { name: "key" }
+ * - setPathParams: заменяет все path-параметры { values: ["val1", "val2"] }
+ * - mergePathParams: обновляет отдельные path-параметры { values: ["val1", null, "val3"] }
+ * - setPathParam: изменяет один path-параметр { index: 1, value: "val2" }
+ * - removePathParam: удаляет path-параметр { index: 0 }
  */
 
 import { StateManager } from "./StateManager";
@@ -678,6 +682,186 @@ export class CommandExecutor {
     window.history.pushState({}, "", newUrl);
   }
 
+  // ========== HELPERS FOR PATH PARAMS ==========
+  /**
+   * Получить текущий pathname с применёнными pathParams
+   * Формирует URL: /{route}/{pathParams.join("/")}?{search}
+   */
+  private buildPathParamsUrl(pathParams: string[]): string {
+    const route = this.context.pageRoute || "";
+    const newPathname =
+      pathParams.length > 0 ? `${route}/${pathParams.join("/")}` : route;
+    const search = window.location.search;
+    return `${newPathname}${search}`;
+  }
+
+  /**
+   * Получить текущие pathParams из URL на основе pageRoute
+   */
+  private getCurrentPathParams(): string[] {
+    if (!this.context.pageRoute || typeof window === "undefined") return [];
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const routeSegments = this.context.pageRoute.split("/").filter(Boolean);
+    return pathParts.slice(routeSegments.length);
+  }
+
+  // ========== SET PATH PARAMS ==========
+  /**
+   * setPathParams: заменяет все path-параметры
+   * params: { values: ["val1", "val2"] }
+   */
+  async executeSetPathParams(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawValues = params.values || [];
+    let resolvedValues = this.macroEngine.apply(
+      rawValues,
+      0,
+      this.createExtraSources(eventData),
+    ) as any[];
+
+    const pathParams = resolvedValues
+      .filter((v: any) => v !== null && v !== undefined)
+      .map((v: any) => String(v));
+
+    const newUrl = this.buildPathParamsUrl(pathParams);
+    window.history.pushState({}, "", newUrl);
+  }
+
+  // ========== MERGE PATH PARAMS ==========
+  /**
+   * mergePathParams: обновляет отдельные path-параметры по индексу
+   * params: { values: ["val1", null, "val3"] }
+   * null/undefined — удаляет элемент по индексу
+   */
+  async executeMergePathParams(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawValues = params.values || [];
+    let resolvedValues = this.macroEngine.apply(
+      rawValues,
+      0,
+      this.createExtraSources(eventData),
+    ) as any[];
+
+    let pathParams = this.getCurrentPathParams();
+
+    for (let i = 0; i < resolvedValues.length; i++) {
+      const val = resolvedValues[i];
+      if (val === null || val === undefined) {
+        // Удалить элемент по индексу
+        if (i < pathParams.length) {
+          pathParams.splice(i, 1);
+          // После удаления все последующие индексы сдвигаются,
+          // поэтому корректируем i, чтобы следующий элемент попал на правильную позицию
+          i--;
+          resolvedValues.splice(i + 1, 0, undefined);
+        }
+      } else {
+        // Установить значение по индексу
+        if (i < pathParams.length) {
+          pathParams[i] = String(val);
+        } else {
+          pathParams.push(String(val));
+        }
+      }
+    }
+
+    const newUrl = this.buildPathParamsUrl(pathParams);
+    window.history.pushState({}, "", newUrl);
+  }
+
+  // ========== SET PATH PARAM ==========
+  /**
+   * setPathParam: изменяет один path-параметр по индексу
+   * params: { index: 1, value: "val2" }
+   * Если value === null/undefined — удаляет элемент
+   */
+  async executeSetPathParam(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawIndex = params.index;
+    let rawValue = params.value;
+
+    const index = this.macroEngine.apply(
+      rawIndex,
+      0,
+      this.createExtraSources(eventData),
+    ) as number;
+    let value = this.macroEngine.apply(
+      rawValue,
+      0,
+      this.createExtraSources(eventData),
+    );
+    value = this.applyFormatToValue(value, "value", params);
+
+    if (index === undefined || index === null || isNaN(Number(index))) return;
+
+    const idx = Number(index);
+    let pathParams = this.getCurrentPathParams();
+
+    if (value === null || value === undefined) {
+      // Удалить
+      if (idx < pathParams.length) {
+        pathParams.splice(idx, 1);
+      }
+    } else {
+      // Установить
+      if (idx < pathParams.length) {
+        pathParams[idx] = String(value);
+      } else {
+        // Добавить новые элементы, если индекс выходит за границы
+        while (pathParams.length < idx) {
+          pathParams.push("");
+        }
+        pathParams.push(String(value));
+      }
+    }
+
+    const newUrl = this.buildPathParamsUrl(pathParams);
+    window.history.pushState({}, "", newUrl);
+  }
+
+  // ========== REMOVE PATH PARAM ==========
+  /**
+   * removePathParam: удаляет path-параметр по индексу
+   * params: { index: 0 }
+   */
+  async executeRemovePathParam(
+    params: Record<string, any>,
+    eventData: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawIndex = params.index;
+    const index = this.macroEngine.apply(
+      rawIndex,
+      0,
+      this.createExtraSources(eventData),
+    ) as number;
+
+    if (index === undefined || index === null || isNaN(Number(index))) return;
+
+    const idx = Number(index);
+    let pathParams = this.getCurrentPathParams();
+
+    if (idx < pathParams.length) {
+      pathParams.splice(idx, 1);
+    }
+
+    const newUrl = this.buildPathParamsUrl(pathParams);
+    window.history.pushState({}, "", newUrl);
+  }
+
   // ========== LOG ==========
   /**
    * log: логирование в консоль
@@ -828,6 +1012,22 @@ export class CommandExecutor {
 
       case "removeUrlParam":
         await this.executeRemoveUrlParam(params, eventData);
+        break;
+
+      case "setPathParams":
+        await this.executeSetPathParams(params, eventData);
+        break;
+
+      case "mergePathParams":
+        await this.executeMergePathParams(params, eventData);
+        break;
+
+      case "setPathParam":
+        await this.executeSetPathParam(params, eventData);
+        break;
+
+      case "removePathParam":
+        await this.executeRemovePathParam(params, eventData);
         break;
 
       case "refresh":
