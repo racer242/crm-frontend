@@ -193,12 +193,21 @@ export function renderFiltersPanel({
           </div>
         );
 
-      case "date":
+      case "date": {
+        // JSON.parse конвертирует Date в ISO-строку; восстанавливаем Date для Calendar
+        const dateValue =
+          value instanceof Date
+            ? value
+            : typeof value === "string" || typeof value === "number"
+              ? new Date(value)
+              : null;
         return (
           <div key={id} className="mb-3">
             <label className="block mb-2 text-200 font-medium">{name}</label>
             <Calendar
-              value={value || null}
+              value={
+                dateValue && !isNaN(dateValue.getTime()) ? dateValue : null
+              }
               onChange={(e) => updateFilterValue(id, e.value ?? null)}
               dateFormat="dd.mm.yy"
               showIcon
@@ -206,17 +215,29 @@ export function renderFiltersPanel({
             />
           </div>
         );
+      }
 
       case "period": {
         const periodValue = Array.isArray(value) ? value : [null, null];
+        // Восстанавливаем Date из строк для каждого Calendar
+        const toDate = (v: any): Date | null => {
+          if (v instanceof Date) return v;
+          if (typeof v === "string" || typeof v === "number") {
+            const d = new Date(v);
+            return isNaN(d.getTime()) ? null : d;
+          }
+          return null;
+        };
+        const startDate = toDate(periodValue[0]);
+        const endDate = toDate(periodValue[1]);
         return (
           <div key={id} className="mb-3">
             <label className="block mb-2 text-200 font-medium">{name}</label>
             <div className="flex gap-2">
               <Calendar
-                value={periodValue[0] || null}
+                value={startDate}
                 onChange={(e) =>
-                  updateFilterValue(id, [e.value ?? null, periodValue[1]])
+                  updateFilterValue(id, [e.value ?? null, endDate])
                 }
                 dateFormat="dd.mm.yy"
                 showIcon
@@ -224,9 +245,9 @@ export function renderFiltersPanel({
                 className="w-full"
               />
               <Calendar
-                value={periodValue[1] || null}
+                value={endDate}
                 onChange={(e) =>
-                  updateFilterValue(id, [periodValue[0], e.value ?? null])
+                  updateFilterValue(id, [startDate, e.value ?? null])
                 }
                 dateFormat="dd.mm.yy"
                 showIcon
