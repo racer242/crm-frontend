@@ -28,7 +28,7 @@
         "id": "f-period",
         "name": "Период активности",
         "type": "period",
-        "value": [null, null]
+        "value": null
       },
       {
         "id": "f-active",

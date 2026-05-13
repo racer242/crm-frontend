@@ -32,6 +32,12 @@ export function renderActiveFiltersBar({
       if (f.type === "options") {
         return Array.isArray(f.value) && f.value.some(Boolean);
       }
+      if (f.type === "period" || f.type === "range") {
+        // Хотя бы одно значение не null/undefined
+        return (
+          Array.isArray(f.value) && (f.value[0] != null || f.value[1] != null)
+        );
+      }
       return f.value !== undefined && f.value !== null && f.value !== "";
     });
   }, [filters]);
@@ -68,11 +74,21 @@ export function renderActiveFiltersBar({
 
         case "period": {
           const periodValue = Array.isArray(value) ? value : [null, null];
-          const from = formatDate(periodValue[0]) || "?";
-          const to = formatDate(periodValue[1]) || "?";
+          const from = formatDate(periodValue[0]);
+          const to = formatDate(periodValue[1]);
+          let label: string;
+          if (from && to) {
+            label = `${name}: ${from} – ${to}`;
+          } else if (from) {
+            label = `${name}: от ${from}`;
+          } else if (to) {
+            label = `${name}: до ${to}`;
+          } else {
+            label = `${name}: ?`;
+          }
           result.push({
             key: id,
-            label: `${name}: ${from} – ${to}`,
+            label,
             filterId: id,
           });
           break;
@@ -80,11 +96,21 @@ export function renderActiveFiltersBar({
 
         case "range": {
           const rangeValue = Array.isArray(value) ? value : [];
-          const begin = rangeValue[0] ?? "?";
-          const end = rangeValue[1] ?? "?";
+          const begin = rangeValue[0];
+          const end = rangeValue[1];
+          let label: string;
+          if (begin !== undefined && end !== undefined) {
+            label = `${name}: ${begin} – ${end}`;
+          } else if (begin !== undefined) {
+            label = `${name}: от ${begin}`;
+          } else if (end !== undefined) {
+            label = `${name}: до ${end}`;
+          } else {
+            label = `${name}: ?`;
+          }
           result.push({
             key: id,
-            label: `${name}: ${begin} – ${end}`,
+            label,
             filterId: id,
           });
           break;
