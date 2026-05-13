@@ -4,7 +4,74 @@
   "route": "/users",
   "state": {
     "loading": false,
-    "initialized": true
+    "initialized": true,
+    "filters": [
+      {
+        "id": "f-name",
+        "name": "Поиск по имени",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "id": "f-age",
+        "name": "Возраст",
+        "type": "number",
+        "value": null
+      },
+      {
+        "id": "f-date",
+        "name": "Дата регистрации",
+        "type": "date",
+        "value": null
+      },
+      {
+        "id": "f-period",
+        "name": "Период активности",
+        "type": "period",
+        "value": [null, null]
+      },
+      {
+        "id": "f-active",
+        "name": "Только активные",
+        "type": "checkbox",
+        "value": false
+      },
+      {
+        "id": "f-admin",
+        "name": "Администратор",
+        "type": "switch",
+        "value": false
+      },
+      {
+        "id": "f-rating",
+        "name": "Рейтинг",
+        "type": "slider",
+        "opts": [0, 100],
+        "value": 50
+      },
+      {
+        "id": "f-salary",
+        "name": "Зарплата",
+        "type": "range",
+        "opts": [30000, 200000],
+        "value": [50000, 150000]
+      },
+      {
+        "id": "f-role",
+        "name": "Роль",
+        "type": "radio",
+        "opts": ["Admin", "Manager", "User", "Guest"],
+        "value": null
+      },
+      {
+        "id": "f-department",
+        "name": "Отдел",
+        "type": "options",
+        "opts": ["Разработка", "Маркетинг", "Продажи", "Поддержка", "HR"],
+        "value": [false, false, false, false, false]
+      }
+    ],
+    "filtersVisible": false
   },
   "meta": {
     "title": "Участники — CRM Platform"
@@ -204,6 +271,17 @@
                         "target": "state.filters"
                       }
                     },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
                     {
                       "type": "toggleProperty",
                       "params": {

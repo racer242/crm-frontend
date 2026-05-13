@@ -358,14 +358,16 @@ export function renderFiltersPanel({
         </div>
 
         {/* Фиксированная нижняя панель с кнопками */}
-        <div className="flex-shrink-0 border-top-1 surface-border pt-3 mt-3">
-          <div className="flex gap-2">
+        <div
+          className="flex-shrink-0 pt-3 mt-3"
+          style={{ borderTop: "1px solid var(--surface-border)" }}
+        >
+          <div className="flex flex-column gap-2">
             <Button
               label="Применить"
               icon="pi pi-check"
               onClick={handleApply}
               className="flex-1"
-              severity={hasActiveFilters ? undefined : "secondary"}
               disabled={!hasActiveFilters}
             />
             <Button
