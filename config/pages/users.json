@@ -7,7 +7,7 @@
     "initialized": true
   },
   "meta": {
-    "title": "Users — CRM Platform"
+    "title": "Участники — CRM Platform"
   },
   "sections": [
     {
@@ -32,39 +32,8 @@
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "User Management",
+                "value": "Участники",
                 "level": 1
-              },
-              "state": {}
-            }
-          ]
-        },
-        {
-          "id": "usersActions",
-          "type": "block",
-          "className": "flex flex-column gap-3 max-w-max",
-          "wrapper": { "className": "flex flex-row justify-content-end" },
-          "state": {},
-          "components": [
-            {
-              "id": "btnAddUser",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Add User",
-                "icon": "pi pi-plus",
-                "severity": "success"
-              },
-              "state": {}
-            },
-            {
-              "id": "btnDeleteUsers",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Delete User",
-                "icon": "pi pi-trash",
-                "severity": "danger"
               },
               "state": {}
             }
@@ -75,42 +44,52 @@
     {
       "id": "usersFilters",
       "type": "section",
+      "className": "flex flex-column xl:flex-row gap-0",
       "state": {
         "visible": true
       },
       "layout": {
-        "type": "flex",
-        "direction": "row"
+        "type": "flex"
       },
       "blocks": [
         {
           "id": "searchBlock",
           "type": "block",
-          "state": {},
+          "className": "w-full",
           "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Search & Filter"
-            }
+            "className": "w-full flex flex-column xl:flex-row gap-3"
           },
+          "state": {},
           "components": [
             {
               "id": "searchInput",
               "type": "component",
+              "className": "w-full p-inputtext-sm",
               "componentType": "InputText",
               "props": {
-                "placeholder": "Search users...",
+                "placeholder": "Быстрый поиск...",
                 "icon": "pi pi-search"
               },
               "state": {
                 "value": ""
               }
-            },
+            }
+          ]
+        },
+        {
+          "id": "filterBlock",
+          "type": "block",
+          "className": "flex flex-column xl:flex-row gap-3 p-inputtext-sm",
+          "state": {},
+          "components": [
             {
-              "id": "roleFilter",
+              "id": "imFilter",
               "type": "component",
               "componentType": "Dropdown",
               "props": {
+                "pt": {
+                  "dropdownIcon": { "style": { "fontSize": "0.3rem" } }
+                },
                 "options": [
                   {
                     "label": "All Roles",
@@ -129,7 +108,7 @@
                     "value": "user"
                   }
                 ],
-                "placeholder": "Filter by role",
+                "placeholder": "Фильтр",
                 "showClear": true
               },
               "state": {}
@@ -137,13 +116,28 @@
             {
               "id": "activeFilter",
               "type": "component",
+              "className": "min-w-max flex-grow-0 p-inputtext-sm",
               "componentType": "InputSwitch",
               "props": {
-                "label": "Active only"
+                "label": "Активные"
               },
               "state": {
                 "value": false
               }
+            },
+
+            {
+              "id": "btnAddUser",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3 field",
+              "props": {
+                "icon": "pi pi-file-import",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small"
+              },
+              "state": {}
             }
           ]
         }

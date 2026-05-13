@@ -20,16 +20,13 @@ export function renderCheckbox({
   };
 
   return (
-    <div className="mb-2 flex align-items-center">
+    <div className={`field flex align-items-center ${className || ""}`}>
       <Checkbox
         {...checkboxProps}
-        className={className}
         style={style}
         onChange={(e) => handleEvent("onChange", { value: e.checked })}
       />
-      {props.label && (
-        <label className="ml-2 text-200">{props.label as string}</label>
-      )}
+      {props.label && <label className="ml-2">{props.label as string}</label>}
     </div>
   );
 }
@@ -46,10 +43,9 @@ export function renderRadioButton({
   };
 
   return (
-    <div className="field flex align-items-center">
+    <div className={`field flex align-items-center ${className || ""}`}>
       <RadioButton
         {...radioButtonProps}
-        className={className}
         style={style}
         onChange={(e) => handleEvent("onChange", { value: e.value })}
       />
@@ -72,15 +68,15 @@ export function renderInputSwitch({
   };
 
   return (
-    <div className="field flex align-items-center">
+    <div className={`field flex align-items-center ${className || ""}`}>
       <InputSwitch
         {...inputSwitchProps}
-        className={className}
+        className="flex-grow-0 min-w-max"
         style={style}
         onChange={(e) => handleEvent("onChange", { value: e.value })}
       />
       {props.label && (
-        <label className="ml-2 text-200">{props.label as string}</label>
+        <label className="ml-2 mb-0 text-200">{props.label as string}</label>
       )}
     </div>
   );

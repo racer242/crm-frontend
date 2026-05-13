@@ -17,7 +17,7 @@
         "route": "/statistics"
       },
       {
-        "label": "Users",
+        "label": "Участники",
         "icon": "pi pi-users",
         "route": "/users"
       },

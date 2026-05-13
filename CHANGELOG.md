@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Google Fonts fallback** — added `NEXT_PUBLIC_USE_SYSTEM_FONTS` env var; when set to `true`, skips Google Fonts fetch and uses system fonts (builds successfully without internet access)
+  - `getGoogleFontVariables()` lazy-requires `next/font/google` and catches fetch errors gracefully
+  - Added to `.env` as `NEXT_PUBLIC_USE_SYSTEM_FONTS=true`
+
+### Changed
+
+- **Pages localized to Russian** — navigation bar, page titles, headers, placeholders, and 404 page translated
+  - `config/crm-config.json` — sidebar label "Users" → "Участники"
+  - `config/pages/users.json` — title, header, search placeholder, dropdown placeholder, switch label translated
+  - `src/app/not-found.tsx` — "Page Not Found" → "Страница не найдена", "Go back to home" → "На главную"
+
+### Refactored
+
+- **Users page filters restructured** — removed separate actions block and Card wrapper; filters now flex row wrapping inline with Add User button inside filter area
+- **ToggleComponents accept `className`** — `renderCheckbox`, `renderRadioButton`, `renderInputSwitch` now forward `className` to wrapper divs for better layout control
+- **InputSwitch compact styling** — `min-w-max flex-grow-0` forced to prevent stretching in flex containers
+
 ### Fixed
 
 - **404 page restyled** — converted `not-found.tsx` to Client Component to fix RSC `performance.measure()` negative timestamp error; restyled with PrimeReact `Button` and PrimeFlex centering to match app design (commit `[to-be-added]`)

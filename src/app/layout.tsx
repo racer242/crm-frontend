@@ -1,23 +1,38 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { PrimeReactProvider } from "primereact/api";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-});
+const useSystemFonts = process.env.NEXT_PUBLIC_USE_SYSTEM_FONTS === "true";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-});
+const fontVariables = useSystemFonts ? "" : getGoogleFontVariables();
+
+function getGoogleFontVariables(): string {
+  // Google Fonts may not be reachable in all environments.
+  // Set NEXT_PUBLIC_USE_SYSTEM_FONTS=true in .env to skip Google Fonts.
+  // Lazy-require to defer the fetch until build time if fonts are available.
+  try {
+    const { Geist, Geist_Mono } =
+      require("next/font/google") as typeof import("next/font/google");
+    const geistSans = Geist({
+      variable: "--font-geist-sans",
+      subsets: ["latin"],
+      display: "swap",
+      preload: true,
+    });
+    const geistMono = Geist_Mono({
+      variable: "--font-geist-mono",
+      subsets: ["latin"],
+      display: "swap",
+      preload: true,
+    });
+    return `${geistSans.variable} ${geistMono.variable}`;
+  } catch {
+    console.warn("Google Fonts unavailable, falling back to system fonts.");
+    return "";
+  }
+}
 
 export const metadata: Metadata = {
   other: {
@@ -40,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={fontVariables || undefined}
       data-scroll-behavior="smooth"
     >
       <body>
