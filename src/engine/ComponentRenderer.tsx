@@ -42,6 +42,7 @@ import {
   renderTimeline,
   renderChart,
   renderFiltersPanel,
+  renderActiveFiltersBar,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -136,6 +137,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderChart(renderProps);
     case "FiltersPanel":
       return renderFiltersPanel(renderProps);
+    case "ActiveFiltersBar":
+      return renderActiveFiltersBar(renderProps);
     default:
       return (
         <div className={className} style={style}>

@@ -44,3 +44,4 @@ export {
 } from "./FeedbackComponents";
 export { renderChart } from "./ChartComponent";
 export { renderFiltersPanel } from "./FiltersPanelComponent";
+export { renderActiveFiltersBar } from "./ActiveFiltersBarComponent";

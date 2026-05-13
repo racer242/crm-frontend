@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
   - Local state editing with "Apply" and "Clear" buttons in fixed footer
   - Integrated with Linkage system via `@state.filters` / `@state.filtersVisible` bindings
   - Example usage added to `config/pages/users.json`
+- **ActiveFiltersBar component** — horizontal chip bar showing active filter selections
+  - `src/engine/components/ActiveFiltersBarComponent.tsx` — renders chips for active filters; hidden when no filters selected
+  - Chip label formatting per filter type: name-only for checkbox/switch, "name: value" for text/number/slider/radio, "name: from – to" for range/period, individual chips per option in options type
+  - "Clear all" button on the left, each chip has removable button
+  - Generates `onChange` event with updated filter model on removal
+  - Integrated with Linkage system via `@state.filters`
+  - Added to `config/pages/users.json` between filter drawer and table
 - **Google Fonts fallback** — added `NEXT_PUBLIC_USE_SYSTEM_FONTS` env var; when set to `true`, skips Google Fonts fetch and uses system fonts (builds successfully without internet access)
   - `getGoogleFontVariables()` lazy-requires `next/font/google` and catches fetch errors gracefully
   - Added to `.env` as `NEXT_PUBLIC_USE_SYSTEM_FONTS=true`

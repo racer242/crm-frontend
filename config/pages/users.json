@@ -297,6 +297,48 @@
       ]
     },
     {
+      "id": "activeFilterSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "layout": {
+        "type": "flex"
+      },
+      "blocks": [
+        {
+          "id": "activeFilterBlock",
+          "type": "block",
+          "state": {},
+          "components": [
+            {
+              "id": "activeFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.filters"
+              },
+              "state": {},
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "mergeState",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.filters"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "usersTableSection",
       "type": "section",
       "state": {

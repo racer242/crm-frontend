@@ -80,7 +80,8 @@ export type ComponentType =
   | "Spacer"
   | "Container"
   // Фильтры
-  | "FiltersPanel";
+  | "FiltersPanel"
+  | "ActiveFiltersBar";
 
 /** Привязка данных */
 export interface DataBinding {
