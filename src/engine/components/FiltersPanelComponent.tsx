@@ -117,7 +117,7 @@ export function renderFiltersPanel({
               checked={!!value}
               onChange={(e) => updateFilterValue(id, e.value ?? false)}
             />
-            <label htmlFor={`filter-${id}`} className="ml-2">
+            <label htmlFor={`filter-${id}`} className="ml-2 cursor-pointer">
               {name}
             </label>
           </div>
@@ -131,8 +131,8 @@ export function renderFiltersPanel({
             ? [Number(value[0]), Number(value[1])]
             : [min, max];
         return (
-          <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+          <div key={id} className="mb-3 px-1">
+            <label className="block mb-3 text-200 font-medium">{name}</label>
             <Slider
               value={rangeValue}
               onChange={(e) => updateFilterValue(id, e.value)}
@@ -141,7 +141,7 @@ export function renderFiltersPanel({
               max={max}
               className="w-full"
             />
-            <div className="flex justify-content-between mt-1">
+            <div className="flex justify-content-between mt-2">
               <span className="text-sm text-400">{rangeValue[0]}</span>
               <span className="text-sm text-400">{rangeValue[1]}</span>
             </div>
@@ -154,7 +154,7 @@ export function renderFiltersPanel({
         const max = Array.isArray(opts) ? (opts[1] ?? 100) : 100;
         const sliderValue = typeof value === "number" ? value : min;
         return (
-          <div key={id} className="mb-3">
+          <div key={id} className="mb-3 px-1">
             <label className="block mb-2 text-200 font-medium">
               {name}: {sliderValue}
             </label>
@@ -245,7 +245,7 @@ export function renderFiltersPanel({
           : optionsList.map(() => false);
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-3 text-200 font-medium">{name}</label>
             <div className="flex flex-column gap-2">
               {optionsList.map((opt: string, i: number) => (
                 <div
@@ -276,7 +276,7 @@ export function renderFiltersPanel({
         const optionsList = Array.isArray(opts) ? opts : [];
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-3 text-200 font-medium">{name}</label>
             <div className="flex flex-column gap-2">
               {optionsList.map((opt: string, i: number) => (
                 <div
@@ -345,11 +345,10 @@ export function renderFiltersPanel({
     >
       <div className="flex flex-column h-full">
         {/* Скроллируемая область с фильтрами */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-column flex-1 overflow-y-auto overflow-x-hidden px-2 gap-3">
           {localFilters.map((filter, index) => (
             <React.Fragment key={filter.id}>
               {renderFilterControl(filter, index)}
-              {index < localFilters.length - 1 && <Divider className="my-2" />}
             </React.Fragment>
           ))}
           {localFilters.length === 0 && (
