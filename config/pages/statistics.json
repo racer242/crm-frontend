@@ -101,6 +101,7 @@
           "className": "w-full",
           "wrapper": {
             "component": "Panel",
+            "className": "w-full",
             "props": {
               "header": "Выбор недели"
             }
@@ -166,6 +167,7 @@
           "state": {},
           "wrapper": {
             "component": "Panel",
+            "className": "w-full",
             "props": {
               "header": "Диапазон дат"
             }
@@ -262,11 +264,6 @@
       "type": "section",
       "state": {
         "visible": true
-      },
-      "layout": {
-        "type": "flex",
-        "direction": "column",
-        "gap": 20
       },
       "blocks": [
         {

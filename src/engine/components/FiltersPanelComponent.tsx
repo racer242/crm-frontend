@@ -358,6 +358,7 @@ export function renderFiltersPanel({
       position={position}
       header={sidebarHeader}
       className={className || ""}
+      autoFocus={false}
       style={style}
       onHide={() => {
         // Просто закрываем без применения — триггер via toggleProperty

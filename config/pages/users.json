@@ -111,20 +111,18 @@
     {
       "id": "usersFilters",
       "type": "section",
-      "className": "flex flex-column xl:flex-row gap-0",
+      "className": "flex flex-wrap gap-3",
       "state": {
         "visible": true
       },
-      "layout": {
-        "type": "flex"
-      },
+
       "blocks": [
         {
           "id": "searchBlock",
           "type": "block",
           "className": "w-full",
           "wrapper": {
-            "className": "w-full flex flex-column xl:flex-row gap-3"
+            "className": "flex-grow-1"
           },
           "state": {},
           "components": [
@@ -135,7 +133,8 @@
               "componentType": "InputText",
               "props": {
                 "placeholder": "Быстрый поиск...",
-                "icon": "pi pi-search"
+                "icon": "pi pi-search",
+                "inline": "true"
               },
               "state": {
                 "value": ""
@@ -146,58 +145,17 @@
         {
           "id": "filterBlock",
           "type": "block",
-          "className": "flex flex-column xl:flex-row gap-3 p-inputtext-sm",
+          "wrapper": {
+            "className": "flex-initial"
+          },
+          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "state": {},
           "components": [
-            {
-              "id": "imFilter",
-              "type": "component",
-              "componentType": "Dropdown",
-              "props": {
-                "pt": {
-                  "dropdownIcon": { "style": { "fontSize": "0.3rem" } }
-                },
-                "options": [
-                  {
-                    "label": "All Roles",
-                    "value": null
-                  },
-                  {
-                    "label": "Admin",
-                    "value": "admin"
-                  },
-                  {
-                    "label": "Manager",
-                    "value": "manager"
-                  },
-                  {
-                    "label": "User",
-                    "value": "user"
-                  }
-                ],
-                "placeholder": "Фильтр",
-                "showClear": true
-              },
-              "state": {}
-            },
-            {
-              "id": "activeFilter",
-              "type": "component",
-              "className": "min-w-max flex-grow-0 p-inputtext-sm",
-              "componentType": "InputSwitch",
-              "props": {
-                "label": "Активные"
-              },
-              "state": {
-                "value": false
-              }
-            },
-
             {
               "id": "toggleFilters",
               "type": "component",
               "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3 field",
+              "className": "min-w-max flex-grow-0 px-3",
               "props": {
                 "icon": "pi pi-filter",
                 "severity": "primary",
@@ -224,7 +182,7 @@
               "id": "btnAddUser",
               "type": "component",
               "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3 field",
+              "className": "min-w-max flex-grow-0 px-3",
               "props": {
                 "icon": "pi pi-file-import",
                 "severity": "primary",
@@ -234,23 +192,14 @@
               "state": {}
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "activeFilterSection",
-      "type": "section",
-      "state": {
-        "visible": true
-      },
-      "layout": {
-        "type": "flex"
-      },
-      "blocks": [
+        },
         {
           "id": "activeFilterBlock",
           "type": "block",
           "state": {},
+          "wrapper": {
+            "className": "w-full"
+          },
           "components": [
             {
               "id": "activeFilterChips",

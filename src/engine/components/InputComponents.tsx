@@ -21,7 +21,7 @@ export function renderInputText({
   return (
     <InputText
       {...inputProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.target.value })}
     />
@@ -42,7 +42,7 @@ export function renderInputNumber({
   return (
     <InputNumber
       {...inputNumberProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onValueChange={(e) => handleEvent("onChange", { value: e.value })}
     />
@@ -63,7 +63,7 @@ export function renderInputTextarea({
   return (
     <InputTextarea
       {...textareaProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.target.value })}
     />
@@ -84,7 +84,7 @@ export function renderPassword({
   return (
     <Password
       {...passwordProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.target.value })}
     />

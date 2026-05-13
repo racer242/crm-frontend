@@ -41,7 +41,7 @@ export function renderDropdown({
   return (
     <Dropdown
       {...dropdownProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}
     />
@@ -62,7 +62,7 @@ export function renderMultiSelect({
   return (
     <MultiSelect
       {...multiSelectProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}
     />
@@ -83,7 +83,7 @@ export function renderAutoComplete({
   return (
     <AutoComplete
       {...autoCompleteProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       completeMethod={(e) => {
         const suggestions = (props.suggestions || []).filter((s: string) =>
@@ -126,7 +126,7 @@ export function renderCalendar({
   return (
     <Calendar
       {...calendarProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}
     />

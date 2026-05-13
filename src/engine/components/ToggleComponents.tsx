@@ -20,7 +20,9 @@ export function renderCheckbox({
   };
 
   return (
-    <div className={`field flex align-items-center ${className || ""}`}>
+    <div
+      className={`${props?.inline ? "" : "field"} flex align-items-center ${className || ""}`}
+    >
       <Checkbox
         {...checkboxProps}
         style={style}
@@ -43,7 +45,9 @@ export function renderRadioButton({
   };
 
   return (
-    <div className={`field flex align-items-center ${className || ""}`}>
+    <div
+      className={`${props?.inline ? "" : "field"} flex align-items-center ${className || ""}`}
+    >
       <RadioButton
         {...radioButtonProps}
         style={style}
@@ -68,7 +72,9 @@ export function renderInputSwitch({
   };
 
   return (
-    <div className={`field flex align-items-center ${className || ""}`}>
+    <div
+      className={`${props?.inline ? "" : "field"} flex align-items-center ${className || ""}`}
+    >
       <InputSwitch
         {...inputSwitchProps}
         className="flex-grow-0 min-w-max"
@@ -96,7 +102,7 @@ export function renderSlider({
   return (
     <Slider
       {...sliderProps}
-      className={`field w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}
     />

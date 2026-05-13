@@ -183,18 +183,9 @@ export function renderActiveFiltersBar({
 
   return (
     <div
-      className={`flex align-items-center gap-2 flex-wrap p-2 border-1 surface-border border-round ${className || ""}`}
+      className={`flex align-items-center gap-2 flex-wrap ${className || ""}`}
       style={style}
     >
-      <Button
-        icon="pi pi-filter-slash"
-        onClick={clearAll}
-        className="p-button-rounded p-button-text p-button-sm"
-        tooltip="Очистить все фильтры"
-        tooltipOptions={{ position: "top" }}
-        style={{ flexShrink: 0 }}
-      />
-
       {chips.map((chip) => (
         <Chip
           key={chip.key}
@@ -206,6 +197,15 @@ export function renderActiveFiltersBar({
           }}
         />
       ))}
+
+      <Button
+        icon="pi pi-filter-slash"
+        onClick={clearAll}
+        className="p-button-rounded p-button-text p-button-sm"
+        tooltip="Очистить все фильтры"
+        tooltipOptions={{ position: "top" }}
+        style={{ flexShrink: 0 }}
+      />
     </div>
   );
 }
