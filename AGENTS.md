@@ -10,6 +10,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Backward compatibility: ignore it.
 When adding new functionality, add configurable params to `.env` if needed. Update startup banner when adding new `.env` params.
-Every iteration must end with: clean build (zero errors and warnings), `README.md` updated, `CHANGELOG.md` updated, Git commit with English message.
+Every iteration must end with: clean build (zero errors and warnings), `README.md` updated, `CHANGELOG.md` updated, Git commit with English message. Always use a semicolon ; instead of && to chain commands in PowerShell.
 
 <!-- END:current-project-agent-rules -->

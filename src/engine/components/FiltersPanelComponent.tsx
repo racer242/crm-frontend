@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
@@ -42,10 +42,17 @@ export function renderFiltersPanel({
   // Локальная копия фильтров для редактирования
   const [localFilters, setLocalFilters] = useState<FilterModel>([]);
 
+  // Ref для хранения предыдущего значения фильтров
+  const prevFiltersRef = useRef<string>("");
+
   // При открытии — копируем внешние фильтры в локальные
+  // Используем сериализацию для предотвращения бесконечного цикла
+  // (Linkage.resolveDeep создаёт новый объект каждый рендер)
   useEffect(() => {
-    if (visible && externalFilters) {
-      setLocalFilters(JSON.parse(JSON.stringify(externalFilters)));
+    const currentFiltersStr = JSON.stringify(externalFilters);
+    if (visible && currentFiltersStr !== prevFiltersRef.current) {
+      prevFiltersRef.current = currentFiltersStr;
+      setLocalFilters(JSON.parse(currentFiltersStr));
     }
   }, [visible, externalFilters]);
 
