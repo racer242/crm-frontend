@@ -127,6 +127,33 @@
             },
 
             {
+              "id": "toggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3 field",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтр"
+              },
+              "state": {},
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "btnAddUser",
               "type": "component",
               "componentType": "Button",
@@ -144,6 +171,54 @@
       ]
     },
     {
+      "id": "filterDrawerSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "filterDrawerBlock",
+          "type": "block",
+          "state": {},
+          "components": [
+            {
+              "id": "filterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "state": {},
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "mergeState",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "usersTableSection",
       "type": "section",
       "state": {
@@ -154,12 +229,6 @@
           "id": "usersTableBlock",
           "type": "block",
           "state": {},
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Users"
-            }
-          },
           "components": [
             {
               "id": "usersTable",

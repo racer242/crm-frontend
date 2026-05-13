@@ -41,6 +41,7 @@ import {
   renderDivider,
   renderTimeline,
   renderChart,
+  renderFiltersPanel,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -133,6 +134,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderTimeline(renderProps);
     case "Chart":
       return renderChart(renderProps);
+    case "FiltersPanel":
+      return renderFiltersPanel(renderProps);
     default:
       return (
         <div className={className} style={style}>

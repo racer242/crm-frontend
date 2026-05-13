@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **FiltersPanel component** — metadata-driven filter drawer for list pages (based on PrimeReact Sidebar)
+  - `src/types/filters.ts` — new types: `FilterItem`, `FilterModel`, `FilterType`
+  - `src/engine/components/FiltersPanelComponent.tsx` — component with 10 filter types: checkbox, switch, range (multi-slider), slider, text, number, date, period (date range), options (checkbox group), radio (radio group)
+  - Local state editing with "Apply" and "Clear" buttons in fixed footer
+  - Integrated with Linkage system via `@state.filters` / `@state.filtersVisible` bindings
+  - Example usage added to `config/pages/users.json`
 - **Google Fonts fallback** — added `NEXT_PUBLIC_USE_SYSTEM_FONTS` env var; when set to `true`, skips Google Fonts fetch and uses system fonts (builds successfully without internet access)
   - `getGoogleFontVariables()` lazy-requires `next/font/google` and catches fetch errors gracefully
   - Added to `.env` as `NEXT_PUBLIC_USE_SYSTEM_FONTS=true`

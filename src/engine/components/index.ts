@@ -43,3 +43,4 @@ export {
   renderTimeline,
 } from "./FeedbackComponents";
 export { renderChart } from "./ChartComponent";
+export { renderFiltersPanel } from "./FiltersPanelComponent";

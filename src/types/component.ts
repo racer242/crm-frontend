@@ -78,7 +78,9 @@ export type ComponentType =
   | "HTML"
   | "Icon"
   | "Spacer"
-  | "Container";
+  | "Container"
+  // Фильтры
+  | "FiltersPanel";
 
 /** Привязка данных */
 export interface DataBinding {

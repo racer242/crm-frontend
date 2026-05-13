@@ -259,6 +259,10 @@ DataTable
 
 Card, Panel, Fieldset, Toolbar, TabView, Accordion
 
+### Фильтры
+
+**FiltersPanel** — выездная панель фильтров на основе PrimeReact Sidebar (Drawer). Управляется через состояние (`visible`, `value`), поддерживает 10 типов фильтров: checkbox, switch, range (мульти-слайдер), slider, text, number, date, period (диапазон дат), options (группа чекбоксов), radio (группа радио-кнопок). Кнопки «Применить» и «Очистить» в фиксированном нижнем блоке. Данные передаются как массив `FilterItem[]` через линковку `@state.filters`.
+
 ### Меню
 
 Menubar, Breadcrumb, Steps
