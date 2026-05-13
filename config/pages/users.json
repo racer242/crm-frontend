@@ -238,65 +238,6 @@
       ]
     },
     {
-      "id": "filterDrawerSection",
-      "type": "section",
-      "state": {
-        "visible": true
-      },
-      "blocks": [
-        {
-          "id": "filterDrawerBlock",
-          "type": "block",
-          "state": {},
-          "components": [
-            {
-              "id": "filterDrawer",
-              "type": "component",
-              "componentType": "FiltersPanel",
-              "props": {
-                "value": "@state.filters",
-                "visible": "@state.filtersVisible",
-                "position": "right",
-                "header": "Фильтры"
-              },
-              "state": {},
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "mergeState",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.filters"
-                      }
-                    },
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "onHide",
-                  "commands": [
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "activeFilterSection",
       "type": "section",
       "state": {
@@ -324,10 +265,53 @@
                   "type": "onChange",
                   "commands": [
                     {
-                      "type": "mergeState",
+                      "type": "setProperty",
                       "params": {
                         "source": "event.value",
                         "target": "state.filters"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "filterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "state": {},
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
                       }
                     }
                   ]
