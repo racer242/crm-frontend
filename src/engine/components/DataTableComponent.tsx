@@ -11,6 +11,8 @@ export function renderDataTable({
   style,
   handleEvent,
 }: ComponentRendererProps) {
+  if (!props?.columns) return null;
+
   return (
     <DataTable
       {...props}
@@ -20,7 +22,7 @@ export function renderDataTable({
       {...(props.lazy ? { onPage: (e) => handleEvent("onPage", e) } : {})}
     >
       {props.columns?.map((col: any, index: number) => (
-        <Column key={index} field={col.field} header={col.header} />
+        <Column key={index} {...col} />
       ))}
     </DataTable>
   );

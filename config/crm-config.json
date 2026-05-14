@@ -115,6 +115,10 @@
     "stats.week.js": {
       "type": "js",
       "script": "adapters/weeks-2-select-list.js"
+    },
+    "stats.users.js": {
+      "type": "js",
+      "script": "adapters/users-2-tabview.js"
     }
   },
   "config": {

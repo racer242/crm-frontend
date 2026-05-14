@@ -5,77 +5,29 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "filters": [
-      {
-        "id": "f-name",
-        "name": "Поиск по имени",
-        "type": "text",
-        "value": ""
-      },
-      {
-        "id": "f-age",
-        "name": "Возраст",
-        "type": "number",
-        "value": null
-      },
-      {
-        "id": "f-date",
-        "name": "Дата регистрации",
-        "type": "date",
-        "value": null
-      },
-      {
-        "id": "f-period",
-        "name": "Период активности",
-        "type": "period",
-        "value": null
-      },
-      {
-        "id": "f-active",
-        "name": "Только активные",
-        "type": "checkbox",
-        "value": false
-      },
-      {
-        "id": "f-admin",
-        "name": "Администратор",
-        "type": "switch",
-        "value": false
-      },
-      {
-        "id": "f-rating",
-        "name": "Рейтинг",
-        "type": "slider",
-        "opts": [0, 100],
-        "value": 50
-      },
-      {
-        "id": "f-salary",
-        "name": "Зарплата",
-        "type": "range",
-        "opts": [30000, 200000],
-        "value": [50000, 150000]
-      },
-      {
-        "id": "f-role",
-        "name": "Роль",
-        "type": "radio",
-        "opts": ["Admin", "Manager", "User", "Guest"],
-        "value": null
-      },
-      {
-        "id": "f-department",
-        "name": "Отдел",
-        "type": "options",
-        "opts": ["Разработка", "Маркетинг", "Продажи", "Поддержка", "HR"],
-        "value": [false, false, false, false, false]
-      }
-    ],
-    "filtersVisible": false
+    "filtersVisible": false,
+    "users": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 10,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": []
+    }
   },
   "meta": {
     "title": "Участники — CRM Platform"
   },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/mocks/api/users/users.json",
+      "method": "GET",
+      "target": "state.users",
+      "adapter": "stats.users.js"
+    }
+  ],
   "sections": [
     {
       "id": "usersHeader",
@@ -161,7 +113,7 @@
                 "severity": "primary",
                 "outlined": true,
                 "size": "small",
-                "label": "Фильтр"
+                "label": "Фильтры"
               },
               "state": {},
               "events": [
@@ -206,7 +158,7 @@
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.filters"
+                "value": "@state.users.filters"
               },
               "state": {},
               "events": [
@@ -217,7 +169,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.filters"
+                        "target": "state.users.filters"
                       }
                     }
                   ]
@@ -229,7 +181,7 @@
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.filters",
+                "value": "@state.users.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -243,7 +195,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.filters"
+                        "target": "state.users.filters"
                       }
                     },
                     {
@@ -288,77 +240,15 @@
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": [
-                  {
-                    "id": 1,
-                    "name": "Alice Johnson",
-                    "email": "alice@example.com",
-                    "role": "Admin",
-                    "status": "Active",
-                    "joined": "2023-06-15"
-                  },
-                  {
-                    "id": 2,
-                    "name": "Bob Smith",
-                    "email": "bob@example.com",
-                    "role": "Manager",
-                    "status": "Active",
-                    "joined": "2023-07-20"
-                  },
-                  {
-                    "id": 3,
-                    "name": "Carol White",
-                    "email": "carol@example.com",
-                    "role": "User",
-                    "status": "Inactive",
-                    "joined": "2023-08-10"
-                  },
-                  {
-                    "id": 4,
-                    "name": "Dave Brown",
-                    "email": "dave@example.com",
-                    "role": "User",
-                    "status": "Active",
-                    "joined": "2023-09-05"
-                  },
-                  {
-                    "id": 5,
-                    "name": "Eve Davis",
-                    "email": "eve@example.com",
-                    "role": "Manager",
-                    "status": "Active",
-                    "joined": "2023-10-12"
-                  }
-                ],
-                "columns": [
-                  {
-                    "field": "name",
-                    "header": "Name"
-                  },
-                  {
-                    "field": "email",
-                    "header": "Email"
-                  },
-                  {
-                    "field": "role",
-                    "header": "Role"
-                  },
-                  {
-                    "field": "status",
-                    "header": "Status"
-                  },
-                  {
-                    "field": "joined",
-                    "header": "Joined"
-                  }
-                ],
+                "value": "@state.users.value",
+                "columns": "@state.users.columns",
+                "totalRecords": "@state.users.totalRecords",
+                "rows": "@state.users.rows",
+                "first": "@state.users.first",
+                "sortField": "@state.users.sortField",
+                "sortOrder": "@state.users.sortOrder",
                 "paginator": true,
-                "rows": 3,
-                "tableStyle": {
-                  "minWidth": "50rem"
-                },
-                "selectionMode": "multiple",
-                "dataKey": "id"
+                "lazy": true
               },
               "state": {}
             }

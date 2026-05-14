@@ -1,0 +1,232 @@
+{
+  "columns": [
+    {
+      "id": "id",
+      "title": "Номер",
+      "type": "number",
+      "sortable": true,
+      "props": {
+        "field": "id",
+        "header": "Номер",
+        "sortable": true,
+        "dataType": "numeric",
+        "style": { "width": "80px", "textAlign": "right" },
+        "headerClassName": "font-semibold",
+        "bodyClassName": "text-right"
+      }
+    },
+    {
+      "id": "first_name",
+      "title": "Имя",
+      "type": "string",
+      "sortable": true,
+      "props": {
+        "field": "first_name",
+        "header": "Имя",
+        "sortable": true,
+        "dataType": "text",
+        "style": { "width": "150px" }
+      }
+    },
+    {
+      "id": "last_name",
+      "title": "Фамилия",
+      "type": "string",
+      "sortable": true,
+      "props": {
+        "field": "last_name",
+        "header": "Фамилия",
+        "sortable": true,
+        "dataType": "text",
+        "style": { "width": "150px" }
+      }
+    },
+    {
+      "id": "balance",
+      "title": "Баланс",
+      "type": "number",
+      "sortable": true,
+      "props": {
+        "field": "balance",
+        "header": "Баланс",
+        "sortable": true,
+        "dataType": "numeric",
+        "style": { "width": "120px", "textAlign": "right" },
+        "headerClassName": "text-right",
+        "bodyClassName": "text-right font-medium",
+        "currency": "RUB",
+        "locale": "ru-RU",
+        "minFractionDigits": 2,
+        "maxFractionDigits": 2
+      }
+    },
+    {
+      "id": "email",
+      "title": "Email",
+      "type": "email",
+      "sortable": true,
+      "props": {
+        "field": "email",
+        "header": "Email",
+        "sortable": true,
+        "dataType": "text",
+        "style": { "width": "200px" },
+        "bodyClassName": "truncate"
+      }
+    },
+    {
+      "id": "phone",
+      "title": "Телефон",
+      "type": "phone",
+      "sortable": false,
+      "props": {
+        "field": "phone",
+        "header": "Телефон",
+        "sortable": false,
+        "dataType": "text",
+        "style": { "width": "140px" },
+        "bodyClassName": "whitespace-nowrap"
+      }
+    },
+    {
+      "id": "last_auth",
+      "title": "Дата последней авторизации",
+      "type": "datetime",
+      "sortable": true,
+      "props": {
+        "field": "last_auth",
+        "header": "Последняя авторизация",
+        "sortable": true,
+        "dataType": "date",
+        "style": { "width": "180px" },
+        "dateFormat": "dd.mm.yy",
+        "showTime": true,
+        "hourFormat": "24"
+      }
+    },
+    {
+      "id": "referral",
+      "title": "Реферал",
+      "type": "string",
+      "sortable": false,
+      "props": {
+        "field": "referral",
+        "header": "Реферал",
+        "sortable": true,
+        "dataType": "text",
+        "style": { "width": "120px" },
+        "bodyClassName": "text-primary cursor-pointer"
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "user_1024",
+      "values": {
+        "id": 1024,
+        "first_name": "Анна",
+        "last_name": "Иванова",
+        "balance": 15420.5,
+        "email": "anna.ivanova@example.com",
+        "phone": "+7 (912) 345-67-89",
+        "last_auth": "2026-05-14T09:23:15Z",
+        "referral": "REF789"
+      },
+      "props": { "class": "status-active" }
+    },
+    {
+      "id": "user_1025",
+      "values": {
+        "id": 1025,
+        "first_name": "Дмитрий",
+        "last_name": "Петров",
+        "balance": 0,
+        "email": "d.petrov@example.com",
+        "phone": "+7 (926) 111-22-33",
+        "last_auth": "2026-05-10T14:05:00Z",
+        "referral": null
+      },
+      "props": { "class": "status-inactive", "disabled": true }
+    },
+    {
+      "id": "user_1026",
+      "values": {
+        "id": 1026,
+        "first_name": "Елена",
+        "last_name": "Смирнова",
+        "balance": 87500,
+        "email": "elena.s@example.com",
+        "phone": "+7 (903) 555-77-99",
+        "last_auth": "2026-05-14T11:47:32Z",
+        "referral": "REF101"
+      },
+      "props": { "class": "status-vip" }
+    },
+    {
+      "id": "user_1027",
+      "values": {
+        "id": 1027,
+        "first_name": "Максим",
+        "last_name": "Козлов",
+        "balance": 3200.75,
+        "email": "max.kozlov@example.com",
+        "phone": "+7 (999) 888-66-44",
+        "last_auth": "2026-05-13T18:20:10Z",
+        "referral": "REF789"
+      },
+      "props": {}
+    },
+    {
+      "id": "user_1028",
+      "values": {
+        "id": 1028,
+        "first_name": "Ольга",
+        "last_name": "Новикова",
+        "balance": 50100,
+        "email": "olga.nov@example.com",
+        "phone": "+7 (915) 222-33-44",
+        "last_auth": "2026-05-14T08:15:05Z",
+        "referral": "REF202"
+      },
+      "props": { "class": "status-active" }
+    }
+  ],
+  "filters": [
+    {
+      "id": "balance",
+      "name": "Баланс",
+      "type": "range",
+      "opts": [0, 100000],
+      "value": [null, null]
+    },
+    {
+      "id": "last_auth",
+      "name": "Последняя авторизация",
+      "type": "period",
+      "opts": null,
+      "value": [null, null]
+    },
+    {
+      "id": "has_referral",
+      "name": "Есть реферал",
+      "type": "checkbox",
+      "opts": null,
+      "value": false
+    },
+    {
+      "id": "status",
+      "name": "Статус",
+      "type": "radio",
+      "opts": ["active", "inactive", "vip", "banned"],
+      "value": null
+    }
+  ],
+  "search": "",
+  "meta": {
+    "total_count": 2847,
+    "first": 0,
+    "limit": 50,
+    "sort": "last_auth",
+    "direction": "desc"
+  }
+}
