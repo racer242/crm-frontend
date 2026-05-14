@@ -9,6 +9,8 @@ import {
   renderInputNumber,
   renderInputTextarea,
   renderPassword,
+  renderInputTextWithThrottle,
+  renderInputTextWithButton,
   renderDropdown,
   renderMultiSelect,
   renderAutoComplete,
@@ -71,6 +73,10 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderInputTextarea(renderProps);
     case "Password":
       return renderPassword(renderProps);
+    case "InputTextWithThrottle":
+      return renderInputTextWithThrottle(renderProps);
+    case "InputTextWithButton":
+      return renderInputTextWithButton(renderProps);
     case "Dropdown":
       return renderDropdown(renderProps);
     case "MultiSelect":

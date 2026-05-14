@@ -4,6 +4,8 @@ export {
   renderInputNumber,
   renderInputTextarea,
   renderPassword,
+  renderInputTextWithThrottle,
+  renderInputTextWithButton,
 } from "./InputComponents";
 export {
   renderDropdown,

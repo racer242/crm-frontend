@@ -15,6 +15,8 @@ export type ComponentType =
   | "Checkbox"
   | "RadioButton"
   | "InputSwitch"
+  | "InputTextWithThrottle"
+  | "InputTextWithButton"
   | "Slider"
   | "Rating"
   | "ColorPicker"
