@@ -340,6 +340,12 @@ npm run build     # Production-билд
 
 # Справочники
 
+## Компоненты
+
+→ [docs/components-reference.md](docs/components-reference.md)
+
+Полное описание всех реализованных компонентов системы: пропсы, события, типы фильтров, примеры конфигурации.
+
 ## Конфигурация
 
 → [docs/config-reference.md](docs/config-reference.md)

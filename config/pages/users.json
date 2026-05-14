@@ -14,7 +14,8 @@
       "first": 0,
       "sortField": "",
       "sortOrder": 1,
-      "filters": []
+      "filters": [],
+      "search": ""
     }
   },
   "meta": {
