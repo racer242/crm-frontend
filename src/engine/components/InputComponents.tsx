@@ -105,14 +105,16 @@ export function renderInputTextWithThrottle({
   style,
   handleEvent,
 }: ComponentRendererProps) {
-  const delay = props?.throttleDelay ?? 300;
-  const [localValue, setLocalValue] = useState(props?.value ?? "");
+  // Извлекаем throttleDelay, чтобы не передавать его в DOM-элемент
+  const { throttleDelay, ...inputProps } = props || {};
+  const delay = throttleDelay ?? 300;
+  const [localValue, setLocalValue] = useState(inputProps?.value ?? "");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Синхронизация с внешним value при изменении
   useEffect(() => {
-    setLocalValue(props?.value ?? "");
-  }, [props?.value]);
+    setLocalValue(inputProps?.value ?? "");
+  }, [inputProps?.value]);
 
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,9 +143,9 @@ export function renderInputTextWithThrottle({
 
   return (
     <InputText
-      {...props}
+      {...inputProps}
       value={localValue}
-      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
+      className={`${inputProps?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={onChange}
     />

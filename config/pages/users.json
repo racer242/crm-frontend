@@ -82,15 +82,29 @@
               "id": "searchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
-              "componentType": "InputText",
+              "componentType": "InputTextWithThrottle",
               "props": {
+                "throttleDelay": 500,
                 "placeholder": "Быстрый поиск...",
                 "icon": "pi pi-search",
                 "inline": "true"
               },
               "state": {
                 "value": ""
-              }
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event}"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
