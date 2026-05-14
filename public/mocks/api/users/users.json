@@ -10,7 +10,7 @@
         "header": "Номер",
         "sortable": true,
         "dataType": "numeric",
-        "style": { "width": "80px", "textAlign": "right" },
+        "style": { "width": "10rem", "textAlign": "right" },
         "headerClassName": "font-semibold",
         "bodyClassName": "text-right"
       }
@@ -25,7 +25,7 @@
         "header": "Имя",
         "sortable": true,
         "dataType": "text",
-        "style": { "width": "150px" }
+        "style": { "width": "10rem" }
       }
     },
     {
@@ -38,7 +38,7 @@
         "header": "Фамилия",
         "sortable": true,
         "dataType": "text",
-        "style": { "width": "150px" }
+        "style": { "width": "10rem" }
       }
     },
     {
@@ -51,7 +51,7 @@
         "header": "Баланс",
         "sortable": true,
         "dataType": "numeric",
-        "style": { "width": "120px", "textAlign": "right" },
+        "style": { "width": "10rem", "textAlign": "right" },
         "headerClassName": "text-right",
         "bodyClassName": "text-right font-medium",
         "currency": "RUB",
@@ -68,9 +68,9 @@
       "props": {
         "field": "email",
         "header": "Email",
-        "sortable": true,
+        "sortable": false,
         "dataType": "text",
-        "style": { "width": "200px" },
+        "style": { "width": "120rem" },
         "bodyClassName": "truncate"
       }
     },
@@ -84,8 +84,8 @@
         "header": "Телефон",
         "sortable": false,
         "dataType": "text",
-        "style": { "width": "140px" },
-        "bodyClassName": "whitespace-nowrap"
+        "style": { "width": "120rem" },
+        "bodyClassName": "white-space-nowrap"
       }
     },
     {
@@ -98,7 +98,7 @@
         "header": "Последняя авторизация",
         "sortable": true,
         "dataType": "date",
-        "style": { "width": "180px" },
+        "style": { "width": "120rem" },
         "dateFormat": "dd.mm.yy",
         "showTime": true,
         "hourFormat": "24"
@@ -114,7 +114,7 @@
         "header": "Реферал",
         "sortable": true,
         "dataType": "text",
-        "style": { "width": "120px" },
+        "style": { "width": "10rem" },
         "bodyClassName": "text-primary cursor-pointer"
       }
     }
@@ -197,14 +197,14 @@
       "name": "Баланс",
       "type": "range",
       "opts": [0, 100000],
-      "value": [null, null]
+      "value": null
     },
     {
       "id": "last_auth",
       "name": "Последняя авторизация",
       "type": "period",
       "opts": null,
-      "value": [null, null]
+      "value": null
     },
     {
       "id": "has_referral",

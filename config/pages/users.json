@@ -33,9 +33,6 @@
     {
       "id": "usersHeader",
       "type": "section",
-      "state": {
-        "visible": true
-      },
       "layout": {
         "type": "flex",
         "direction": "row",
@@ -45,7 +42,6 @@
         {
           "id": "usersTitle",
           "type": "block",
-          "state": {},
           "components": [
             {
               "id": "usersPageTitle",
@@ -54,8 +50,7 @@
               "props": {
                 "value": "Участники",
                 "level": 1
-              },
-              "state": {}
+              }
             }
           ]
         }
@@ -65,10 +60,6 @@
       "id": "usersFilters",
       "type": "section",
       "className": "flex flex-wrap gap-3",
-      "state": {
-        "visible": true
-      },
-
       "blocks": [
         {
           "id": "searchBlock",
@@ -77,44 +68,35 @@
           "wrapper": {
             "className": "flex-grow-1"
           },
-          "state": {},
           "components": [
             {
               "id": "searchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
-              "componentType": "InputTextWithButton",
+              "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
-                "icon": "pi pi-search",
-                "inline": "true",
-                "button": {
-                  "size": "small",
-                  "outlined": true
-                }
-              },
-              "state": {
-                "value": ""
+                "throttleDelay": 500,
+                "value": "@state.users.search"
               },
               "events": [
                 {
                   "type": "onChange",
                   "commands": [
                     {
-                      "type": "log",
+                      "type": "setProperty",
                       "params": {
-                        "message": "{$event}"
+                        "source": "event.value",
+                        "target": "state.users.search"
                       }
-                    }
-                  ]
-                },
-                {
-                  "type": "onClick",
-                  "commands": [
+                    },
                     {
                       "type": "log",
                       "params": {
-                        "message": "{$event}"
+                        "message": {
+                          "event": { "search": "{$event.value}" },
+                          "data": "{$state.users}"
+                        }
                       }
                     }
                   ]
@@ -130,7 +112,6 @@
             "className": "flex-initial"
           },
           "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "state": {},
           "components": [
             {
               "id": "toggleFilters",
@@ -144,7 +125,6 @@
                 "size": "small",
                 "label": "Фильтры"
               },
-              "state": {},
               "events": [
                 {
                   "type": "onClick",
@@ -160,7 +140,7 @@
               ]
             },
             {
-              "id": "btnAddUser",
+              "id": "btnImportUsers",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -169,15 +149,13 @@
                 "severity": "primary",
                 "outlined": true,
                 "size": "small"
-              },
-              "state": {}
+              }
             }
           ]
         },
         {
           "id": "activeFilterBlock",
           "type": "block",
-          "state": {},
           "wrapper": {
             "className": "w-full"
           },
@@ -189,7 +167,6 @@
               "props": {
                 "value": "@state.users.filters"
               },
-              "state": {},
               "events": [
                 {
                   "type": "onChange",
@@ -199,6 +176,15 @@
                       "params": {
                         "source": "event.value",
                         "target": "state.users.filters"
+                      }
+                    },
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": { "filters": "{$event.value}" },
+                          "data": "{$state.users}"
+                        }
                       }
                     }
                   ]
@@ -215,7 +201,6 @@
                 "position": "right",
                 "header": "Фильтры"
               },
-              "state": {},
               "events": [
                 {
                   "type": "onChange",
@@ -231,6 +216,15 @@
                       "type": "toggleProperty",
                       "params": {
                         "target": "state.filtersVisible"
+                      }
+                    },
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": { "filters": "{$event.value}" },
+                          "data": "{$state.users}"
+                        }
                       }
                     }
                   ]
@@ -255,14 +249,10 @@
     {
       "id": "usersTableSection",
       "type": "section",
-      "state": {
-        "visible": true
-      },
       "blocks": [
         {
           "id": "usersTableBlock",
           "type": "block",
-          "state": {},
           "components": [
             {
               "id": "usersTable",
@@ -279,7 +269,36 @@
                 "paginator": true,
                 "lazy": true
               },
-              "state": {}
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": "{$event}",
+                          "data": "{$state.users}"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": "{$event}",
+                          "data": "{$state.users}"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

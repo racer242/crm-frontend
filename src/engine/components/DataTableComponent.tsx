@@ -20,6 +20,7 @@ export function renderDataTable({
       className={`w-full ${className || ""}`}
       style={style}
       {...(props.lazy ? { onPage: (e) => handleEvent("onPage", e) } : {})}
+      onSort={(e) => handleEvent("onSort", e)}
     >
       {props.columns?.map((col: any, index: number) => (
         <Column key={index} {...col} />
