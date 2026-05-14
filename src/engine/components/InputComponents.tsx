@@ -190,11 +190,12 @@ export function renderInputTextWithButton({
         onChange={(e) => handleEvent("onChange", { value: e.target.value })}
       />
       <Button
+        {...buttonProps}
         icon={ButtonIcon}
-        label={buttonProps.label}
-        severity={buttonProps.severity || "primary"}
-        outlined={buttonProps.outlined ?? true}
-        className={buttonProps.className || ""}
+        // label={buttonProps.label}
+        // severity={buttonProps.severity || "primary"}
+        // outlined={buttonProps.outlined ?? true}
+        // className={buttonProps.className || ""}
         onClick={handleButtonClick}
       />
     </div>
