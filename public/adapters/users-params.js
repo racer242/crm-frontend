@@ -5,7 +5,7 @@
  * @param {Object} params.event - Событие с актуальными изменениями
  * @returns {Object} Параметры для GET-запроса к API
  */
-function transformToApiParams({ data = {}, event = {} }) {
+function transform({ data = {}, event = {} }) {
   // 1. Мердж параметров: event имеет приоритет, но только для определённых значений
   const merged = {
     search: event.search !== undefined ? event.search : data.search,

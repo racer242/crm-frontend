@@ -224,9 +224,9 @@
   "search": "",
   "meta": {
     "total_count": 2847,
-    "first": 0,
+    "first": 50,
     "limit": 50,
-    "sort": "last_auth",
+    "sort": "balance",
     "direction": "desc"
   }
 }

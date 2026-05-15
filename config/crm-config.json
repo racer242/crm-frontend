@@ -118,13 +118,11 @@
     },
     "users.request.js": {
       "type": "js",
-      "script": "adapters/users-params.js",
-      "client": true
+      "script": "adapters/users-params.js"
     },
     "users.response.js": {
       "type": "js",
-      "script": "adapters/users-2-tabview.js",
-      "client": true
+      "script": "adapters/users-2-tabview.js"
     }
   },
   "config": {
@@ -146,7 +144,11 @@
       },
       {
         "path": "get-users",
-        "url": "{$config.baseURL}/mocks/api/users/users.json"
+        "url": "{$config.baseURL}/mocks/api/users/users.json",
+        "adapter": {
+          "request": "users.request.js",
+          "response": "users.response.js"
+        }
       }
     ]
   }

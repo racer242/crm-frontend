@@ -51,11 +51,7 @@
               "target": "state.users",
               "data": {
                 "event": "{$event}",
-                "data": "{$state.users}",
-                "adapter": {
-                  "request": "users.request.js",
-                  "response": "users.response.js"
-                }
+                "data": "{$state.users}"
               }
             }
           }

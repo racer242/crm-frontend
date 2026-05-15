@@ -127,7 +127,7 @@ async function handleRequest(
           ? null
           : (routeAdapter as DataFeedAdapter)?.request;
       if (requestAdapterName) {
-        const adapter = config.config.adapters?.[requestAdapterName];
+        const adapter = config.adapters?.[requestAdapterName];
         if (adapter) {
           adaptedBody = await applyAdapter(requestBody, adapter);
         }
@@ -165,7 +165,7 @@ async function handleRequest(
             : (routeAdapter as DataFeedAdapter)?.response;
 
         if (responseAdapterName) {
-          const adapter = config.config.adapters?.[responseAdapterName];
+          const adapter = config.adapters?.[responseAdapterName];
           if (!adapter) {
             return NextResponse.json(
               { error: `Response adapter not found: ${responseAdapterName}` },
