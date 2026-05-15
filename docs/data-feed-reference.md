@@ -16,6 +16,7 @@ DataFeedService — модуль для выполнения HTTP-запросо
 - Интеграция с API Router
 - Автоматическая запись в state
 - Обработка ошибок с dataFeedErrors
+- **Адаптация данных на сервере** — request/response адаптеры через API route
 
 ---
 
@@ -27,9 +28,18 @@ interface DataFeedConfig {
   method: string; // HTTP-метод (GET, POST, PUT, PATCH, DELETE)
   data?: Record<string, any>; // Данные запроса (с макросами)
   target: string; // Куда записать результат
-  adapter?: string; // ID адаптера для трансформации
+  adapter?: string | DataFeedAdapter; // Адаптер (строка = response, объект = request/response)
   cache?: boolean; // Включить кэширование (пока не реализовано)
   cacheTTL?: number; // Время жизни кэша в мс
+}
+```
+
+### DataFeedAdapter
+
+```typescript
+interface DataFeedAdapter {
+  request?: string; // ID адаптера для трансформации данных ПЕРЕД запросом
+  response?: string; // ID адаптера для трансформации ответа ПОСЛЕ запроса
 }
 ```
 
@@ -109,7 +119,7 @@ function executeClientDataFeed(
 
 **Отличия от серверного:**
 
-- Не применяет adapter (адаптеры только на сервере)
+- Адаптация данных происходит на сервере через API route
 - URL уже разрешён через API Router
 
 ---
@@ -202,7 +212,7 @@ function storeInState(stateManager, elementId, statePath, data): void {
 }
 ```
 
-### Через API Router
+### Через API Router с адаптером (response only)
 
 ```json
 {
@@ -212,6 +222,25 @@ function storeInState(stateManager, elementId, statePath, data): void {
       "method": "GET",
       "target": "state",
       "adapter": "stats.replace"
+    }
+  ]
+}
+```
+
+### Через API Router с request/response адаптерами
+
+```json
+{
+  "dataFeed": [
+    {
+      "url": "/api/search",
+      "method": "POST",
+      "data": { "q": "{$state.query}" },
+      "target": "state.results",
+      "adapter": {
+        "request": "transform-search-request",
+        "response": "parse-search-response"
+      }
     }
   ]
 }

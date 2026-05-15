@@ -3,14 +3,16 @@ import { AppEngine } from "@/engine";
 import {
   initApp,
   getPageConfigByRoute,
-  executeServerDataFeeds,
   PageIndex,
-  resolveElementStateMacros,
   buildPageIndex,
 } from "@/core/config";
 import { getServerLocation } from "@/utils/location";
 import { getServerEnv } from "@/utils/env";
 import { notFound } from "next/navigation";
+import {
+  executeServerDataFeeds,
+  resolveElementStateMacros,
+} from "@/core/DataFeedServerService";
 
 export default async function Page({
   params,

@@ -26,18 +26,43 @@
       "url": "{$config.baseURL}/mocks/api/users/users.json",
       "method": "GET",
       "target": "state.users",
-      "adapter": "stats.users.js"
+      "adapter": "users.response.js"
     }
   ],
-  "commands": [
-    {
-      "id": "requestUsers",
-      "type": "log",
+  "shortcuts": {
+    "requestUsers": {
+      "type": "sequence",
       "params": {
-        "message": "event.value"
+        "commands": [
+          {
+            "type": "log",
+            "params": {
+              "message": {
+                "event": "{$event}",
+                "data": "{$state.users}"
+              }
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/get-users",
+              "method": "GET",
+              "target": "state.users",
+              "data": {
+                "event": "{$event}",
+                "data": "{$state.users}",
+                "adapter": {
+                  "request": "users.request.js",
+                  "response": "users.response.js"
+                }
+              }
+            }
+          }
+        ]
       }
     }
-  ],
+  },
   "sections": [
     {
       "id": "usersHeader",
@@ -99,15 +124,7 @@
                         "target": "state.users.search"
                       }
                     },
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": { "search": "{$event.value}" },
-                          "data": "{$state.users}"
-                        }
-                      }
-                    }
+                    "requestUsers"
                   ]
                 }
               ]
@@ -187,15 +204,7 @@
                         "target": "state.users.filters"
                       }
                     },
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": { "filters": "{$event.value}" },
-                          "data": "{$state.users}"
-                        }
-                      }
-                    }
+                    "requestUsers"
                   ]
                 }
               ]
@@ -227,15 +236,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": { "filters": "{$event.value}" },
-                          "data": "{$state.users}"
-                        }
-                      }
-                    }
+                    "requestUsers"
                   ]
                 },
                 {
@@ -281,31 +282,11 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": [
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": "{$event}",
-                          "data": "{$state.users}"
-                        }
-                      }
-                    }
-                  ]
+                  "commands": ["requestUsers"]
                 },
                 {
                   "type": "onSort",
-                  "commands": [
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": "{$event}",
-                          "data": "{$state.users}"
-                        }
-                      }
-                    }
-                  ]
+                  "commands": ["requestUsers"]
                 }
               ]
             }

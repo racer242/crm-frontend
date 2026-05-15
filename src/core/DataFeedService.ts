@@ -3,6 +3,7 @@
  *
  * Core service for executing external API data feed requests.
  * Handles request execution, macro substitution, and state updates.
+ * Adaptation is handled server-side via API route.
  */
 
 import {
@@ -11,7 +12,6 @@ import {
   SendRequestParams,
   ApiRouteConfig,
   MacroSources,
-  DataFeedAdapter,
 } from "@/types";
 import { StateManager } from "./StateManager";
 import { MacroEngine } from "./MacroEngine";
@@ -77,87 +77,6 @@ function buildHeaders(
   }
 
   return headers;
-}
-
-/**
- * Applies request adapter if specified
- */
-async function applyRequestAdapter(
-  adapter: string | DataFeedAdapter | undefined,
-  data: Record<string, any> | undefined,
-  appConfig?: Record<string, any>,
-): Promise<Record<string, any> | undefined> {
-  if (!adapter || !data) return data;
-
-  const adapterName =
-    typeof adapter === "string" ? null : (adapter as DataFeedAdapter)?.request;
-
-  if (!adapterName) return data;
-
-  const adapterConfig = appConfig?.adapters?.[adapterName];
-  if (!adapterConfig) return data;
-
-  return applyReplaceAdapter(data, adapterConfig);
-}
-
-/**
- * Apply replace-style adapter (client-side compatible)
- */
-async function applyReplaceAdapter(data: any, adapter: any): Promise<any> {
-  if (adapter.type === "replace" && adapter.rules) {
-    return applyReplaceRules(data, adapter.rules);
-  }
-  // For JS adapters on client, we'd need to fetch and eval - not implemented
-  return data;
-}
-
-/**
- * Apply replace rules to data
- */
-function applyReplaceRules(data: any, rules: Record<string, any>): any {
-  if (data === null || data === undefined) return data;
-  if (Array.isArray(data)) {
-    return data.map((item) => applyReplaceRules(item, rules));
-  }
-  if (typeof data === "object") {
-    const result: Record<string, any> = {};
-    for (const [key, value] of Object.entries(data)) {
-      const rule = rules[key];
-      if (rule && rule.name) {
-        result[rule.name] = transformValue(value, rule.value, rule, rules);
-      } else {
-        result[key] = applyReplaceRules(value, rules);
-      }
-    }
-    return result;
-  }
-  return data;
-}
-
-/**
- * Transform a single value using replace rule
- */
-function transformValue(
-  value: any,
-  ruleValue: any,
-  rule: any,
-  rules: Record<string, any>,
-): any {
-  if (ruleValue && typeof ruleValue === "object" && "$value$" in ruleValue) {
-    return applyReplaceRules(value, rules);
-  }
-  return value;
-}
-
-/**
- * Extracts response adapter name from adapter config
- */
-function getResponseAdapterName(
-  adapter: string | DataFeedAdapter | undefined,
-): string | null {
-  if (!adapter) return null;
-  if (typeof adapter === "string") return adapter;
-  return (adapter as DataFeedAdapter)?.response || null;
 }
 
 /**
@@ -237,6 +156,7 @@ function createMacroSources(
 
 /**
  * Executes a single data feed request
+ * Data adaptation is handled server-side via API route
  */
 export async function executeDataFeed(
   feed: DataFeedConfig,
@@ -264,15 +184,7 @@ export async function executeDataFeed(
       ? (macroEngine.apply(feed.data) as Record<string, any>)
       : undefined;
 
-    // Apply request adapter if specified
-    resolvedData = await applyRequestAdapter(
-      feed.adapter,
-      resolvedData,
-      appConfig,
-    );
-
     // Resolve the actual URL (check if it's a router URL)
-    // Note: macros in route URLs are resolved inside resolveUrl via macroEngine
     const finalUrl = resolveUrl(resolvedUrl, apiRoutes, macroEngine);
 
     // Build headers with auth
@@ -285,17 +197,6 @@ export async function executeDataFeed(
       resolvedData,
       headers,
     );
-
-    // Apply response adapter if specified
-    const responseAdapterName = getResponseAdapterName(feed.adapter);
-    if (responseAdapterName) {
-      const adapter = appConfig?.adapters?.[responseAdapterName];
-      if (!adapter) {
-        result.error = `Adapter not found: ${responseAdapterName}`;
-        return result;
-      }
-      responseData = await applyReplaceAdapter(responseData, adapter);
-    }
 
     // Parse target and resolve element ID
     const parsedTarget = PathResolver.parseTarget(feed.target);
@@ -349,6 +250,7 @@ export async function executePageDataFeeds(
 /**
  * Client-side data feed execution
  * Uses the API router for requests
+ * Data adaptation is handled server-side via API route
  */
 export async function executeClientDataFeed(
   params: SendRequestParams,
@@ -375,13 +277,6 @@ export async function executeClientDataFeed(
       ? (macroEngine.apply(params.data) as Record<string, any>)
       : undefined;
 
-    // Apply request adapter if specified
-    resolvedData = await applyRequestAdapter(
-      params.adapter,
-      resolvedData,
-      appConfig,
-    );
-
     // Build headers with auth
     const headers = buildHeaders(authToken);
 
@@ -392,17 +287,6 @@ export async function executeClientDataFeed(
       resolvedData,
       headers,
     );
-
-    // Apply response adapter if specified
-    const responseAdapterName = getResponseAdapterName(params.adapter);
-    if (responseAdapterName) {
-      const adapter = appConfig?.adapters?.[responseAdapterName];
-      if (!adapter) {
-        result.error = `Adapter not found: ${responseAdapterName}`;
-        return result;
-      }
-      responseData = await applyReplaceAdapter(responseData, adapter);
-    }
 
     // Parse target and resolve element ID
     const parsedTarget = PathResolver.parseTarget(params.target);

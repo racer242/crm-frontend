@@ -896,9 +896,9 @@ export class CommandExecutor {
   async executeCommand(
     type: string,
     params: Record<string, any>,
-    eventData: any,
+    commandExtraSources: any,
   ): Promise<void> {
-    const extraSources = this.createExtraSources(eventData);
+    const extraSources = this.createExtraSources(commandExtraSources);
 
     switch (type) {
       case "setProperty":
@@ -942,7 +942,7 @@ export class CommandExecutor {
         break;
 
       case "sequence":
-        await this.executeSequence(params, extraSources);
+        await this.executeSequence(params, commandExtraSources);
         break;
 
       case "log":

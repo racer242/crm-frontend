@@ -193,9 +193,6 @@ export function getPageConfigByRoute(route: string | null): any | null {
   );
 }
 
-// Re-export from DataFeedServerService for backward compatibility
-export { executeServerDataFeeds, resolveElementStateMacros };
-
 /**
  * Print startup banner with configuration info
  */

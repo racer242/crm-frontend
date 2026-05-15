@@ -116,9 +116,15 @@
       "type": "js",
       "script": "adapters/weeks-2-select-list.js"
     },
-    "stats.users.js": {
+    "users.request.js": {
       "type": "js",
-      "script": "adapters/users-2-tabview.js"
+      "script": "adapters/users-params.js",
+      "client": true
+    },
+    "users.response.js": {
+      "type": "js",
+      "script": "adapters/users-2-tabview.js",
+      "client": true
     }
   },
   "config": {
@@ -137,6 +143,10 @@
       {
         "path": "get-dynamic-data",
         "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
+      },
+      {
+        "path": "get-users",
+        "url": "{$config.baseURL}/mocks/api/users/users.json"
       }
     ]
   }

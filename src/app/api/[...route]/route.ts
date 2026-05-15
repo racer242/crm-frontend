@@ -13,7 +13,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { initApp } from "@/core/config";
-import { ApiRouteConfig, DataFeedMethod, MacroSources } from "@/types";
+import {
+  ApiRouteConfig,
+  DataFeedMethod,
+  MacroSources,
+  DataFeedAdapter,
+} from "@/types";
 import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "@/core/DataAdapterEngine";
@@ -82,6 +87,19 @@ async function handleRequest(
     // Find the route configuration
     const routeConfig = findRouteConfig(routeName, apiRoutes);
 
+    // Read request body for methods that have one
+    let requestBody: any;
+    if (["POST", "PUT", "PATCH"].includes(request.method)) {
+      try {
+        const contentType = request.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          requestBody = await request.json();
+        }
+      } catch {
+        // Body not parseable, continue without it
+      }
+    }
+
     if (!routeConfig) {
       return NextResponse.json(
         { error: `Route not found: ${routeName}` },
@@ -97,8 +115,32 @@ async function handleRequest(
     const macroEngine = new MacroEngine(serverSources);
     const resolvedUrl = macroEngine.apply(routeConfig.url) as string;
 
-    // Build the fetch options
+    // Apply request adapter if specified in route config
+    let adaptedBody = requestBody;
+    const routeAdapter = routeConfig.adapter as
+      | string
+      | DataFeedAdapter
+      | undefined;
+    if (routeAdapter && requestBody) {
+      const requestAdapterName =
+        typeof routeAdapter === "string"
+          ? null
+          : (routeAdapter as DataFeedAdapter)?.request;
+      if (requestAdapterName) {
+        const adapter = config.config.adapters?.[requestAdapterName];
+        if (adapter) {
+          adaptedBody = await applyAdapter(requestBody, adapter);
+        }
+      }
+    }
+
+    // Build the fetch options with adapted body
     const fetchOptions = buildFetchOptions(request);
+    if (adaptedBody && fetchOptions.body === undefined) {
+      fetchOptions.body = JSON.stringify(adaptedBody);
+    } else if (adaptedBody) {
+      fetchOptions.body = JSON.stringify(adaptedBody);
+    }
 
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
@@ -114,20 +156,29 @@ async function handleRequest(
       responseData = await externalResponse.text();
     }
 
-    // Apply adapter if specified in the route config
-    if (routeConfig.adapter) {
+    // Apply response adapter if specified in the route config
+    if (routeAdapter) {
       try {
-        const adapter = config.config.adapters?.[routeConfig.adapter];
-        if (!adapter) {
-          return NextResponse.json(
-            { error: `Adapter not found: ${routeConfig.adapter}` },
-            { status: 500 },
-          );
+        const responseAdapterName =
+          typeof routeAdapter === "string"
+            ? routeAdapter
+            : (routeAdapter as DataFeedAdapter)?.response;
+
+        if (responseAdapterName) {
+          const adapter = config.config.adapters?.[responseAdapterName];
+          if (!adapter) {
+            return NextResponse.json(
+              { error: `Response adapter not found: ${responseAdapterName}` },
+              { status: 500 },
+            );
+          }
+          responseData = await applyAdapter(responseData, adapter);
         }
-        responseData = await applyAdapter(responseData, adapter);
       } catch (adapterError) {
         return NextResponse.json(
-          { error: `Adapter error: ${(adapterError as Error).message}` },
+          {
+            error: `Response adapter error: ${(adapterError as Error).message}`,
+          },
           { status: 500 },
         );
       }
