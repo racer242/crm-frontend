@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { Component } from "@/types";
+import { Component, Command } from "@/types";
 import { Linkage } from "@/core";
 import { useComponentContext } from "../ComponentContext";
 
@@ -34,7 +34,20 @@ export function useComponentBindings({
     refresh?: (mode: string) => void;
   } | null>(null);
 
-  const { stateManager, pageId, elementIndex } = ctx;
+  const { stateManager, pageId, elementIndex, shortcuts } = ctx;
+
+  /**
+   * Resolve a command reference: if string, look up in shortcuts; otherwise return as-is
+   */
+  const resolveCommand = useCallback(
+    (cmd: string | Command): Command | null => {
+      if (typeof cmd === "string") {
+        return shortcuts?.[cmd] || null;
+      }
+      return cmd;
+    },
+    [shortcuts],
+  );
 
   // Создаём Linkage instance
   const linkage = useMemo(() => {
@@ -139,13 +152,20 @@ export function useComponentBindings({
             : handler.commands;
 
         for (const cmd of commands) {
+          const resolved = resolveCommand(cmd);
+          if (!resolved) {
+            console.warn(
+              `Shortcut command not found: ${typeof cmd === "string" ? cmd : "unknown"}`,
+            );
+            continue;
+          }
           const { CommandExecutor } = require("@/core");
           const executor = new CommandExecutor(commandContextRef.current);
-          executor.executeCommand(cmd.type, cmd.params, eventValue);
+          executor.executeCommand(resolved.type, resolved.params, eventValue);
         }
       }
     },
-    [component.events],
+    [component.events, resolveCommand],
   );
 
   return {

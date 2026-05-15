@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import { App } from "@/types";
+import { App, Command } from "@/types";
 import { StateManager, ElementIndex } from "@/core";
 
 export interface ComponentContextValue {
@@ -17,6 +17,8 @@ export interface ComponentContextValue {
   navigate?: (url: string) => void;
   confirm?: (message: string) => Promise<boolean>;
   refresh?: (mode: string) => void;
+  /** Named command shortcuts from page config */
+  shortcuts?: Record<string, Command>;
 }
 
 export const ComponentContext = createContext<ComponentContextValue>({
@@ -40,6 +42,8 @@ export interface ComponentProviderProps {
   navigate?: (url: string) => void;
   confirm?: (message: string) => Promise<boolean>;
   refresh?: (mode: string) => void;
+  /** Named command shortcuts from page config */
+  shortcuts?: Record<string, Command>;
   children: React.ReactNode;
 }
 
@@ -53,6 +57,7 @@ export function ComponentProvider({
   navigate,
   confirm,
   refresh,
+  shortcuts,
   children,
 }: ComponentProviderProps) {
   return (
@@ -67,6 +72,7 @@ export function ComponentProvider({
         navigate,
         confirm,
         refresh,
+        shortcuts,
       }}
     >
       {children}

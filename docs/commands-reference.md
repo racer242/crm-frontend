@@ -4,6 +4,82 @@
 
 ---
 
+## Shortcuts (Именованные команды)
+
+Shortcuts позволяют определить команды на уровне страницы и ссылаться на них по ID, упрощая конфигурацию и переиспользуя код.
+
+### Определение shortcuts
+
+В корне страницы добавляется объект `shortcuts`:
+
+```json
+{
+  "id": "usersPage",
+  "route": "/users",
+  "shortcuts": {
+    "requestUsers": {
+      "type": "apiRequest",
+      "params": {
+        "url": "/api/users",
+        "target": "state.users"
+      }
+    },
+    "showLoading": {
+      "type": "setProperty",
+      "params": {
+        "target": "state.loading",
+        "value": true
+      }
+    },
+    "logUsers": {
+      "type": "log",
+      "params": {
+        "message": "Users loaded: {$state.users}"
+      }
+    }
+  },
+  "sections": [...]
+}
+```
+
+### Использование в событиях
+
+В массиве `commands` события можно использовать строки вместо полных объектов команд:
+
+```json
+{
+  "id": "searchInput",
+  "type": "component",
+  "componentType": "InputText",
+  "events": [
+    {
+      "type": "onChange",
+      "commands": [
+        "showLoading",
+        "requestUsers",
+        "logUsers",
+        {
+          "type": "setProperty",
+          "params": {
+            "source": "event.value",
+            "target": "state.search"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Правила
+
+- Строка в `commands` → ищется в `page.shortcuts` по ID
+- Если shortcut не найден — выводится предупреждение в консоль
+- Строки и объекты можно смешивать в одном массиве `commands`
+- Shortcut это полноценный `Command` с `type`, `params` и всеми стандартными полями
+
+---
+
 ## Что такое команды
 
 Команды — действия, выполняемые при событиях компонентов (onClick, onChange, onLoad). Каждая команда имеет тип (`type`) и параметры (`params`).

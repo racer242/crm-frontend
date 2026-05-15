@@ -29,6 +29,15 @@
       "adapter": "stats.users.js"
     }
   ],
+  "commands": [
+    {
+      "id": "requestUsers",
+      "type": "log",
+      "params": {
+        "message": "event.value"
+      }
+    }
+  ],
   "sections": [
     {
       "id": "usersHeader",

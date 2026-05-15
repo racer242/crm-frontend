@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Command Shortcuts** — named commands at page level, referenced by string ID in events `commands: ["shortcutId", {...}]`
+  - `shortcuts?: Record<string, Command>` in Page type (`src/types/page.ts`)
+  - `ComponentContext` extended with `shortcuts` prop, passed from `AppEngine`
+  - `useComponentBindings` resolves string commands to full Command objects via `page.shortcuts`
+  - `docs/commands-reference.md` updated with Shortcuts documentation
 - **DataFeedAdapter with request/response support** — adapter can now be an object `{ request: "...", response: "..." }` in addition to a string
   - `src/types/dataFeed.ts` — new `DataFeedAdapter` interface, `DataFeedConfig.adapter` and `SendRequestParams.adapter` now support `string | DataFeedAdapter`
   - Request adapter applied **before** sending HTTP request (after macro resolution)

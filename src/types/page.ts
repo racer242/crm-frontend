@@ -18,6 +18,8 @@ export interface Page extends BaseElement {
   meta?: PageMeta;
   access?: AccessControl;
   events?: PageEvent[];
+  /** Named command shortcuts that can be referenced by ID in events[] */
+  shortcuts?: Record<string, Command>;
   /** Data feed configurations for loading external API data on page load */
   dataFeed?: DataFeedConfig[];
   /** @deprecated Use events array instead */

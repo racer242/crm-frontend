@@ -272,6 +272,7 @@ export function AppEngine({
             navigate={navigate}
             confirm={confirm}
             refresh={refresh}
+            shortcuts={currentPage.shortcuts}
           >
             <PageRenderer page={currentPage} />
             {/* Убирает FOUC при переходе между страницами */}
