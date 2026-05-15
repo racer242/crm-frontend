@@ -10,6 +10,7 @@ import {
   DataFeedResult,
   MacroSources,
   ApiRouteConfig,
+  DataFeedAdapter,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { applyAdapter } from "./DataAdapterEngine";
@@ -58,6 +59,9 @@ export async function executeServerDataFeeds(
       let data = feed.data
         ? (macroEngine.apply(feed.data) as Record<string, any>)
         : undefined;
+
+      // Apply request adapter if specified
+      data = await applyRequestAdapter(feed.adapter, data);
 
       // Resolve the URL (check if it's a router URL)
       if (url.startsWith("/api/")) {
@@ -110,19 +114,26 @@ export async function executeServerDataFeeds(
         responseData = await response.text();
       }
 
-      // Apply adapter if specified
+      // Apply response adapter if specified
       if (feed.adapter) {
         try {
-          const adapter = cachedConfig?.adapters?.[feed.adapter];
-          if (!adapter) {
-            results.push({
-              success: false,
-              target: feed.target,
-              error: `Adapter not found: ${feed.adapter}`,
-            });
-            continue;
+          const adapterName =
+            typeof feed.adapter === "string"
+              ? feed.adapter
+              : (feed.adapter as DataFeedAdapter)?.response;
+
+          if (adapterName) {
+            const adapter = cachedConfig?.adapters?.[adapterName];
+            if (!adapter) {
+              results.push({
+                success: false,
+                target: feed.target,
+                error: `Adapter not found: ${adapterName}`,
+              });
+              continue;
+            }
+            responseData = await applyAdapter(responseData, adapter);
           }
-          responseData = await applyAdapter(responseData, adapter);
         } catch (adapterError) {
           results.push({
             success: false,
@@ -189,4 +200,24 @@ function getChildren(element: any): any[] {
   if (Array.isArray(element.pages)) children.push(...element.pages);
 
   return children;
+}
+
+/**
+ * Apply request adapter to data before sending
+ */
+async function applyRequestAdapter(
+  adapter: string | DataFeedAdapter | undefined,
+  data: Record<string, any> | undefined,
+): Promise<Record<string, any> | undefined> {
+  if (!adapter || !data) return data;
+
+  const adapterName =
+    typeof adapter === "string" ? null : (adapter as DataFeedAdapter)?.request;
+
+  if (!adapterName) return data;
+
+  const adapterConfig = cachedConfig?.adapters?.[adapterName];
+  if (!adapterConfig) return data;
+
+  return applyAdapter(data, adapterConfig);
 }

@@ -32,8 +32,9 @@ export interface DataFeedConfig {
   /**
    * Adapter ID to transform the response data.
    * References an adapter defined in the root `adapters` config.
+   * Can be a string (response adapter) or object with request/response.
    */
-  adapter?: string;
+  adapter?: string | DataFeedAdapter;
 }
 
 /**
@@ -64,6 +65,8 @@ export interface SendRequestParams {
   data?: Record<string, any>;
   /** Target address for the response data */
   target: string;
+  /** Adapter for request/response transformation */
+  adapter?: string | DataFeedAdapter;
 }
 
 /**
@@ -78,6 +81,16 @@ export interface DataFeedResult {
   error?: string;
   /** Target address where data should be stored */
   target: string;
+}
+
+/**
+ * Adapter configuration for request/response transformation
+ */
+export interface DataFeedAdapter {
+  /** Adapter ID for transforming request data before sending */
+  request?: string;
+  /** Adapter ID for transforming response data after receiving */
+  response?: string;
 }
 
 /**
