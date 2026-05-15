@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **DataFeedAdapter with request/response support** — adapter can now be an object `{ request: "...", response: "..." }` in addition to a string
+  - `src/types/dataFeed.ts` — new `DataFeedAdapter` interface, `DataFeedConfig.adapter` and `SendRequestParams.adapter` now support `string | DataFeedAdapter`
+  - Request adapter applied **before** sending HTTP request (after macro resolution)
+  - Response adapter applied **after** receiving HTTP response (as before)
+  - `src/core/DataFeedServerService.ts` — extracted server-side data feed execution from `config.ts`, added `applyRequestAdapter()`, `setServerConfig()`
+  - `src/core/DataFeedService.ts` — client-side `applyReplaceAdapter()` implementation with `applyReplaceRules()` for replace-style adapters, removed server-side `fs/promises` dependency
+- **DataTable onSort handler** — `onSort` event now wired to handle lazy sorting
+- **InputTextWithThrottle** — InputText with configurable `throttleDelay` (default 300ms), local state with debounced onChange
+- **InputTextWithButton** — InputText with attached button using `p-inputgroup` style, `button` prop config with icon, label, severity, outlined, etc.
+- **Components reference documentation** — `docs/components-reference.md` with full docs for all 40+ component types
 - **FiltersPanel component** — metadata-driven filter drawer for list pages (based on PrimeReact Sidebar)
   - `src/types/filters.ts` — new types: `FilterItem`, `FilterModel`, `FilterType`
   - `src/engine/components/FiltersPanelComponent.tsx` — component with 10 filter types: checkbox, switch, range (multi-slider), slider, text, number, date, period (date range), options (checkbox group), radio (radio group)
@@ -25,6 +35,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **DataFeedServerService extracted from config.ts** — server-side data feed functions (`executeServerDataFeeds`, `resolveElementStateMacros`) moved to `src/core/DataFeedServerService.ts`, re-exported for backward compatibility
+- **config.ts simplified** — removed ~160 lines of DataFeed functions, added `setServerConfig()` call in `initApp()`
+- **Users page cleanup** — removed empty `state: {}` blocks, search switched to InputTextWithThrottle with 500ms delay, added onPage/onSort log events
+- **Mock users data** — column widths converted to rem units, whitespace class fixed, added users-params.js adapter
 - **Pages localized to Russian** — navigation bar, page titles, headers, placeholders, and 404 page translated
   - `config/crm-config.json` — sidebar label "Users" → "Участники"
   - `config/pages/users.json` — title, header, search placeholder, dropdown placeholder, switch label translated

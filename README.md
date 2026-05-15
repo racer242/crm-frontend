@@ -387,6 +387,7 @@ Replace-адаптер (макро `$value$`), JS-адаптер (`transform(dat
 → [docs/data-feed-reference.md](docs/data-feed-reference.md)
 
 DataFeedConfig, серверный/клиентский режимы, обработка ошибок.
+Адаптер может быть строкой (response) или объектом `{ request: "...", response: "..." }` для трансформации данных до/после запроса.
 
 ## API Router
 
