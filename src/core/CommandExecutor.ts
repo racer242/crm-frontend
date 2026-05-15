@@ -385,13 +385,32 @@ export class CommandExecutor {
         this.context.appConfig.config,
       );
 
-      if (!result.success && result.error) {
-        console.error(`sendRequest error: ${result.error}`);
+      if (result.success && params.onSuccess) {
+        for (const cmd of params.onSuccess) {
+          await this.executeCommand(cmd.type, cmd.params, {
+            ...extraSources,
+            result: result.data,
+          });
+        }
+      }
+
+      if (!result.success) {
+        const errorMsg = result.error || "Unknown error";
+        console.error(`sendRequest error: ${errorMsg}`);
         this.context.stateManager.setStateField(
           this.context.pageId,
           "dataFeedErrors",
-          [result.error],
+          [errorMsg],
         );
+
+        if (params.onError) {
+          for (const cmd of params.onError) {
+            await this.executeCommand(cmd.type, cmd.params, {
+              ...extraSources,
+              error: result.error,
+            });
+          }
+        }
       }
     } catch (error) {
       const errorMessage =
@@ -402,6 +421,15 @@ export class CommandExecutor {
         "dataFeedErrors",
         [errorMessage],
       );
+
+      if (params.onError) {
+        for (const cmd of params.onError) {
+          await this.executeCommand(cmd.type, cmd.params, {
+            ...extraSources,
+            error: errorMessage,
+          });
+        }
+      }
     }
   }
 

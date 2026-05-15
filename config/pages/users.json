@@ -52,7 +52,27 @@
               "data": {
                 "event": "{$event}",
                 "data": "{$state.users}"
-              }
+              },
+              "onSuccess": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "success": "{$event}"
+                    }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "error": "{$event}"
+                    }
+                  }
+                }
+              ]
             }
           }
         ]
@@ -273,7 +293,9 @@
                 "sortField": "@state.users.sortField",
                 "sortOrder": "@state.users.sortOrder",
                 "paginator": true,
-                "lazy": true
+                "lazy": true,
+                "size": "normal",
+                "selectionMode": "single"
               },
               "events": [
                 {

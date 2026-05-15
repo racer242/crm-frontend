@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **sendRequest onSuccess/onError callbacks** — команды sendRequest теперь поддерживают коллбэки `onSuccess` (при успехе) и `onError` (при ошибке), доступны `{$event.result}` и `{$event.error}` в extraSources
 - **Command Shortcuts** — named commands at page level, referenced by string ID in events `commands: ["shortcutId", {...}]`
   - `shortcuts?: Record<string, Command>` in Page type (`src/types/page.ts`)
   - `ComponentContext` extended with `shortcuts` prop, passed from `AppEngine`
