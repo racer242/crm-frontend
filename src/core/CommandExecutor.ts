@@ -22,6 +22,7 @@
  * - mergePathParams: обновляет отдельные path-параметры { values: { "2": "val2", "4": "val4", "5": null } }
  * - setPathParam: изменяет один path-параметр { index: 1, value: "val2" }
  * - removePathParam: удаляет path-параметр { index: 0 }
+ * - downloadFile: скачивание файла через API { url, method?, data?, filename?, onError? }
  */
 
 import { StateManager } from "./StateManager";
@@ -347,6 +348,115 @@ export class CommandExecutor {
       fieldPath,
       toggledValue,
     );
+  }
+
+  // ========== DOWNLOAD FILE ==========
+  /**
+   * downloadFile: скачивание файла через API
+   *
+   * params:
+   *   url      - URL запроса (обязательно, с поддержкой макросов)
+   *   method   - HTTP метод (опционально, по умолчанию GET)
+   *   data     - тело запроса для POST/PUT (опционально)
+   *   filename - имя файла для сохранения (опционально, с макросами)
+   *   onError  - команды при ошибке (опционально)
+   *
+   * Определение имени файла (приоритет):
+   *   1. Параметр filename
+   *   2. Content-Disposition из ответа
+   *   3. Из URL (последний сегмент)
+   */
+  async executeDownloadFile(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    const { url, method, data, filename, onError } = params;
+    if (!url) {
+      console.warn("downloadFile: missing url");
+      return;
+    }
+
+    const resolvedUrl = this.macroEngine.apply(url, 0, extraSources) as string;
+    let resolvedData = data
+      ? (this.macroEngine.apply(data, 0, extraSources) as Record<string, any>)
+      : undefined;
+    let resolvedFilename = filename
+      ? (this.macroEngine.apply(filename, 0, extraSources) as string)
+      : undefined;
+
+    try {
+      const fetchOptions: RequestInit = {
+        method: method || "GET",
+        headers: {
+          Accept: "*/*",
+        },
+      };
+
+      if (
+        resolvedData &&
+        ["POST", "PUT", "PATCH"].includes((method || "GET").toUpperCase())
+      ) {
+        fetchOptions.body = JSON.stringify(resolvedData);
+      }
+
+      const response = await fetch(resolvedUrl, fetchOptions);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP ${response.status}: ${response.statusText || "Request failed"}`,
+        );
+      }
+
+      // Determine filename
+      if (!resolvedFilename) {
+        const disposition = response.headers.get("Content-Disposition");
+        if (disposition) {
+          const match = disposition.match(/filename="?(.+?)"?$/);
+          if (match) {
+            resolvedFilename = match[1];
+          }
+        }
+      }
+      if (!resolvedFilename) {
+        const urlParts = resolvedUrl.split("/");
+        resolvedFilename =
+          urlParts[urlParts.length - 1].split("?")[0] || "download";
+      }
+
+      // Determine MIME type
+      const contentType =
+        response.headers.get("Content-Type") || "application/octet-stream";
+
+      // Get blob from response
+      const blob = await response.blob();
+
+      // Create download link and click it
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = resolvedFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Revoke blob URL after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 100);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(`downloadFile error: ${errorMessage}`);
+
+      if (onError) {
+        for (const cmd of onError) {
+          await this.executeCommand(cmd.type, cmd.params, {
+            ...extraSources,
+            error: errorMessage,
+          });
+        }
+      }
+    }
   }
 
   // ========== SEND REQUEST ==========
@@ -1007,6 +1117,10 @@ export class CommandExecutor {
 
       case "removePathParam":
         await this.executeRemovePathParam(params, extraSources);
+        break;
+
+      case "downloadFile":
+        await this.executeDownloadFile(params, extraSources);
         break;
 
       case "refresh":

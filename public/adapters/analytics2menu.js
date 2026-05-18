@@ -43,7 +43,7 @@ function transform(data) {
           {
             type: "navigate",
             params: {
-              url: item.url,
+              url: "get-file/?url=" + item.url,
             },
           },
         ];

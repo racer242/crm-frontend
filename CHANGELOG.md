@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **downloadFile command** — новая команда `downloadFile` для скачивания файлов через API (commit `[to-be-added]`)
+  - `CommandType` расширен типом `"downloadFile"`
+  - `CommandExecutor.executeDownloadFile()` — fetch-запрос с бинарным ответом, создание Blob, программный клик для скачивания
+  - Поддержка макросов в `url`, `data`, `filename`
+  - Определение имени файла: параметр > Content-Disposition > последний сегмент URL
+  - Параметры `onError` для обработки ошибок
+- **API Router file route support** — `ApiRouteConfig.type?: "file"` для проксирования бинарных ответов (commit `[to-be-added]`)
+  - `src/types/datafeed.ts` — добавлено поле `type` в `ApiRouteConfig`
+  - `src/app/api/[...route]/route.ts` — при `type: "file"` возвращает ответ как `NextResponse(blob)` с `Content-Type`, `Content-Disposition`, `Content-Length`
+  - `docs/commands-reference.md` — обновлен раздел downloadFile
+
 - **sendRequest onSuccess/onError callbacks** — команды sendRequest теперь поддерживают коллбэки `onSuccess` (при успехе) и `onError` (при ошибке), доступны `{$event.result}` и `{$event.error}` в extraSources
 - **Command Shortcuts** — named commands at page level, referenced by string ID in events `commands: ["shortcutId", {...}]`
   - `shortcuts?: Record<string, Command>` in Page type (`src/types/page.ts`)

@@ -935,6 +935,88 @@ HTTP-запрос к API с записью результата в state и по
 
 ---
 
+## 26. downloadFile
+
+Скачивание файла через API. Выполняет fetch-запрос, получает бинарный ответ и инициирует скачивание в браузере через `URL.createObjectURL`.
+
+**Только клиент:** да (требует browser API)
+
+**Params:**
+
+| Параметр   | Тип         | Описание                      | Обязательно |
+| ---------- | ----------- | ----------------------------- | :---------: |
+| `url`      | `string`    | URL запроса (с макросами)     |     ✅      |
+| `method`   | `string`    | HTTP-метод (GET, POST...)     |  ❌ (GET)   |
+| `data`     | `object`    | Данные запроса (для POST/PUT) |     ❌      |
+| `filename` | `string`    | Имя файла для сохранения      |     ❌      |
+| `onError`  | `Command[]` | Команды при ошибке            |     ❌      |
+
+**Определение имени файла (приоритет):**
+
+1. Параметр `filename`
+2. `Content-Disposition` из ответа сервера
+3. Последний сегмент URL
+
+**Примеры:**
+
+```json
+// Простое скачивание через API Router
+{
+  "type": "downloadFile",
+  "params": {
+    "url": "/api/get-file",
+    "method": "GET"
+  }
+}
+
+// С кастомным именем и макросом
+{
+  "type": "downloadFile",
+  "params": {
+    "url": "/api/get-file",
+    "method": "GET",
+    "filename": "Report_{$now.DD_MM_YYYY}.xlsx"
+  }
+}
+
+// POST-запрос с телом
+{
+  "type": "downloadFile",
+  "params": {
+    "url": "/api/export",
+    "method": "POST",
+    "data": {
+      "format": "xlsx",
+      "ids": "{$state.selectedIds}"
+    },
+    "filename": "export.xlsx",
+    "onError": [
+      {
+        "type": "showToast",
+        "params": {
+          "message": "Ошибка скачивания файла",
+          "severity": "error"
+        }
+      }
+    ]
+  }
+}
+```
+
+**Конфигурация file-роута в crm-config.json:**
+
+```json
+{
+  "path": "get-file",
+  "type": "file",
+  "url": "{$config.baseURL}/mocks/api/files/default.xlsx"
+}
+```
+
+При `type: "file"` API Router проксирует ответ как бинарный stream, пробрасывая `Content-Type`, `Content-Disposition`, `Content-Length`.
+
+---
+
 ## Сводная таблица команд
 
 | Команда           | Описание                    | Сервер | Клиент |
@@ -959,6 +1041,7 @@ HTTP-запрос к API с записью результата в state и по
 | `mergeUrlParams`  | Добавление URL params       |   ❌   |   ✅   |
 | `setUrlParam`     | Изменение одного URL param  |   ❌   |   ✅   |
 | `removeUrlParam`  | Удаление URL param          |   ❌   |   ✅   |
+| `downloadFile`    | Скачивание файла            |   ❌   |   ✅   |
 | `refresh`         | Обновление страницы         |   ❌   |   ✅   |
 
 ---

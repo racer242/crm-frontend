@@ -4,19 +4,24 @@
     "items": [
       {
         "title": "Скачать 1.1.",
-        "url": "Ссылка на скачивание 1.1."
+        "url": "/mocks/api/files/default_12_5_2026_15_5_29.xlsx",
+        "download": true,
+        "file_name": "analytics_data.xlsx"
       },
       {
         "title": "Скачать 1.2.",
-        "url": "Ссылка на скачивание 1.2."
+        "url": "/mocks/api/files/default_21_4_2026_12_33_9.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 1.3.",
-        "url": "Ссылка на скачивание 1.3."
+        "url": "/mocks/api/files/default_21_4_2026_12_55_11.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 1.4.",
-        "url": "Ссылка на скачивание 1.5."
+        "url": "/mocks/api/files/default_21_4_2026_14_25_57.xlsx",
+        "download": true
       }
     ]
   },
@@ -25,19 +30,23 @@
     "items": [
       {
         "title": "Скачать 2.1.",
-        "url": "Ссылка на скачивание 2.1."
+        "url": "/mocks/api/files/default_21_4_2026_14_38_17.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 2.2.",
-        "url": "Ссылка на скачивание 2.2."
+        "url": "/mocks/api/files/default_12_5_2026_14_26_10.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 2.3.",
-        "url": "Ссылка на скачивание 2.3."
+        "url": "/mocks/api/files/default_21_4_2026_14_40_28.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 2.4.",
-        "url": "Ссылка на скачивание 2.5."
+        "url": "/mocks/api/files/default_21_4_2026_14_50_27.xlsx",
+        "download": true
       }
     ]
   },
@@ -46,38 +55,46 @@
     "items": [
       {
         "title": "Скачать 3.1.",
-        "url": "Ссылка на скачивание 3.1."
+        "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 3.2.",
-        "url": "Ссылка на скачивание 3.2."
+        "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 3.3.",
-        "url": "Ссылка на скачивание 3.3."
+        "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+        "download": true
       },
       {
         "title": "Скачать 3.4.",
-        "url": "Ссылка на скачивание 3.5."
+        "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+        "download": true
       },
       {
         "title": "Секция 3.1",
         "items": [
           {
             "title": "Скачать 3.1.1.",
-            "url": "Ссылка на скачивание 3.1.1."
+            "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+            "download": true
           },
           {
             "title": "Скачать 3.1.2.",
-            "url": "Ссылка на скачивание 3.1.2."
+            "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+            "download": true
           },
           {
             "title": "Скачать 3.1.3.",
-            "url": "Ссылка на скачивание 3.1.3."
+            "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+            "download": true
           },
           {
             "title": "Скачать 3.1.4.",
-            "url": "Ссылка на скачивание 3.1.5."
+            "url": "/mocks/api/files/default_21_4_2026_14_58_58.xlsx",
+            "download": true
           }
         ]
       }

@@ -19,11 +19,6 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/mocks/api/get-stats.json",
-      "method": "GET",
-      "target": "state"
-    },
-    {
       "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
       "method": "GET",
       "target": "state.analytics",
@@ -282,7 +277,16 @@
               "events": [
                 {
                   "type": "onNavigate",
-                  "commands": []
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": "{$event}"
+                        }
+                      }
+                    }
+                  ]
                 }
               ]
             }

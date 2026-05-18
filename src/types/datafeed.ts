@@ -47,6 +47,11 @@ export interface ApiRouteConfig {
   /** Full URL of the external API endpoint */
   url: string;
   /**
+   * Route type. If "file", the response is treated as binary
+   * and proxied as-is for download (no JSON parsing, no adapters).
+   */
+  type?: "file";
+  /**
    * Adapter ID to transform the response data.
    * References an adapter defined in the root `adapters` config.
    */

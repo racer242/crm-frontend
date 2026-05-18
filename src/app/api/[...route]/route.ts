@@ -145,6 +145,33 @@ async function handleRequest(
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
 
+    // Check if this is a file route — return binary response as-is
+    if (routeConfig.type === "file") {
+      const blob = await externalResponse.blob();
+      const responseHeaders: Record<string, string> = {};
+
+      // Forward relevant headers for file download
+      const contentType = externalResponse.headers.get("content-type");
+      if (contentType) {
+        responseHeaders["Content-Type"] = contentType;
+      }
+      const contentDisposition = externalResponse.headers.get(
+        "content-disposition",
+      );
+      if (contentDisposition) {
+        responseHeaders["Content-Disposition"] = contentDisposition;
+      }
+      const contentLength = externalResponse.headers.get("content-length");
+      if (contentLength) {
+        responseHeaders["Content-Length"] = contentLength;
+      }
+
+      return new NextResponse(blob, {
+        status: externalResponse.status,
+        headers: responseHeaders,
+      });
+    }
+
     // Get the response content type
     const contentType = externalResponse.headers.get("content-type");
 
