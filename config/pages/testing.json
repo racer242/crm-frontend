@@ -374,6 +374,14 @@
                       "params": {
                         "message": "{$location.param.0}"
                       }
+                    },
+                    {
+                      "type": "copyToClipboard",
+                      "params": {
+                        "value": "{$filtersSection.state.textData.input}",
+                        "message": "Скопировано!",
+                        "severity": "success"
+                      }
                     }
                   ]
                 }

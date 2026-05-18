@@ -320,6 +320,23 @@
                 {
                   "type": "onSort",
                   "commands": ["requestUsers"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event}"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$event.data.id}"
+                      }
+                    }
+                  ]
                 }
               ]
             }

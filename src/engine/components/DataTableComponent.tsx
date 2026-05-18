@@ -21,6 +21,7 @@ export function renderDataTable({
       style={style}
       {...(props.lazy ? { onPage: (e) => handleEvent("onPage", e) } : {})}
       onSort={(e) => handleEvent("onSort", e)}
+      onRowClick={(e) => handleEvent("onRowClick", e)}
     >
       {props.columns?.map((col: any, index: number) => (
         <Column key={index} {...col} />

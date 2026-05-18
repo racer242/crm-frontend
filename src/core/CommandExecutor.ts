@@ -586,7 +586,6 @@ export class CommandExecutor {
   ): Promise<void> {
     const rawUrl = params.url || "";
     let url = this.macroEngine.apply(rawUrl, 0, extraSources) as string;
-    url = this.applyFormatToValue(url, "url", params);
 
     if (this.context.navigate) {
       this.context.navigate(url);
