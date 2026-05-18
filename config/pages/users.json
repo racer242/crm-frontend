@@ -39,7 +39,16 @@
             "params": {
               "message": {
                 "event": "{$event}",
-                "data": "{$state.users}"
+                "data": "{$state.users}",
+                "toSend": {
+                  "event": "{$event}",
+                  "first": "{$state.users.first}",
+                  "rows": "{$state.users.rows}",
+                  "sortField": "{$state.users.sortField}",
+                  "sortOrder": "{$state.users.sortOrder}",
+                  "search": "{$state.users.search}",
+                  "filters": "{$state.users.filters}"
+                }
               }
             }
           },
@@ -51,8 +60,14 @@
               "target": "state.users",
               "data": {
                 "event": "{$event}",
-                "data": "{$state.users}"
+                "first": "{$state.users.first}",
+                "rows": "{$state.users.rows}",
+                "sortField": "{$state.users.sortField}",
+                "sortOrder": "{$state.users.sortOrder}",
+                "search": "{$state.users.search}",
+                "filters": "{$state.users.filters}"
               },
+              "rules": {},
               "onSuccess": [
                 {
                   "type": "log",

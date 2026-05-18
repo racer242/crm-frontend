@@ -41,9 +41,16 @@ function transform(data) {
       if (item.url) {
         menuItem.commands = [
           {
-            type: "navigate",
+            type: "downloadFile",
             params: {
-              url: "get-file/?url=" + item.url,
+              url: "/api/get-file",
+              method: "GET",
+              data: {
+                file_type: "xlsx",
+                file_id: item.file_name,
+                time_stamp: "{$now.DD_MM_YYYY}",
+              },
+              filename: item.file_name,
             },
           },
         ];

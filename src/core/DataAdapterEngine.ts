@@ -2,100 +2,14 @@
  * DataAdapterEngine
  *
  * Applies adapters to transform API response data into CRM-compatible format.
- * Two adapter types:
- * - "replace": dictionary-based property name/value replacement
- * - "js": JavaScript script transformation
+ * Only "js" adapter type is supported (client-side rules are handled by RulesEngine).
  *
  * Adapters run only on the server side.
  */
 
 import * as fs from "fs/promises";
 import * as path from "path";
-import { Adapter, ReplaceRule } from "@/types/adapter";
-
-/**
- * Apply a replace adapter to data
- * Recursively walks through the data, replacing keys and values based on rules
- */
-function applyReplace(data: any, rules: Record<string, ReplaceRule>): any {
-  if (data === null || data === undefined) {
-    return data;
-  }
-
-  if (Array.isArray(data)) {
-    return data.map((item) => applyReplace(item, rules));
-  }
-
-  if (typeof data !== "object") {
-    return data;
-  }
-
-  const result: Record<string, any> = {};
-
-  for (const [key, value] of Object.entries(data)) {
-    const rule = rules[key];
-
-    if (rule) {
-      // Rule found
-      const targetKey = rule.name !== undefined ? rule.name : key;
-
-      if (rule.value !== undefined) {
-        // Value specified: apply $value$ macro, NO recursion
-        result[targetKey] = replaceValueMacro(rule.value, value);
-      } else {
-        // Value not specified: recurse into original value
-        result[targetKey] = applyReplace(value, rules);
-      }
-    } else {
-      // No rule: keep original key, recurse if object/array
-      result[key] = applyReplace(value, rules);
-    }
-  }
-
-  return result;
-}
-
-/**
- * Replace $value$ macro in a value with the original value
- * Handles both string and non-string target values
- */
-function replaceValueMacro(template: any, originalValue: any): any {
-  if (typeof template === "string" && template.includes("$value$")) {
-    return template.replace(/\$value\$/g, String(originalValue));
-  }
-  // If template is an object, recursively replace $value$ macros
-  if (typeof template === "object" && template !== null) {
-    return replaceMacroInObject(template, originalValue);
-  }
-  return template;
-}
-
-/**
- * Recursively replace $value$ macro in an object
- */
-function replaceMacroInObject(obj: any, originalValue: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map((item) =>
-      typeof item === "object" && item !== null
-        ? replaceMacroInObject(item, originalValue)
-        : typeof item === "string"
-          ? item.replace(/\$value\$/g, String(originalValue))
-          : item,
-    );
-  }
-
-  const result: Record<string, any> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === "string") {
-      result[key] = value.replace(/\$value\$/g, String(originalValue));
-    } else if (typeof value === "object" && value !== null) {
-      result[key] = replaceMacroInObject(value, originalValue);
-    } else {
-      result[key] = value;
-    }
-  }
-  return result;
-}
+import { Adapter } from "@/types/adapter";
 
 /**
  * Apply a JS adapter to data
@@ -151,7 +65,10 @@ async function applyJs(data: any, scriptPath: string): Promise<any> {
 export async function applyAdapter(data: any, adapter: Adapter): Promise<any> {
   switch (adapter.type) {
     case "replace":
-      return applyReplace(data, adapter.rules);
+      console.warn(
+        "Replace adapter is deprecated. Use JS adapters or client-side rules instead.",
+      );
+      return data;
 
     case "js":
       return applyJs(data, adapter.script);

@@ -153,7 +153,7 @@
       {
         "path": "get-file",
         "type": "file",
-        "url": "{$config.baseURL}/mocks/api/files/default_12_5_2026_14_26_10.xlsx"
+        "url": "{$config.baseURL}/mocks/api/file/default_12_5_2026_14_26_10.xlsx"
       }
     ]
   }

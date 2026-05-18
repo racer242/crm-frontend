@@ -13,6 +13,7 @@ import {
   DataFeedAdapter,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
+import { buildUrlWithParams } from "@/utils/http";
 import { applyAdapter } from "./DataAdapterEngine";
 
 let cachedConfig: any = null;
@@ -89,8 +90,12 @@ export async function executeServerDataFeeds(
         headers,
       };
 
-      if (data && ["POST", "PUT", "PATCH"].includes(feed.method)) {
-        options.body = JSON.stringify(data);
+      if (data) {
+        if (["POST", "PUT", "PATCH"].includes(feed.method)) {
+          options.body = JSON.stringify(data);
+        } else {
+          url = buildUrlWithParams(url, data);
+        }
       }
 
       const response = await fetch(url, options);

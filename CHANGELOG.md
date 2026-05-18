@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **RulesEngine — rules support in sendRequest command** — новый модуль `RulesEngine` с функцией `applyRules()`, перенесён из `DataAdapterEngine.applyReplace()` (commit `[to-be-added]`)
+  - `src/core/RulesEngine.ts` — функция `applyRules(data, rules)` для трансформации параметров запроса
+  - Макрос `$value$` — подстановка исходного значения в шаблон
+  - Рекурсивный обход данных: переименование ключей (через `name`) и замена значений (через `value`)
+- **sendRequest rules parameter** — команда `sendRequest` теперь поддерживает опциональный параметр `rules` для трансформации `data` (commit `[to-be-added]`)
+  - `executeSendRequest`: `data → macroEngine.apply → applyRules → format → execute`
+  - Правила применяются после макро-резолвинга, что позволяет комбинировать `$value$` и `{{...}}` макросы
+  - Пример: `rules: { "page": { "name": "offset", "value": "$value$" } }`
+
+### Changed
+
+- **DataAdapterEngine упрощён** — удалены функции `applyReplace`, `replaceValueMacro`, `replaceMacroInObject`; replace-адаптер теперь deprecated (commit `[to-be-added]`)
+  - `replace` тип адаптера теперь только выводит предупреждение в консоль и возвращает данные без изменений
+  - Для replace-трансформаций на сервере рекомендуется использовать JS-адаптеры
+  - Клиентские replace-трансформации реализованы через `RulesEngine` в команде `sendRequest`
+
+### Added
+
+- **GET data as query params** — when `data` is provided but method is GET, the data is now serialized into URL query parameters instead of being silently dropped; `null`/`undefined` values are skipped (commit `[to-be-added]`)
+  - `src/utils/http.ts` — new `buildUrlWithParams()` helper
+  - `src/core/DataFeedServerService.ts` — `executeServerDataFeeds` now converts data to query params for non-POST/PUT/PATCH methods
+  - `src/core/DataFeedService.ts` — `executeRequest` same logic with a local `finalUrl` variable
+  - `src/core/CommandExecutor.ts` — `executeDownloadFile` now uses `buildUrlWithParams` for GET data (commit `[to-be-added]`)
+
+### Added
+
 - **downloadFile command** — новая команда `downloadFile` для скачивания файлов через API (commit `[to-be-added]`)
   - `CommandType` расширен типом `"downloadFile"`
   - `CommandExecutor.executeDownloadFile()` — fetch-запрос с бинарным ответом, создание Blob, программный клик для скачивания

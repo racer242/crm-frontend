@@ -16,10 +16,9 @@ function transform({ data = {}, event = {} }) {
     rows: event.rows !== undefined ? event.rows : data.rows,
   };
 
-  // 2. Пагинация: first (индекс записи) → page (номер страницы)
+  // 2. Пагинация: first (индекс записи)
   const limit = merged.rows ?? 50;
   const first = merged.first ?? 0;
-  const page = limit ? Math.floor(first / limit) : 0;
 
   // 3. Сортировка: sortOrder (1/-1) → direction ('asc'/'desc')
   const sort = merged.sortField || null;
@@ -30,7 +29,7 @@ function transform({ data = {}, event = {} }) {
 
   // 5. Формируем итоговый объект (исключаем null/undefined для чистоты запроса)
   return {
-    page,
+    first,
     limit: limit || null, // null = без лимита
     sort,
     direction,

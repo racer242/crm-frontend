@@ -17,6 +17,7 @@ import { StateManager } from "./StateManager";
 import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
 import { getServerEnv } from "@/utils/env";
+import { buildUrlWithParams } from "@/utils/http";
 
 /**
  * Resolves the target element ID for a data feed request.
@@ -88,17 +89,23 @@ async function executeRequest(
   data: Record<string, any> | undefined,
   headers: Record<string, string>,
 ): Promise<any> {
+  let finalUrl = url;
+
   const options: RequestInit = {
     method,
     headers,
   };
 
-  // Add body for methods that support it
-  if (data && ["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-    options.body = JSON.stringify(data);
+  // Add body for methods that support it, or convert to query params for GET
+  if (data) {
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
+      options.body = JSON.stringify(data);
+    } else {
+      finalUrl = buildUrlWithParams(url, data);
+    }
   }
 
-  const response = await fetch(url, options);
+  const response = await fetch(finalUrl, options);
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => "");

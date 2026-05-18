@@ -36,9 +36,11 @@ import {
 } from "@/types";
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
+import { buildUrlWithParams } from "@/utils/http";
 import { getServerEnv } from "@/utils/env";
 import { getClientLocation } from "@/utils/location";
 import { FormatEngine, FormatRule } from "./FormatEngine";
+import { applyRules } from "./RulesEngine";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -376,7 +378,7 @@ export class CommandExecutor {
       return;
     }
 
-    const resolvedUrl = this.macroEngine.apply(url, 0, extraSources) as string;
+    let resolvedUrl = this.macroEngine.apply(url, 0, extraSources) as string;
     let resolvedData = data
       ? (this.macroEngine.apply(data, 0, extraSources) as Record<string, any>)
       : undefined;
@@ -392,11 +394,14 @@ export class CommandExecutor {
         },
       };
 
-      if (
-        resolvedData &&
-        ["POST", "PUT", "PATCH"].includes((method || "GET").toUpperCase())
-      ) {
-        fetchOptions.body = JSON.stringify(resolvedData);
+      if (resolvedData) {
+        if (
+          ["POST", "PUT", "PATCH"].includes((method || "GET").toUpperCase())
+        ) {
+          fetchOptions.body = JSON.stringify(resolvedData);
+        } else {
+          resolvedUrl = buildUrlWithParams(resolvedUrl, resolvedData);
+        }
       }
 
       const response = await fetch(resolvedUrl, fetchOptions);
@@ -477,6 +482,12 @@ export class CommandExecutor {
     let resolvedData = data
       ? (this.macroEngine.apply(data, 0, extraSources) as Record<string, any>)
       : undefined;
+
+    // Применение правил трансформации (rules) к данным после макро-резолвинга
+    if (params.rules && resolvedData) {
+      resolvedData = applyRules(resolvedData, params.rules);
+    }
+
     resolvedData = this.applyFormatToValue(resolvedData, "data", params);
 
     const requestParams: SendRequestParams = {
