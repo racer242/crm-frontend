@@ -13,7 +13,7 @@ function transform(params = {}) {
     sortField: event.sortField !== undefined ? event.sortField : base.sortField,
     sortOrder: event.sortOrder !== undefined ? event.sortOrder : base.sortOrder,
     search: event.search !== undefined ? event.search : base.search,
-    filters: event.filters !== undefined ? event.filters : base.filters,
+    filters: base.filters,
   };
 
   // 2. Пагинация: first (индекс) → page (номер страницы)
@@ -37,7 +37,6 @@ function transform(params = {}) {
     search: merged.search || "",
     filters,
   };
-  console.log("??", a);
 
   return a;
 }
