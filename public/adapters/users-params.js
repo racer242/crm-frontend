@@ -1,70 +1,61 @@
 /**
- * Трансформирует параметры PrimeReact DataTable в формат API запроса
- * @param {Object} params - Объект с data и event
- * @param {Object} params.data - Текущее состояние таблицы
- * @param {Object} params.event - Событие с актуальными изменениями
+ * Трансформирует состояние таблицы + событие в параметры API-запроса
+ * @param {Object} params - Объект с полями состояния и вложенным event
  * @returns {Object} Параметры для GET-запроса к API
  */
-function transform({ data = {}, event = {} }) {
-  // 1. Мердж параметров: event имеет приоритет, но только для определённых значений
+function transform(params = {}) {
+  const { event = {}, ...base } = params;
+
+  // 1. Слияние: event переопределяет base только если значение передано явно
   const merged = {
-    search: event.search !== undefined ? event.search : data.search,
-    filters: event.filters !== undefined ? event.filters : data.filters,
-    first: event.first !== undefined ? event.first : data.first,
-    sortField: event.sortField !== undefined ? event.sortField : data.sortField,
-    sortOrder: event.sortOrder !== undefined ? event.sortOrder : data.sortOrder,
-    rows: event.rows !== undefined ? event.rows : data.rows,
+    first: event.first !== undefined ? event.first : base.first,
+    rows: event.rows !== undefined ? event.rows : base.rows,
+    sortField: event.sortField !== undefined ? event.sortField : base.sortField,
+    sortOrder: event.sortOrder !== undefined ? event.sortOrder : base.sortOrder,
+    search: event.search !== undefined ? event.search : base.search,
+    filters: event.filters !== undefined ? event.filters : base.filters,
   };
 
-  // 2. Пагинация: first (индекс записи)
-  const limit = merged.rows ?? 50;
+  // 2. Пагинация: first (индекс) → page (номер страницы)
+  const limit = merged.rows;
   const first = merged.first ?? 0;
+  const page = limit ? Math.floor(first / limit) : 0;
 
-  // 3. Сортировка: sortOrder (1/-1) → direction ('asc'/'desc')
+  // 3. Сортировка: 1/-1 → 'asc'/'desc'
   const sort = merged.sortField || null;
   const direction = sort ? (merged.sortOrder === -1 ? "desc" : "asc") : null;
 
-  // 4. Фильтры: трансформация из формата PrimeReact в формат API
+  // 4. Фильтры: объект → массив
   const filters = transformFilters(merged.filters);
 
-  // 5. Формируем итоговый объект (исключаем null/undefined для чистоты запроса)
-  return {
-    first,
-    limit: limit || null, // null = без лимита
+  // 5. Итоговый объект
+  let a = {
+    page,
+    limit: limit ?? null,
     sort,
     direction,
     search: merged.search || "",
     filters,
   };
+  console.log("??", a);
+
+  return a;
 }
 
 /**
- * Трансформирует фильтры из формата PrimeReact в формат API
- *
- * PrimeReact: { fieldName: { value, matchMode }, ... }
- * API:        [{ id: fieldName, value, matchMode }, ...]
- *
- * @param {Object} prFilters - Фильтры из PrimeReact
- * @returns {Array} Массив фильтров для API
+ * Преобразует фильтры PrimeReact → формат API
  */
 function transformFilters(prFilters) {
-  if (!prFilters || typeof prFilters !== "object") {
-    return [];
-  }
+  if (!prFilters || typeof prFilters !== "object") return [];
 
   return Object.entries(prFilters)
     .filter(
-      ([_, filter]) =>
-        filter &&
-        filter.value !== undefined &&
-        filter.value !== null &&
-        filter.value !== "",
+      ([_, f]) =>
+        f?.value !== undefined && f?.value !== null && f?.value !== "",
     )
-    .map(([field, filter]) => {
-      const result = { id: field, value: filter.value };
-      if (filter.matchMode) {
-        result.matchMode = filter.matchMode;
-      }
+    .map(([id, { value, matchMode }]) => {
+      const result = { id, value };
+      if (matchMode) result.matchMode = matchMode;
       return result;
     });
 }

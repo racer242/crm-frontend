@@ -22,3 +22,22 @@ export function buildUrlWithParams(
   }
   return `${url}?${params.toString()}`;
 }
+
+/**
+ * Parse URL search parameters back into a data object.
+ * Reverse operation of buildUrlWithParams — tries JSON.parse for each value,
+ * falls back to raw string for primitive values.
+ */
+export function parseSearchParams(
+  searchParams: URLSearchParams,
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of searchParams.entries()) {
+    try {
+      result[key] = JSON.parse(value);
+    } catch {
+      result[key] = value;
+    }
+  }
+  return result;
+}

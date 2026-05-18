@@ -22,6 +22,7 @@ import {
 import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "@/core/DataAdapterEngine";
+import { buildUrlWithParams, parseSearchParams } from "@/utils/http";
 
 /**
  * Finds a route configuration by path name
@@ -87,7 +88,7 @@ async function handleRequest(
     // Find the route configuration
     const routeConfig = findRouteConfig(routeName, apiRoutes);
 
-    // Read request body for methods that have one
+    // Read request body — from JSON body for POST/PUT/PATCH, from URL params for others
     let requestBody: any;
     if (["POST", "PUT", "PATCH"].includes(request.method)) {
       try {
@@ -97,6 +98,11 @@ async function handleRequest(
         }
       } catch {
         // Body not parseable, continue without it
+      }
+    } else {
+      const searchParams = request.nextUrl.searchParams;
+      if (searchParams.size > 0) {
+        requestBody = parseSearchParams(searchParams);
       }
     }
 
@@ -113,10 +119,11 @@ async function handleRequest(
       env: getServerEnv(),
     };
     const macroEngine = new MacroEngine(serverSources);
-    const resolvedUrl = macroEngine.apply(routeConfig.url) as string;
+    let resolvedUrl = macroEngine.apply(routeConfig.url) as string;
 
     // Apply request adapter if specified in route config
     let adaptedBody = requestBody;
+
     const routeAdapter = routeConfig.adapter as
       | string
       | DataFeedAdapter
@@ -136,10 +143,13 @@ async function handleRequest(
 
     // Build the fetch options with adapted body
     const fetchOptions = buildFetchOptions(request);
-    if (adaptedBody && fetchOptions.body === undefined) {
-      fetchOptions.body = JSON.stringify(adaptedBody);
-    } else if (adaptedBody) {
-      fetchOptions.body = JSON.stringify(adaptedBody);
+
+    if (adaptedBody) {
+      if (["POST", "PUT", "PATCH"].includes(request.method)) {
+        fetchOptions.body = JSON.stringify(adaptedBody);
+      } else {
+        resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
+      }
     }
 
     // Forward the request to the external API

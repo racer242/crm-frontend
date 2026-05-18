@@ -25,10 +25,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **GET data as query params** — when `data` is provided but method is GET, the data is now serialized into URL query parameters instead of being silently dropped; `null`/`undefined` values are skipped (commit `[to-be-added]`)
-  - `src/utils/http.ts` — new `buildUrlWithParams()` helper
+  - `src/utils/http.ts` — new `buildUrlWithParams()` helper, `parseSearchParams()` reverse function
   - `src/core/DataFeedServerService.ts` — `executeServerDataFeeds` now converts data to query params for non-POST/PUT/PATCH methods
   - `src/core/DataFeedService.ts` — `executeRequest` same logic with a local `finalUrl` variable
   - `src/core/CommandExecutor.ts` — `executeDownloadFile` now uses `buildUrlWithParams` for GET data (commit `[to-be-added]`)
+  - `src/app/api/[...route]/route.ts` — `handleRequest` now reads URL params for GET, parses them via `parseSearchParams` (with JSON.parse for encoded objects/arrays), passes them through the request adapter, and sends the adapted data back as URL params via `buildUrlWithParams`
 
 ### Added
 
