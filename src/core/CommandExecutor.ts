@@ -1038,6 +1038,73 @@ export class CommandExecutor {
     }
   }
 
+  // ========== COPY TO CLIPBOARD ==========
+  /**
+   * copyToClipboard: копирует данные из params в буфер обмена
+   *
+   * params:
+   *   value    - что копировать (строка, объект, макрос {$...})
+   *   message  - опциональное toast-сообщение при успехе (с макросами)
+   *   severity - уровень toast (success/info/warn/error), по умолчанию "info"
+   *
+   * Если value — объект, он преобразуется в JSON (pretty-printed).
+   * Использует navigator.clipboard.writeText() с fallback на document.execCommand('copy').
+   */
+  async executeCopyToClipboard(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    const rawValue = params.value;
+    if (rawValue === undefined || rawValue === null) {
+      console.warn("copyToClipboard: missing value");
+      return;
+    }
+
+    let resolvedValue = this.macroEngine.apply(rawValue, 0, extraSources);
+
+    // Если в итоге получился объект — сериализуем в JSON
+    const text =
+      typeof resolvedValue === "object" && resolvedValue !== null
+        ? JSON.stringify(resolvedValue, null, 2)
+        : String(resolvedValue);
+
+    try {
+      // Основной API: navigator.clipboard
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback: document.execCommand('copy')
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+    } catch (error) {
+      console.error("copyToClipboard error:", error);
+      return;
+    }
+
+    // Показать toast, если указан message
+    const rawMessage = params.message;
+    if (rawMessage) {
+      let message = this.macroEngine.apply(
+        rawMessage,
+        0,
+        extraSources,
+      ) as string;
+      const severity = params.severity || "info";
+      if (this.context.showToast) {
+        this.context.showToast(message, severity);
+      } else {
+        console.log(`[Toast ${severity}] ${message}`);
+      }
+    }
+  }
+
   // ========== EXECUTE COMMAND ==========
   /**
    * Общая функция исполнения команд
@@ -1132,6 +1199,10 @@ export class CommandExecutor {
 
       case "downloadFile":
         await this.executeDownloadFile(params, extraSources);
+        break;
+
+      case "copyToClipboard":
+        await this.executeCopyToClipboard(params, extraSources);
         break;
 
       case "refresh":

@@ -1017,6 +1017,70 @@ HTTP-запрос к API с записью результата в state и по
 
 ---
 
+### 27. copyToClipboard
+
+Копирует данные из `params` в буфер обмена (clipboard).
+
+**Только клиент:** да (требует browser API)
+
+**Params:**
+
+| Параметр   | Тип      | Описание                                        | Обязательно |
+| ---------- | -------- | ----------------------------------------------- | :---------: |
+| `value`    | `any`    | Данные для копирования (строка, объект, макрос) |     ✅      |
+| `message`  | `string` | Toast-сообщение при успехе (с макросами)        |     ❌      |
+| `severity` | `string` | Уровень toast (success/info/warn/error)         |  ❌ (info)  |
+
+**Особенности:**
+
+- Если `value` — объект, он сериализуется в JSON (pretty-printed)
+- Использует `navigator.clipboard.writeText()` с fallback на `document.execCommand('copy')`
+- Поддерживает макросы `{$...}`
+
+**Примеры:**
+
+```json
+// Копирование строки
+{
+  "type": "copyToClipboard",
+  "params": {
+    "value": "Текст для копирования"
+  }
+}
+
+// Копирование значения из state (с макросом и toast)
+{
+  "type": "copyToClipboard",
+  "params": {
+    "value": "{$user.state.email}",
+    "message": "Email скопирован: {$user.state.email}",
+    "severity": "success"
+  }
+}
+
+// Копирование объекта (будет преобразован в JSON)
+{
+  "type": "copyToClipboard",
+  "params": {
+    "value": {
+      "id": "{$state.selectedUser.id}",
+      "name": "{$state.selectedUser.name}"
+    },
+    "message": "Данные пользователя скопированы"
+  }
+}
+
+// Копирование с форматированием
+{
+  "type": "copyToClipboard",
+  "params": {
+    "value": "ID: {$user.state.id} | Имя: {$user.state.name} | Дата: {$now.DD.MM.YYYY}"
+  }
+}
+```
+
+---
+
 ## Сводная таблица команд
 
 | Команда           | Описание                    | Сервер | Клиент |
@@ -1042,6 +1106,7 @@ HTTP-запрос к API с записью результата в state и по
 | `setUrlParam`     | Изменение одного URL param  |   ❌   |   ✅   |
 | `removeUrlParam`  | Удаление URL param          |   ❌   |   ✅   |
 | `downloadFile`    | Скачивание файла            |   ❌   |   ✅   |
+| `copyToClipboard` | Копирование в буфер обмена  |   ❌   |   ✅   |
 | `refresh`         | Обновление страницы         |   ❌   |   ✅   |
 
 ---

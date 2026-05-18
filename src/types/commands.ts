@@ -36,7 +36,8 @@ export type CommandType =
   | "setUrlParam"
   | "removeUrlParam"
   | "refresh"
-  | "downloadFile";
+  | "downloadFile"
+  | "copyToClipboard";
 
 /** Триггер выполнения команды */
 export interface CommandTrigger {

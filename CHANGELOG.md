@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **copyToClipboard command** — новая команда `copyToClipboard` для копирования данных в буфер обмена (commit `[to-be-added]`)
+  - `CommandType` расширен типом `"copyToClipboard"`
+  - `CommandExecutor.executeCopyToClipboard()` — использует `navigator.clipboard.writeText()` с fallback на `document.execCommand('copy')`
+  - Поддержка макросов в `value`, `message`
+  - Если `value` — объект, сериализуется в JSON (pretty-printed)
+  - Опциональный параметр `message` для toast-уведомления при успехе
+  - `docs/commands-reference.md` — добавлен раздел copyToClipboard
+
 - **RulesEngine — rules support in sendRequest command** — новый модуль `RulesEngine` с функцией `applyRules()`, перенесён из `DataAdapterEngine.applyReplace()` (commit `[to-be-added]`)
   - `src/core/RulesEngine.ts` — функция `applyRules(data, rules)` для трансформации параметров запроса
   - Макрос `$value$` — подстановка исходного значения в шаблон
