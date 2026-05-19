@@ -25,6 +25,10 @@ import {
 } from "@/auth/constants";
 
 function isProtectedRoute(pathname: string): boolean {
+  if (PROTECTED_ROUTES.length === 0 && GUEST_ROUTES.length > 0) {
+    // Всё защищено — проверяем что это НЕ guest роут
+    return !isGuestRoute(pathname);
+  }
   return PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + "/"),
   );

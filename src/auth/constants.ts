@@ -41,9 +41,10 @@ export const TOKEN_LIFETIMES = {
 } as const;
 
 /** Защищённые роуты — требуют авторизации */
-export const PROTECTED_ROUTES = getRoutes(process.env.AUTH_PROTECTED_ROUTES, [
-  "/",
-]);
+export const PROTECTED_ROUTES = getRoutes(
+  process.env.AUTH_PROTECTED_ROUTES,
+  [],
+);
 
 /** Гостевые роуты — только для неавторизованных */
 export const GUEST_ROUTES = getRoutes(process.env.AUTH_GUEST_ROUTES, [
