@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
+import { useAuth } from "@/auth/AuthContext";
 import { Menu } from "primereact/menu";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
@@ -121,7 +122,6 @@ interface DashboardSidebarProps {
   items: NavItem[];
   title: string;
   userMenu?: UserMenuConfig;
-  isAuthenticated: boolean;
   mobileOpen: boolean;
   collapsed: boolean;
   onMobileOpenChange: (open: boolean) => void;
@@ -132,12 +132,12 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
   items,
   title,
   userMenu,
-  isAuthenticated,
   mobileOpen,
   collapsed,
   onMobileOpenChange,
   onCollapseChange,
 }: DashboardSidebarProps) {
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname() || "/";
 

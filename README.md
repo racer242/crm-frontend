@@ -33,6 +33,8 @@ App (приложение)
 - **PrimeIcons** — иконки
 - **chart.js** — графики и диаграммы
 - **$RefParser** — разрешение `$ref` в конфигурации
+- **jose** — JWT верификация и создание токенов
+- **1С Битрикс** — источник пользователей для авторизации
 - Тёмная тема **lara-dark-blue**
 
 ## Структура проекта
@@ -43,15 +45,25 @@ App (приложение)
 │   ├── pages/                   # Конфигурации страниц
 │   └── api/                     # Конфигурации API-маршрутов
 ├── src/
-│   ├── types/                   # Система типов
+│   ├── types/                   # Система типов (+ auth.ts)
+│   ├── auth/                    # Сервисы авторизации (JWT, cookies, Bitrix API)
+│   │   ├── constants.ts         # Cookie keys, lifetimes, protected/guest routes
+│   │   ├── bitrixClient.ts      # HTTP клиент для 1С Битрикс
+│   │   ├── tokenService.ts      # JWT верификация / декодирование через jose
+│   │   ├── cookieService.ts     # Установка/удаление httpOnly cookies
+│   │   ├── getServerUser.ts     # Серверный хелпер для Server Components
+│   │   └── AuthContext.tsx      # React Context (AuthProvider + useAuth)
 │   ├── core/                    # Ядро платформы (StateManager, CommandExecutor, MacroEngine, Linkage...)
 │   ├── engine/                  # Рендер-движок (AppEngine, PageRenderer, ComponentRenderer...)
 │   ├── utils/                   # Общие утилиты
+│   ├── proxy.ts                 # Proxy (бывш. middleware) — проверка JWT, refresh, редиректы
 │   └── app/
-│       ├── layout.tsx           # Корневой layout с PrimeReactProvider
+│       ├── layout.tsx           # Корневой layout с PrimeReactProvider + AuthProvider
 │       ├── globals.css          # Минимальные CSS-reset
 │       ├── [[...slug]]/page.tsx # Динамический роутер
-│       └── api/[...route]/route.ts # API Router (проксирование запросов)
+│       ├── api/[...route]/route.ts     # API Router (проксирование запросов)
+│       ├── api/auth/[...auth]/route.ts # Auth API (login, refresh, logout)
+│       └── login/page.tsx       # Страница логина
 └── docs/                        # Документация
 ```
 
@@ -224,6 +236,49 @@ Next.js API Route (`/api/[...route]`) проксирует запросы кли
 
 → Полное описание: [docs/api-router-reference.md](docs/api-router-reference.md)
 
+## 9. Авторизация (NextJS + 1С Битрикс)
+
+Система авторизации использует **1С Битрикс** как источник пользователей и **JWT** для аутентификации сессий.
+
+**Архитектура:**
+
+- Все запросы к Битрикс идут **только с сервера** NextJS
+- Токены хранятся исключительно в **httpOnly cookies**
+- **Proxy** (`src/proxy.ts`) валидирует токен локально через `JWT_SECRET`
+- Данные пользователя для UI читаются на сервере в `layout.tsx` и передаются в `AuthProvider`
+
+**API эндпоинты:**
+
+| Метод | Путь                | Описание                                      |
+| ----- | ------------------- | --------------------------------------------- |
+| POST  | `/api/auth/login`   | Принимает логин/пароль, устанавливает cookies |
+| POST  | `/api/auth/refresh` | Обновляет токены через refresh_token          |
+| POST  | `/api/auth/logout`  | Удаляет cookies, уведомляет Битрикс           |
+
+**Ключевые файлы:**
+
+| Файл                                  | Назначение                                         |
+| ------------------------------------- | -------------------------------------------------- |
+| `src/auth/constants.ts`               | Ключи cookies, время жизни, списки protected/guest |
+| `src/auth/bitrixClient.ts`            | HTTP клиент с `X-Internal-Secret`                  |
+| `src/auth/tokenService.ts`            | Верификация JWT через `jose`                       |
+| `src/auth/cookieService.ts`           | Установка/удаление httpOnly cookies                |
+| `src/auth/getServerUser.ts`           | Чтение пользователя из токена (Server Components)  |
+| `src/auth/AuthContext.tsx`            | React Context (AuthProvider + useAuth)             |
+| `src/proxy.ts`                        | Proxy — проверка/refresh токенов, редиректы        |
+| `src/app/login/page.tsx`              | Страница логина                                    |
+| `src/app/api/auth/[...auth]/route.ts` | Route handler для login/refresh/logout             |
+
+**Переменные окружения:**
+
+| Переменная               | Описание                                         |
+| ------------------------ | ------------------------------------------------ |
+| `BITRIX_API_URL`         | URL для API 1С Битрикс                           |
+| `BITRIX_INTERNAL_SECRET` | Секретный ключ для внутренних запросов к Битрикс |
+| `JWT_SECRET`             | Секрет для верификации JWT-токенов               |
+
+→ Описание задачи: [.prompts/auth.md](.prompts/auth.md)
+
 ---
 
 # Навигация
@@ -317,6 +372,9 @@ npm run build     # Production-билд
 | `API_BASE_URL`                 | (пусто)                    | Базовый URL для API-запросов                        |
 | `DEBUG_MODE`                   | `false`                    | Включить отладочное логирование                     |
 | `PORT`                         | `3000`                     | Порт dev-сервера                                    |
+| `BITRIX_API_URL`               | (пусто)                    | URL для API 1С Битрикс (авторизация)                |
+| `BITRIX_INTERNAL_SECRET`       | (пусто)                    | Секретный ключ для внутренних запросов к Битрикс    |
+| `JWT_SECRET`                   | (пусто)                    | Секрет для верификации JWT-токенов                  |
 | `NEXT_PUBLIC_USE_SYSTEM_FONTS` | `false`                    | Пропустить загрузку Google Fonts (системные шрифты) |
 
 **Параметры `config/crm-config.json`:**
@@ -401,3 +459,7 @@ DataFeedConfig, серверный/клиентский режимы, обраб
 → [docs/architecture-reference.md](docs/architecture-reference.md)
 
 StateManager, ElementIndex, PathResolver, Component Rendering, Event System.
+
+## Авторизация
+
+→ [.prompts/auth.md](.prompts/auth.md)

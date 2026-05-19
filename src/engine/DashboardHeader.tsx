@@ -3,22 +3,22 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { UserMenuConfig } from "@/types";
+import { useAuth } from "@/auth/AuthContext";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 
 interface DashboardHeaderProps {
   title: string;
   userMenu?: UserMenuConfig;
-  isAuthenticated: boolean;
   onMenuClick: () => void;
 }
 
 export function DashboardHeader({
   title,
   userMenu,
-  isAuthenticated,
   onMenuClick,
 }: DashboardHeaderProps) {
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   const handleAuthClick = useCallback(() => {

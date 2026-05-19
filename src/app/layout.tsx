@@ -3,6 +3,8 @@ import "./globals.css";
 
 import { PrimeReactProvider } from "primereact/api";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
+import { AuthProvider } from "@/auth/AuthContext";
+import { getServerUser } from "@/auth/getServerUser";
 
 const useSystemFonts = process.env.NEXT_PUBLIC_USE_SYSTEM_FONTS === "true";
 
@@ -47,11 +49,13 @@ const primeReactConfig = {
   unstyled: false,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getServerUser();
+
   return (
     <html
       lang="en"
@@ -69,7 +73,7 @@ export default function RootLayout({
 
         <GlobalPreloader />
         <PrimeReactProvider value={primeReactConfig}>
-          {children}
+          <AuthProvider initialUser={user}>{children}</AuthProvider>
         </PrimeReactProvider>
       </body>
     </html>

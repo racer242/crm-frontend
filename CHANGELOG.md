@@ -6,11 +6,25 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-<<<<<<< HEAD
 - **Auth specification prompt** — `.prompts/auth.md` with a detailed plan for implementing JWT-based Bitrix24 authorization in NextJS App Router using httpOnly cookies, local JWT validation via `jose`, Auth Context for user state, and middleware-based route protection (commit `ad1656b`)
-=======
-- **Auth specification prompt** — `.prompts/auth.md` with a detailed plan for implementing JWT-based Bitrix24 authorization in NextJS App Router using httpOnly cookies, local JWT validation via `jose`, Auth Context for user state, and middleware-based route protection (commit `[to-be-added]`)
->>>>>>> ad1656b2cf11db9b7b01b1fa358f45cc60d14de0
+- **Auth system implementation** — full JWT-based Bitrix24 authorization (commit `[to-be-added]`)
+  - `src/types/auth.ts` — new types: User, AuthTokens, LoginResponse, LoginCredentials, TokenPayload
+  - `src/auth/constants.ts` — cookie keys, token lifetimes, protected/guest routes
+  - `src/auth/bitrixClient.ts` — HTTP клиент для 1С Битрикс с X-Internal-Secret
+  - `src/auth/tokenService.ts` — JWT верификация/декодирование через jose
+  - `src/auth/cookieService.ts` — установка/удаление httpOnly cookies
+  - `src/auth/getServerUser.ts` — серверный хелпер для Server Components
+  - `src/auth/AuthContext.tsx` — React Context (AuthProvider + useAuth)
+  - `src/app/api/auth/[...auth]/route.ts` — Route handler для login/refresh/logout
+  - `src/proxy.ts` — Proxy (бывш. middleware): проверка JWT, refresh, редиректы
+  - `src/app/login/page.tsx` — страница логина с PrimeReact компонентами
+  - `src/app/layout.tsx` — AuthProvider с initialUser с сервера
+  - `src/engine/DashboardSidebar.tsx` — переключен на useAuth вместо пропсов
+  - `src/engine/DashboardHeader.tsx` — переключен на useAuth вместо пропсов
+  - `src/engine/AppEngine.tsx` — удалён isAuthenticated hardcode
+  - `src/middleware.ts → src/proxy.ts` — миграция с middleware на proxy
+  - `.env.example` — добавлены BITRIX_API_URL, BITRIX_INTERNAL_SECRET, JWT_SECRET
+  - `README.md` — обновлена структура проекта и документация авторизации
 
 ### Fixed
 

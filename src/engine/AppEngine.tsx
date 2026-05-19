@@ -235,7 +235,6 @@ export function AppEngine({
   }
 
   const navItems: NavItem[] = config.navbar?.items || [];
-  const isAuthenticated = true; // TODO: Replace with proper auth mechanism
   const title = config.title || "CRM Platform";
 
   return (
@@ -245,7 +244,6 @@ export function AppEngine({
       <DashboardHeader
         title={title}
         userMenu={config.userMenu}
-        isAuthenticated={isAuthenticated}
         onMenuClick={() => setMobileMenuOpen(true)}
       />
       {navItems.length > 0 && (
@@ -253,7 +251,6 @@ export function AppEngine({
           items={navItems}
           title={title}
           userMenu={config.userMenu}
-          isAuthenticated={isAuthenticated}
           mobileOpen={mobileMenuOpen}
           collapsed={collapsed}
           onMobileOpenChange={setMobileMenuOpen}
