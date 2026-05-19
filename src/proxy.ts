@@ -86,11 +86,12 @@ async function tryRefreshToken(
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
-  // Пропускаем статические файлы, API, _next и т.д.
+  // Пропускаем статические файлы, API, _next, mocks и т.д.
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/static/") ||
+    pathname.startsWith("/mocks/") ||
     pathname === "/favicon.ico"
   ) {
     return NextResponse.next();
