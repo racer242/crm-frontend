@@ -16,26 +16,40 @@ export class BitrixApiError extends Error {
   }
 }
 
+/** Кэшированные значения — вычисляются один раз */
+let _cachedUrl: string | null = null;
+let _cachedSecret: string | null = null;
+let _cachedMethod: string | null = null;
+
 function getBitrixApiUrl(): string {
-  const url = process.env.BITRIX_API_URL;
-  if (!url) {
-    console.error("[bitrixClient] BITRIX_API_URL is not configured");
-    throw new Error("BITRIX_API_URL is not configured");
+  if (_cachedUrl === null) {
+    const url = process.env.BITRIX_API_URL;
+    if (!url) {
+      console.error("[bitrixClient] BITRIX_API_URL is not configured");
+      throw new Error("BITRIX_API_URL is not configured");
+    }
+    _cachedUrl = url;
   }
-  return url;
+  return _cachedUrl;
 }
 
 function getInternalSecret(): string {
-  const secret = process.env.BITRIX_INTERNAL_SECRET;
-  if (!secret) {
-    console.error("[bitrixClient] BITRIX_INTERNAL_SECRET is not configured");
-    throw new Error("BITRIX_INTERNAL_SECRET is not configured");
+  if (_cachedSecret === null) {
+    const secret = process.env.BITRIX_INTERNAL_SECRET;
+    if (!secret) {
+      console.error("[bitrixClient] BITRIX_INTERNAL_SECRET is not configured");
+      throw new Error("BITRIX_INTERNAL_SECRET is not configured");
+    }
+    _cachedSecret = secret;
   }
-  return secret;
+  return _cachedSecret;
 }
 
 function getRequestMethod(): string {
-  return process.env.BITRIX_REQUEST_METHOD || "POST";
+  if (_cachedMethod === null) {
+    _cachedMethod = process.env.BITRIX_REQUEST_METHOD || "POST";
+  }
+  return _cachedMethod;
 }
 
 interface BitrixRequestOptions {

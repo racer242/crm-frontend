@@ -1,6 +1,7 @@
 /**
  * Константы для системы авторизации
  * Все параметры читаются из process.env.* с fallback на значения по умолчанию.
+ * Вычисляются один раз при первом импорте.
  */
 
 /**
@@ -17,19 +18,14 @@ function getRoutes(envVar: string | undefined, defaults: string[]): string[] {
 }
 
 /** Ключи cookie */
+const _cookieNames =
+  process.env.AUTH_COOKIE_NAMES || "access_token,refresh_token,user_data";
+const _cookieArray = _cookieNames.split(",").map((s) => s.trim());
+
 export const COOKIE_KEYS = {
-  ACCESS_TOKEN:
-    (process.env.AUTH_COOKIE_NAMES || "access_token,refresh_token,user_data")
-      .split(",")
-      .map((s) => s.trim())[0] || "access_token",
-  REFRESH_TOKEN:
-    (process.env.AUTH_COOKIE_NAMES || "access_token,refresh_token,user_data")
-      .split(",")
-      .map((s) => s.trim())[1] || "refresh_token",
-  USER_DATA:
-    (process.env.AUTH_COOKIE_NAMES || "access_token,refresh_token,user_data")
-      .split(",")
-      .map((s) => s.trim())[2] || "user_data",
+  ACCESS_TOKEN: _cookieArray[0] || "access_token",
+  REFRESH_TOKEN: _cookieArray[1] || "refresh_token",
+  USER_DATA: _cookieArray[2] || "user_data",
 } as const;
 
 /** Время жизни токенов (в секундах) */

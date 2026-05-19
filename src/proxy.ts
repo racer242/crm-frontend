@@ -3,7 +3,7 @@
  *
  * 1. Определяет тип роута: защищённый, гостевой, остальные
  * 2. Проверяет access_token локально через tokenService
- * 3. Если токен истекает — пробует refresh через /api/auth/refresh
+ * 3. Если токен истекает — пробует refresh напрямую через bitrixClient
  * 4. Защищённый роут без сессии → редирект на /login?returnUrl=...
  * 5. Гостевой роут с сессией → редирект на /
  *
@@ -17,12 +17,9 @@ import {
   isTokenExpiringSoon,
   decodeToken,
 } from "@/auth/tokenService";
-import {
-  COOKIE_KEYS,
-  PROTECTED_ROUTES,
-  GUEST_ROUTES,
-  MAX_REFRESH_ATTEMPTS,
-} from "@/auth/constants";
+import { bitrixRequest, BitrixApiError } from "@/auth/bitrixClient";
+import { COOKIE_KEYS, PROTECTED_ROUTES, GUEST_ROUTES } from "@/auth/constants";
+import type { LoginResponse } from "@/types";
 
 function isProtectedRoute(pathname: string): boolean {
   if (PROTECTED_ROUTES.length === 0 && GUEST_ROUTES.length > 0) {
@@ -47,7 +44,8 @@ function getReturnUrl(request: NextRequest): string {
 }
 
 /**
- * Попытка refresh токена через внутренний API
+ * Попытка refresh токена напрямую через Битрикс (без внутреннего HTTP-запроса).
+ * Это предотвращает цепочку request → fetch → /api/auth/refresh → bitrixClient.
  */
 async function tryRefreshToken(
   request: NextRequest,
@@ -59,26 +57,58 @@ async function tryRefreshToken(
   }
 
   try {
-    const origin = request.nextUrl.origin;
-    const refreshResponse = await fetch(`${origin}/api/auth/refresh`, {
-      method: "POST",
-      headers: {
-        Cookie: `refresh_token=${refreshToken}`,
-      },
+    const response = await bitrixRequest<LoginResponse>("/api/auth/refresh", {
+      body: { refresh_token: refreshToken },
     });
 
-    if (refreshResponse.ok) {
-      // Создаём ответ и переносим Set-Cookie из refresh-ответа
-      const response = NextResponse.next();
-      const setCookieHeaders = refreshResponse.headers.getSetCookie();
-      setCookieHeaders.forEach((cookie) => {
-        response.headers.append("Set-Cookie", cookie);
-      });
-      return { ok: true, response };
-    }
+    // Создаём ответ с новыми cookies
+    const nextResponse = NextResponse.next();
+    const lifetimeAccess =
+      Number(process.env.AUTH_TOKEN_LIFETIME_ACCESS) || 15 * 60;
+    const lifetimeRefresh =
+      Number(process.env.AUTH_TOKEN_LIFETIME_REFRESH) || 7 * 24 * 3600;
+    const lifetimeUser =
+      Number(process.env.AUTH_TOKEN_LIFETIME_USERDATA) || 7 * 24 * 3600;
+    const isProd = process.env.NODE_ENV === "production";
 
-    return { ok: false };
-  } catch {
+    nextResponse.cookies.set(COOKIE_KEYS.ACCESS_TOKEN, response.access_token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: lifetimeAccess,
+    });
+
+    nextResponse.cookies.set(
+      COOKIE_KEYS.REFRESH_TOKEN,
+      response.refresh_token,
+      {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+        maxAge: lifetimeRefresh,
+      },
+    );
+
+    nextResponse.cookies.set(
+      COOKIE_KEYS.USER_DATA,
+      JSON.stringify(response.user),
+      {
+        httpOnly: false,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+        maxAge: lifetimeUser,
+      },
+    );
+
+    return { ok: true, response: nextResponse };
+  } catch (error) {
+    // Логируем только неожиданные ошибки (BitrixApiError ожидаемы)
+    if (!(error instanceof BitrixApiError)) {
+      console.error("[proxy] Refresh token error:", error);
+    }
     return { ok: false };
   }
 }

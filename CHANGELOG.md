@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Memory leak: JWT secret regenerated on every request** — `tokenService.ts` now caches the encoded secret (`_jwtSecretCache`) instead of calling `new TextEncoder().encode(secret)` on every `verifyToken` call
+- **Memory leak: Bitrix client env values regenerated** — `bitrixClient.ts` now caches `BITRIX_API_URL`, `BITRIX_INTERNAL_SECRET`, and `BITRIX_REQUEST_METHOD` in module-level variables instead of reading `process.env` on every request
+- **Memory leak: constants recomputed on module import** — `constants.ts` now memoizes cookie name parsing into a single `_cookieArray` instead of splitting the same string 3 times
+- **Memory leak: proxy making internal HTTP fetch for token refresh** — `proxy.ts` `tryRefreshToken()` now calls `bitrixRequest()` directly instead of `fetch('/api/auth/refresh')`, eliminating the request chain: request → proxy → fetch → /api/auth/refresh → bitrixClient → external API
+- **Missing middleware entry point** — Next.js 16 requires the middleware file to be named `proxy.ts` with exported `proxy` function and `config` matcher; file was present but not wired correctly
+
 ### Added
 
 - **Auth specification prompt** — `.prompts/auth.md` with a detailed plan for implementing JWT-based Bitrix24 authorization in NextJS App Router using httpOnly cookies, local JWT validation via `jose`, Auth Context for user state, and middleware-based route protection (commit `ad1656b`)

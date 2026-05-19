@@ -7,12 +7,18 @@
 import { jwtVerify, decodeJwt, SignJWT } from "jose";
 import type { TokenPayload } from "@/types";
 
+/** Кэшированный секрет — вычисляется один раз, не создаёт лишних объектов */
+let _jwtSecretCache: Uint8Array | null = null;
+
 function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error("JWT_SECRET is not configured");
+  if (!_jwtSecretCache) {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error("JWT_SECRET is not configured");
+    }
+    _jwtSecretCache = new TextEncoder().encode(secret);
   }
-  return new TextEncoder().encode(secret);
+  return _jwtSecretCache;
 }
 
 /**
