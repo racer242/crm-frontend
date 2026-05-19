@@ -4,6 +4,8 @@
  * Работает только на сервере.
  */
 
+import { buildUrlWithParams } from "@/utils/http";
+
 export class BitrixApiError extends Error {
   constructor(
     message: string,
@@ -32,6 +34,10 @@ function getInternalSecret(): string {
   return secret;
 }
 
+function getRequestMethod(): string {
+  return process.env.BITRIX_REQUEST_METHOD || "POST";
+}
+
 interface BitrixRequestOptions {
   method?: string;
   body?: unknown;
@@ -39,12 +45,15 @@ interface BitrixRequestOptions {
 
 /**
  * Выполняет запрос к API Битрикс
+ * Метод по умолчанию берётся из BITRIX_REQUEST_METHOD (из .env).
+ * Если метод GET — body сериализуется в URL-параметры.
  */
 export async function bitrixRequest<T>(
   path: string,
   options: BitrixRequestOptions = {},
 ): Promise<T> {
-  const url = `${getBitrixApiUrl()}${path}`;
+  const method = options.method || getRequestMethod();
+  const baseUrl = getBitrixApiUrl();
   const secret = getInternalSecret();
 
   const headers: Record<string, string> = {
@@ -53,17 +62,32 @@ export async function bitrixRequest<T>(
     "X-Internal-Secret": secret,
   };
 
+  // Для GET-запросов сериализуем body в URL-параметры
+  let requestUrl: string;
+  let requestBody: string | undefined;
+
+  if (method === "GET" && options.body) {
+    requestUrl = buildUrlWithParams(
+      baseUrl + path,
+      options.body as Record<string, unknown>,
+    );
+    requestBody = undefined;
+  } else {
+    requestUrl = baseUrl + path;
+    requestBody = options.body ? JSON.stringify(options.body) : undefined;
+  }
+
   console.log(
-    `[bitrixClient] → ${options.method || "POST"} ${url}`,
+    `[bitrixClient] → ${method} ${requestUrl}`,
     options.body ? JSON.stringify(options.body).slice(0, 200) : "",
   );
 
   let response: Response;
   try {
-    response = await fetch(url, {
-      method: options.method || "POST",
+    response = await fetch(requestUrl, {
+      method,
       headers,
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      body: requestBody,
     });
   } catch (fetchError) {
     const message =

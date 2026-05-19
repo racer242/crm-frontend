@@ -1,0 +1,17 @@
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjk5OTk5OTk5OTksInR5cGUiOiJhY2Nlc3MifQ.test-signature",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjk5OTk5OTk5OTksInR5cGUiOiJyZWZyZXNoIn0.test-signature",
+  "expires_in": 900,
+  "user": {
+    "id": "1",
+    "login": "admin",
+    "email": "admin@crm.test",
+    "name": "Администратор",
+    "avatar": "",
+    "role": "admin",
+    "groups": [
+      "users",
+      "admins"
+    ]
+  }
+}

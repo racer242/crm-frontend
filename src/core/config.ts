@@ -304,6 +304,9 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Auth URL:  ${(process.env.BITRIX_API_URL || "not set").padEnd(48)}║`,
   );
   console.log(
+    `║  Method:    ${(process.env.BITRIX_REQUEST_METHOD || "POST").padEnd(48)}║`,
+  );
+  console.log(
     "╚═════════════════════════════════════════════════════════════╝",
   );
   console.log("");
