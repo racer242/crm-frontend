@@ -301,6 +301,9 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Mode:      ${(process.env.NODE_ENV || "development").padEnd(48)}║`,
   );
   console.log(
+    `║  Auth URL:  ${(process.env.BITRIX_API_URL || "not set").padEnd(48)}║`,
+  );
+  console.log(
     "╚═════════════════════════════════════════════════════════════╝",
   );
   console.log("");

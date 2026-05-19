@@ -17,6 +17,7 @@ export class BitrixApiError extends Error {
 function getBitrixApiUrl(): string {
   const url = process.env.BITRIX_API_URL;
   if (!url) {
+    console.error("[bitrixClient] BITRIX_API_URL is not configured");
     throw new Error("BITRIX_API_URL is not configured");
   }
   return url;
@@ -25,6 +26,7 @@ function getBitrixApiUrl(): string {
 function getInternalSecret(): string {
   const secret = process.env.BITRIX_INTERNAL_SECRET;
   if (!secret) {
+    console.error("[bitrixClient] BITRIX_INTERNAL_SECRET is not configured");
     throw new Error("BITRIX_INTERNAL_SECRET is not configured");
   }
   return secret;
@@ -51,6 +53,11 @@ export async function bitrixRequest<T>(
     "X-Internal-Secret": secret,
   };
 
+  console.log(
+    `[bitrixClient] → ${options.method || "POST"} ${url}`,
+    options.body ? JSON.stringify(options.body).slice(0, 200) : "",
+  );
+
   const response = await fetch(url, {
     method: options.method || "POST",
     headers,
@@ -69,8 +76,11 @@ export async function bitrixRequest<T>(
     } catch {
       // ignore parse error, use default message
     }
+    console.error(`[bitrixClient] ✘ ${response.status} — ${errorMessage}`);
     throw new BitrixApiError(errorMessage, response.status);
   }
 
-  return response.json() as Promise<T>;
+  const body = await response.json();
+  console.log(`[bitrixClient] ✓ ${response.status}`);
+  return body as Promise<T>;
 }

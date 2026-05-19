@@ -1,0 +1,4 @@
+{
+  "error": "invalid_login",
+  "error_description": "Неверный логин или пароль"
+}

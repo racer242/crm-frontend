@@ -1,0 +1,4 @@
+{
+  "error": "invalid_refresh_token",
+  "error_description": "Refresh токен недействителен или истёк"
+}

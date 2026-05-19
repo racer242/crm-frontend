@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **Auth specification prompt** — `.prompts/auth.md` with a detailed plan for implementing JWT-based Bitrix24 authorization in NextJS App Router using httpOnly cookies, local JWT validation via `jose`, Auth Context for user state, and middleware-based route protection (commit `ad1656b`)
-- **Auth system implementation** — full JWT-based Bitrix24 authorization (commit `[to-be-added]`)
+- **Auth system implementation** — full JWT-based Bitrix24 authorization (commit `d3bb21d`)
   - `src/types/auth.ts` — new types: User, AuthTokens, LoginResponse, LoginCredentials, TokenPayload
   - `src/auth/constants.ts` — cookie keys, token lifetimes, protected/guest routes
   - `src/auth/bitrixClient.ts` — HTTP клиент для 1С Битрикс с X-Internal-Secret
@@ -25,6 +25,18 @@ All notable changes to this project will be documented in this file.
   - `src/middleware.ts → src/proxy.ts` — миграция с middleware на proxy
   - `.env.example` — добавлены BITRIX_API_URL, BITRIX_INTERNAL_SECRET, JWT_SECRET
   - `README.md` — обновлена структура проекта и документация авторизации
+- **Auth server error logging** — `bitrixClient.ts` теперь логирует ошибки в `console.error` (безопасно, в ответе клиенту — общее сообщение) (commit `[to-be-added]`)
+  - Логи вызова: `[bitrixClient] → POST url`, `[bitrixClient] ✘ status — error`, `[bitrixClient] ✓ status`
+  - `console.error` при отсутствии `BITRIX_API_URL` или `BITRIX_INTERNAL_SECRET`
+  - `console.error` при HTTP-ошибке с расшифровкой из `error_description`
+- **Mock API ответы для Bitrix auth** — 6 файлов в `public/mocks/api/bitrix/` (commit `[to-be-added]`)
+  - `login-response-success.json` — успешный вход с access_token, refresh_token, user
+  - `login-response-error.json` — ошибка "Неверный логин или пароль"
+  - `refresh-response-success.json` — успешный refresh токенов
+  - `refresh-response-error.json` — ошибка "Refresh токен недействителен или истёк"
+  - `logout-response-success.json` — успешный выход
+  - `logout-response-error.json` — ошибка "Токен недействителен"
+- **Startup banner** — добавлена строка `Auth URL` с отображением `BITRIX_API_URL` из `.env` (commit `[to-be-added]`)
 
 ### Fixed
 
