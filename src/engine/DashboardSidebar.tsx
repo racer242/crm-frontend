@@ -19,7 +19,10 @@ function buildMenuItems(
     if ((item as any).separator) {
       return { separator: true };
     }
-    const active = pathname === item.route;
+    const active =
+      item.route === "/"
+        ? pathname === "/"
+        : pathname === item.route || pathname.startsWith(item.route + "/");
     return {
       label: collapsed ? "" : item.label,
       icon: item.icon,

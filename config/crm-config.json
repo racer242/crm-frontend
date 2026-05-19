@@ -82,7 +82,8 @@
     { "$ref": "./pages/reports.json" },
     { "$ref": "./pages/settings.json" },
     { "$ref": "./pages/components.json" },
-    { "$ref": "./pages/testing.json" }
+    { "$ref": "./pages/testing.json" },
+    { "$ref": "./pages/user.json" }
   ],
   "adapters": {
     "stats.analytics.replace": {

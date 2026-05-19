@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Main navbar active route detection** — sidebar menu items now stay highlighted for nested sub‑routes (e.g. `/users/123` keeps the "Участники" item active) (commit `[to-be-added]`)
+  - Exact match for root route `/` to avoid highlighting Dashboard on every page
+  - Route prefix match with `/` delimiter for all other routes to prevent false positives (e.g. `/users` does not match `/usersettings`)
+
 ### Added
 
 - **Route pattern matching with [id]-style templates** — `findPageByRoute()` and `matchRoute()` in `src/core/config.ts` for matching dynamic routes like `/users/[id]` or `/users/[id]/edit` (commit `[to-be-added]`)
