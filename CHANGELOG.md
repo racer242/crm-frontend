@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Auth specification prompt** — `.prompts/auth.md` with a detailed plan for implementing JWT-based Bitrix24 authorization in NextJS App Router using httpOnly cookies, local JWT validation via `jose`, Auth Context for user state, and middleware-based route protection (commit `ad1656b`)
+
 ### Fixed
 
 - **Main navbar active route detection** — sidebar menu items now stay highlighted for nested sub‑routes (e.g. `/users/123` keeps the "Участники" item active) (commit `[to-be-added]`)
