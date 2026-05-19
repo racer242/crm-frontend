@@ -17,7 +17,7 @@ export const TOKEN_LIFETIMES = {
 } as const;
 
 /** Защищённые роуты — требуют авторизации */
-export const PROTECTED_ROUTES = ["/dashboard", "/profile"];
+export const PROTECTED_ROUTES = ["/"];
 
 /** Гостевые роуты — только для неавторизованных */
 export const GUEST_ROUTES = ["/login"];

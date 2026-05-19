@@ -59,7 +59,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
         const data = await response.json();
         setUser(data.user);
-        router.push(returnUrl || "/dashboard");
+        router.push(returnUrl || "/");
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Login failed");

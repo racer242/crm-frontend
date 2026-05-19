@@ -5,7 +5,7 @@
  * 2. Проверяет access_token локально через tokenService
  * 3. Если токен истекает — пробует refresh через /api/auth/refresh
  * 4. Защищённый роут без сессии → редирект на /login?returnUrl=...
- * 5. Гостевой роут с сессией → редирект на /dashboard
+ * 5. Гостевой роут с сессией → редирект на /
  *
  * ВАЖНО: proxy работает с request.cookies напрямую,
  * т.к. next/headers несовместим с Edge Runtime.
@@ -39,7 +39,7 @@ function isGuestRoute(pathname: string): boolean {
 function getReturnUrl(request: NextRequest): string {
   const { pathname, search } = request.nextUrl;
   const fullPath = pathname + search;
-  return fullPath !== "/login" ? fullPath : "/dashboard";
+  return fullPath !== "/login" ? fullPath : "/";
 }
 
 /**
@@ -128,9 +128,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Гостевой роут с сессией → редирект на /dashboard
+  // Гостевой роут с сессией → редирект на /
   if (isGuest && hasSession) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
