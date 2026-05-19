@@ -58,11 +58,19 @@ export async function bitrixRequest<T>(
     options.body ? JSON.stringify(options.body).slice(0, 200) : "",
   );
 
-  const response = await fetch(url, {
-    method: options.method || "POST",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: options.method || "POST",
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+  } catch (fetchError) {
+    const message =
+      fetchError instanceof Error ? fetchError.message : String(fetchError);
+    console.error(`[bitrixClient] ✘ Network error — ${message}`);
+    throw new BitrixApiError(`Bitrix API request failed: ${message}`, 502);
+  }
 
   if (!response.ok) {
     let errorMessage = `Bitrix API error: ${response.status}`;
@@ -80,7 +88,16 @@ export async function bitrixRequest<T>(
     throw new BitrixApiError(errorMessage, response.status);
   }
 
-  const body = await response.json();
+  let body: T;
+  try {
+    body = await response.json();
+  } catch (parseError) {
+    const message =
+      parseError instanceof Error ? parseError.message : String(parseError);
+    console.error(`[bitrixClient] ✘ Parse error — ${message}`);
+    throw new BitrixApiError("Failed to parse Bitrix API response", 502);
+  }
+
   console.log(`[bitrixClient] ✓ ${response.status}`);
-  return body as Promise<T>;
+  return body;
 }
