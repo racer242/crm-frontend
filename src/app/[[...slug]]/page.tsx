@@ -3,6 +3,7 @@ import { AppEngine } from "@/engine";
 import {
   initApp,
   getPageConfigByRoute,
+  findPageByRoute,
   PageIndex,
   buildPageIndex,
 } from "@/core/config";
@@ -29,6 +30,7 @@ export default async function Page({
   const slug = resolvedParams.slug || [];
   let route: string | null = null;
   let pathParams: string[] = [];
+  let routeParams: Record<string, string> = {};
   let pageConfig: any = null;
 
   // If accessing "/" and indexPageId is configured, redirect to that page
@@ -45,14 +47,16 @@ export default async function Page({
   }
 
   // Fallback matching: try to find page by route, starting from full path
+  // Supports [id]-style route patterns like /users/[id] or /users/[id]/edit
   if (!pageConfig) {
     for (let i = slug.length; i >= 0; i--) {
       const testRoute: string | null =
         i > 0 ? "/" + slug.slice(0, i).join("/") : null;
-      const cfg = getPageConfigByRoute(testRoute);
-      if (cfg) {
-        pageConfig = cfg;
-        route = testRoute;
+      const match = findPageByRoute(testRoute);
+      if (match) {
+        pageConfig = match.pageConfig;
+        route = match.route;
+        routeParams = match.routeParams;
         pathParams = slug.slice(i);
         break;
       }
@@ -76,6 +80,7 @@ export default async function Page({
     resolvedSearchParams,
     route ?? undefined,
     pathParams,
+    routeParams,
   );
 
   // Create shared server sources for macros

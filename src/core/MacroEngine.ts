@@ -160,6 +160,11 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
         const idx = parseInt(parts[1], 10);
         return pathParams[idx] ?? undefined;
       }
+      if (parts[0] === "routeParams") {
+        const routeParams = (sources.location as any).routeParams;
+        if (!routeParams) return undefined;
+        return routeParams[parts[1]] ?? undefined;
+      }
       return getNestedValue(
         {
           href: sources.location.href,
@@ -173,6 +178,7 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
           origin: sources.location.origin,
           params: (sources.location as any).params,
           pathParams: (sources.location as any).pathParams,
+          routeParams: (sources.location as any).routeParams,
         },
         fullPath,
       );

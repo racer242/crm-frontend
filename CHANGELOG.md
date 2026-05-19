@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Route pattern matching with [id]-style templates** — `findPageByRoute()` and `matchRoute()` in `src/core/config.ts` for matching dynamic routes like `/users/[id]` or `/users/[id]/edit` (commit `[to-be-added]`)
+  - `matchRoute(actualRoute, routePattern)` — compares actual URL segments against a template with `[param]` placeholders
+  - `findPageByRoute(route)` — tries exact match first, then pattern matching across all pages; returns `{ pageConfig, route, routeParams }`
+  - `PageRouteMatch` and `RouteMatchResult` interfaces exported from `config.ts`
+- **routeParams in ParsedLocation** — `src/utils/location.ts`: new `routeParams: Record<string, string>` field in `ParsedLocation`, populated both on server (`getServerLocation`) and client (`getClientLocation`) from `[id]` patterns in the page route
+- **`{$location.routeParams.*}` macro** — `src/core/MacroEngine.ts`: new macro for accessing named route parameters, e.g. `{$location.routeParams.id}` resolves to `"123"` for URL `/users/123` with route `/users/[id]`
+- **src/app/[[...slug]]/page.tsx** — fallback matching now uses `findPageByRoute` with full pattern support; `routeParams` passed to `getServerLocation`
+
+### Changed
+
 - **copyToClipboard command** — новая команда `copyToClipboard` для копирования данных в буфер обмена (commit `[to-be-added]`)
   - `CommandType` расширен типом `"copyToClipboard"`
   - `CommandExecutor.executeCopyToClipboard()` — использует `navigator.clipboard.writeText()` с fallback на `document.execCommand('copy')`

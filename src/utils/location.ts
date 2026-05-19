@@ -8,6 +8,7 @@
 export interface ParsedLocation extends Location {
   params: Record<string, string>; // search params (?key=value)
   pathParams: string[]; // path segments (/users/312 -> ['312'])
+  routeParams: Record<string, string>; // named route params from [id] patterns ({ id: "312" })
 }
 
 /**
@@ -15,11 +16,13 @@ export interface ParsedLocation extends Location {
  * @param searchParams - URL search parameters
  * @param pathname - Current path
  * @param pathParams - Path segments after the matched route
+ * @param routeParams - Named route params from [id] patterns ({ id: "312" })
  */
 export async function getServerLocation(
   searchParams: Record<string, string | string[] | undefined>,
   pathname?: string,
   pathParams: string[] = [],
+  routeParams: Record<string, string> = {},
 ): Promise<ParsedLocation> {
   const { headers } = await import("next/headers");
   const headerList = await headers();
@@ -49,6 +52,7 @@ export async function getServerLocation(
     hash: "",
     params,
     pathParams,
+    routeParams,
   } as ParsedLocation;
 }
 
@@ -73,10 +77,18 @@ export function getClientLocation(route?: string): ParsedLocation {
   // Parse path params from remaining pathname after route
   const pathParts = window.location.pathname.split("/").filter(Boolean);
   let pathParams: string[] = [];
+  let routeParams: Record<string, string> = {};
+
   if (route) {
-    // route = "/users/:id", computed from page config
     const routeSegments = route.split("/").filter(Boolean);
     pathParams = pathParts.slice(routeSegments.length);
+    // Extract named route params from pattern like /users/[id]/edit
+    for (let i = 0; i < routeSegments.length && i < pathParts.length; i++) {
+      const dynamicMatch = routeSegments[i].match(/^\[(.+)\]$/);
+      if (dynamicMatch) {
+        routeParams[dynamicMatch[1]] = pathParts[i];
+      }
+    }
   } else {
     // Fallback: skip first segment
     pathParams = pathParts.slice(1);
@@ -86,5 +98,6 @@ export function getClientLocation(route?: string): ParsedLocation {
     ...window.location,
     params,
     pathParams,
+    routeParams,
   } as ParsedLocation;
 }

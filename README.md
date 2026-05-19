@@ -92,16 +92,16 @@ App (приложение)
 
 **Формат:** `{$PREFIX.PATH.TO.FIELD}`
 
-| Префикс                        | Описание              | Сервер | Клиент |
-| ------------------------------ | --------------------- | :----: | :----: |
-| `{$ELEMENT_ID.state.PATH}`     | State элемента        |   ✅   |   ✅   |
-| `{$state.PATH}`                | State страницы        |   ✅   |   ✅   |
-| `{$config.PATH}`               | Конфиг приложения     |   ✅   |   ✅   |
-| `{$location.*}`                | URL, slug, params     |   ✅   |   ✅   |
-| `{$now.*}`                     | Дата/время            |   ✅   |   ✅   |
-| `{$math.*}`                    | random, GUID, UUID    |   ✅   |   ✅   |
-| `{$device.*}` / `{$browser.*}` | Платформа, User-Agent |   ✅   |   ✅   |
-| `{$env.VAR}`                   | Переменные окружения  |   ✅   |   ✅   |
+| Префикс                        | Описание                       | Сервер | Клиент |
+| ------------------------------ | ------------------------------ | :----: | :----: |
+| `{$ELEMENT_ID.state.PATH}`     | State элемента                 |   ✅   |   ✅   |
+| `{$state.PATH}`                | State страницы                 |   ✅   |   ✅   |
+| `{$config.PATH}`               | Конфиг приложения              |   ✅   |   ✅   |
+| `{$location.*}`                | URL, slug, params, routeParams |   ✅   |   ✅   |
+| `{$now.*}`                     | Дата/время                     |   ✅   |   ✅   |
+| `{$math.*}`                    | random, GUID, UUID             |   ✅   |   ✅   |
+| `{$device.*}` / `{$browser.*}` | Платформа, User-Agent          |   ✅   |   ✅   |
+| `{$env.VAR}`                   | Переменные окружения           |   ✅   |   ✅   |
 
 **Особенности:**
 
@@ -116,18 +116,19 @@ App (приложение)
 
 Команды привязываются к событиям компонентов (`onClick`, `onChange`, `onLoad`) и выполняют действия.
 
-| Команда                                           | Описание                                  |
-| ------------------------------------------------- | ----------------------------------------- |
-| `setProperty` / `setState` / `mergeState`         | Запись / замена / слияние state           |
-| `clearState` / `toggleProperty`                   | Очистка / переключение boolean            |
-| `sendRequest`                                     | HTTP-запрос к API                         |
-| `showToast`                                       | Toast-уведомление                         |
-| `navigate`                                        | Переход по URL                            |
-| `confirm`                                         | Диалог подтверждения (onConfirm/onCancel) |
-| `sequence` / `delay`                              | Последовательность / пауза                |
-| `log`                                             | Логирование                               |
-| `setUrlParams` / `setUrlParam` / `removeUrlParam` | Управление URL параметрами                |
-| `refresh`                                         | Обновление страницы                       |
+| Команда                                                                  | Описание                                  |
+| ------------------------------------------------------------------------ | ----------------------------------------- |
+| `setProperty` / `setState` / `mergeState`                                | Запись / замена / слияние state           |
+| `setPathParams` / `mergePathParams` / `setPathParam` / `removePathParam` | Управление path-параметрами по индексу    |
+| `clearState` / `toggleProperty`                                          | Очистка / переключение boolean            |
+| `sendRequest`                                                            | HTTP-запрос к API                         |
+| `showToast`                                                              | Toast-уведомление                         |
+| `navigate`                                                               | Переход по URL                            |
+| `confirm`                                                                | Диалог подтверждения (onConfirm/onCancel) |
+| `sequence` / `delay`                                                     | Последовательность / пауза                |
+| `log`                                                                    | Логирование                               |
+| `setUrlParams` / `setUrlParam` / `removeUrlParam`                        | Управление URL параметрами                |
+| `refresh`                                                                | Обновление страницы                       |
 
 **Источники данных:** `event.value`, `event.field`, `elementId.state.field`, `state.field`
 
@@ -281,17 +282,17 @@ Avatar, Badge, Tag, Chip, Skeleton, ProgressBar, ProgressSpinner, Message, Divid
 
 # Страницы
 
-| Страница       | Маршрут          | Описание                                                                    |
-| -------------- | ---------------- | --------------------------------------------------------------------------- |
-| **Dashboard**  | `/`              | Карточки статистики, быстрые действия, таблица заказов, timeline активности |
-| **Statistics** | `/statistics`    | Фильтры по дате (неделя, диапазон), экспорт CSV, календари                  |
-| **Users**      | `/users`         | Фильтры, таблица пользователей, профиль, прогресс, аватары                  |
-| **Orders**     | `/orders`        | Вкладки (TabView), форма заказа, сообщения                                  |
-| **Products**   | `/products`      | Поиск/фильтры, карточки товаров, таблица, форма редактирования              |
-| **Reports**    | `/reports`       | Фильтры дат, графики (line/pie), carousel, skeleton-заглушки                |
-| **Settings**   | `/settings`      | Steps, профиль, уведомления, безопасность, интеграции, FAQ (Accordion)      |
-| **Components** | `/components`    | Демонстрация всех типов компонентов PrimeReact                              |
-| **Testing**    | `/stats/testing` | Тестирование DataFeed, макросов, адаптеров и линковки                       |
+| Страница       | Маршрут                 | Описание                                                                                                          |
+| -------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Dashboard**  | `/`                     | Карточки статистики, быстрые действия, таблица заказов, timeline активности                                       |
+| **Statistics** | `/statistics`           | Фильтры по дате (неделя, диапазон), экспорт CSV, календари                                                        |
+| **Users**      | `/users`, `/users/[id]` | Фильтры, таблица пользователей, профиль, прогресс, аватары. Поддерживает динамические маршруты с `[id]`-шаблонами |
+| **Orders**     | `/orders`               | Вкладки (TabView), форма заказа, сообщения                                                                        |
+| **Products**   | `/products`             | Поиск/фильтры, карточки товаров, таблица, форма редактирования                                                    |
+| **Reports**    | `/reports`              | Фильтры дат, графики (line/pie), carousel, skeleton-заглушки                                                      |
+| **Settings**   | `/settings`             | Steps, профиль, уведомления, безопасность, интеграции, FAQ (Accordion)                                            |
+| **Components** | `/components`           | Демонстрация всех типов компонентов PrimeReact                                                                    |
+| **Testing**    | `/stats/testing`        | Тестирование DataFeed, макросов, адаптеров и линковки                                                             |
 
 ---
 
@@ -356,7 +357,7 @@ App, Page, Section, Block, Component, Command, LayoutConfig, ElementMeta.
 
 → [docs/macros-reference.md](docs/macros-reference.md)
 
-13 типов макросов: state, config, location, now, session/localStorage, cookie, window, math, device/browser, env.
+14 типов макросов: state, config, location (включая routeParams для динамических маршрутов вида `[id]`), now, session/localStorage, cookie, window, math, device/browser, env.
 
 ## Линковка
 

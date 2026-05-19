@@ -181,7 +181,93 @@ export function clearConfigCache(): void {
 }
 
 /**
- * Get page configuration by route
+ * Result of matching an actual route against a route pattern with [id]-style placeholders
+ */
+export interface RouteMatchResult {
+  matched: boolean;
+  params: Record<string, string>; // e.g. { id: "123", group: "admin" }
+}
+
+/**
+ * Result of finding a page by route with pattern support
+ */
+export interface PageRouteMatch {
+  pageConfig: any;
+  route: string; // the matched route pattern e.g. "/users/[id]"
+  routeParams: Record<string, string>; // e.g. { id: "123" }
+}
+
+/**
+ * Match an actual route against a route pattern that may contain [id]-style placeholders
+ * Example: matchRoute("/users/123/edit", "/users/[id]/edit") -> { matched: true, params: { id: "123" } }
+ */
+export function matchRoute(
+  actualRoute: string,
+  routePattern: string,
+): RouteMatchResult {
+  const actualSegments = actualRoute.split("/").filter(Boolean);
+  const patternSegments = routePattern.split("/").filter(Boolean);
+
+  if (actualSegments.length !== patternSegments.length) {
+    return { matched: false, params: {} };
+  }
+
+  const params: Record<string, string> = {};
+  for (let i = 0; i < patternSegments.length; i++) {
+    const patternSegment = patternSegments[i];
+    const actualSegment = actualSegments[i];
+
+    // Dynamic segment e.g. [id]
+    const dynamicMatch = patternSegment.match(/^\[(.+)\]$/);
+    if (dynamicMatch) {
+      params[dynamicMatch[1]] = actualSegment;
+    } else if (patternSegment !== actualSegment) {
+      // Static segment mismatch
+      return { matched: false, params: {} };
+    }
+  }
+
+  return { matched: true, params };
+}
+
+/**
+ * Find a page configuration by route with support for [id]-style patterns.
+ * First tries exact match, then pattern matching across all pages.
+ */
+export function findPageByRoute(route: string | null): PageRouteMatch | null {
+  if (!cachedConfig || route === null) {
+    return null;
+  }
+
+  const normalizedRoute = route === "" ? "/" : route;
+
+  // 1. Try exact match first (fast path)
+  const exactMatch = cachedConfig.pages?.find(
+    (p: any) => p.route === normalizedRoute,
+  );
+  if (exactMatch) {
+    return { pageConfig: exactMatch, route: normalizedRoute, routeParams: {} };
+  }
+
+  // 2. Try pattern matching across all pages
+  for (const page of cachedConfig.pages || []) {
+    if (!page.route) continue;
+    const result = matchRoute(normalizedRoute, page.route);
+    if (result.matched) {
+      return {
+        pageConfig: page,
+        route: page.route,
+        routeParams: result.params,
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Get page configuration by exact route match (exact match only, no pattern support)
+ * Kept for backward compatibility and index page resolution
  */
 export function getPageConfigByRoute(route: string | null): any | null {
   if (!cachedConfig) {
