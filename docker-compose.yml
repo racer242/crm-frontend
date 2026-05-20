@@ -1,0 +1,11 @@
+services:
+  crm-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crm-frontend
+    ports:
+      - "3028:3028"
+    env_file:
+      - .env.production
+    restart: unless-stopped

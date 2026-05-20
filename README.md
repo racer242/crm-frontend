@@ -359,6 +359,16 @@ npm run dev       # Dev-сервер
 npm run build     # Production-билд
 ```
 
+### Docker
+
+```bash
+docker compose up -d          # Собрать и запустить на порту 3028
+docker compose logs -f        # Смотреть логи
+docker compose down           # Остановить
+```
+
+Приложение будет доступно на `http://localhost:3028`.
+
 # Конфигурация
 
 Все настройки в `config/crm-config.json` и переменных окружения (`.env`):

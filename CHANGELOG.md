@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Docker container** — multi-stage Dockerfile for production deployment on port 3028 (commit `[to-be-added]`)
+  - `Dockerfile` — 3-stage build (deps → builder → runner) using `node:20-alpine`
+  - `.dockerignore` — excludes `node_modules`, `.next`, `.git`, secrets from build context
+  - `docker-compose.yml` — service `crm-frontend` with port mapping `3028:3028` and `.env.production`
+  - `.env.production` — production environment config with `PORT=3028`, `NODE_ENV=production`
+  - `next.config.ts` — added `output: "standalone"` for minimal production image
+  - `README.md` — added Docker section with `docker compose` commands
+
+### Added
+
 - **Internationalization (i18n) system** — `next-intl` v4.12.0 integrated for all standard, non-customizable UI elements
   - `next.config.ts` — wrapped with `createNextIntlPlugin("./i18n/request.ts")`
   - `i18n/request.ts` — server-side request config with locale resolution (`LANGUAGE` env var)
