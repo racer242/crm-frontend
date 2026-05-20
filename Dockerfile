@@ -24,6 +24,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3028
+ENV HOSTNAME=0.0.0.0
 
 # Копируем standalone-сборку из builder
 COPY --from=builder /app/.next/standalone ./
