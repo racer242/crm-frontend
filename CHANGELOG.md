@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 - **User menu now uses AuthContext** — `DashboardSidebar.tsx` displays `user.name` and `user.role` from `AuthContext` instead of hardcoded `userName`/`userRole` from `crm-config.json`; "Выйти" menu item triggers `logout()` deauthentication instead of navigation
 - **UserMenuItem.action field** — new optional `action: "logout"` field in `src/types/app.ts` for menu items that should trigger actions instead of navigation
+- **Auth API paths moved to .env** — `AUTH_LOGIN_URL`, `AUTH_LOGOUT_URL`, `AUTH_REFRESH_URL` now read from `process.env` (fallback: `/api/auth/login`, `/api/auth/logout`, `/api/auth/refresh`) instead of being hardcoded throughout the auth system
+  - `src/auth/constants.ts` — added `AUTH_LOGIN_URL`, `AUTH_LOGOUT_URL`, `AUTH_REFRESH_URL` exports
+  - `src/auth/AuthContext.tsx` — uses `AUTH_LOGIN_URL`/`AUTH_LOGOUT_URL` for client-side fetch
+  - `src/proxy.ts` — uses `AUTH_REFRESH_URL` for server-side token refresh
+  - `src/app/api/auth/[...auth]/route.ts` — uses `AUTH_LOGIN_URL`/`AUTH_REFRESH_URL`/`AUTH_LOGOUT_URL` for Bitrix requests
+  - `.env` / `.env.example` — added `AUTH_LOGIN_URL`, `AUTH_LOGOUT_URL`, `AUTH_REFRESH_URL` defaults
 
 ### Fixed
 

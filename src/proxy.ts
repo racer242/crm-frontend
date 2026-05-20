@@ -18,7 +18,12 @@ import {
   decodeToken,
 } from "@/auth/tokenService";
 import { bitrixRequest, BitrixApiError } from "@/auth/bitrixClient";
-import { COOKIE_KEYS, PROTECTED_ROUTES, GUEST_ROUTES } from "@/auth/constants";
+import {
+  COOKIE_KEYS,
+  PROTECTED_ROUTES,
+  GUEST_ROUTES,
+  AUTH_REFRESH_URL,
+} from "@/auth/constants";
 import type { LoginResponse } from "@/types";
 
 function isProtectedRoute(pathname: string): boolean {
@@ -57,7 +62,7 @@ async function tryRefreshToken(
   }
 
   try {
-    const response = await bitrixRequest<LoginResponse>("/api/auth/refresh", {
+    const response = await bitrixRequest<LoginResponse>(AUTH_REFRESH_URL, {
       body: { refresh_token: refreshToken },
     });
 

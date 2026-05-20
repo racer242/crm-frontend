@@ -16,6 +16,7 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import type { User, LoginCredentials } from "@/types";
+import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL } from "@/auth/constants";
 
 interface AuthContextValue {
   user: User | null;
@@ -46,7 +47,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       setError(null);
 
       try {
-        const response = await fetch("/api/auth/login", {
+        const response = await fetch(AUTH_LOGIN_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(credentials),
@@ -73,7 +74,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      await fetch(AUTH_LOGOUT_URL, { method: "POST" });
     } finally {
       setUser(null);
       router.push("/login");

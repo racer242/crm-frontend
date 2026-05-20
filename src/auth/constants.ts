@@ -50,3 +50,13 @@ export const GUEST_ROUTES = getRoutes(process.env.AUTH_GUEST_ROUTES, [
 /** Максимальное количество попыток refresh */
 export const MAX_REFRESH_ATTEMPTS =
   Number(process.env.AUTH_MAX_REFRESH_ATTEMPTS) || 1;
+
+/** URL путей аутентификации — Next.js API route handlers (для клиентских fetch) */
+export const AUTH_LOGIN_URL: string =
+  process.env.AUTH_LOGIN_URL || "/api/auth/login";
+export const AUTH_LOGOUT_URL: string =
+  process.env.AUTH_LOGOUT_URL || "/api/auth/logout";
+
+/** URL пути refresh — используется на сервере (в proxy и route) */
+export const AUTH_REFRESH_URL: string =
+  process.env.AUTH_REFRESH_URL || "/api/auth/refresh";

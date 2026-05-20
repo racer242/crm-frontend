@@ -9,7 +9,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { bitrixRequest, BitrixApiError } from "@/auth/bitrixClient";
 import { setAuthCookies, clearAuthCookies } from "@/auth/cookieService";
-import { COOKIE_KEYS } from "@/auth/constants";
+import {
+  COOKIE_KEYS,
+  AUTH_LOGIN_URL,
+  AUTH_REFRESH_URL,
+  AUTH_LOGOUT_URL,
+} from "@/auth/constants";
 import type { LoginCredentials, LoginResponse } from "@/types";
 
 /**
@@ -28,7 +33,7 @@ async function handleLogin(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const response = await bitrixRequest<LoginResponse>("/api/auth/login", {
+    const response = await bitrixRequest<LoginResponse>(AUTH_LOGIN_URL, {
       body: credentials,
     });
 
@@ -70,7 +75,7 @@ async function handleRefresh(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const response = await bitrixRequest<LoginResponse>("/api/auth/refresh", {
+    const response = await bitrixRequest<LoginResponse>(AUTH_REFRESH_URL, {
       body: { refresh_token: refreshToken },
     });
 
@@ -110,7 +115,7 @@ async function handleLogout(request: NextRequest): Promise<NextResponse> {
     // Уведомляем Битрикс об инвалидации токена
     if (accessToken) {
       try {
-        await bitrixRequest("/api/auth/logout", {
+        await bitrixRequest(AUTH_LOGOUT_URL, {
           body: { access_token: accessToken },
         });
       } catch {
