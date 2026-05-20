@@ -3,7 +3,7 @@
 /**
  * Страница логина
  * Клиентский компонент. Использует useAuth() для вызова login().
- * После успешного входа делает router.push(returnUrl) и router.refresh().
+ * После успешного входа делает router.push(return_url) и router.refresh().
  *
  * useSearchParams требует Suspense границы,
  * поэтому страница логина разделена на обёртку (LoginPage) и содержимое (LoginForm).
@@ -37,7 +37,7 @@ function LoginForm() {
   const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl") || "/";
+  const return_url = searchParams.get("return_url") || "/";
 
   const [loginField, setLoginField] = useState("");
   const [password, setPassword] = useState("");
@@ -53,20 +53,20 @@ function LoginForm() {
       }
 
       try {
-        await login({ login: loginField, password }, returnUrl);
+        await login({ login: loginField, password }, return_url);
       } catch {
         // Ошибка уже установлена в контексте
       }
     },
-    [loginField, password, login, returnUrl],
+    [loginField, password, login, return_url],
   );
 
   // Если уже авторизован — перенаправляем
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push(returnUrl);
+      router.push(return_url);
     }
-  }, [isAuthenticated, router, returnUrl]);
+  }, [isAuthenticated, router, return_url]);
 
   return (
     <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
