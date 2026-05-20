@@ -105,23 +105,23 @@
     },
     "stats.analytics.js": {
       "type": "js",
-      "script": "adapters/analytics2menu.js"
+      "script": "./config/adapters/analytics2menu.js"
     },
     "stats.review.js": {
       "type": "js",
-      "script": "adapters/stats-review-2-tabview.js"
+      "script": "./config/adapters/stats-review-2-tabview.js"
     },
     "stats.week.js": {
       "type": "js",
-      "script": "adapters/weeks-2-select-list.js"
+      "script": "./config/adapters/weeks-2-select-list.js"
     },
     "users.request.js": {
       "type": "js",
-      "script": "adapters/users-params.js"
+      "script": "./config/adapters/users-params.js"
     },
     "users.response.js": {
       "type": "js",
-      "script": "adapters/users-2-tabview.js"
+      "script": "./config/adapters/users-2-tabview.js"
     }
   },
   "config": {

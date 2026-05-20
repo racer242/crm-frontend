@@ -16,7 +16,7 @@ import { Adapter } from "@/types/adapter";
  * Loads the script from public/ directory and executes it
  */
 async function applyJs(data: any, scriptPath: string): Promise<any> {
-  const fullPath = path.join(process.cwd(), "public", scriptPath);
+  const fullPath = path.join(process.cwd(), scriptPath);
 
   let scriptContent: string;
   try {
