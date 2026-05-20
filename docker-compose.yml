@@ -8,4 +8,7 @@ services:
       - "3028:3028"
     env_file:
       - .env.production
+    volumes:
+      - ./config:/app/config
+      - ./messages:/app/messages
     restart: unless-stopped

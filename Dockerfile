@@ -29,8 +29,6 @@ ENV PORT=3028
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/config ./config
-COPY --from=builder /app/messages ./messages
 
 # Копируем node_modules production (на случай если standalone не хватило)
 COPY --from=deps /app/node_modules ./node_modules
