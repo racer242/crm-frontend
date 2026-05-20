@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Login page responsive layout** — `src/app/login/page.tsx`: form card now fills the entire viewport on mobile (<768px: `min-h-screen`, no border-radius, no shadow) and remains centered with rounded corners and shadow on desktop (≥768px: `md:min-h-auto`, `md:border-round`, `md:shadow-2`)
+- **Login page responsive layout** — `src/app/login/page.tsx`: form card full-width on mobile with `sm:max-w-30rem`, `sm:shadow-2`, `sm:border-round` breakpoint at 576px for centered card with shadow on larger screens
 - **User menu now uses AuthContext** — `DashboardSidebar.tsx` displays `user.name` and `user.role` from `AuthContext` instead of hardcoded `userName`/`userRole` from `crm-config.json`; "Выйти" menu item triggers `logout()` deauthentication instead of navigation
 - **UserMenuItem.action field** — new optional `action: "logout"` field in `src/types/app.ts` for menu items that should trigger actions instead of navigation
 - **Auth API paths moved to .env** — `AUTH_LOGIN_URL`, `AUTH_LOGOUT_URL`, `AUTH_REFRESH_URL` now read from `process.env` (fallback: `/api/auth/login`, `/api/auth/logout`, `/api/auth/refresh`) instead of being hardcoded throughout the auth system

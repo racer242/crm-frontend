@@ -70,7 +70,7 @@ function LoginForm() {
 
   return (
     <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
-      <div className="surface-card w-full max-w-md min-h-screen md:min-h-auto p-5 md:shadow-2 md:border-round flex flex-column">
+      <div className="surface-card w-full sm:max-w-30rem min-h-auto p-5 sm:shadow-2 sm:border-round flex flex-column">
         <div className="text-center mb-5">
           <h2 className="text-2xl font-bold mb-2">CRM Login</h2>
         </div>
