@@ -27,6 +27,7 @@ export default function LoginPage() {
 
 import { useState, useCallback, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/auth/AuthContext";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
@@ -34,6 +35,7 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 
 function LoginForm() {
+  const t = useTranslations("login");
   const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -72,13 +74,13 @@ function LoginForm() {
     <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
       <div className="surface-card w-full sm:max-w-30rem min-h-auto p-5 sm:shadow-2 sm:border-round flex flex-column">
         <div className="text-center mb-5">
-          <h2 className="text-2xl font-bold mb-2">CRM Login</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("title")}</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-column gap-4">
           {/* Login field */}
           <div className="flex flex-column gap-2">
-            <label htmlFor="login">Login</label>
+            <label htmlFor="login">{t("loginLabel")}</label>
             <InputText
               id="login"
               value={loginField}
@@ -90,13 +92,13 @@ function LoginForm() {
               autoFocus
             />
             {submitted && !loginField && (
-              <small className="p-error">Login is required</small>
+              <small className="p-error">{t("loginRequired")}</small>
             )}
           </div>
 
           {/* Password field */}
           <div className="flex flex-column gap-2">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t("passwordLabel")}</label>
             <Password
               id="password"
               value={password}
@@ -111,7 +113,7 @@ function LoginForm() {
               })}
             />
             {submitted && !password && (
-              <small className="p-error">Password is required</small>
+              <small className="p-error">{t("passwordRequired")}</small>
             )}
           </div>
 
@@ -125,7 +127,7 @@ function LoginForm() {
           {/* Submit button */}
           <Button
             type="submit"
-            label="Sign In"
+            label={t("signIn")}
             icon="pi pi-sign-in"
             loading={isLoading}
             className="w-full"

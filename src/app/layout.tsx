@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getLocale } from "next-intl/server";
 import { PrimeReactProvider } from "primereact/api";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
 import { AuthProvider } from "@/auth/AuthContext";
@@ -55,10 +57,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getServerUser();
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
     <html
-      lang="en"
+      lang={locale}
       className={fontVariables || undefined}
       data-scroll-behavior="smooth"
     >
@@ -72,9 +76,11 @@ export default async function RootLayout({
         />
 
         <GlobalPreloader />
-        <PrimeReactProvider value={primeReactConfig}>
-          <AuthProvider initialUser={user}>{children}</AuthProvider>
-        </PrimeReactProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <PrimeReactProvider value={primeReactConfig}>
+            <AuthProvider initialUser={user}>{children}</AuthProvider>
+          </PrimeReactProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

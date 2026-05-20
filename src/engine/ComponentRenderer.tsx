@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Component, App } from "@/types";
 import { useComponentBindings } from "./hooks/useComponentBindings";
 import {
@@ -48,6 +49,8 @@ import {
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
+  const t = useTranslations("component");
+  const tf = useTranslations("filters");
   const { componentType, className, style } = component;
 
   const { resolvedProps, handleEvent } = useComponentBindings({
@@ -60,6 +63,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
     className,
     style,
     handleEvent,
+    t: tf,
   };
 
   switch (componentType) {
@@ -149,7 +153,7 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return (
         <div className={className} style={style}>
           <p className="text-500 text-sm">
-            [Component: {componentType} - Not implemented]
+            {t("notImplemented", { type: componentType })}
           </p>
         </div>
       );

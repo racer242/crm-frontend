@@ -14,6 +14,7 @@ import React, {
   useMemo,
   type ReactNode,
 } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { User, LoginCredentials } from "@/types";
 import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL } from "@/auth/constants";
@@ -36,6 +37,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
+  const t = useTranslations("auth");
   const [user, setUser] = useState<User | null>(initialUser);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.error || "Login failed");
+          throw new Error(data.error || t("loginFailed"));
         }
 
         const data = await response.json();
@@ -63,13 +65,13 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
         router.push(returnUrl || "/");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Login failed");
+        setError(err instanceof Error ? err.message : t("loginFailed"));
         throw err;
       } finally {
         setIsLoading(false);
       }
     },
-    [router],
+    [router, t],
   );
 
   const logout = useCallback(async () => {

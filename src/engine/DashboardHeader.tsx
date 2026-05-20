@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { UserMenuConfig } from "@/types";
 import { useAuth } from "@/auth/AuthContext";
@@ -20,6 +21,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const t = useTranslations("app");
 
   const handleAuthClick = useCallback(() => {
     router.push(isAuthenticated ? "/profile" : "/login");
@@ -31,7 +33,7 @@ export function DashboardHeader({
         icon="pi pi-bars"
         className="p-button-rounded p-button-text p-button-secondary"
         onClick={onMenuClick}
-        aria-label="Menu"
+        aria-label={t("menu")}
       />
       <span className="font-semibold text-lg">{title}</span>
       <Button
@@ -48,7 +50,7 @@ export function DashboardHeader({
         }
         className="p-button-rounded p-button-text p-button-secondary"
         onClick={handleAuthClick}
-        aria-label={isAuthenticated ? "Profile" : "Login"}
+        aria-label={isAuthenticated ? t("profile") : t("login")}
       />
     </header>
   );

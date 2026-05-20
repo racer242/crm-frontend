@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Internationalization (i18n) system** — `next-intl` v4.12.0 integrated for all standard, non-customizable UI elements
+  - `next.config.ts` — wrapped with `createNextIntlPlugin("./i18n/request.ts")`
+  - `i18n/request.ts` — server-side request config with locale resolution (`LANGUAGE` env var)
+  - `i18n/routing.ts` — locale routing config (`en`, `ru`; default from `LANGUAGE`)
+  - `messages/en.json` — English dictionary (26 translation keys across 6 namespaces)
+  - `messages/ru.json` — Russian dictionary (26 translation keys across 6 namespaces)
+  - `src/app/layout.tsx` — wrapped in `NextIntlClientProvider` with `getLocale()`/`getMessages()`
+  - `html lang` attribute now uses the resolved locale instead of hardcoded `"en"`
+  - `.env` / `.env.example` — added `LANGUAGE=ru` for default locale
+- **i18n integration in all standard UI components**:
+  - `src/app/login/page.tsx` — all 6 user-facing strings → `useTranslations("login")`
+  - `src/app/not-found.tsx` — "Страница не найдена" and "На главную" → `useTranslations("notFound")`
+  - `src/engine/AppEngine.tsx` — "Page not found: {route}", "Data Feed Error", toast summaries (Error/Success/Info), "Confirmation" dialog header, "CRM Platform" default title → `useTranslations("app")`
+  - `src/engine/DashboardHeader.tsx` — aria-labels (Menu, Profile, Login) → `useTranslations("app")`
+  - `src/engine/ComponentRenderer.tsx` — fallback "[Component: {type} - Not implemented]" → `useTranslations("component")`
+  - `src/engine/components/FiltersPanelComponent.tsx` — sidebar header, placeholders, apply/clear buttons, empty state → `useTranslations("filters")` via `t` prop
+  - `src/engine/components/ActiveFiltersBarComponent.tsx` — "Clear all filters" tooltip → `useTranslations("filters")` via `t` prop
+  - `src/engine/hooks/useDataFeedErrors.ts` — Toast "Data Feed Error" summary → `useTranslations("app")`
+  - `src/auth/AuthContext.tsx` — "Login failed" error messages → `useTranslations("auth")`
+  - `src/engine/components/types.ts` — `ComponentRendererProps` extended with optional `t` function
+- **`LANGUAGE` env parameter** — controls default locale (added to `.env` and `.env.example`)
+
 ### Changed
 
 - **Login page responsive layout** — `src/app/login/page.tsx`: form card full-width on mobile with `sm:max-w-30rem`, `sm:shadow-2`, `sm:border-round` breakpoint at 576px for centered card with shadow on larger screens

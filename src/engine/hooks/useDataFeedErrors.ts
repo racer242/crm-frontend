@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Toast } from "primereact/toast";
 
 /**
@@ -15,6 +16,7 @@ export function useDataFeedErrors(
   toastRef: React.RefObject<Toast | null>,
   dataFeedErrors: string[] | undefined,
 ): void {
+  const t = useTranslations("app");
   const prevErrorsRef = useRef<string[]>([]);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function useDataFeedErrors(
     newErrors.forEach((error) => {
       toastRef.current?.show({
         severity: "error",
-        summary: "Data Feed Error",
+        summary: t("dataFeedError"),
         detail: error,
         life: 5000,
       });
@@ -38,5 +40,5 @@ export function useDataFeedErrors(
 
     // Update previous errors
     prevErrorsRef.current = [...dataFeedErrors];
-  }, [dataFeedErrors, toastRef]);
+  }, [dataFeedErrors, toastRef, t]);
 }

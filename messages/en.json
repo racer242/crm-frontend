@@ -1,0 +1,41 @@
+{
+  "login": {
+    "title": "CRM Login",
+    "loginLabel": "Login",
+    "loginRequired": "Login is required",
+    "passwordLabel": "Password",
+    "passwordRequired": "Password is required",
+    "signIn": "Sign In"
+  },
+  "notFound": {
+    "message": "Page not found",
+    "goHome": "Home"
+  },
+  "app": {
+    "defaultTitle": "CRM Platform",
+    "pageNotFound": "Page not found: {route}",
+    "confirmation": "Confirmation",
+    "dataFeedError": "Data Feed Error",
+    "error": "Error",
+    "success": "Success",
+    "info": "Info",
+    "menu": "Menu",
+    "profile": "Profile",
+    "login": "Login"
+  },
+  "component": {
+    "notImplemented": "[Component: {type} - Not implemented]"
+  },
+  "filters": {
+    "title": "Filters",
+    "noFilters": "No filters available",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearAll": "Clear all filters",
+    "startDate": "Start",
+    "endDate": "End"
+  },
+  "auth": {
+    "loginFailed": "Login failed"
+  }
+}

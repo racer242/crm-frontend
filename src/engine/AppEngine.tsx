@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { App, Page, NavItem, DataFeedResult, Command } from "@/types";
 import { PageRenderer } from "./PageRenderer";
 import { DashboardSidebar } from "./DashboardSidebar";
@@ -136,19 +137,21 @@ export function AppEngine({
   const [collapsed, setCollapsed] = useState(false);
   const toastRef = useRef<Toast>(null);
 
+  const t = useTranslations("app");
+
   // Show server-side data feed errors on mount
   useEffect(() => {
     if (initialErrors && initialErrors.length > 0 && toastRef.current) {
       initialErrors.forEach((error) => {
         toastRef.current?.show({
           severity: "error",
-          summary: "Data Feed Error",
+          summary: t("dataFeedError"),
           detail: error,
           life: 5000,
         });
       });
     }
-  }, [initialErrors]);
+  }, [initialErrors, t]);
 
   // Track client-side data feed errors from page state
   const [dataFeedErrors, setDataFeedErrors] = useState<string[]>([]);
@@ -176,15 +179,15 @@ export function AppEngine({
         severity: severity || "info",
         summary:
           severity === "error"
-            ? "Error"
+            ? t("error")
             : severity === "success"
-              ? "Success"
-              : "Info",
+              ? t("success")
+              : t("info"),
         detail: message,
         life: 5000,
       });
     },
-    [],
+    [t],
   );
 
   const navigate = useCallback(
@@ -198,17 +201,20 @@ export function AppEngine({
     setCollapsed((c) => !c);
   }, []);
 
-  const confirm = useCallback((message: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      confirmDialog({
-        message,
-        header: "Confirmation",
-        icon: "pi pi-exclamation-triangle",
-        accept: () => resolve(true),
-        reject: () => resolve(false),
+  const confirm = useCallback(
+    (message: string): Promise<boolean> => {
+      return new Promise((resolve) => {
+        confirmDialog({
+          message,
+          header: t("confirmation"),
+          icon: "pi pi-exclamation-triangle",
+          accept: () => resolve(true),
+          reject: () => resolve(false),
+        });
       });
-    });
-  }, []);
+    },
+    [t],
+  );
 
   const refresh = useCallback(
     (mode: string) => {
@@ -229,13 +235,15 @@ export function AppEngine({
   if (!currentPage) {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
-        <p className="text-500">Page not found: {route || pathname}</p>
+        <p className="text-500">
+          {t("pageNotFound", { route: route || pathname })}
+        </p>
       </div>
     );
   }
 
   const navItems: NavItem[] = config.navbar?.items || [];
-  const title = config.title || "CRM Platform";
+  const title = config.title || t("defaultTitle");
 
   return (
     <div className="flex flex-column md:flex-row min-h-screen surface-900">

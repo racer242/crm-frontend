@@ -7,4 +7,5 @@ export interface ComponentRendererProps {
   className?: string;
   style?: CSSProperties;
   handleEvent: (eventType: string, eventValue: any) => void;
+  t?: (key: string, params?: Record<string, any>) => string;
 }

@@ -22,6 +22,7 @@ export function renderActiveFiltersBar({
   className,
   style,
   handleEvent,
+  t,
 }: ComponentRendererProps) {
   const { value: filters = [] } = props;
 
@@ -202,7 +203,7 @@ export function renderActiveFiltersBar({
         icon="pi pi-filter-slash"
         onClick={clearAll}
         className="p-button-rounded p-button-text p-button-sm"
-        tooltip="Очистить все фильтры"
+        tooltip={t?.("clearAll") || "Очистить все фильтры"}
         tooltipOptions={{ position: "top" }}
         style={{ flexShrink: 0 }}
       />

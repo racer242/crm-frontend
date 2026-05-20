@@ -31,12 +31,13 @@ export function renderFiltersPanel({
   className,
   style,
   handleEvent,
+  t,
 }: ComponentRendererProps) {
   const {
     value: externalFilters = [],
     visible = false,
     position = "right",
-    header = "Фильтры",
+    header = t?.("title") || "Фильтры",
   } = props;
 
   // Локальная копия фильтров для редактирования
@@ -241,7 +242,7 @@ export function renderFiltersPanel({
                 }
                 dateFormat="dd.mm.yy"
                 showIcon
-                placeholder="Начало"
+                placeholder={t?.("startDate") || "Начало"}
                 className="w-full"
               />
               <Calendar
@@ -251,7 +252,7 @@ export function renderFiltersPanel({
                 }
                 dateFormat="dd.mm.yy"
                 showIcon
-                placeholder="Конец"
+                placeholder={t?.("endDate") || "Конец"}
                 className="w-full"
               />
             </div>
@@ -374,7 +375,9 @@ export function renderFiltersPanel({
             </React.Fragment>
           ))}
           {localFilters.length === 0 && (
-            <p className="text-400 text-center mt-4">Нет доступных фильтров</p>
+            <p className="text-400 text-center mt-4">
+              {t?.("noFilters") || "Нет доступных фильтров"}
+            </p>
           )}
         </div>
 
@@ -385,14 +388,14 @@ export function renderFiltersPanel({
         >
           <div className="flex flex-column gap-2">
             <Button
-              label="Применить"
+              label={t?.("apply") || "Применить"}
               icon="pi pi-check"
               onClick={handleApply}
               className="flex-1"
               disabled={!hasActiveFilters}
             />
             <Button
-              label="Очистить"
+              label={t?.("clear") || "Очистить"}
               icon="pi pi-filter-slash"
               onClick={handleClear}
               className="flex-1"

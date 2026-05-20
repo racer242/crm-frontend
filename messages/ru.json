@@ -1,0 +1,41 @@
+{
+  "login": {
+    "title": "CRM Вход",
+    "loginLabel": "Логин",
+    "loginRequired": "Логин обязателен",
+    "passwordLabel": "Пароль",
+    "passwordRequired": "Пароль обязателен",
+    "signIn": "Войти"
+  },
+  "notFound": {
+    "message": "Страница не найдена",
+    "goHome": "На главную"
+  },
+  "app": {
+    "defaultTitle": "CRM Платформа",
+    "pageNotFound": "Страница не найдена: {route}",
+    "confirmation": "Подтверждение",
+    "dataFeedError": "Ошибка загрузки данных",
+    "error": "Ошибка",
+    "success": "Успех",
+    "info": "Информация",
+    "menu": "Меню",
+    "profile": "Профиль",
+    "login": "Вход"
+  },
+  "component": {
+    "notImplemented": "[Компонент: {type} - не реализован]"
+  },
+  "filters": {
+    "title": "Фильтры",
+    "noFilters": "Нет доступных фильтров",
+    "apply": "Применить",
+    "clear": "Очистить",
+    "clearAll": "Очистить все фильтры",
+    "startDate": "Начало",
+    "endDate": "Конец"
+  },
+  "auth": {
+    "loginFailed": "Ошибка входа"
+  }
+}
