@@ -4,7 +4,7 @@
  * 1. Определяет тип роута: защищённый, гостевой, остальные
  * 2. Проверяет access_token локально через tokenService
  * 3. Если токен истекает — пробует refresh напрямую через bitrixClient
- * 4. Защищённый роут без сессии → редирект на /login?return_url=...
+ * 4. Защищённый роут без сессии → редирект на /login?returnUrl=...
  * 5. Гостевой роут с сессией → редирект на /
  *
  * ВАЖНО: proxy работает с request.cookies напрямую,
@@ -159,7 +159,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   // Защищённый роут без сессии → редирект на /login
   if (isProtected && !hasSession) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("return_url", getReturnUrl(request));
+    loginUrl.searchParams.set("returnUrl", getReturnUrl(request));
     return NextResponse.redirect(loginUrl);
   }
 

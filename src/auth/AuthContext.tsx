@@ -21,7 +21,7 @@ interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  login: (credentials: LoginCredentials, return_url?: string) => Promise<void>;
+  login: (credentials: LoginCredentials, returnUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
   isAuthenticated: boolean;
@@ -41,7 +41,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const router = useRouter();
 
   const login = useCallback(
-    async (credentials: LoginCredentials, return_url?: string) => {
+    async (credentials: LoginCredentials, returnUrl?: string) => {
       setIsLoading(true);
       setError(null);
 
@@ -59,7 +59,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
         const data = await response.json();
         setUser(data.user);
-        router.push(return_url || "/");
+        router.push(returnUrl || "/");
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Login failed");
