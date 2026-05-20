@@ -4,7 +4,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --ignore-scripts
 
 # ============================================================
 # Stage 2: builder — сборка приложения
@@ -12,7 +12,7 @@ RUN npm ci --omit=dev
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --ignore-scripts
 COPY . .
 RUN npm run build
 
