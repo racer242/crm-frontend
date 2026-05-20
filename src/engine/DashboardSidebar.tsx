@@ -41,6 +41,7 @@ function buildMenuItems(
 function buildUserMenuItems(
   userMenu: UserMenuConfig | undefined,
   onNavigate: (route: string) => void,
+  onLogout: () => void,
 ) {
   return userMenu?.items.map((item) => {
     if ((item as any).separator) {
@@ -49,7 +50,13 @@ function buildUserMenuItems(
     return {
       label: item.label,
       icon: item.icon,
-      command: () => onNavigate(item.route || "/"),
+      command: () => {
+        if (item.action === "logout") {
+          onLogout();
+        } else {
+          onNavigate(item.route || "/");
+        }
+      },
     };
   });
 }
@@ -61,6 +68,8 @@ interface UserMenuSectionProps {
   userMenu: UserMenuConfig;
   collapsed: boolean;
   onNavigate: (route: string) => void;
+  onLogout: () => void;
+  user: { name: string; role: string } | null;
   wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
   collapsible?: boolean;
 }
@@ -69,13 +78,15 @@ const UserMenuSection = React.memo(function UserMenuSection({
   userMenu,
   collapsed,
   onNavigate,
+  onLogout,
+  user,
   wrapperProps,
   collapsible,
 }: UserMenuSectionProps) {
   const [expanded, setExpanded] = useState(!collapsible);
   const userMenuModel = useMemo(
-    () => buildUserMenuItems(userMenu, onNavigate),
-    [userMenu, onNavigate],
+    () => buildUserMenuItems(userMenu, onNavigate, onLogout),
+    [userMenu, onNavigate, onLogout],
   );
 
   const handleToggle = useCallback(() => {
@@ -95,8 +106,10 @@ const UserMenuSection = React.memo(function UserMenuSection({
         />
         {!collapsed && (
           <div className="flex flex-column align-items-start pointer-events-none">
-            <span className="font-bold">{userMenu?.userName}</span>
-            <span className="text-sm">{userMenu?.userRole}</span>
+            <span className="font-bold">
+              {user?.name ?? userMenu?.userName}
+            </span>
+            <span className="text-sm">{user?.role ?? userMenu?.userRole}</span>
           </div>
         )}
         {collapsible && !collapsed && (
@@ -137,7 +150,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
   onMobileOpenChange,
   onCollapseChange,
 }: DashboardSidebarProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname() || "/";
 
@@ -152,6 +165,10 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
   const handleAuthClick = useCallback(() => {
     router.push(isAuthenticated ? "/profile" : "/login");
   }, [isAuthenticated, router]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
 
   return (
     <>
@@ -174,6 +191,8 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               userMenu={userMenu}
               collapsed={false}
               onNavigate={handleNav}
+              onLogout={handleLogout}
+              user={user}
             />
           )}
         </div>
@@ -214,6 +233,8 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               userMenu={userMenu}
               collapsed={collapsed}
               onNavigate={handleNav}
+              onLogout={handleLogout}
+              user={user}
               wrapperProps={{ className: "p-3" }}
               collapsible
             />

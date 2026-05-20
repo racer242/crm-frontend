@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **User menu now uses AuthContext** — `DashboardSidebar.tsx` displays `user.name` and `user.role` from `AuthContext` instead of hardcoded `userName`/`userRole` from `crm-config.json`; "Выйти" menu item triggers `logout()` deauthentication instead of navigation
+- **UserMenuItem.action field** — new optional `action: "logout"` field in `src/types/app.ts` for menu items that should trigger actions instead of navigation
+
 ### Fixed
 
 - **Memory leak: JWT secret regenerated on every request** — `tokenService.ts` now caches the encoded secret (`_jwtSecretCache`) instead of calling `new TextEncoder().encode(secret)` on every `verifyToken` call

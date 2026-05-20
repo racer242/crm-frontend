@@ -55,8 +55,6 @@
   },
   "userMenu": {
     "loginLabel": "Войти",
-    "userName": "e.simonov",
-    "userRole": "администратор",
     "items": [
       {
         "label": "Профиль",
@@ -69,7 +67,7 @@
       {
         "label": "Выйти",
         "icon": "pi pi-sign-out",
-        "route": "/"
+        "action": "logout"
       }
     ]
   },
