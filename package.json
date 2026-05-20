@@ -6,7 +6,13 @@
     "dev": "nodemon --watch config/ --exec \"next dev\"",
     "build": "next build",
     "start": "node .next/standalone/server.js",
-    "lint": "eslint"
+    "lint": "eslint",
+    "docker:build": "docker compose down && docker compose up -d --build",
+    "docker:deploy": "docker compose down && docker compose up -d --build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:restart": "docker compose restart"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^15.3.5",
