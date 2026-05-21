@@ -15,7 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   verifyToken,
   isTokenExpiringSoon,
-  decodeToken,
+  type TokenVerifyResult,
 } from "@/auth/tokenService";
 import { bitrixRequest, BitrixApiError } from "@/auth/bitrixClient";
 import {
@@ -133,33 +133,49 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   const accessToken = request.cookies.get(COOKIE_KEYS.ACCESS_TOKEN)?.value;
+  const refreshToken = request.cookies.get(COOKIE_KEYS.REFRESH_TOKEN)?.value;
   const isProtected = isProtectedRoute(pathname);
   const isGuest = isGuestRoute(pathname);
 
-  // Проверяем access_token локально
-  let payload = accessToken ? await verifyToken(accessToken) : null;
+  let hasSession = false;
 
-  // Если токен истекает — пробуем refresh
-  if (payload && isTokenExpiringSoon(payload)) {
+  // Если access_token отсутствует, но refresh_token есть — пробуем refresh
+  if (!accessToken && refreshToken) {
     const refreshResult = await tryRefreshToken(request);
     if (refreshResult.ok && refreshResult.response) {
-      // Обновляем payload из новых cookies (декодируем без верификации,
-      // т.к. новые куки уже установлены в ответе)
       return refreshResult.response;
     }
-    // Если refresh не удался — payload остаётся, может быть ещё валиден
   }
 
-  // Если токен не прошёл верификацию — пробуем декодировать
-  // (токен может быть ещё валиден по времени, но мы его не верифицировали)
-  if (!payload && accessToken) {
-    const decoded = decodeToken(accessToken);
-    if (decoded && decoded.exp * 1000 > Date.now()) {
-      payload = decoded as any;
+  // Проверяем access_token локально
+  const result: TokenVerifyResult | null = accessToken
+    ? await verifyToken(accessToken)
+    : null;
+
+  if (result?.valid) {
+    // Токен валиден
+    hasSession = true;
+
+    // Если скоро истекает — пробуем refresh
+    if (isTokenExpiringSoon(result.payload)) {
+      const refreshResult = await tryRefreshToken(request);
+      if (refreshResult.ok && refreshResult.response) {
+        return refreshResult.response;
+      }
+      // Если refresh не удался — текущий токен ещё жив, продолжаем
     }
+  } else if (result?.reason === "expired") {
+    // Токен истёк — пробуем обновить, если есть refresh_token
+    if (refreshToken) {
+      const refreshResult = await tryRefreshToken(request);
+      if (refreshResult.ok && refreshResult.response) {
+        return refreshResult.response;
+      }
+    }
+    // Refresh не удался — сессии нет
+    hasSession = false;
   }
-
-  const hasSession = !!payload;
+  // Если reason === "invalid" или accessToken отсутствует — сессии нет, идём к проверке роутов
 
   // Защищённый роут без сессии → редирект на /login
   if (isProtected && !hasSession) {

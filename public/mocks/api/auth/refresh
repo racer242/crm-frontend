@@ -1,6 +1,6 @@
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjk5OTk5OTk5OTksInR5cGUiOiJhY2Nlc3MifQ.test-refresh",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjk5OTk5OTk5OTksInR5cGUiOiJyZWZyZXNoIn0.test-refresh",
+  "access_token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc3OTM4MTI1NywiZXhwIjoxNzc5MzgyMTU3fQ.5JBjg_UFP-cGdBUpRUiEadtgUuKqn5kR7fkXZH5o8Mg",
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibG9naW4iOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AY3JtLnRlc3QiLCJuYW1lIjoi0JDQtNC80LjQvdC40YHRgtGA0LDRgtC-0YAiLCJhdmF0YXIiOiIiLCJyb2xlIjoiYWRtaW4iLCJncm91cHMiOlsidXNlcnMiLCJhZG1pbnMiXSwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3NzkzODEyNTcsImV4cCI6MTc3OTk4NjA1N30.MfNmsqHeJILGCfA3I5uGN4LNvG_R83zadmQxk_nf-4U",
   "expires_in": 900,
   "user": {
     "id": "1",
@@ -9,6 +9,9 @@
     "name": "Администратор",
     "avatar": "",
     "role": "admin",
-    "groups": ["users", "admins"]
+    "groups": [
+      "users",
+      "admins"
+    ]
   }
 }

@@ -7,6 +7,11 @@
 import { jwtVerify, decodeJwt, SignJWT } from "jose";
 import type { TokenPayload } from "@/types";
 
+/** Результат верификации JWT */
+export type TokenVerifyResult =
+  | { valid: true; payload: TokenPayload }
+  | { valid: false; reason: "expired" | "invalid" };
+
 /** Кэшированный секрет — вычисляется один раз, не создаёт лишних объектов */
 let _jwtSecretCache: Uint8Array | null = null;
 
@@ -22,15 +27,23 @@ function getJwtSecret(): Uint8Array {
 }
 
 /**
- * Верифицирует JWT токен и возвращает payload
+ * Верифицирует JWT токен и возвращает результат с указанием причины,
+ * если верификация не удалась.
+ * - expired: токен имеет правильную подпись, но его срок истёк
+ * - invalid: токен не может быть верифицирован (неправильная подпись или битые данные)
  */
-export async function verifyToken(token: string): Promise<TokenPayload | null> {
+export async function verifyToken(token: string): Promise<TokenVerifyResult> {
   try {
     const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
-    return payload as unknown as TokenPayload;
+    return { valid: true, payload: payload as unknown as TokenPayload };
   } catch {
-    return null;
+    // Верификация не прошла — пробуем декодировать, чтобы понять причину
+    const decoded = decodeJwt(token);
+    if (decoded?.exp && decoded.exp * 1000 <= Date.now()) {
+      return { valid: false, reason: "expired" };
+    }
+    return { valid: false, reason: "invalid" };
   }
 }
 

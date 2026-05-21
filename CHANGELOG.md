@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **JWT token refresh on expiration** — fixed `proxy.ts` (middleware) to properly detect expired access tokens and attempt refresh via `tryRefreshToken()` before redirecting to login
+  - `src/auth/tokenService.ts` — `verifyToken()` now returns `TokenVerifyResult` with reason: `"expired"` or `"invalid"`, enabling proxy to distinguish between expired and malformed tokens
+  - `src/proxy.ts` — added refresh attempts for expired tokens (cookie missing but refresh_token present) and expired-but-still-verifiable tokens; invalid tokens immediately redirect to `/login`; removed debug console.logs
+  - `src/auth/getServerUser.ts` — simplified to use new `verifyToken()` result type, removed fallback `decodeToken()` path (middleware handles refresh before SSR)
+  - `public/mocks/api/auth/login` and `public/mocks/api/auth/refresh` — updated JWT tokens signed with `JWT_SECRET=1234567890` for valid local `jose` verification
+  - `.env.local` — updated `JWT_SECRET` and `BITRIX_INTERNAL_SECRET` to `1234567890`
+
 ### Added
 
 - **Docker container** — multi-stage Dockerfile for production deployment on port 3028 (commit `[to-be-added]`)
