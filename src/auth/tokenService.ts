@@ -4,7 +4,7 @@
  * Работает только на сервере.
  */
 
-import { jwtVerify, decodeJwt, SignJWT } from "jose";
+import { jwtVerify, decodeJwt, SignJWT, errors } from "jose";
 import type { TokenPayload } from "@/types";
 
 /** Результат верификации JWT */
@@ -37,10 +37,8 @@ export async function verifyToken(token: string): Promise<TokenVerifyResult> {
     const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return { valid: true, payload: payload as unknown as TokenPayload };
-  } catch {
-    // Верификация не прошла — пробуем декодировать, чтобы понять причину
-    const decoded = decodeJwt(token);
-    if (decoded?.exp && decoded.exp * 1000 <= Date.now()) {
+  } catch (err) {
+    if (err instanceof errors.JWTExpired) {
       return { valid: false, reason: "expired" };
     }
     return { valid: false, reason: "invalid" };
