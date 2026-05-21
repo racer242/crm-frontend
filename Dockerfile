@@ -23,7 +23,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3028
+ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 # Копируем standalone-сборку из builder
@@ -34,6 +34,6 @@ COPY --from=builder /app/public ./public
 # Копируем node_modules production (на случай если standalone не хватило)
 COPY --from=deps /app/node_modules ./node_modules
 
-EXPOSE 3028
+EXPOSE 3000
 
 CMD ["node", "server.js"]
