@@ -240,14 +240,34 @@ Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
 
 ### Logout
 
-Сервер берёт access_token из httpOnly cookie (если есть), уведомляет Bitrix об инвалидации, удаляет все cookies. Завершается успехом даже если Bitrix недоступен.
+Клиент отправляет пустой POST. Сервер читает `access_token` из httpOnly cookie (если есть), отправляет его в Bitrix для инвалидации, затем удаляет все cookies. Завершается успехом даже если Bitrix недоступен.
 
-**Запрос (клиент → NextJS):**
+**Запрос клиента → NextJS:**
 
 ```http
 POST /api/auth/logout
-Cookies: access_token=eyJhbGciOiJIUzI1NiJ9...
 ```
+
+**Запрос NextJS → Bitrix (сервер-сервер):**
+
+```json
+POST {AUTH_LOGOUT_URL}
+X-Internal-Secret: ...
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+**Ответ Bitrix → NextJS (сервер-сервер):**
+
+```json
+{
+  "success": true
+}
+```
+
+Если Bitrix недоступен или вернул ошибку — она игнорируется, cookies всё равно удаляются.
 
 **Ответ NextJS → клиент (200):**
 
