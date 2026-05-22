@@ -96,7 +96,7 @@
 
 ## Ключевые принципы
 
-- Все запросы к Битрикс идут **только с сервера NextJS**, никогда с браузера
+- Все запросы к Битрикс идут **только с сервера NextJS**, никогда из браузера
 - Токены хранятся исключительно в **httpOnly cookies** (кроме `user_data`, который нужен клиенту для AuthContext)
 - **Proxy (middleware)** валидирует токен **локально** через `JWT_SECRET`, без сетевых запросов к Битрикс на каждый запрос
 - Данные пользователя для UI читаются **на сервере** в `layout.tsx` и передаются в AuthProvider, чтобы исключить мигание меню
@@ -114,15 +114,113 @@
 
 ### Login
 
-Принимает `{ login, password }`, отправляет на Bitrix API, при успехе устанавливает три cookies, возвращает `{ user }`.
+**Запрос:**
+
+```json
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "login": "admin",
+  "password": "password123"
+}
+```
+
+**Успешный ответ (200):**
+
+```json
+{
+  "user": {
+    "id": "1",
+    "login": "admin",
+    "email": "admin@crm.test",
+    "name": "Администратор",
+    "avatar": "",
+    "role": "admin",
+    "groups": ["users", "admins"]
+  }
+}
+```
+
+Также устанавливаются три Set-Cookie:
+
+- `access_token` (httpOnly, 15 мин) — JWT с полями `sub`, `login`, `email`, `name`, `avatar`, `role`, `groups`, `iat`, `exp`, `type: "access"`
+- `refresh_token` (httpOnly, 7 дней) — JWT с теми же полями, `type: "refresh"`
+- `user_data` (не httpOnly, 7 дней) — JSON-строка объекта User
+
+**Ошибка (4xx):**
+
+```json
+{
+  "error": "Неверный логин или пароль"
+}
+```
 
 ### Refresh
 
-Берёт `refresh_token` из cookie, отправляет на Bitrix API, обновляет cookies с новыми токенами. При ошибке — удаляет все cookies и возвращает 401.
+**Запрос:**
+
+```json
+POST /api/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+Refresh_token передаётся в теле. При этом refresh_token также доступен в одноимённой httpOnly cookie — сервер также может взять его оттуда, если тело пустое.
+
+**Успешный ответ (200):**
+
+```json
+{
+  "user": {
+    "id": "1",
+    "login": "admin",
+    "email": "admin@crm.test",
+    "name": "Администратор",
+    "avatar": "",
+    "role": "admin",
+    "groups": ["users", "admins"]
+  }
+}
+```
+
+Сервер обновляет все три cookie с новыми access_token и refresh_token.
+
+**Ошибка (401):**
+
+```json
+{
+  "error": "Refresh token not found"
+}
+```
+
+При ошибке cookies удаляются.
 
 ### Logout
 
-Берёт `access_token` из cookie, уведомляет Bitrix об инвалидации, удаляет все cookies. Завершается успехом даже если Bitrix недоступен.
+**Запрос:**
+
+```json
+POST /api/auth/logout
+Content-Type: application/json
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+**Успешный ответ (200):**
+
+```json
+{
+  "success": true
+}
+```
+
+Все три cookies удаляются. Если Bitrix недоступен — cookies всё равно удаляются.
 
 ---
 
