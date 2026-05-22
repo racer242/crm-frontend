@@ -114,12 +114,25 @@
 
 ### Login
 
-Клиент отправляет логин/пароль на сервер NextJS. Сервер пересылает credentials в Bitrix API, получает `{ access_token, refresh_token, expires_in, user }`, устанавливает три cookies, возвращает клиенту только пользователя.
+Клиент отправляет логин/пароль на сервер NextJS. Сервер пересылает credentials в Bitrix API для валидации. Bitrix возвращает токены и данные пользователя. Сервер устанавливает три cookies и возвращает клиенту данные пользователя.
 
 **Запрос клиента → NextJS:**
 
 ```http
 POST /api/auth/login
+Content-Type: application/json
+
+{
+  "login": "admin",
+  "password": "password123"
+}
+```
+
+**Запрос NextJS → Bitrix (сервер-сервер):**
+
+```http
+POST {AUTH_LOGIN_URL}
+X-Internal-Secret: ...
 Content-Type: application/json
 
 {
@@ -168,7 +181,7 @@ Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
 }
 ```
 
-**Ошибка (4xx):**
+**Ответ NextJS → клиент (ошибка 4xx):**
 
 ```json
 {
@@ -178,14 +191,25 @@ Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
 
 ### Refresh
 
-Сервер берёт refresh_token из httpOnly cookie, отправляет в Bitrix, получает новую пару токенов, обновляет cookies, возвращает пользователя. Клиент **не вызывает** `/api/auth/refresh` напрямую — его вызывает middleware или fetch-интерцептор.
+Клиент не вызывает `/api/auth/refresh` напрямую — его вызывает middleware (`proxy.ts`) при истекшем или отсутствующем access_token. Сервер берёт refresh_token из httpOnly cookie, отправляет в Bitrix, получает новую пару токенов, обновляет cookies и возвращает обновлённые данные.
 
-**Запрос (вызывается сервером, не клиентом):**
+**Запрос клиента → NextJS (вызывается middleware, не браузером):**
 
-```
+```http
 POST /api/auth/refresh
-Headers: Cookie: refresh_token=eyJhbGciOiJIUzI1NiJ9...
-Body: { "refresh_token": "eyJhbGciOiJIUzI1NiJ9..." }
+Cookies: refresh_token=eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Запрос NextJS → Bitrix (сервер-сервер):**
+
+```http
+POST {AUTH_REFRESH_URL}
+X-Internal-Secret: ...
+Content-Type: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9..."
+}
 ```
 
 **Ответ Bitrix → NextJS (сервер-сервер):**
@@ -228,7 +252,7 @@ Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
 }
 ```
 
-**Ошибка (401):**
+**Ответ NextJS → клиент (ошибка 401):**
 
 ```json
 {
