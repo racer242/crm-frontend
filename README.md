@@ -362,12 +362,30 @@ npm run build     # Production-билд
 ### Docker
 
 ```bash
-docker compose up -d          # Собрать и запустить на порту 3028
+docker compose up -d          # Собрать и запустить на порту 3030
 docker compose logs -f        # Смотреть логи
 docker compose down           # Остановить
 ```
 
-Приложение будет доступно на `http://localhost:3028`.
+Приложение будет доступно на `http://localhost:3030`.
+
+### HTTPS (production)
+
+На production-сервере приложение доступно только через nginx reverse proxy:
+
+- **Публичный URL:** `https://dev.ssd26.srv08.ru:3030`
+- **Внутренний порт контейнера:** 3000
+- **Внешний порт (localhost):** 3030 (только для nginx)
+- **nginx config:** `deploy/nginx-crm.conf`
+
+Для настройки HTTPS на сервере (сертификат уже установлен):
+
+```bash
+# Скопировать nginx-конфиг (если не используется deploy-remote.sh)
+cp deploy/nginx-crm.conf /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/nginx-crm.conf /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
 
 **Конфигурация вне контейнера:**
 
@@ -393,6 +411,7 @@ docker compose restart
 | `NODE_ENV`                     | `development`              | Режим окружения                                     |
 | `API_BASE_URL`                 | (пусто)                    | Базовый URL для API-запросов                        |
 | `DEBUG_MODE`                   | `false`                    | Включить отладочное логирование                     |
+| `BASE_URL`                     | (пусто)                    | Базовый URL приложения (используется в макросах)    |
 | `PORT`                         | `3000`                     | Порт dev-сервера                                    |
 | `BITRIX_API_URL`               | (пусто)                    | URL для API 1С Битрикс (авторизация)                |
 | `BITRIX_INTERNAL_SECRET`       | (пусто)                    | Секретный ключ для внутренних запросов к Битрикс    |

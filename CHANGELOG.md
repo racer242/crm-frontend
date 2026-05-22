@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **HTTPS support via nginx reverse proxy** — приложение теперь доступно по HTTPS через nginx на домене `dev.ssd26.srv08.ru:3030`
+  - `docker-compose.yml` — порт контейнера привязан только к localhost (`127.0.0.1:${HOST_PORT:-3030}:3000`)
+  - `.env.production` — добавлен `BASE_URL="https://dev.ssd26.srv08.ru:3030"`
+  - `.env.local` — добавлен `BASE_URL=http://localhost:3000`
+  - `.env.example` — добавлен `BASE_URL=`
+  - `config/crm-config.json` — `baseURL` теперь использует макрос `{$env.BASE_URL}` вместо hardcoded HTTP URL
+  - `deploy/nginx-crm.conf` — новый nginx-конфиг с SSL и reverse proxy на 127.0.0.1:3030 и HTTP→HTTPS redirect
+  - `deploy-remote.sh`:
+    - Удалён небезопасный блок установки Docker на удалённом сервере
+    - Порт по умолчанию изменён на 3030
+    - Вывод URL изменён на `https://dev.ssd26.srv08.ru:3030`
+    - Добавлено копирование nginx-конфига на сервер
+  - `README.md` — добавлен раздел "HTTPS (production)" с инструкцией по certbot и nginx
+
 ### Fixed
 
 - **JWT token refresh on expiration** — fixed `proxy.ts` (middleware) to properly detect expired access tokens and attempt refresh via `tryRefreshToken()` before redirecting to login

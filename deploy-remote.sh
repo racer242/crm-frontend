@@ -25,6 +25,10 @@ REMOTE_PORT="22"
 REMOTE_DIR="/opt/crm-frontend"
 
 LOCAL_IMAGE_NAME="crm-frontend-crm-frontend:latest"
+HOST_PORT="${HOST_PORT:-3030}"
+DOMAIN="dev.ssd26.srv08.ru"
+NGINX_CONF_SRC="./deploy/nginx-crm.conf"
+NGINX_CONF_DST="/etc/nginx/sites-available/nginx-crm.conf"
 COMPOSE_FILE="docker-compose.yml"
 ENV_FILE=".env.production"
 TEMP_ARCHIVE="crm-image.tar.gz"
@@ -91,24 +95,12 @@ main() {
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp config failed"
   scp -P "$REMOTE_PORT" -r messages/ \
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp messages failed"
+  # Copy nginx config
+  scp -P "$REMOTE_PORT" "$NGINX_CONF_SRC" \
+    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp nginx config failed"
 
   rm -f "$TEMP_ARCHIVE"
   ok "All files copied."
-
-  # Install Docker on remote if needed
-  info "Checking Docker on remote..."
-  if ! ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
-       "command -v docker && docker --version" 2>/dev/null; then
-    warn "Installing Docker on remote..."
-    ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
-      "curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && \
-       sh /tmp/get-docker.sh && \
-       systemctl enable docker && \
-       systemctl start docker" || fail "Docker install failed."
-    ok "Docker installed."
-  else
-    ok "Docker already installed."
-  fi
 
   # Deploy
   info "Deploying container on remote..."
@@ -123,11 +115,10 @@ main() {
   ok "Container started."
 
   # Show URL
-  local host_port="${HOST_PORT:-3028}"
   echo ""
   echo -e "${GREEN}============================================${NC}"
   echo -e "${GREEN}  CRM Frontend running at:${NC}"
-  echo -e "${GREEN}  http://$REMOTE_HOST:$host_port${NC}"
+  echo -e "${GREEN}  https://$DOMAIN:$HOST_PORT${NC}"
   echo -e "${GREEN}============================================${NC}"
   echo ""
   echo "  Logs:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && docker compose logs -f'"

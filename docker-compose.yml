@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: crm-frontend
     ports:
-      - "${HOST_PORT:-3028}:3000"
+      - "127.0.0.1:${HOST_PORT:-3030}:3000"
     env_file:
       - .env.production
     volumes:
