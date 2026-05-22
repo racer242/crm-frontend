@@ -382,14 +382,16 @@ docker compose down           # Остановить
 **Настройка nginx на сервере (выполняется один раз):**
 
 ```bash
-# Скопировать конфиг в Bitrix nginx
-cp deploy/CentOS7/nginx-crm.conf /etc/nginx/bx/site_avaliable/
-ln -s /etc/nginx/bx/site_avaliable/nginx-crm.conf /etc/nginx/bx/site_enabled/nginx-crm.conf
-nginx -t && systemctl reload nginx
+# 1. Копируем и активируем конфигурацию Nginx
+sudo cp deploy/CentOS7/nginx-crm.conf /etc/nginx/bx/site_avaliable/
+sudo ln -s /etc/nginx/bx/site_avaliable/nginx-crm.conf /etc/nginx/bx/site_enabled/nginx-crm.conf
 
-# Открыть порт 3003 в firewall (нестандартный порт, нужно разрешить)
-firewall-cmd --zone=public --add-port=3003/tcp --permanent
-firewall-cmd --reload
+# 2. Проверяем синтаксис и перезапускаем Nginx
+sudo nginx -t && sudo systemctl reload nginx
+
+# 3. Открываем внешний порт 3003 в файрволе
+sudo firewall-cmd --zone=public --add-port=3003/tcp --permanent
+sudo firewall-cmd --reload
 ```
 
 **Схема подключения:**

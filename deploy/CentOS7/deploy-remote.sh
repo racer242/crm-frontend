@@ -139,8 +139,9 @@ main() {
   echo "  Stop:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && docker compose down'"
   echo ""
   echo "  Nginx config: $NGINX_AVAILABLE/$NGINX_CONF_NAME"
-  echo "  Firewall:     sudo firewall-cmd --zone=public --add-port=$EXTERNAL_PORT/tcp --permanent"
-  echo "                sudo firewall-cmd --reload"
+  echo "  Firewall (one-time):"
+  echo "    sudo firewall-cmd --zone=public --add-port=$EXTERNAL_PORT/tcp --permanent"
+  echo "    sudo firewall-cmd --reload"
 }
 
 main
