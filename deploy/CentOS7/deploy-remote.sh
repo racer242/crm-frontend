@@ -3,23 +3,12 @@ set -euo pipefail
 
 # ============================================================
 # Remote deploy script for CRM Frontend — CentOS 7 / Bitrix
-#
-# Builds Docker image locally, copies it + config to remote
-# server via SSH, starts the container, and installs nginx
-# config for Bitrix environment.
-#
-# Usage:
-#   ./deploy/CentOS7/deploy-remote.sh
-#
-# Prerequisites:
-#   - SSH key must be added to remote server
-#   - Docker Desktop (or Docker) must be running locally
 # ============================================================
 
 # ---------------------------------------------------------------
 # CONSTANTS — edit these as needed
 # ---------------------------------------------------------------
-REMOTE_USER="root"
+REMOTE_USER="crm_admin" # SAFE: Используем настроенного пользователя
 REMOTE_HOST="94.198.217.127"
 REMOTE_PORT="22"
 REMOTE_DIR="/opt/crm-frontend"
@@ -87,7 +76,8 @@ main() {
 
   # Copy files to remote
   info "Copying files to $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR ..."
-  ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "mkdir -p $REMOTE_DIR"
+  # SAFE: Создаем каталог через sudo и сразу даем на него права пользователю crm_admin
+  ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "sudo mkdir -p $REMOTE_DIR && sudo chown -R $REMOTE_USER:$REMOTE_USER $REMOTE_DIR"
 
   scp -P "$REMOTE_PORT" "$TEMP_ARCHIVE" \
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp image failed"
@@ -99,7 +89,6 @@ main() {
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp config failed"
   scp -P "$REMOTE_PORT" -r messages/ \
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp messages failed"
-  # Copy nginx config
   scp -P "$REMOTE_PORT" "$NGINX_CONF_SRC" \
     "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp nginx config failed"
 
@@ -108,22 +97,24 @@ main() {
 
   # Deploy container
   info "Deploying container on remote..."
+  # SAFE: Запуск Docker-команд через sudo
   ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
     "cd $REMOTE_DIR && \
-     docker load < crm-image.tar.gz && \
+     sudo docker load < crm-image.tar.gz && \
      rm -f crm-image.tar.gz && \
-     docker compose up -d && \
+     sudo docker compose up -d && \
      echo '' && \
-     docker ps --filter name=crm-frontend --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'" \
+     sudo docker ps --filter name=crm-frontend --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'" \
     || fail "Remote deployment failed."
   ok "Container started."
 
   # Install nginx config (Bitrix CentOS 7)
   info "Installing nginx config for Bitrix environment..."
+  # SAFE: Запуск копирования конфигов и перезапуска Nginx через sudo
   ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
-    "cp $REMOTE_DIR/$NGINX_CONF_NAME $NGINX_AVAILABLE/ && \
-     ln -sf $NGINX_AVAILABLE/$NGINX_CONF_NAME $NGINX_ENABLED/$NGINX_CONF_NAME && \
-     nginx -t && systemctl reload nginx" \
+    "sudo cp $REMOTE_DIR/$NGINX_CONF_NAME $NGINX_AVAILABLE/ && \
+     sudo ln -sf $NGINX_AVAILABLE/$NGINX_CONF_NAME $NGINX_ENABLED/$NGINX_CONF_NAME && \
+     sudo nginx -t && sudo systemctl reload nginx" \
     || fail "Nginx config installation failed."
   ok "Nginx config installed and reloaded."
 
@@ -134,14 +125,11 @@ main() {
   echo -e "${GREEN}  https://$DOMAIN:$EXTERNAL_PORT${NC}"
   echo -e "${GREEN}============================================${NC}"
   echo ""
-  echo "  Logs:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && docker compose logs -f'"
-  echo "  Restart:  ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && docker compose restart'"
-  echo "  Stop:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && docker compose down'"
+  echo "  Logs:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && sudo docker compose logs -f'"
+  echo "  Restart:  ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && sudo docker compose restart'"
+  echo "  Stop:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && sudo docker compose down'"
   echo ""
   echo "  Nginx config: $NGINX_AVAILABLE/$NGINX_CONF_NAME"
-  echo "  Firewall (one-time):"
-  echo "    sudo firewall-cmd --zone=public --add-port=$EXTERNAL_PORT/tcp --permanent"
-  echo "    sudo firewall-cmd --reload"
 }
 
 main
