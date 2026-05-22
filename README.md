@@ -503,4 +503,4 @@ StateManager, ElementIndex, PathResolver, Component Rendering, Event System.
 
 ## Авторизация
 
-→ [.prompts/auth.md](.prompts/auth.md)
+→ [docs/auth-reference.md](docs/auth-reference.md)
