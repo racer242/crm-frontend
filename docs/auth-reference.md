@@ -114,9 +114,11 @@
 
 ### Login
 
-**Запрос:**
+Клиент отправляет логин/пароль на сервер NextJS. Сервер пересылает credentials в Bitrix API, получает `{ access_token, refresh_token, expires_in, user }`, устанавливает три cookies, возвращает клиенту только пользователя.
 
-```json
+**Запрос клиента → NextJS:**
+
+```http
 POST /api/auth/login
 Content-Type: application/json
 
@@ -126,10 +128,13 @@ Content-Type: application/json
 }
 ```
 
-**Успешный ответ (200):**
+**Ответ Bitrix → NextJS (сервер-сервер):**
 
 ```json
 {
+  "access_token": "eyJhbGciOiJIUzI1NiJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9...",
+  "expires_in": 900,
   "user": {
     "id": "1",
     "login": "admin",
@@ -142,11 +147,26 @@ Content-Type: application/json
 }
 ```
 
-Также устанавливаются три Set-Cookie:
+**Ответ NextJS → клиент (200):**
 
-- `access_token` (httpOnly, 15 мин) — JWT с полями `sub`, `login`, `email`, `name`, `avatar`, `role`, `groups`, `iat`, `exp`, `type: "access"`
-- `refresh_token` (httpOnly, 7 дней) — JWT с теми же полями, `type: "refresh"`
-- `user_data` (не httpOnly, 7 дней) — JSON-строка объекта User
+```http
+HTTP/1.1 200 OK
+Set-Cookie: access_token=eyJhbGciOiJIUzI1NiJ9...; HttpOnly; Path=/; Max-Age=900
+Set-Cookie: refresh_token=eyJhbGciOiJIUzI1NiJ9...; HttpOnly; Path=/; Max-Age=604800
+Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
+
+{
+  "user": {
+    "id": "1",
+    "login": "admin",
+    "email": "admin@crm.test",
+    "name": "Администратор",
+    "avatar": "",
+    "role": "admin",
+    "groups": ["users", "admins"]
+  }
+}
+```
 
 **Ошибка (4xx):**
 
@@ -158,22 +178,43 @@ Content-Type: application/json
 
 ### Refresh
 
-**Запрос:**
+Сервер берёт refresh_token из httpOnly cookie, отправляет в Bitrix, получает новую пару токенов, обновляет cookies, возвращает пользователя. Клиент **не вызывает** `/api/auth/refresh` напрямую — его вызывает middleware или fetch-интерцептор.
+
+**Запрос (вызывается сервером, не клиентом):**
+
+```
+POST /api/auth/refresh
+Headers: Cookie: refresh_token=eyJhbGciOiJIUzI1NiJ9...
+Body: { "refresh_token": "eyJhbGciOiJIUzI1NiJ9..." }
+```
+
+**Ответ Bitrix → NextJS (сервер-сервер):**
 
 ```json
-POST /api/auth/refresh
-Content-Type: application/json
-
 {
-  "refresh_token": "eyJhbGciOiJIUzI1NiJ9..."
+  "access_token": "eyJhbGciOiJIUzI1NiJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9...",
+  "expires_in": 900,
+  "user": {
+    "id": "1",
+    "login": "admin",
+    "email": "admin@crm.test",
+    "name": "Администратор",
+    "avatar": "",
+    "role": "admin",
+    "groups": ["users", "admins"]
+  }
 }
 ```
 
-Refresh_token передаётся в теле. При этом refresh_token также доступен в одноимённой httpOnly cookie — сервер также может взять его оттуда, если тело пустое.
+**Ответ NextJS → клиент (200):**
 
-**Успешный ответ (200):**
+```http
+HTTP/1.1 200 OK
+Set-Cookie: access_token=eyJhbGciOiJIUzI1NiJ9...; HttpOnly; Path=/; Max-Age=900
+Set-Cookie: refresh_token=eyJhbGciOiJIUzI1NiJ9...; HttpOnly; Path=/; Max-Age=604800
+Set-Cookie: user_data={"id":"1","login":"admin",...}; Path=/; Max-Age=604800
 
-```json
 {
   "user": {
     "id": "1",
@@ -187,8 +228,6 @@ Refresh_token передаётся в теле. При этом refresh_token т
 }
 ```
 
-Сервер обновляет все три cookie с новыми access_token и refresh_token.
-
 **Ошибка (401):**
 
 ```json
@@ -197,30 +236,31 @@ Refresh_token передаётся в теле. При этом refresh_token т
 }
 ```
 
-При ошибке cookies удаляются.
+При ошибке cookies удаляются (Set-Cookie с Max-Age=0).
 
 ### Logout
 
-**Запрос:**
+Сервер берёт access_token из httpOnly cookie (если есть), уведомляет Bitrix об инвалидации, удаляет все cookies. Завершается успехом даже если Bitrix недоступен.
 
-```json
+**Запрос (клиент → NextJS):**
+
+```http
 POST /api/auth/logout
-Content-Type: application/json
-
-{
-  "access_token": "eyJhbGciOiJIUzI1NiJ9..."
-}
+Cookies: access_token=eyJhbGciOiJIUzI1NiJ9...
 ```
 
-**Успешный ответ (200):**
+**Ответ NextJS → клиент (200):**
 
-```json
+```http
+HTTP/1.1 200 OK
+Set-Cookie: access_token=; HttpOnly; Path=/; Max-Age=0
+Set-Cookie: refresh_token=; HttpOnly; Path=/; Max-Age=0
+Set-Cookie: user_data=; Path=/; Max-Age=0
+
 {
   "success": true
 }
 ```
-
-Все три cookies удаляются. Если Bitrix недоступен — cookies всё равно удаляются.
 
 ---
 
