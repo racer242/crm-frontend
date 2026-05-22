@@ -18,7 +18,11 @@ All notable changes to this project will be documented in this file.
     - Порт по умолчанию изменён на 3030
     - Вывод URL изменён на `https://dev.ssd26.srv08.ru:3030`
     - Добавлено копирование nginx-конфига на сервер
-  - `README.md` — добавлен раздел "HTTPS (production)" с инструкцией по certbot и nginx
+  - `deploy/CentOS7/nginx-crm.conf` — новый nginx-конфиг для Bitrix окружения (CentOS 7), порт 3003
+  - `deploy/CentOS7/deploy-remote.sh` — скрипт деплоя для CentOS 7 с установкой nginx-конфига в `/etc/nginx/bx/site_avaliable/`
+  - `.env.production` — `BASE_URL` изменён на `https://dev.ssd26.srv08.ru:3003`
+  - `README.md` — раздел HTTPS переписан для CentOS 7 / Bitrix окружения с портом 3003
+  - Старый `deploy/nginx-crm.conf` и корневой `deploy-remote.sh` оставлены для обратной совместимости
 
 ### Fixed
 

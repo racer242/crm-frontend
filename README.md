@@ -369,23 +369,36 @@ docker compose down           # Остановить
 
 Приложение будет доступно на `http://localhost:3030`.
 
-### HTTPS (production)
+### HTTPS (production) — CentOS 7 / Bitrix
 
-На production-сервере приложение доступно только через nginx reverse proxy:
+На production-сервере приложение доступно через nginx reverse proxy в Bitrix-окружении:
 
-- **Публичный URL:** `https://dev.ssd26.srv08.ru:3030`
+- **Публичный URL:** `https://dev.ssd26.srv08.ru:3003`
 - **Внутренний порт контейнера:** 3000
-- **Внешний порт (localhost):** 3030 (только для nginx)
-- **nginx config:** `deploy/nginx-crm.conf`
+- **Внутренний порт Docker (localhost):** 3030 (только для nginx)
+- **nginx config:** `deploy/CentOS7/nginx-crm.conf`
+- **deploy script:** `deploy/CentOS7/deploy-remote.sh`
 
-Для настройки HTTPS на сервере (сертификат уже установлен):
+**Настройка nginx на сервере (выполняется один раз):**
 
 ```bash
-# Скопировать nginx-конфиг (если не используется deploy-remote.sh)
-cp deploy/nginx-crm.conf /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/nginx-crm.conf /etc/nginx/sites-enabled/
+# Скопировать конфиг в Bitrix nginx
+cp deploy/CentOS7/nginx-crm.conf /etc/nginx/bx/site_avaliable/
+ln -s /etc/nginx/bx/site_avaliable/nginx-crm.conf /etc/nginx/bx/site_enabled/nginx-crm.conf
 nginx -t && systemctl reload nginx
+
+# Открыть порт 3003 в firewall (нестандартный порт, нужно разрешить)
+firewall-cmd --zone=public --add-port=3003/tcp --permanent
+firewall-cmd --reload
 ```
+
+**Схема подключения:**
+
+```
+Пользователь → https://dev.ssd26.srv08.ru:3003 → nginx (ssl) → http://127.0.0.1:3030 → Docker (порт 3000)
+```
+
+Порт 3030 контейнера привязан к `127.0.0.1` (localhost), поэтому недоступен извне напрямую — только через nginx.
 
 **Конфигурация вне контейнера:**
 
