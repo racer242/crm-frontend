@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`.env.production` removed from git tracking** — `.gitignore` had `!.env.production` (negation rule), which explicitly allowed `.env.production` to be tracked. Fixed by changing `!.env.production` → `.env.production` in `.gitignore`. File removed from git tracking with `git rm --cached .env.production`.
+
 ### Added
 
 - **HTTPS support via nginx reverse proxy** — приложение теперь доступно по HTTPS через nginx на домене `dev.ssd26.srv08.ru:3030`
