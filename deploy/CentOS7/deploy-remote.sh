@@ -8,13 +8,13 @@ set -euo pipefail
 # ---------------------------------------------------------------
 # CONSTANTS — edit these as needed
 # ---------------------------------------------------------------
-REMOTE_USER="crm_admin" # SAFE: Используем настроенного пользователя
+REMOTE_USER="crm_admin"
 REMOTE_HOST="94.198.217.127"
 REMOTE_PORT="22"
 REMOTE_DIR="/opt/crm-frontend"
 
 LOCAL_IMAGE_NAME="crm-frontend-crm-frontend:latest"
-HOST_PORT="${HOST_PORT:-3030}"
+export HOST_PORT="${HOST_PORT:-3030}" # ДОБАВЛЕНО export для Docker Compose
 DOMAIN="dev.ssd26.srv08.ru"
 EXTERNAL_PORT="3003"
 NGINX_CONF_SRC="./deploy/CentOS7/nginx-crm.conf"
@@ -65,7 +65,7 @@ main() {
 
   # Build Docker image
   info "Building Docker image..."
-  docker compose build --quiet 2>&1 || fail "Docker build failed."
+  docker compose build 2>&1 || fail "Docker build failed."
   ok "Docker image built."
 
   # Export image
@@ -76,33 +76,27 @@ main() {
 
   # Copy files to remote
   info "Copying files to $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR ..."
-  # SAFE: Создаем каталог через sudo и сразу даем на него права пользователю crm_admin
   ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "sudo mkdir -p $REMOTE_DIR && sudo chown -R $REMOTE_USER:$REMOTE_USER $REMOTE_DIR"
 
-  scp -P "$REMOTE_PORT" "$TEMP_ARCHIVE" \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp image failed"
-  scp -P "$REMOTE_PORT" "$COMPOSE_FILE" \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp compose failed"
-  scp -P "$REMOTE_PORT" "$ENV_FILE" \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp env failed"
-  scp -P "$REMOTE_PORT" -r config/ \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp config failed"
-  scp -P "$REMOTE_PORT" -r messages/ \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp messages failed"
-  scp -P "$REMOTE_PORT" "$NGINX_CONF_SRC" \
-    "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp nginx config failed"
+  scp -P "$REMOTE_PORT" "$TEMP_ARCHIVE" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp image failed"
+  scp -P "$REMOTE_PORT" "$COMPOSE_FILE" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp compose failed"
+  scp -P "$REMOTE_PORT" "$ENV_FILE" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp env failed"
+  
+  # Проверяем наличие папок перед копированием
+  if [ -d "config" ]; then scp -P "$REMOTE_PORT" -r config/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp config failed"; fi
+  if [ -d "messages" ]; then scp -P "$REMOTE_PORT" -r messages/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp messages failed"; fi
+  scp -P "$REMOTE_PORT" "$NGINX_CONF_SRC" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp nginx config failed"
 
   rm -f "$TEMP_ARCHIVE"
   ok "All files copied."
 
   # Deploy container
   info "Deploying container on remote..."
-  # SAFE: Запуск Docker-команд через sudo
   ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
     "cd $REMOTE_DIR && \
-     sudo docker load < crm-image.tar.gz && \
-     rm -f crm-image.tar.gz && \
-     sudo docker compose up -d && \
+     sudo docker load < $TEMP_ARCHIVE && \
+     rm -f $TEMP_ARCHIVE && \
+     sudo HOST_PORT=$HOST_PORT docker compose up -d && \
      echo '' && \
      sudo docker ps --filter name=crm-frontend --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'" \
     || fail "Remote deployment failed."
@@ -110,9 +104,11 @@ main() {
 
   # Install nginx config (Bitrix CentOS 7)
   info "Installing nginx config for Bitrix environment..."
-  # SAFE: Запуск копирования конфигов и перезапуска Nginx через sudo
+  # ИСПРАВЛЕНО: Добавлена смена владельца конфига на root:root после копирования
   ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
     "sudo cp $REMOTE_DIR/$NGINX_CONF_NAME $NGINX_AVAILABLE/ && \
+     sudo chown root:root $NGINX_AVAILABLE/$NGINX_CONF_NAME && \
+     sudo chmod 644 $NGINX_AVAILABLE/$NGINX_CONF_NAME && \
      sudo ln -sf $NGINX_AVAILABLE/$NGINX_CONF_NAME $NGINX_ENABLED/$NGINX_CONF_NAME && \
      sudo nginx -t && sudo systemctl reload nginx" \
     || fail "Nginx config installation failed."
