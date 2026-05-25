@@ -128,7 +128,7 @@
     "name": "CRM Platform",
     "version": "1.0.0",
     "indexPageId": "dashboard",
-    "baseURL": "{$env.BASE_URL}",
+    "baseURL": "{$env.NEXT_PUBLIC_BASE_URL}",
     "timeout": 10000,
     "features": {
       "darkMode": true,

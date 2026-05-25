@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`{$config.baseURL}` macro resolution error on `/statistics` page** — `BASE_URL` env var renamed to `NEXT_PUBLIC_BASE_URL` because `getServerEnv()` only exposes `NEXT_PUBLIC_*` variables for server-side macro resolution. The macro in `config/crm-config.json` was `{$env.BASE_URL}` but `BASE_URL` was filtered out, causing `{$config.baseURL}` to remain unresolved and produce an invalid URL `{$config.baseURL}/mocks/api/stats/review.json`. Fixed by:
+  - `.env.local`: `BASE_URL` → `NEXT_PUBLIC_BASE_URL`
+  - `config/crm-config.json`: `{$env.BASE_URL}` → `{$env.NEXT_PUBLIC_BASE_URL}`
+
 ### Added
 
 - **`deploy/CentOS7/deploy-remote-configure.sh`** — новый скрипт для обновления конфигурации на удалённом сервере без пересборки Docker-образа. Копирует `config/`, `messages/`, `.env.production`, `docker-compose.yml` и перезапускает контейнер через `docker compose up -d`. Основан на `deploy-remote.sh`, но без этапов сборки, загрузки образа и установки nginx-конфига.
