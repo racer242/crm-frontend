@@ -378,6 +378,7 @@ docker compose down           # Остановить
 - **Внутренний порт Docker (localhost):** 3030 (только для nginx)
 - **nginx config:** `deploy/CentOS7/nginx-crm.conf`
 - **deploy script:** `deploy/CentOS7/deploy-remote.sh`
+- **reconfigure script (update config only):** `deploy/CentOS7/deploy-remote-configure.sh`
 
 **Настройка nginx на сервере (выполняется один раз):**
 

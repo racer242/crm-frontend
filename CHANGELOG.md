@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **`deploy/CentOS7/deploy-remote-configure.sh`** — новый скрипт для обновления конфигурации на удалённом сервере без пересборки Docker-образа. Копирует `config/`, `messages/`, `.env.production`, `docker-compose.yml` и перезапускает контейнер через `docker compose up -d`. Основан на `deploy-remote.sh`, но без этапов сборки, загрузки образа и установки nginx-конфига.
+  - `README.md` — добавлена ссылка на reconfigure script в разделе HTTPS
+
 ### Fixed
 
 - **`.env.production` removed from git tracking** — `.gitignore` had `!.env.production` (negation rule), which explicitly allowed `.env.production` to be tracked. Fixed by changing `!.env.production` → `.env.production` in `.gitignore`. File removed from git tracking with `git rm --cached .env.production`.
