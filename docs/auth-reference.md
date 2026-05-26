@@ -376,21 +376,21 @@ createToken(payload, expiresIn: number): Promise<string>;
 
 ## Переменные окружения
 
-| Переменная                     | По умолчанию                           | Описание                                         |
-| ------------------------------ | -------------------------------------- | ------------------------------------------------ |
-| `BITRIX_API_URL`               | (пусто)                                | URL для API 1С Битрикс                           |
-| `BITRIX_INTERNAL_SECRET`       | (пусто)                                | Секретный ключ для внутренних запросов к Битрикс |
-| `JWT_SECRET`                   | (пусто)                                | Секрет для верификации JWT-токенов               |
-| `AUTH_COOKIE_NAMES`            | `access_token,refresh_token,user_data` | Имена cookie для токенов                         |
-| `AUTH_TOKEN_LIFETIME_ACCESS`   | `900` (15 мин)                         | Время жизни access_token cookie (секунды)        |
-| `AUTH_TOKEN_LIFETIME_REFRESH`  | `604800` (7 дней)                      | Время жизни refresh_token cookie (секунды)       |
-| `AUTH_TOKEN_LIFETIME_USERDATA` | `604800` (7 дней)                      | Время жизни user_data cookie (секунды)           |
-| `AUTH_PROTECTED_ROUTES`        | (пусто)                                | Список защищённых роутов (через запятую)         |
-| `AUTH_GUEST_ROUTES`            | `/login`                               | Список гостевых роутов (через запятую)           |
-| `AUTH_MAX_REFRESH_ATTEMPTS`    | `1`                                    | Максимальное количество попыток refresh          |
-| `AUTH_LOGIN_URL`               | `/api/auth/login`                      | URL для login route handler                      |
-| `AUTH_LOGOUT_URL`              | `/api/auth/logout`                     | URL для logout route handler                     |
-| `AUTH_REFRESH_URL`             | `/api/auth/refresh`                    | URL для refresh route handler                    |
+| Переменная                     | По умолчанию                           | Описание                                                                                                                             |
+| ------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `BITRIX_API_URL`               | (пусто)                                | URL для API 1С Битрикс                                                                                                               |
+| `BITRIX_INTERNAL_SECRET`       | (пусто)                                | Секретный ключ для внутренних запросов к Битрикс. Если значение содержит спецсимволы, закодируйте его в Base64 с префиксом `Base64_` |
+| `JWT_SECRET`                   | (пусто)                                | Секрет для верификации JWT-токенов. Если значение содержит спецсимволы, закодируйте его в Base64 с префиксом `Base64_`               |
+| `AUTH_COOKIE_NAMES`            | `access_token,refresh_token,user_data` | Имена cookie для токенов                                                                                                             |
+| `AUTH_TOKEN_LIFETIME_ACCESS`   | `900` (15 мин)                         | Время жизни access_token cookie (секунды)                                                                                            |
+| `AUTH_TOKEN_LIFETIME_REFRESH`  | `604800` (7 дней)                      | Время жизни refresh_token cookie (секунды)                                                                                           |
+| `AUTH_TOKEN_LIFETIME_USERDATA` | `604800` (7 дней)                      | Время жизни user_data cookie (секунды)                                                                                               |
+| `AUTH_PROTECTED_ROUTES`        | (пусто)                                | Список защищённых роутов (через запятую)                                                                                             |
+| `AUTH_GUEST_ROUTES`            | `/login`                               | Список гостевых роутов (через запятую)                                                                                               |
+| `AUTH_MAX_REFRESH_ATTEMPTS`    | `1`                                    | Максимальное количество попыток refresh                                                                                              |
+| `AUTH_LOGIN_URL`               | `/api/auth/login`                      | URL для login route handler                                                                                                          |
+| `AUTH_LOGOUT_URL`              | `/api/auth/logout`                     | URL для logout route handler                                                                                                         |
+| `AUTH_REFRESH_URL`             | `/api/auth/refresh`                    | URL для refresh route handler                                                                                                        |
 
 ---
 

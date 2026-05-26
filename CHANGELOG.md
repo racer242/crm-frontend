@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Base64-encoding for BITRIX_INTERNAL_SECRET and JWT_SECRET** — `.env.local`, `.env.production`: secrets now stored in Base64 with `Base64_` prefix + raw value backup comments. `src/auth/secretUtils.ts` — new `decodeSecret()` utility. `src/auth/bitrixClient.ts`, `src/auth/tokenService.ts` — call `decodeSecret()` before using. `.env.example` — added Base64 usage example. `README.md`, `docs/auth-reference.md` — added Base64 notes. Non-Base64 values are still supported for backward compatibility.
+
 ### Fixed
 
 - **Duplicate error toast and MISSING_MESSAGE on login failure** — `src/app/login/page.tsx`: removed error toast from `handleSubmit` catch block to prevent double toast; the error is now shown exclusively via `useEffect` on `error` context change with the server-provided error message. Removed unused `t("loginFailed")` call that caused `MISSING_MESSAGE` error (the key exists under `auth` namespace, not `login`).

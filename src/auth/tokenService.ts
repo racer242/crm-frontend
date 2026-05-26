@@ -6,6 +6,7 @@
 
 import { jwtVerify, decodeJwt, SignJWT, errors } from "jose";
 import type { TokenPayload } from "@/types";
+import { decodeSecret } from "@/auth/secretUtils";
 
 /** Результат верификации JWT */
 export type TokenVerifyResult =
@@ -21,7 +22,7 @@ function getJwtSecret(): Uint8Array {
     if (!secret) {
       throw new Error("JWT_SECRET is not configured");
     }
-    _jwtSecretCache = new TextEncoder().encode(secret);
+    _jwtSecretCache = new TextEncoder().encode(decodeSecret(secret));
   }
   return _jwtSecretCache;
 }

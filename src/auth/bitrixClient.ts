@@ -5,6 +5,7 @@
  */
 
 import { buildUrlWithParams } from "@/utils/http";
+import { decodeSecret } from "@/auth/secretUtils";
 
 export class BitrixApiError extends Error {
   constructor(
@@ -40,7 +41,7 @@ function getInternalSecret(): string {
       console.error("[bitrixClient] BITRIX_INTERNAL_SECRET is not configured");
       throw new Error("BITRIX_INTERNAL_SECRET is not configured");
     }
-    _cachedSecret = secret;
+    _cachedSecret = decodeSecret(secret);
   }
   return _cachedSecret;
 }
@@ -95,6 +96,12 @@ export async function bitrixRequest<T>(
     `[bitrixClient] → ${method} ${requestUrl}`,
     options.body ? JSON.stringify(options.body).slice(0, 200) : "",
   );
+
+  console.log("???", requestUrl, {
+    method,
+    headers,
+    body: requestBody,
+  });
 
   let response: Response;
   try {
