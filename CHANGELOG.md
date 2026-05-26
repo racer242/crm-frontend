@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Login page toast notifications & button lock** — `src/app/login/page.tsx`:
+  - Added PrimeReact `Toast` component for success/error messages instead of raw error div
+  - Added `navigatingRef` to block the submit button after successful login until navigation completes, preventing duplicate API calls
+  - `messages/ru.json` and `messages/en.json` — added `loginSuccess`, `success`, `error` translation keys under `login` namespace
+
 ### Fixed
 
 - **`{$config.baseURL}` macro resolution error on `/statistics` page** — `BASE_URL` env var renamed to `NEXT_PUBLIC_BASE_URL` because `getServerEnv()` only exposes `NEXT_PUBLIC_*` variables for server-side macro resolution. The macro in `config/crm-config.json` was `{$env.BASE_URL}` but `BASE_URL` was filtered out, causing `{$config.baseURL}` to remain unresolved and produce an invalid URL `{$config.baseURL}/mocks/api/stats/review.json`. Fixed by:

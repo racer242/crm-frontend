@@ -9,7 +9,7 @@
  * поэтому страница логина разделена на обёртку (LoginPage) и содержимое (LoginForm).
  */
 
-import React, { Suspense } from "react";
+import React, { Suspense, useRef } from "react";
 
 export default function LoginPage() {
   return (
@@ -32,6 +32,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 import { classNames } from "primereact/utils";
 
 function LoginForm() {
@@ -40,6 +41,9 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("return_url") || "/";
+
+  const toastRef = useRef<Toast>(null);
+  const navigatingRef = useRef(false);
 
   const [loginField, setLoginField] = useState("");
   const [password, setPassword] = useState("");
@@ -50,24 +54,50 @@ function LoginForm() {
       e.preventDefault();
       setSubmitted(true);
 
-      if (!loginField || !password) {
-        return;
-      }
+      if (!loginField || !password) return;
+      if (isLoading || navigatingRef.current) return;
 
       try {
         await login({ login: loginField, password }, returnUrl);
+        navigatingRef.current = true;
+        toastRef.current?.show({
+          severity: "success",
+          summary: t("success"),
+          detail: t("loginSuccess"),
+          life: 2000,
+        });
       } catch {
-        // Ошибка уже установлена в контексте
+        toastRef.current?.show({
+          severity: "error",
+          summary: t("error"),
+          detail: error || t("loginFailed"),
+          life: 4000,
+        });
       }
     },
-    [loginField, password, login, returnUrl],
+    [loginField, password, login, returnUrl, isLoading, error, t],
   );
+
+  // Показываем ошибки из контекста через toast
+  React.useEffect(() => {
+    if (error) {
+      toastRef.current?.show({
+        severity: "error",
+        summary: t("error"),
+        detail: error,
+        life: 4000,
+      });
+    }
+  }, [error, t]);
 
   // Если уже авторизован — перенаправляем
   React.useEffect(() => {
     if (isAuthenticated) {
       router.push(returnUrl);
     }
+    return () => {
+      navigatingRef.current = false;
+    };
   }, [isAuthenticated, router, returnUrl]);
 
   return (
@@ -78,6 +108,8 @@ function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-column gap-4">
+          <Toast ref={toastRef} />
+
           {/* Login field */}
           <div className="flex flex-column gap-2">
             <label htmlFor="login">{t("loginLabel")}</label>
@@ -116,13 +148,6 @@ function LoginForm() {
               <small className="p-error">{t("passwordRequired")}</small>
             )}
           </div>
-
-          {/* Error message */}
-          {error && (
-            <div className="p-3 border-round bg-red-50 text-red-700 text-sm">
-              {error}
-            </div>
-          )}
 
           {/* Submit button */}
           <Button

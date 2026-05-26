@@ -5,7 +5,10 @@
     "loginRequired": "Логин обязателен",
     "passwordLabel": "Пароль",
     "passwordRequired": "Пароль обязателен",
-    "signIn": "Войти"
+    "signIn": "Войти",
+    "loginSuccess": "Вход выполнен успешно",
+    "success": "Успех",
+    "error": "Ошибка"
   },
   "notFound": {
     "message": "Страница не найдена",

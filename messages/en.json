@@ -5,7 +5,10 @@
     "loginRequired": "Login is required",
     "passwordLabel": "Password",
     "passwordRequired": "Password is required",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "loginSuccess": "Login successful",
+    "success": "Success",
+    "error": "Error"
   },
   "notFound": {
     "message": "Page not found",
