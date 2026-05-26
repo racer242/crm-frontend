@@ -67,15 +67,10 @@ function LoginForm() {
           life: 2000,
         });
       } catch {
-        toastRef.current?.show({
-          severity: "error",
-          summary: t("error"),
-          detail: error || t("loginFailed"),
-          life: 4000,
-        });
+        // Ошибка уже установлена в контексте и будет показана через useEffect
       }
     },
-    [loginField, password, login, returnUrl, isLoading, error, t],
+    [loginField, password, login, returnUrl, isLoading, t],
   );
 
   // Показываем ошибки из контекста через toast
