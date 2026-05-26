@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Duplicate error toast and MISSING_MESSAGE on login failure** — `src/app/login/page.tsx`: removed error toast from `handleSubmit` catch block to prevent double toast; the error is now shown exclusively via `useEffect` on `error` context change with the server-provided error message. Removed unused `t("loginFailed")` call that caused `MISSING_MESSAGE` error (the key exists under `auth` namespace, not `login`).
+
 ### Changed
 
 - **Login page toast notifications & button lock** — `src/app/login/page.tsx`:
