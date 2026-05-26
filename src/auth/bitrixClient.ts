@@ -97,12 +97,6 @@ export async function bitrixRequest<T>(
     options.body ? JSON.stringify(options.body).slice(0, 200) : "",
   );
 
-  console.log("???", requestUrl, {
-    method,
-    headers,
-    body: requestBody,
-  });
-
   let response: Response;
   try {
     response = await fetch(requestUrl, {

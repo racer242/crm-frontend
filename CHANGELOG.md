@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **User name and role lost after page refresh** — `src/auth/getServerUser.ts`: server-side user retrieval now reads full `User` data from `user_data` cookie (non-httpOnly, set at login/refresh) instead of relying solely on JWT claims, which may not contain `name`, `role`, or `groups`. Falls back to JWT claims if `user_data` cookie is absent.
+
 ### Changed
 
 - **Base64-encoding for BITRIX_INTERNAL_SECRET and JWT_SECRET** — `.env.local`, `.env.production`: secrets now stored in Base64 with `Base64_` prefix + raw value backup comments. `src/auth/secretUtils.ts` — new `decodeSecret()` utility. `src/auth/bitrixClient.ts`, `src/auth/tokenService.ts` — call `decodeSecret()` before using. `.env.example` — added Base64 usage example. `README.md`, `docs/auth-reference.md` — added Base64 notes. Non-Base64 values are still supported for backward compatibility.
