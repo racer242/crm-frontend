@@ -6,12 +6,8 @@
       "type": "number",
       "sortable": true,
       "props": {
-        "field": "id",
-        "header": "Номер",
-        "sortable": true,
-        "dataType": "numeric",
-        "style": { "width": "10rem", "textAlign": "right" },
-        "headerClassName": "font-semibold",
+        "style": { "width": "10rem" },
+        "headerClassName": "font-italic",
         "bodyClassName": "text-right"
       }
     },
@@ -21,10 +17,6 @@
       "type": "string",
       "sortable": true,
       "props": {
-        "field": "first_name",
-        "header": "Имя",
-        "sortable": true,
-        "dataType": "text",
         "style": { "width": "10rem" }
       }
     },
@@ -34,10 +26,6 @@
       "type": "string",
       "sortable": true,
       "props": {
-        "field": "last_name",
-        "header": "Фамилия",
-        "sortable": true,
-        "dataType": "text",
         "style": { "width": "10rem" }
       }
     },
@@ -47,31 +35,17 @@
       "type": "number",
       "sortable": true,
       "props": {
-        "field": "balance",
-        "header": "Баланс",
-        "sortable": true,
-        "dataType": "numeric",
-        "style": { "width": "10rem", "textAlign": "right" },
-        "headerClassName": "text-right",
-        "bodyClassName": "text-right font-medium",
-        "currency": "RUB",
-        "locale": "ru-RU",
-        "minFractionDigits": 2,
-        "maxFractionDigits": 2
+        "style": { "width": "10rem" },
+        "bodyClassName": "text-right"
       }
     },
     {
       "id": "email",
       "title": "Email",
       "type": "email",
-      "sortable": true,
+      "sortable": false,
       "props": {
-        "field": "email",
-        "header": "Email",
-        "sortable": false,
-        "dataType": "text",
-        "style": { "width": "120rem" },
-        "bodyClassName": "truncate"
+        "style": { "width": "120rem" }
       }
     },
     {
@@ -80,10 +54,6 @@
       "type": "phone",
       "sortable": false,
       "props": {
-        "field": "phone",
-        "header": "Телефон",
-        "sortable": false,
-        "dataType": "text",
         "style": { "width": "120rem" },
         "bodyClassName": "white-space-nowrap"
       }
@@ -94,14 +64,7 @@
       "type": "datetime",
       "sortable": true,
       "props": {
-        "field": "last_auth",
-        "header": "Последняя авторизация",
-        "sortable": true,
-        "dataType": "date",
-        "style": { "width": "120rem" },
-        "dateFormat": "dd.mm.yy",
-        "showTime": true,
-        "hourFormat": "24"
+        "style": { "width": "120rem" }
       }
     },
     {
@@ -110,18 +73,13 @@
       "type": "string",
       "sortable": false,
       "props": {
-        "field": "referral",
-        "header": "Реферал",
-        "sortable": true,
-        "dataType": "text",
-        "style": { "width": "10rem" },
-        "bodyClassName": "text-primary cursor-pointer"
+        "style": { "width": "10rem" }
       }
     }
   ],
   "rows": [
     {
-      "id": "user_1024",
+      "id": 1024,
       "values": {
         "id": 1024,
         "first_name": "Анна",
@@ -129,13 +87,12 @@
         "balance": 15420.5,
         "email": "anna.ivanova@example.com",
         "phone": "+7 (912) 345-67-89",
-        "last_auth": "2026-05-14T09:23:15Z",
+        "last_auth": "2026-05-14 09:23:15",
         "referral": "REF789"
-      },
-      "props": { "class": "status-active" }
+      }
     },
     {
-      "id": "user_1025",
+      "id": 1025,
       "values": {
         "id": 1025,
         "first_name": "Дмитрий",
@@ -143,13 +100,12 @@
         "balance": 0,
         "email": "d.petrov@example.com",
         "phone": "+7 (926) 111-22-33",
-        "last_auth": "2026-05-10T14:05:00Z",
+        "last_auth": "2026-05-10 14:05:00",
         "referral": null
-      },
-      "props": { "class": "status-inactive", "disabled": true }
+      }
     },
     {
-      "id": "user_1026",
+      "id": 1026,
       "values": {
         "id": 1026,
         "first_name": "Елена",
@@ -157,13 +113,12 @@
         "balance": 87500,
         "email": "elena.s@example.com",
         "phone": "+7 (903) 555-77-99",
-        "last_auth": "2026-05-14T11:47:32Z",
+        "last_auth": "2026-05-14 11:47:32",
         "referral": "REF101"
-      },
-      "props": { "class": "status-vip" }
+      }
     },
     {
-      "id": "user_1027",
+      "id": 1027,
       "values": {
         "id": 1027,
         "first_name": "Максим",
@@ -171,13 +126,12 @@
         "balance": 3200.75,
         "email": "max.kozlov@example.com",
         "phone": "+7 (999) 888-66-44",
-        "last_auth": "2026-05-13T18:20:10Z",
+        "last_auth": "2026-05-13 18:20:10",
         "referral": "REF789"
-      },
-      "props": {}
+      }
     },
     {
-      "id": "user_1028",
+      "id": 1028,
       "values": {
         "id": 1028,
         "first_name": "Ольга",
@@ -185,10 +139,9 @@
         "balance": 50100,
         "email": "olga.nov@example.com",
         "phone": "+7 (915) 222-33-44",
-        "last_auth": "2026-05-14T08:15:05Z",
+        "last_auth": "2026-05-14 08:15:05",
         "referral": "REF202"
-      },
-      "props": { "class": "status-active" }
+      }
     }
   ],
   "filters": [
@@ -197,28 +150,28 @@
       "name": "Баланс",
       "type": "range",
       "opts": [0, 100000],
-      "value": null
+      "value": [17578, 78906]
     },
     {
       "id": "last_auth",
       "name": "Последняя авторизация",
       "type": "period",
       "opts": null,
-      "value": null
+      "value": ["2026-06-09T21:00:00.000Z", "2026-06-11T21:00:00.000Z"]
     },
     {
       "id": "has_referral",
       "name": "Есть реферал",
       "type": "checkbox",
       "opts": null,
-      "value": false
+      "value": true
     },
     {
       "id": "status",
       "name": "Статус",
       "type": "radio",
       "opts": ["active", "inactive", "vip", "banned"],
-      "value": null
+      "value": "inactive"
     }
   ],
   "search": "",

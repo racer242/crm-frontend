@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Mock users data simplified** — `public/mocks/api/users/users.json`:
+  - Column props stripped down to style-only (removed `field`, `header`, `sortable`, `dataType`)
+  - Row IDs changed from strings (`"user_1024"`) to numeric (`1024`)
+  - Row-level `props` (`class`, `disabled`) removed
+  - Date format changed from ISO (`2026-05-14T09:23:15Z`) to simple datetime (`2026-05-14 09:23:15`)
+  - Filter values populated with test data for UI preview
+
 ### Fixed
 
 - **User name and role lost after page refresh** — `src/auth/getServerUser.ts`: server-side user retrieval now reads full `User` data from `user_data` cookie (non-httpOnly, set at login/refresh) instead of relying solely on JWT claims, which may not contain `name`, `role`, or `groups`. Falls back to JWT claims if `user_data` cookie is absent.
