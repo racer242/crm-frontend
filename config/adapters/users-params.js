@@ -49,7 +49,11 @@ function transformFilters(prFilters) {
 
   return prFilters
     .filter(
-      (f) => f?.value !== undefined && f?.value !== null && f?.value !== "",
+      (f) =>
+        f?.value !== undefined &&
+        f?.value !== null &&
+        f?.value !== false &&
+        f?.value !== "",
     )
     .map(({ id, value, matchMode }) => {
       const result = { id, value };
