@@ -24,6 +24,10 @@ export function applyRules(data: any, rules: Record<string, ReplaceRule>): any {
     return data;
   }
 
+  if (data instanceof Date) {
+    return data;
+  }
+
   if (Array.isArray(data)) {
     return data.map((item) => applyRules(item, rules));
   }

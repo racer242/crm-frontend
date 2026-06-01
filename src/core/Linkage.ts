@@ -57,6 +57,10 @@ export class Linkage {
       return value;
     }
 
+    if (value instanceof Date) {
+      return value;
+    }
+
     if (typeof value === "string") {
       return this.resolve(value);
     }
