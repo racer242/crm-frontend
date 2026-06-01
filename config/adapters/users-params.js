@@ -45,14 +45,13 @@ function transform(params = {}) {
  * Преобразует фильтры PrimeReact → формат API
  */
 function transformFilters(prFilters) {
-  if (!prFilters || typeof prFilters !== "object") return [];
+  if (!Array.isArray(prFilters)) return [];
 
-  return Object.entries(prFilters)
+  return prFilters
     .filter(
-      ([_, f]) =>
-        f?.value !== undefined && f?.value !== null && f?.value !== "",
+      (f) => f?.value !== undefined && f?.value !== null && f?.value !== "",
     )
-    .map(([id, { value, matchMode }]) => {
+    .map(({ id, value, matchMode }) => {
       const result = { id, value };
       if (matchMode) result.matchMode = matchMode;
       return result;
