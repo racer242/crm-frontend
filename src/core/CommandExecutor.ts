@@ -37,7 +37,7 @@ import {
 import { executeClientDataFeed } from "./DataFeedService";
 import { MacroEngine } from "./MacroEngine";
 import { buildUrlWithParams } from "@/utils/http";
-import { getServerEnv } from "@/utils/env";
+import { getPublicEnv } from "@/utils/env";
 import { getClientLocation } from "@/utils/location";
 import { FormatEngine, FormatRule } from "./FormatEngine";
 import { applyRules } from "./RulesEngine";
@@ -81,7 +81,7 @@ export class CommandExecutor {
       stateManager: this.context.stateManager,
       pageId: this.context.pageId,
       config: this.context.appConfig,
-      env: getServerEnv(),
+      env: getPublicEnv(),
     };
   }
 

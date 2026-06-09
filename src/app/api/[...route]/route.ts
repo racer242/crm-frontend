@@ -116,7 +116,7 @@ async function handleRequest(
     // Resolve macros in the route URL
     const serverSources: MacroSources = {
       config: config.config,
-      env: getServerEnv(),
+      env: await getServerEnv(),
     };
     const macroEngine = new MacroEngine(serverSources);
     let resolvedUrl = macroEngine.apply(routeConfig.url) as string;

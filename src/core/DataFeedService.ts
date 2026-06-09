@@ -10,7 +10,7 @@ import { DataFeedResult, SendRequestParams, MacroSources } from "@/types";
 import { StateManager } from "./StateManager";
 import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
-import { getServerEnv } from "@/utils/env";
+import { getPublicEnv } from "@/utils/env";
 import { buildUrlWithParams } from "@/utils/http";
 
 /**
@@ -126,7 +126,7 @@ function createMacroSources(
     stateManager,
     pageId,
     config: appConfig,
-    env: getServerEnv(),
+    env: getPublicEnv(),
   };
 }
 
