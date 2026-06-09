@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Removed
+
+- **Dead code cleaned up** — `src/core/DataFeedService.ts` and `src/core/index.ts`:
+  - Removed commented-out `resolveUrl()` function (unused — only called inside the removed `executeDataFeed`)
+  - Removed commented-out `executeDataFeed()` and `executePageDataFeeds()` functions (replaced by client-side `executeClientDataFeed()` and server-side `executeServerDataFeeds()` in `DataFeedServerService.ts`)
+  - Removed commented-out `executeDataFeed` / `executePageDataFeeds` re-exports from barrel `index.ts`
+  - Cleaned up unused `DataFeedConfig` and `ApiRouteConfig` imports from `DataFeedService.ts`
+
 ### Changed
 
 - **Mock users data simplified** — `public/mocks/api/users/users.json`:

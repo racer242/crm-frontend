@@ -6,13 +6,7 @@
  * Adaptation is handled server-side via API route.
  */
 
-import {
-  DataFeedConfig,
-  DataFeedResult,
-  SendRequestParams,
-  ApiRouteConfig,
-  MacroSources,
-} from "@/types";
+import { DataFeedResult, SendRequestParams, MacroSources } from "@/types";
 import { StateManager } from "./StateManager";
 import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
@@ -28,31 +22,6 @@ function resolveTargetElementId(
   pageId: string,
 ): string {
   return parsedTarget.elementId || pageId;
-}
-
-/**
- * Resolves the full URL for a request.
- * If URL starts with /api/, looks up the route in apiRoutes config.
- * Macro resolution in route URL is handled by the caller (macroEngine).
- */
-function resolveUrl(
-  url: string,
-  apiRoutes: ApiRouteConfig[] | undefined,
-  macroEngine?: MacroEngine,
-): string {
-  // Check if this is a router URL (/api/ROUTE_NAME)
-  if (url.startsWith("/api/")) {
-    const routeName = url.substring(5); // Remove "/api/"
-    const route = apiRoutes?.find((r) => r.path === routeName);
-    if (route) {
-      // Apply macros to the route URL if macroEngine is provided
-      return macroEngine ? (macroEngine.apply(route.url) as string) : route.url;
-    }
-    // If route not found, return as-is (might be internal Next.js route)
-    return url;
-  }
-  // External URL or relative URL
-  return url;
 }
 
 /**
@@ -159,99 +128,6 @@ function createMacroSources(
     config: appConfig,
     env: getServerEnv(),
   };
-}
-
-/**
- * Executes a single data feed request
- * Data adaptation is handled server-side via API route
- */
-export async function executeDataFeed(
-  feed: DataFeedConfig,
-  stateManager: StateManager,
-  pageId: string,
-  authToken?: string,
-  apiRoutes?: ApiRouteConfig[],
-  appConfig?: Record<string, any>,
-): Promise<DataFeedResult> {
-  const result: DataFeedResult = {
-    success: false,
-    target: feed.target,
-  };
-
-  try {
-    const macroEngine = new MacroEngine(
-      createMacroSources(stateManager, pageId, appConfig),
-    );
-
-    // Resolve macros in URL
-    const resolvedUrl = macroEngine.apply(feed.url) as string;
-
-    // Resolve macros in data
-    let resolvedData = feed.data
-      ? (macroEngine.apply(feed.data) as Record<string, any>)
-      : undefined;
-
-    // Resolve the actual URL (check if it's a router URL)
-    const finalUrl = resolveUrl(resolvedUrl, apiRoutes, macroEngine);
-
-    // Build headers with auth
-    const headers = buildHeaders(authToken);
-
-    // Execute the request
-    let responseData = await executeRequest(
-      finalUrl,
-      feed.method,
-      resolvedData,
-      headers,
-    );
-
-    // Parse target and resolve element ID
-    const parsedTarget = PathResolver.parseTarget(feed.target);
-    const elementId = resolveTargetElementId(parsedTarget, pageId);
-
-    // Store response in state
-    storeInState(stateManager, elementId, parsedTarget.statePath, responseData);
-
-    result.success = true;
-    result.data = responseData;
-  } catch (error) {
-    result.success = false;
-    result.error = error instanceof Error ? error.message : String(error);
-  }
-
-  return result;
-}
-
-/**
- * Executes all data feed requests for a page
- */
-export async function executePageDataFeeds(
-  dataFeeds: DataFeedConfig[] | undefined,
-  stateManager: StateManager,
-  pageId: string,
-  authToken?: string,
-  apiRoutes?: ApiRouteConfig[],
-  appConfig?: Record<string, any>,
-): Promise<DataFeedResult[]> {
-  if (!dataFeeds || dataFeeds.length === 0) {
-    return [];
-  }
-
-  // Execute all data feeds in parallel
-  const promises = dataFeeds.map((feed) =>
-    executeDataFeed(
-      feed,
-      stateManager,
-      pageId,
-      authToken,
-      apiRoutes,
-      appConfig,
-    ),
-  );
-
-  return Promise.all(promises).then((results) => {
-    return results;
-  });
 }
 
 /**
