@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **`apiRoutes` moved from `config{}` to root level in `crm-config.json`** — `apiRoutes` are server-side only (external API URLs with adapters), not meant for client. Removed from `AppConfig` interface (`src/types/app.ts`), added to `App` interface. Updated `DataFeedServerService.ts` and `api/[...route]/route.ts` to read from `config.apiRoutes` instead of `config.config?.apiRoutes`. Stripped `apiRoutes` from client-bound config in `page.tsx` via destructuring.
+- **`apiRoutes` extracted to separate file `config/system/api-routes.json`** — the `apiRoutes` array in `crm-config.json` replaced with `{ "$ref": "./system/api-routes.json" }`. The `config/system/` directory created for service/system includes.
 
 ### Removed
 
