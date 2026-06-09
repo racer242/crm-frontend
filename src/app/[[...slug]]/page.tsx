@@ -86,7 +86,7 @@ export default async function Page({
   // Create shared server sources for macros
   const serverSources: MacroSources = {
     config: config.config,
-    env: getServerEnv(),
+    env: await getServerEnv(),
     location,
   };
 
