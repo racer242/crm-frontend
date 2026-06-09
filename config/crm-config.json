@@ -135,25 +135,25 @@
       "apiAccess": true,
       "exportData": true,
       "twoFactorAuth": false
+    }
+  },
+  "apiRoutes": [
+    {
+      "path": "get-dynamic-data",
+      "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
     },
-    "apiRoutes": [
-      {
-        "path": "get-dynamic-data",
-        "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
-      },
-      {
-        "path": "get-users",
-        "url": "{$config.baseURL}/mocks/api/users/users.json",
-        "adapter": {
-          "request": "users.request.js",
-          "response": "users.response.js"
-        }
-      },
-      {
-        "path": "get-file",
-        "type": "file",
-        "url": "{$config.baseURL}/mocks/api/file/default_12_5_2026_14_26_10.xlsx"
+    {
+      "path": "get-users",
+      "url": "{$config.baseURL}/mocks/api/users/users.json",
+      "adapter": {
+        "request": "users.request.js",
+        "response": "users.response.js"
       }
-    ]
-  }
+    },
+    {
+      "path": "get-file",
+      "type": "file",
+      "url": "{$config.baseURL}/mocks/api/file/default_12_5_2026_14_26_10.xlsx"
+    }
+  ]
 }

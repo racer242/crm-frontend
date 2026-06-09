@@ -41,6 +41,8 @@ export interface App extends BaseElement {
   /** Data adapters indexed by ID */
   adapters?: AdaptersConfig;
   config: AppConfig;
+  /** API router configurations: maps short route names to external API URLs (server-side only, not exposed to client) */
+  apiRoutes?: ApiRouteConfig[];
 }
 
 /** Пункт меню пользователя */
@@ -80,8 +82,6 @@ export interface AppConfig {
   api: ApiConfig;
   features?: FeatureFlags;
   routes?: RouteConfig[];
-  /** API router configurations: maps short route names to external API URLs */
-  apiRoutes?: ApiRouteConfig[];
   /** Настройки локали */
   locale?: LocaleConfig;
 }

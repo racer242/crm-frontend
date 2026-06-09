@@ -44,8 +44,7 @@ export async function executeServerDataFeeds(
   const authToken: string | undefined = undefined;
 
   // Get API routes config
-  const apiRoutes: ApiRouteConfig[] | undefined =
-    cachedConfig?.config?.apiRoutes;
+  const apiRoutes: ApiRouteConfig[] | undefined = cachedConfig?.apiRoutes;
 
   const results: DataFeedResult[] = [];
 

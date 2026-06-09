@@ -115,9 +115,10 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
-  // Create minimal config with only current page
+  // Create minimal config with only current page (strip server-only apiRoutes)
+  const { apiRoutes: _, ...configForClient } = config;
   const minimalConfig = {
-    ...config,
+    ...configForClient,
     pages: clonedPageConfig ? [clonedPageConfig] : [],
   };
 
