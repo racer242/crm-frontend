@@ -1,15 +1,15 @@
 [
   {
-    "path": "get-dynamic-data",
-    "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
-  },
-  {
     "path": "get-users",
-    "url": "{$config.baseURL}/mocks/api/users/users.json",
+    "url": "{$env.API_CAMP_URL_0}/users",
     "adapter": {
       "request": "users.request.js",
       "response": "users.response.js"
     }
+  },
+  {
+    "path": "get-dynamic-data",
+    "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
   },
   {
     "path": "get-file",

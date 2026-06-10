@@ -14,6 +14,7 @@ import {
   executeServerDataFeeds,
   resolveElementStateMacros,
 } from "@/core/DataFeedServerService";
+import { getAccessTokenServer } from "@/utils/getAccessToken";
 
 export default async function Page({
   params,
@@ -98,6 +99,9 @@ export default async function Page({
   let successResults: DataFeedResult[] = [];
   let initialPageId: string | null = null;
 
+  // Get user's access_token for authenticated API requests
+  const accessToken = await getAccessTokenServer();
+
   if (clonedPageConfig && clonedPageConfig.dataFeed) {
     const pageId = clonedPageConfig.id || "";
     initialPageId = pageId;
@@ -105,6 +109,7 @@ export default async function Page({
       pageId,
       clonedPageConfig,
       serverSources,
+      accessToken,
     );
 
     // Separate errors from successful results

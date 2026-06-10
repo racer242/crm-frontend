@@ -1,0 +1,46 @@
+▲ Next.js 16.2.2 (Turbopack)
+- Environments: .env.local, .env.production, .env
+
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/core/DataAdapterEngine.ts
+    ./src/app/api/[...route]/route.ts
+
+
+✓ Compiled successfully in 10.4s
+  Running TypeScript ...
+  Finished TypeScript in 7.5s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/4) ...
+  Generating static pages using 8 workers (1/4) 
+  Generating static pages using 8 workers (2/4) 
+  Generating static pages using 8 workers (3/4) 
+✓ Generating static pages using 8 workers (4/4) in 1700ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /_not-found
+├ ƒ /[[...slug]]
+├ ƒ /api/[...route]
+├ ƒ /api/auth/[...auth]
+└ ƒ /login
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+

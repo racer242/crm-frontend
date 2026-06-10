@@ -303,6 +303,12 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Method:    ${(process.env.BITRIX_REQUEST_METHOD || "POST").padEnd(48)}║`,
   );
   console.log(
+    `║  Auth API:  ${(process.env.BITRIX_API_URL || "").replace(/^https?:\/\//, "").padEnd(48)}║`,
+  );
+  console.log(
+    `║  Auth:      ${((process.env.AUTH_COOKIE_NAMES ? "enabled" : "disabled") as string).padEnd(48)}║`,
+  );
+  console.log(
     "╚═════════════════════════════════════════════════════════════╝",
   );
   console.log("");

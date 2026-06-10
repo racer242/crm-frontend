@@ -33,15 +33,13 @@ export async function executeServerDataFeeds(
   pageId: string,
   pageConfig: any,
   serverSources: MacroSources,
+  authToken?: string,
 ): Promise<DataFeedResult[]> {
   const dataFeeds: DataFeedConfig[] | undefined = pageConfig?.dataFeed;
 
   if (!dataFeeds || dataFeeds.length === 0) {
     return [];
   }
-
-  // Auth token is no longer used - globalState removed
-  const authToken: string | undefined = undefined;
 
   // Get API routes config
   const apiRoutes: ApiRouteConfig[] | undefined = cachedConfig?.apiRoutes;

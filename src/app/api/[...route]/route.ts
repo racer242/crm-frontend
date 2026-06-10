@@ -23,6 +23,7 @@ import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "@/core/DataAdapterEngine";
 import { buildUrlWithParams, parseSearchParams } from "@/utils/http";
+import { getAccessTokenFromRequest } from "@/utils/getAccessToken";
 
 /**
  * Finds a route configuration by path name
@@ -40,10 +41,10 @@ function findRouteConfig(
 function buildFetchOptions(request: NextRequest): RequestInit {
   const headers: Record<string, string> = {};
 
-  // Copy relevant headers from the original request
-  const authHeader = request.headers.get("authorization");
-  if (authHeader) {
-    headers["Authorization"] = authHeader;
+  // Inject user's access_token from httpOnly cookies into outgoing request
+  const accessToken = getAccessTokenFromRequest(request);
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
   headers["Content-Type"] = "application/json";

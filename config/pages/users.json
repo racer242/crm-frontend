@@ -23,10 +23,9 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/mocks/api/users/users.json",
+      "url": "{$config.baseURL}/api/get-users",
       "method": "GET",
-      "target": "state.users",
-      "adapter": "users.response.js"
+      "target": "state.users"
     }
   ],
   "shortcuts": {
