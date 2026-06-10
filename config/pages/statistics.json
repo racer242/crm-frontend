@@ -19,19 +19,19 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/mocks/api/stats/analytics.json",
+      "url": "{$config.baseURL}/api/stats/analytics",
       "method": "GET",
       "target": "state.analytics",
       "adapter": "stats.analytics.js"
     },
     {
-      "url": "{$config.baseURL}/mocks/api/stats/review.json",
+      "url": "{$config.baseURL}/api/stats/review",
       "method": "GET",
       "target": "state.review",
       "adapter": "stats.review.js"
     },
     {
-      "url": "{$config.baseURL}/mocks/api/stats/weeks.json",
+      "url": "{$config.baseURL}/api/stats/weeks",
       "method": "GET",
       "target": "state.weeks",
       "adapter": "stats.week.js"
