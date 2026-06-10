@@ -2,251 +2,333 @@
   {
     "path": "stats/weeks",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/weeks"
+    "url": "{$env.API_CAMP_URL_0}/stats/weeks",
+    "note": "Статистика: Список недель"
   },
   {
     "path": "stats/analytics",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/analytics"
+    "url": "{$env.API_CAMP_URL_0}/stats/analytics",
+    "note": "Статистика: Аналитика"
   },
   {
     "path": "stats/analytics/download",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/analytics/download"
+    "url": "{$env.API_CAMP_URL_0}/stats/analytics/download",
+    "note": "Статистика: Скачать документ аналитики"
   },
   {
     "path": "stats/review",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/review"
+    "url": "{$env.API_CAMP_URL_0}/stats/review",
+    "note": "Статистика: Быстрая статистика"
   },
 
-  { "path": "users", "method": "GET", "url": "{$env.API_CAMP_URL_0}/users" },
+  {
+    "path": "users",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/users",
+    "note": "Участники: Список участников"
+  },
   {
     "path": "users/import",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/users/import"
+    "url": "{$env.API_CAMP_URL_0}/users/import",
+    "note": "Участники: Импорт пользователей"
   },
   {
     "path": "users/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "note": "Участники: Состояние участника"
   },
   {
     "path": "users/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "note": "Участники: Редактировать участника"
   },
   {
     "path": "users/[id]/docs",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "note": "Участники: Личные документы участника"
   },
   {
     "path": "users/[id]/docs",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "note": "Участники: Редактировать документы участника"
   },
   {
     "path": "users/[id]/groups",
     "method": "PUT",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/groups"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/groups",
+    "note": "Участники: Изменить группы участника"
   },
   {
     "path": "users/[id]/acts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts",
+    "note": "Участники: Акты участника"
   },
   {
     "path": "users/[id]/prizes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes",
+    "note": "Участники: Призы участника"
   },
   {
     "path": "users/[id]/points",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points",
+    "note": "Участники: Баллы участника"
   },
   {
     "path": "users/[id]/points",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points",
+    "note": "Участники: Обновить баллы участника"
   },
   {
     "path": "users/[id]/points/history",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history",
+    "note": "Участники: История баллов участника"
   },
   {
     "path": "users/[id]/receipts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts",
+    "note": "Участники: Чеки участника"
   },
   {
     "path": "users/[id]/codes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
+    "note": "Участники: Коды участника"
   },
   {
     "path": "users/[id]/codes",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
+    "note": "Участники: Добавить код участнику"
   },
   {
     "path": "users/[id]/gtins",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins",
+    "note": "Участники: Коды ЧЗ участника"
   },
   {
     "path": "users/[id]/products",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products",
+    "note": "Участники: Акционные продукты участника"
   },
   {
     "path": "users/[id]/products/[product_id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}",
+    "note": "Участники: Подробно об акционном продукте"
   },
   {
     "path": "users/[id]/products/[product_id]/purchases",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}/purchases"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}/purchases",
+    "note": "Участники: Покупки акционного продукта"
   },
   {
     "path": "users/[id]/log/events",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events",
+    "note": "Участники: Журнал действий участника"
   },
   {
     "path": "users/[id]/log/transactions",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions",
+    "note": "Участники: Журнал транзакций участника"
   },
   {
     "path": "users/[id]/messages",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages"
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages",
+    "note": "Участники: Сообщения от участника"
   },
 
-  { "path": "prizes", "method": "GET", "url": "{$env.API_CAMP_URL_0}/prizes" },
-  { "path": "prizes", "method": "POST", "url": "{$env.API_CAMP_URL_0}/prizes" },
+  {
+    "path": "prizes",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/prizes",
+    "note": "Призы: Список призов"
+  },
+  {
+    "path": "prizes",
+    "method": "POST",
+    "url": "{$env.API_CAMP_URL_0}/prizes",
+    "note": "Призы: Добавить приз"
+  },
   {
     "path": "prizes/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "note": "Призы: Подробно о призе"
   },
   {
     "path": "prizes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "note": "Призы: Редактировать приз"
   },
   {
     "path": "prizes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "note": "Призы: Удалить приз"
   },
 
   {
     "path": "receipts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts"
+    "url": "{$env.API_CAMP_URL_0}/receipts",
+    "note": "Чеки: Список чеков"
   },
   {
     "path": "receipts/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "note": "Чеки: Подробно о чеке"
   },
   {
     "path": "receipts/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "note": "Чеки: Редактировать чек"
   },
   {
     "path": "receipts/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "note": "Чеки: Удалить чек"
   },
   {
     "path": "receipts/[id]/products",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/products"
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/products",
+    "note": "Чеки: Список продукции в чеке"
   },
 
-  { "path": "acts", "method": "GET", "url": "{$env.API_CAMP_URL_0}/acts" },
-  { "path": "acts", "method": "POST", "url": "{$env.API_CAMP_URL_0}/acts" },
+  {
+    "path": "acts",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/acts",
+    "note": "Акты: Список актов"
+  },
+  {
+    "path": "acts",
+    "method": "POST",
+    "url": "{$env.API_CAMP_URL_0}/acts",
+    "note": "Акты: Добавить акт"
+  },
   {
     "path": "acts/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "note": "Акты: Подробно об акте"
   },
   {
     "path": "acts/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "note": "Акты: Редактировать акт"
   },
   {
     "path": "acts/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "note": "Акты: Удалить акт"
   },
 
-  { "path": "codes", "method": "GET", "url": "{$env.API_CAMP_URL_0}/codes" },
+  {
+    "path": "codes",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/codes",
+    "note": "Коды участников: Список кодов"
+  },
   {
     "path": "codes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}",
+    "note": "Коды участников: Редактировать код"
   },
   {
     "path": "codes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}",
+    "note": "Коды участников: Удалить код"
   },
 
   {
     "path": "dictionary/codes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes"
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes",
+    "note": "Справочник кодов: Список кодов"
   },
   {
     "path": "dictionary/codes",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes"
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes",
+    "note": "Справочник кодов: Добавить код"
   },
   {
     "path": "dictionary/codes/import",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/import"
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/import",
+    "note": "Справочник кодов: Импорт кодов"
   },
   {
     "path": "dictionary/codes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}",
+    "note": "Справочник кодов: Редактировать код"
   },
   {
     "path": "dictionary/codes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}",
+    "note": "Справочник кодов: Удалить код"
   },
 
-  { "path": "gtins", "method": "GET", "url": "{$env.API_CAMP_URL_0}/gtins" },
+  {
+    "path": "gtins",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/gtins",
+    "note": "Коды Честный Знак: Список кодов ЧЗ"
+  },
   {
     "path": "gtins/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "note": "Коды Честный Знак: Подробно о коде ЧЗ"
   },
   {
     "path": "gtins/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "note": "Коды Честный Знак: Редактировать код ЧЗ"
   },
   {
     "path": "gtins/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "note": "Коды Честный Знак: Удалить код ЧЗ"
   },
 
   {
     "path": "log/events/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/log/events/{$location.routeParams.id}"
+    "url": "{$env.API_CAMP_URL_0}/log/events/{$location.routeParams.id}",
+    "note": "Журнал: Подробно о событии"
   }
 ]
