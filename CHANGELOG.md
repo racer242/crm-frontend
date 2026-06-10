@@ -6,7 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- **Double error toast on client-side navigation** — `src/engine/AppEngine.tsx`: added `shownErrorsRef` to deduplicate `initialErrors` toast notifications. React Strict Mode double-invokes `useEffect` in development mode; when navigating between pages, the component is not re-created (unlike full page refresh), so `toastRef.current` is already available on both invocations, causing two toasts. The fix only shows errors that haven't been shown before, matching the pattern already used in `useDataFeedErrors.ts`.
+- **Double error toast on client-side navigation** — React Strict Mode double-invokes `useEffect` in development mode. Two separate mechanisms caused double toasts:
+  - `src/engine/AppEngine.tsx`: `initialErrors` toast — added `shownErrorsRef` (`useRef<string[]>`) to track already-shown errors and prevent Strict Mode duplicate. Only new errors that haven't been shown before trigger Toast notifications.
+  - `src/engine/hooks/useDataFeedErrors.ts`: refactored to use reference-identity (`prevDataFeedErrorsRef`) and `hasShownRef` flag instead of error-text comparison. Previously, filtering by `.includes()` blocked toasts when the same error text occurred in a subsequent `sendRequest` call. Now each new `sendRequest` error payload (new array reference) always triggers toasts, regardless of error text, while Strict Mode double-invoke is still blocked.
+  - Both fixes are semantically identical: new payload → show toasts; same reference (Strict Mode double-invoke) → block.
 
 ### Added
 
