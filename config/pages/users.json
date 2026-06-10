@@ -23,7 +23,7 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/get-users",
+      "url": "{$config.baseURL}/api/users",
       "method": "GET",
       "target": "state.users"
     }
@@ -54,7 +54,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/get-users",
+              "url": "/api/users",
               "method": "GET",
               "target": "state.users",
               "data": {
