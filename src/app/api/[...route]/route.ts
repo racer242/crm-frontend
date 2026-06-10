@@ -41,7 +41,7 @@ function findRouteConfig(
 function buildFetchOptions(request: NextRequest): RequestInit {
   const headers: Record<string, string> = {};
 
-  // Inject user's access_token from httpOnly cookies into outgoing request
+  // Inject access_token from Authorization header or httpOnly cookies
   const accessToken = getAccessTokenFromRequest(request);
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;

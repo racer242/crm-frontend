@@ -99,6 +99,7 @@ export async function executeServerDataFeeds(
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
+
         results.push({
           success: false,
           target: feed.target,
