@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **API routes collected from `.prompts/docs/api/`** — 37 routes compiled into `config/system/api-routes.json` with `{$env.API_CAMP_URL_0}` macro format across all CRM resource groups (stats, users, prizes, receipts, acts, codes, gtins). Adapters not yet specified.
+  - `config/system/api-routes.json` — full route listing
+  - `.env.example` — new `API_CAMP_URL_0` configurable param for campaign API base URL
+  - `src/core/config.ts` — startup banner extended with `Camp URL` status line
+
 ### Changed
 
 - **`access_token` injected into external API requests** — user's Bitrix access_token is now automatically forwarded to all external API requests for authenticated access:

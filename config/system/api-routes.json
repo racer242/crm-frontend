@@ -1,19 +1,101 @@
 [
+  { "path": "stats/weeks", "url": "{$env.API_CAMP_URL_0}/stats/weeks" },
+  { "path": "stats/analytics", "url": "{$env.API_CAMP_URL_0}/stats/analytics" },
   {
-    "path": "get-users",
-    "url": "{$env.API_CAMP_URL_0}/users",
-    "adapter": {
-      "request": "users.request.js",
-      "response": "users.response.js"
-    }
+    "path": "stats/analytics/download",
+    "url": "{$env.API_CAMP_URL_0}/stats/analytics/download"
+  },
+  { "path": "stats/review", "url": "{$env.API_CAMP_URL_0}/stats/review" },
+
+  { "path": "users", "url": "{$env.API_CAMP_URL_0}/users" },
+  { "path": "users/import", "url": "{$env.API_CAMP_URL_0}/users/import" },
+  { "path": "users/[id]", "url": "{$env.API_CAMP_URL_0}/users/{id}" },
+  { "path": "users/[id]/docs", "url": "{$env.API_CAMP_URL_0}/users/{id}/docs" },
+  {
+    "path": "users/[id]/groups",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/groups"
+  },
+  { "path": "users/[id]/acts", "url": "{$env.API_CAMP_URL_0}/users/{id}/acts" },
+  {
+    "path": "users/[id]/prizes",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/prizes"
   },
   {
-    "path": "get-dynamic-data",
-    "url": "{$config.baseURL}/mocks/api/get-dynamic-data.json"
+    "path": "users/[id]/points",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/points"
   },
   {
-    "path": "get-file",
-    "type": "file",
-    "url": "{$config.baseURL}/mocks/api/file/default_12_5_2026_14_26_10.xlsx"
-  }
+    "path": "users/[id]/points/history",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/points/history"
+  },
+  {
+    "path": "users/[id]/receipts",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/receipts"
+  },
+  {
+    "path": "users/[id]/codes",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/codes"
+  },
+  {
+    "path": "users/[id]/gtins",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/gtins"
+  },
+  {
+    "path": "users/[id]/products",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/products"
+  },
+  {
+    "path": "users/[id]/products/[product_id]",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/products/{product_id}"
+  },
+  {
+    "path": "users/[id]/products/[product_id]/purchases",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/products/{product_id}/purchases"
+  },
+  {
+    "path": "users/[id]/log/events",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/log/events"
+  },
+  {
+    "path": "users/[id]/log/transactions",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/log/transactions"
+  },
+  {
+    "path": "users/[id]/messages",
+    "url": "{$env.API_CAMP_URL_0}/users/{id}/messages"
+  },
+
+  { "path": "prizes", "url": "{$env.API_CAMP_URL_0}/prizes" },
+  { "path": "prizes/[id]", "url": "{$env.API_CAMP_URL_0}/prizes/{id}" },
+
+  { "path": "receipts", "url": "{$env.API_CAMP_URL_0}/receipts" },
+  { "path": "receipts/[id]", "url": "{$env.API_CAMP_URL_0}/receipts/{id}" },
+  {
+    "path": "receipts/[id]/products",
+    "url": "{$env.API_CAMP_URL_0}/receipts/{id}/products"
+  },
+
+  { "path": "acts", "url": "{$env.API_CAMP_URL_0}/acts" },
+  { "path": "acts/[id]", "url": "{$env.API_CAMP_URL_0}/acts/{id}" },
+
+  { "path": "codes", "url": "{$env.API_CAMP_URL_0}/codes" },
+  { "path": "codes/[id]", "url": "{$env.API_CAMP_URL_0}/codes/{id}" },
+
+  {
+    "path": "dictionary/codes",
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes"
+  },
+  {
+    "path": "dictionary/codes/import",
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/import"
+  },
+  {
+    "path": "dictionary/codes/[id]",
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{id}"
+  },
+
+  { "path": "gtins", "url": "{$env.API_CAMP_URL_0}/gtins" },
+  { "path": "gtins/[id]", "url": "{$env.API_CAMP_URL_0}/gtins/{id}" },
+
+  { "path": "log/events/[id]", "url": "{$env.API_CAMP_URL_0}/log/events/{id}" }
 ]

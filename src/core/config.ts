@@ -309,6 +309,9 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Auth:      ${((process.env.AUTH_COOKIE_NAMES ? "enabled" : "disabled") as string).padEnd(48)}║`,
   );
   console.log(
+    `║  Camp URL:  ${(process.env.API_CAMP_URL_0 || "not set").padEnd(48)}║`,
+  );
+  console.log(
     "╚═════════════════════════════════════════════════════════════╝",
   );
   console.log("");
