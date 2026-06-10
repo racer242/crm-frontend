@@ -34,6 +34,7 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { classNames } from "primereact/utils";
+import { parseApiError } from "@/utils/parseApiError";
 
 function LoginForm() {
   const t = useTranslations("login");
@@ -79,7 +80,7 @@ function LoginForm() {
       toastRef.current?.show({
         severity: "error",
         summary: t("error"),
-        detail: error,
+        detail: parseApiError(error),
         life: 4000,
       });
     }

@@ -1,36 +1,27 @@
 /**
  * parseApiError
  *
- * Парсит тело ответа API в формате:
- *   { "error": { "code": "AUTH_REQUIRED", "message": "...", "details": [...] } }
- * и возвращает читаемую строку для отображения в Toast.
+ * Парсит строку ошибки в читаемый формат для отображения в Toast.
  *
- * Если тело не JSON или не соответствует формату — возвращает сырой текст.
+ * Поддерживаемые форматы на входе:
+ *   1. Сырой ответ API:   { "error": { "code": "...", "message": "...", "details": [...] } }
+ *   2. Объект ошибки:     { "code": "...", "message": "...", "details": [...] }
+ *   3. Простая строка:    "Неверный логин или пароль"
+ *
+ * Результат:
+ *   [AUTH_REQUIRED] Для выполнения действия нужна авторизация.
+ *   email: Неверный формат почты; password: Пароль слишком короткий
  */
 
-interface ApiErrorBody {
-  error?: {
-    code?: string;
-    message?: string;
-    details?: Array<{ field?: string; issue?: string }>;
-  };
+interface ErrorShape {
+  code?: string;
+  message?: string;
+  details?: Array<{ field?: string; issue?: string }>;
 }
 
-export function parseApiError(bodyText: string): string {
-  if (!bodyText) return "";
-
-  let parsed: ApiErrorBody;
-  try {
-    parsed = JSON.parse(bodyText);
-  } catch {
-    // Не JSON — возвращаем как есть
-    return bodyText;
-  }
-
-  if (!parsed.error) return bodyText;
-
-  const { code, message, details } = parsed.error;
+function formatErrorObj(obj: ErrorShape): string {
   const parts: string[] = [];
+  const { code, message, details } = obj;
 
   // [CODE] message
   if (code || message) {
@@ -51,5 +42,33 @@ export function parseApiError(bodyText: string): string {
     }
   }
 
-  return parts.length > 0 ? parts.join("; ") : bodyText;
+  return parts.join("; ");
+}
+
+export function parseApiError(text: string): string {
+  if (!text) return "";
+
+  // Пробуем распарсить как JSON
+  let parsed: any;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    // Не JSON — возвращаем как есть
+    return text;
+  }
+
+  // Формат 1: { error: { code, message, details } }
+  if (parsed?.error) {
+    const formatted = formatErrorObj(parsed.error);
+    if (formatted) return formatted;
+  }
+
+  // Формат 2: { code, message, details } (уже извлечённый объект)
+  if (parsed?.code || parsed?.message) {
+    const formatted = formatErrorObj(parsed);
+    if (formatted) return formatted;
+  }
+
+  // Ничего не распознано — возвращаем исходный текст
+  return text;
 }

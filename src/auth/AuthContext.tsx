@@ -57,7 +57,12 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.error || t("loginFailed"));
+          // error может быть строкой или объектом { code, message, details }
+          const errorMessage =
+            typeof data.error === "object"
+              ? JSON.stringify(data.error)
+              : data.error || t("loginFailed");
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();

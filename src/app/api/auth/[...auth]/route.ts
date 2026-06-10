@@ -45,11 +45,13 @@ async function handleLogin(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ user: response.user });
   } catch (error) {
+    console.log("!!!!! Error !!", error);
+
     if (error instanceof BitrixApiError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
+      // Return the original error body from Bitrix as-is
+      return NextResponse.json(error.body || { error: error.message }, {
+        status: error.status,
+      });
     }
     return NextResponse.json(
       { error: "Internal server error" },
@@ -91,10 +93,10 @@ async function handleRefresh(request: NextRequest): Promise<NextResponse> {
     await clearAuthCookies();
 
     if (error instanceof BitrixApiError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
+      // Return the original error body from Bitrix as-is
+      return NextResponse.json(error.body || { error: error.message }, {
+        status: error.status,
+      });
     }
     return NextResponse.json(
       { error: "Internal server error" },

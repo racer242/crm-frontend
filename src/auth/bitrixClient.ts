@@ -11,6 +11,7 @@ export class BitrixApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public body?: any,
   ) {
     super(message);
     this.name = "BitrixApiError";
@@ -115,18 +116,24 @@ export async function bitrixRequest<T>(
 
   if (!response.ok) {
     let errorMessage = `Bitrix API error: ${response.status}`;
+    let errorBody: any = null;
     try {
-      const errorBody = await response.json();
-      if (errorBody.error_description) {
+      errorBody = await response.json();
+      if (errorBody?.error?.message) {
+        errorMessage = errorBody.error.message;
+      } else if (errorBody?.error_description) {
         errorMessage = errorBody.error_description;
-      } else if (errorBody.error) {
-        errorMessage = errorBody.error;
+      } else if (errorBody?.error) {
+        errorMessage =
+          typeof errorBody.error === "string"
+            ? errorBody.error
+            : errorBody.error.message || JSON.stringify(errorBody.error);
       }
     } catch {
       // ignore parse error, use default message
     }
     console.error(`[bitrixClient] ✘ ${response.status} — ${errorMessage}`);
-    throw new BitrixApiError(errorMessage, response.status);
+    throw new BitrixApiError(errorMessage, response.status, errorBody);
   }
 
   let body: T;
