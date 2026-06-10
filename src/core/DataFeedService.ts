@@ -12,6 +12,7 @@ import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
 import { getPublicEnv } from "@/utils/env";
 import { buildUrlWithParams } from "@/utils/http";
+import { parseApiError } from "@/utils/parseApiError";
 
 /**
  * Resolves the target element ID for a data feed request.
@@ -78,9 +79,7 @@ async function executeRequest(
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => "");
-    throw new Error(
-      `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ""}`,
-    );
+    throw new Error(parseApiError(errorText) || `HTTP ${response.status}`);
   }
 
   // Parse JSON response

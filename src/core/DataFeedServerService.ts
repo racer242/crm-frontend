@@ -14,6 +14,7 @@ import {
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { buildUrlWithParams } from "@/utils/http";
+import { parseApiError } from "@/utils/parseApiError";
 import { applyAdapter } from "./DataAdapterEngine";
 
 let cachedConfig: any = null;
@@ -103,7 +104,7 @@ export async function executeServerDataFeeds(
         results.push({
           success: false,
           target: feed.target,
-          error: `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ""}`,
+          error: parseApiError(errorText) || `HTTP ${response.status}`,
         });
         continue;
       }

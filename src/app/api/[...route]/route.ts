@@ -153,8 +153,12 @@ async function handleRequest(
       }
     }
 
+    console.log("??????", resolvedUrl, fetchOptions);
+
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
+
+    console.log("------", externalResponse);
 
     // Check if this is a file route — return binary response as-is
     if (routeConfig.type === "file") {
@@ -193,6 +197,8 @@ async function handleRequest(
     } else {
       responseData = await externalResponse.text();
     }
+
+    console.log("+++++++", responseData);
 
     // Apply response adapter if specified in the route config
     if (routeAdapter) {

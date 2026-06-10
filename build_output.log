@@ -21,7 +21,7 @@ Import trace:
     ./src/app/api/[...route]/route.ts
 
 
-✓ Compiled successfully in 5.6s
+✓ Compiled successfully in 5.5s
   Running TypeScript ...
   Finished TypeScript in 5.3s ...
   Collecting page data using 8 workers ...
@@ -29,7 +29,7 @@ Import trace:
   Generating static pages using 8 workers (1/4) 
   Generating static pages using 8 workers (2/4) 
   Generating static pages using 8 workers (3/4) 
-✓ Generating static pages using 8 workers (4/4) in 1122ms
+✓ Generating static pages using 8 workers (4/4) in 878ms
   Finalizing page optimization ...
 
 Route (app)
