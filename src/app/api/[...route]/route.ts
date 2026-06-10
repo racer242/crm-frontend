@@ -9,6 +9,13 @@
  * - Router looks up the route in config.apiRoutes
  * - Forwards the request to the external API URL
  * - Returns the response back to the client
+ *
+ * Route URL macros:
+ * - {$config.PATH} — app config values
+ * - {$env.VAR} — server environment variables
+ * - {$location.routeParams.PARAM} — extracted route params (e.g., id from users/[id])
+ * - {$location.query.PARAM} — URL query params
+ * - {$location.pathname}, {$location.href}, etc.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -24,15 +31,61 @@ import { getServerEnv } from "@/utils/env";
 import { applyAdapter } from "@/core/DataAdapterEngine";
 import { buildUrlWithParams, parseSearchParams } from "@/utils/http";
 import { getAccessTokenFromRequest } from "@/utils/getAccessToken";
+import { getServerLocation } from "@/utils/location";
 
 /**
- * Finds a route configuration by path name
+ * Converts a route path pattern like "users/[id]/docs" into a regex
+ * and extracts named parameter positions.
+ * Returns null if no match.
+ */
+function matchRoutePattern(
+  routeName: string,
+  apiRoute: ApiRouteConfig,
+): Record<string, string> | null {
+  const patternSegments = apiRoute.path.split("/").filter(Boolean);
+  const requestSegments = routeName.split("/").filter(Boolean);
+
+  if (patternSegments.length !== requestSegments.length) {
+    return null;
+  }
+
+  const routeParams: Record<string, string> = {};
+
+  for (let i = 0; i < patternSegments.length; i++) {
+    const patternPart = patternSegments[i];
+    const requestPart = requestSegments[i];
+
+    // Dynamic segment like [id] or [product_id]
+    const dynamicMatch = patternPart.match(/^\[(.+)\]$/);
+    if (dynamicMatch) {
+      routeParams[dynamicMatch[1]] = requestPart;
+    } else if (patternPart !== requestPart) {
+      // Static segment mismatch
+      return null;
+    }
+  }
+
+  return routeParams;
+}
+
+/**
+ * Finds a route configuration by path name with support for dynamic segments.
+ * Returns the route config and extracted route params (e.g., { id: "123" }).
  */
 function findRouteConfig(
   routeName: string,
   apiRoutes: ApiRouteConfig[] | undefined,
-): ApiRouteConfig | undefined {
-  return apiRoutes?.find((r) => r.path === routeName);
+): { config: ApiRouteConfig; routeParams: Record<string, string> } | undefined {
+  if (!apiRoutes) return undefined;
+
+  for (const route of apiRoutes) {
+    const routeParams = matchRoutePattern(routeName, route);
+    if (routeParams !== null) {
+      return { config: route, routeParams };
+    }
+  }
+
+  return undefined;
 }
 
 /**
@@ -86,8 +139,8 @@ async function handleRequest(
     const { config } = await initApp();
     const apiRoutes = config.apiRoutes;
 
-    // Find the route configuration
-    const routeConfig = findRouteConfig(routeName, apiRoutes);
+    // Find the route configuration (with pattern matching and route params)
+    const routeResult = findRouteConfig(routeName, apiRoutes);
 
     // Read request body — from JSON body for POST/PUT/PATCH, from URL params for others
     let requestBody: any;
@@ -107,17 +160,28 @@ async function handleRequest(
       }
     }
 
-    if (!routeConfig) {
+    if (!routeResult) {
       return NextResponse.json(
         { error: `Route not found: ${routeName}` },
         { status: 404 },
       );
     }
 
+    const { config: routeConfig, routeParams } = routeResult;
+
+    // Build server location for macro resolution (supports {$location.*} macros)
+    const serverLocation = await getServerLocation(
+      Object.fromEntries(request.nextUrl.searchParams.entries()),
+      request.nextUrl.pathname,
+      routeSegments,
+      routeParams,
+    );
+
     // Resolve macros in the route URL
     const serverSources: MacroSources = {
       config: config.config,
       env: await getServerEnv(),
+      location: serverLocation,
     };
     const macroEngine = new MacroEngine(serverSources);
     let resolvedUrl = macroEngine.apply(routeConfig.url) as string;

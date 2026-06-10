@@ -73,25 +73,26 @@ Authorization: Bearer token123
 
 - Извлекает routeName из URL: `get-users`
 - Загружает config через `initApp()`
-- Ищет маршрут в `config.apiRoutes`
+- Ищет маршрут в `config.apiRoutes` с поддержкой паттерн-матчинга
 - Если не найден → 404
 
 ### 3. Разрешение макросов
 
-Создаёт MacroSources:
+Создаёт MacroSources, включая `location` из входящего запроса:
 
 ```typescript
 {
   config: config.config,
-  env: getServerEnv(),
+  env: await getServerEnv(),
+  location: await getServerLocation(searchParams, pathname, pathSegments, routeParams),
 }
 ```
 
 Применяет макросы к routeConfig.url:
 
 ```
-"https://api.example.com/users/{$config.defaultUserId}"
-→ "https://api.example.com/users/12345"
+"{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}"
+→ "https://camp-api.example.com/users/12345"
 ```
 
 ### 4. Проброс заголовков

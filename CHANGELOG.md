@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **API Router dynamic route matching and `{$location.routeParams.*}` macros** — `src/app/api/[...route]/route.ts` now supports pattern matching for routes with dynamic segments like `users/[id]`. Route params are automatically extracted from the URL and made available to URL macros via `{$location.routeParams.id}`.
+  - `findRouteConfig` rewritten to match route patterns and return `{ config, routeParams }`.
+  - `serverSources` now includes `location` built from the incoming request, enabling `{$location.*}` macros in route URLs.
+  - `api-routes.json` — all `{id}`/`{product_id}` placeholders replaced with `{$location.routeParams.id}`/`{$location.routeParams.product_id}` macros.
+  - `types/macro.ts` — documented `location.routeParams`, `location.params`, `location.param` in supported macro prefixes.
+
 ### Fixed
 
 - **Double error toast on client-side navigation** — React Strict Mode double-invokes `useEffect` in development mode. Two separate mechanisms caused double toasts:

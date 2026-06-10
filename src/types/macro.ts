@@ -10,6 +10,9 @@
  * - location.PROP — URL properties (href, protocol, host, pathname, search, hash)
  * - location.query.PARAM — query parameters
  * - location.slug.N — path segments
+ * - location.param.N — path params by index (from pathParams array)
+ * - location.routeParams.PARAM — named route params (e.g., id from users/[id])
+ * - location.params.PARAM — parsed search params as object
  * - now.FORMAT — date/time (iso, timestamp, DD.MM.YY, DD.MM.YYYY, etc.)
  * - session.PROP — sessionStorage
  * - localStorage.PROP — localStorage
