@@ -1,135 +1,252 @@
 [
-  { "path": "stats/weeks", "url": "{$env.API_CAMP_URL_0}/stats/weeks" },
-  { "path": "stats/analytics", "url": "{$env.API_CAMP_URL_0}/stats/analytics" },
+  {
+    "path": "stats/weeks",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/stats/weeks"
+  },
+  {
+    "path": "stats/analytics",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/stats/analytics"
+  },
   {
     "path": "stats/analytics/download",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/stats/analytics/download"
   },
-  { "path": "stats/review", "url": "{$env.API_CAMP_URL_0}/stats/review" },
-
   {
-    "path": "users",
-    "url": "{$env.API_CAMP_URL_0}/users",
-    "adapter": {
-      "request": "users.request.js",
-      "response": "users.response.js"
-    }
+    "path": "stats/review",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/stats/review"
   },
-  { "path": "users/import", "url": "{$env.API_CAMP_URL_0}/users/import" },
+
+  { "path": "users", "method": "GET", "url": "{$env.API_CAMP_URL_0}/users" },
+  {
+    "path": "users/import",
+    "method": "POST",
+    "url": "{$env.API_CAMP_URL_0}/users/import"
+  },
   {
     "path": "users/[id]",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}"
+  },
+  {
+    "path": "users/[id]",
+    "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}"
   },
   {
     "path": "users/[id]/docs",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs"
+  },
+  {
+    "path": "users/[id]/docs",
+    "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs"
   },
   {
     "path": "users/[id]/groups",
+    "method": "PUT",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/groups"
   },
   {
     "path": "users/[id]/acts",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts"
   },
   {
     "path": "users/[id]/prizes",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes"
   },
   {
     "path": "users/[id]/points",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points"
+  },
+  {
+    "path": "users/[id]/points",
+    "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points"
   },
   {
     "path": "users/[id]/points/history",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history"
   },
   {
     "path": "users/[id]/receipts",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts"
   },
   {
     "path": "users/[id]/codes",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes"
+  },
+  {
+    "path": "users/[id]/codes",
+    "method": "POST",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes"
   },
   {
     "path": "users/[id]/gtins",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins"
   },
   {
     "path": "users/[id]/products",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products"
   },
   {
     "path": "users/[id]/products/[product_id]",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}"
   },
   {
     "path": "users/[id]/products/[product_id]/purchases",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}/purchases"
   },
   {
     "path": "users/[id]/log/events",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events"
   },
   {
     "path": "users/[id]/log/transactions",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions"
   },
   {
     "path": "users/[id]/messages",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages"
   },
 
-  { "path": "prizes", "url": "{$env.API_CAMP_URL_0}/prizes" },
+  { "path": "prizes", "method": "GET", "url": "{$env.API_CAMP_URL_0}/prizes" },
+  { "path": "prizes", "method": "POST", "url": "{$env.API_CAMP_URL_0}/prizes" },
   {
     "path": "prizes/[id]",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
+  },
+  {
+    "path": "prizes/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
+  },
+  {
+    "path": "prizes/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}"
   },
 
-  { "path": "receipts", "url": "{$env.API_CAMP_URL_0}/receipts" },
+  {
+    "path": "receipts",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/receipts"
+  },
   {
     "path": "receipts/[id]",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
+  },
+  {
+    "path": "receipts/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
+  },
+  {
+    "path": "receipts/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}"
   },
   {
     "path": "receipts/[id]/products",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/products"
   },
 
-  { "path": "acts", "url": "{$env.API_CAMP_URL_0}/acts" },
+  { "path": "acts", "method": "GET", "url": "{$env.API_CAMP_URL_0}/acts" },
+  { "path": "acts", "method": "POST", "url": "{$env.API_CAMP_URL_0}/acts" },
   {
     "path": "acts/[id]",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
+  },
+  {
+    "path": "acts/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
+  },
+  {
+    "path": "acts/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}"
   },
 
-  { "path": "codes", "url": "{$env.API_CAMP_URL_0}/codes" },
+  { "path": "codes", "method": "GET", "url": "{$env.API_CAMP_URL_0}/codes" },
   {
     "path": "codes/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}"
+  },
+  {
+    "path": "codes/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}"
   },
 
   {
     "path": "dictionary/codes",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes"
+  },
+  {
+    "path": "dictionary/codes",
+    "method": "POST",
     "url": "{$env.API_CAMP_URL_0}/dictionary/codes"
   },
   {
     "path": "dictionary/codes/import",
+    "method": "POST",
     "url": "{$env.API_CAMP_URL_0}/dictionary/codes/import"
   },
   {
     "path": "dictionary/codes/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}"
+  },
+  {
+    "path": "dictionary/codes/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}"
   },
 
-  { "path": "gtins", "url": "{$env.API_CAMP_URL_0}/gtins" },
+  { "path": "gtins", "method": "GET", "url": "{$env.API_CAMP_URL_0}/gtins" },
   {
     "path": "gtins/[id]",
+    "method": "GET",
+    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
+  },
+  {
+    "path": "gtins/[id]",
+    "method": "PATCH",
+    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
+  },
+  {
+    "path": "gtins/[id]",
+    "method": "DELETE",
     "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}"
   },
 
   {
     "path": "log/events/[id]",
+    "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/log/events/{$location.routeParams.id}"
   }
 ]
