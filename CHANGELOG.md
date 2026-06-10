@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Double error toast on client-side navigation** — `src/engine/AppEngine.tsx`: added `shownErrorsRef` to deduplicate `initialErrors` toast notifications. React Strict Mode double-invokes `useEffect` in development mode; when navigating between pages, the component is not re-created (unlike full page refresh), so `toastRef.current` is already available on both invocations, causing two toasts. The fix only shows errors that haven't been shown before, matching the pattern already used in `useDataFeedErrors.ts`.
+
 ### Added
 
 - **API routes collected from `.prompts/docs/api/`** — 37 routes compiled into `config/system/api-routes.json` with `{$env.API_CAMP_URL_0}` macro format across all CRM resource groups (stats, users, prizes, receipts, acts, codes, gtins). Adapters not yet specified.

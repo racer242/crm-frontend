@@ -139,17 +139,27 @@ export function AppEngine({
 
   const t = useTranslations("app");
 
+  // Deduplicate server-side data feed errors to avoid double toast in Strict Mode
+  const shownErrorsRef = useRef<string[]>([]);
+
   // Show server-side data feed errors on mount
   useEffect(() => {
     if (initialErrors && initialErrors.length > 0 && toastRef.current) {
-      initialErrors.forEach((error) => {
-        toastRef.current?.show({
-          severity: "error",
-          summary: t("dataFeedError"),
-          detail: error,
-          life: 5000,
+      // Only show errors that haven't been shown before
+      const newErrors = initialErrors.filter(
+        (err) => !shownErrorsRef.current.includes(err),
+      );
+      if (newErrors.length > 0) {
+        shownErrorsRef.current = [...initialErrors];
+        newErrors.forEach((error) => {
+          toastRef.current?.show({
+            severity: "error",
+            summary: t("dataFeedError"),
+            detail: error,
+            life: 5000,
+          });
         });
-      });
+      }
     }
   }, [initialErrors, t]);
 
