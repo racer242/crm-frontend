@@ -462,7 +462,7 @@ const label = categories[category];
 
 ### Параметры
 
-`params` — массив строк с путями к удаляемым свойствам. Поддерживаются вложенные пути через точку (например, `"internal.secret"`).
+`params` — объект с полем `props`, содержащим массив строк с путями к удаляемым свойствам. Поддерживаются вложенные пути через точку (например, `"internal.secret"`).
 
 ### Примеры
 
@@ -470,7 +470,7 @@ const label = categories[category];
 {
   "type": "RemoveProps",
   "func": "DateTimeFormat",
-  "params": ["id", "internal"]
+  "params": { "props": ["id", "internal"] }
 }
 // → { id: 1, name: "test", internal: { secret: "xxx" } }
 // → { name: "test" }
@@ -478,7 +478,7 @@ const label = categories[category];
 {
   "type": "RemoveProps",
   "func": "DateTimeFormat",
-  "params": ["internal.secret"]
+  "params": { "props": ["internal.secret"] }
 }
 // → { id: 1, internal: { secret: "xxx", visible: true } }
 // → { id: 1, internal: { visible: true } }
@@ -486,7 +486,7 @@ const label = categories[category];
 {
   "type": "RemoveProps",
   "func": "DateTimeFormat",
-  "params": ["deleted"]
+  "params": { "props": ["deleted"] }
 }
 // → [{ id: 1, deleted: true }, { id: 2, deleted: false }]
 // → [{ id: 1 }, { id: 2 }]
@@ -503,7 +503,7 @@ const label = categories[category];
       {
         "prop": "value",
         "type": "RemoveProps",
-        "params": ["password", "token", "metadata.internal"]
+        "params": { "props": ["password", "token", "metadata.internal"] }
       }
     ]
   }

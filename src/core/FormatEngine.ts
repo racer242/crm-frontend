@@ -30,6 +30,11 @@ export type FormatFunc =
   | "ListFormat"
   | "PluralRules";
 
+export interface RemovePropsParams {
+  /** Массив путей к свойствам, которые нужно удалить */
+  props: string[];
+}
+
 export interface FormatRule {
   /** Путь к свойству (может быть вложенным, например "data.amount") */
   prop: string;
@@ -44,7 +49,7 @@ export interface FormatRule {
     | Intl.RelativeTimeFormatOptions
     | Intl.ListFormatOptions
     | Intl.PluralRulesOptions
-    | string[];
+    | RemovePropsParams;
 }
 
 export interface LocaleConfig {
@@ -271,8 +276,8 @@ export class FormatEngine {
         return this.selectPlural(value, rule.params as Intl.PluralRulesOptions);
 
       case "RemoveProps": {
-        const props = rule.params as string[];
-        return this.removeProps(value, props);
+        const params = rule.params as RemovePropsParams;
+        return this.removeProps(value, params?.props || []);
       }
 
       default:
@@ -301,6 +306,7 @@ export class FormatEngine {
 
     // Объект → удалить перечисленные свойства
     const result = structuredClone(value);
+
     for (const prop of props) {
       PathResolver.deleteValue(result, prop);
     }
