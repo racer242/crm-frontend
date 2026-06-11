@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **FiltersPanel: changes discarded on close, buttons disabled incorrectly** — Two bugs in `FiltersPanelComponent.tsx`:
+  - **Bug 1**: When closing the filter panel without applying, local edits were not discarded. Fixed by copying `externalFilters` into `localFilters` on every open (using `prevVisibleRef` to detect open transition) instead of the previous broken `JSON.stringify` comparison logic.
+  - **Bug 2**: "Apply" and "Clear" buttons were disabled based on `hasActiveFilters` (whether any filter has a selected value), making them unresponsive when the user unselected the last active filter. Fixed by storing `originalFilters` on panel open and computing `hasChanges` via deep comparison (`JSON.stringify(localFilters) !== JSON.stringify(originalFilters)`). Buttons are now active whenever the user has made any changes to the filters, regardless of whether any values are selected.
+
 - **Double error toast on client-side navigation** — React Strict Mode double-invokes `useEffect` in development mode. Two separate mechanisms caused double toasts:
   - `src/engine/AppEngine.tsx`: `initialErrors` toast — added `shownErrorsRef` (`useRef<string[]>`) to track already-shown errors and prevent Strict Mode duplicate. Only new errors that haven't been shown before trigger Toast notifications.
   - `src/engine/hooks/useDataFeedErrors.ts`: refactored to use reference-identity (`prevDataFeedErrorsRef`) and `hasShownRef` flag instead of error-text comparison. Previously, filtering by `.includes()` blocked toasts when the same error text occurred in a subsequent `sendRequest` call. Now each new `sendRequest` error payload (new array reference) always triggers toasts, regardless of error text, while Strict Mode double-invoke is still blocked.

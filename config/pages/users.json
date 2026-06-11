@@ -24,6 +24,10 @@
   "dataFeed": [
     {
       "url": "{$config.baseURL}/api/users",
+      "data": {
+        "first": 0,
+        "rows": 10
+      },
       "method": "GET",
       "target": "state.users"
     }
@@ -87,6 +91,19 @@
                   }
                 }
               ]
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.users.first}",
+                "rows": "{$state.users.rows}",
+                "sortField": "{$state.users.sortField}",
+                "sortOrder": "{$state.users.sortOrder}",
+                "search": "{$state.users.search}",
+                "filters": "{$state.users.filters}"
+              }
             }
           }
         ]
@@ -194,18 +211,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "id": "btnImportUsers",
-              "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
-              "props": {
-                "icon": "pi pi-file-import",
-                "severity": "primary",
-                "outlined": true,
-                "size": "small"
-              }
             }
           ]
         },

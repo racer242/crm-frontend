@@ -112,8 +112,6 @@ export async function bitrixRequest<T>(
     throw new BitrixApiError(`Bitrix API request failed: ${message}`, 502);
   }
 
-  console.log("8********************", headers, response);
-
   if (!response.ok) {
     let errorMessage = `Bitrix API error: ${response.status}`;
     let errorBody: any = null;

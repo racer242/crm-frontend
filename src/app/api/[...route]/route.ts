@@ -238,6 +238,7 @@ async function handleRequest(
 
     // Check if this is a file route — return binary response as-is
     if (routeConfig.type === "file") {
+      console.log("------ Response File --");
       const blob = await externalResponse.blob();
       const responseHeaders: Record<string, string> = {};
 
@@ -274,6 +275,8 @@ async function handleRequest(
       responseData = await externalResponse.text();
     }
 
+    // console.log("------ Response Data--", responseData);
+
     // Apply response adapter if specified in the route config
     if (routeAdapter) {
       try {
@@ -301,6 +304,8 @@ async function handleRequest(
         );
       }
     }
+
+    // console.log("------ Adapted Data--", responseData);
 
     // Return the response with the same status code
     return NextResponse.json(responseData, { status: externalResponse.status });

@@ -17,7 +17,7 @@ function transform(params = {}) {
   };
 
   // 2. Пагинация: first (индекс) → page (номер страницы)
-  const limit = merged.rows;
+  const limit = merged.rows ?? 10;
   const first = merged.first ?? 0;
   const page = limit ? Math.floor(first / limit) : 0;
 
@@ -30,8 +30,8 @@ function transform(params = {}) {
 
   // 5. Итоговый объект (спецификация API: first, limit, sort, direction, search, filters)
   let a = {
-    first: page,
-    limit: limit ?? null,
+    first,
+    limit,
     sort,
     direction,
     search: merged.search || "",

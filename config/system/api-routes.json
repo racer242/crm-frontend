@@ -28,6 +28,10 @@
     "path": "users",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users",
+    "adapter": {
+      "request": "users.request.js",
+      "response": "users.response.js"
+    },
     "note": "Участники: Список участников"
   },
   {

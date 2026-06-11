@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
@@ -43,18 +49,22 @@ export function renderFiltersPanel({
   // Локальная копия фильтров для редактирования
   const [localFilters, setLocalFilters] = useState<FilterModel>([]);
 
-  // Ref для хранения предыдущего значения фильтров
-  const prevFiltersRef = useRef<string>("");
+  // Снимок фильтров на момент открытия панели — для сравнения изменений
+  const [originalFilters, setOriginalFilters] = useState<FilterModel>([]);
 
-  // При открытии — копируем внешние фильтры в локальные
-  // Используем сериализацию для предотвращения бесконечного цикла
-  // (Linkage.resolveDeep создаёт новый объект каждый рендер)
+  // Ref для отслеживания предыдущего состояния visible
+  const prevVisibleRef = useRef(visible);
+
+  // При открытии панели — копируем внешние фильтры в локальные,
+  // чтобы панель всегда показывала актуальное состояние.
+  // При закрытии без применения изменения отбрасываются.
   useEffect(() => {
-    const currentFiltersStr = JSON.stringify(externalFilters);
-    if (visible && currentFiltersStr !== prevFiltersRef.current) {
-      prevFiltersRef.current = currentFiltersStr;
-      setLocalFilters(JSON.parse(currentFiltersStr));
+    if (visible && !prevVisibleRef.current) {
+      const snapshot = JSON.parse(JSON.stringify(externalFilters));
+      setLocalFilters(snapshot);
+      setOriginalFilters(snapshot);
     }
+    prevVisibleRef.current = visible;
   }, [visible, externalFilters]);
 
   // Обновить значение конкретного фильтра по id
@@ -336,14 +346,10 @@ export function renderFiltersPanel({
     }
   };
 
-  // Вычисляем, есть ли выбранные фильтры
-  const hasActiveFilters = localFilters.some((f) => {
-    if (f.type === "checkbox" || f.type === "switch") return !!f.value;
-    if (f.type === "options") {
-      return Array.isArray(f.value) && f.value.some(Boolean);
-    }
-    return f.value !== undefined && f.value !== null && f.value !== "";
-  });
+  // Проверяем, были ли изменения в фильтрах по сравнению с исходным состоянием
+  const hasChanges = useMemo(() => {
+    return JSON.stringify(localFilters) !== JSON.stringify(originalFilters);
+  }, [localFilters, originalFilters]);
 
   // Sidebar header content (appears at top of drawer)
   const sidebarHeader = (
@@ -392,7 +398,7 @@ export function renderFiltersPanel({
               icon="pi pi-check"
               onClick={handleApply}
               className="flex-1"
-              disabled={!hasActiveFilters}
+              disabled={!hasChanges}
             />
             <Button
               label={t?.("clear") || "Очистить"}
@@ -401,7 +407,7 @@ export function renderFiltersPanel({
               className="flex-1"
               severity="danger"
               outlined
-              disabled={!hasActiveFilters}
+              disabled={!hasChanges}
             />
           </div>
         </div>

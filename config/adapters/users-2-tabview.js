@@ -32,5 +32,6 @@ function transform(source) {
     first: source.meta?.first ?? 0,
     sortField: source.meta?.sort || null,
     sortOrder,
+    search: source.search || null,
   };
 }
