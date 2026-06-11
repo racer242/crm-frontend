@@ -28,9 +28,9 @@ function transform(params = {}) {
   // 4. Фильтры: объект → массив
   const filters = transformFilters(merged.filters);
 
-  // 5. Итоговый объект
+  // 5. Итоговый объект (спецификация API: first, limit, sort, direction, search, filters)
   let a = {
-    page,
+    first: page,
     limit: limit ?? null,
     sort,
     direction,
@@ -49,11 +49,7 @@ function transformFilters(prFilters) {
 
   return prFilters
     .filter(
-      (f) =>
-        f?.value !== undefined &&
-        f?.value !== null &&
-        f?.value !== false &&
-        f?.value !== "",
+      (f) => f?.value !== undefined && f?.value !== null && f?.value !== "",
     )
     .map(({ id, value, matchMode }) => {
       const result = { id, value };
