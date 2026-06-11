@@ -20,7 +20,8 @@ export type FormatType =
   | "Time"
   | "RelativeTime"
   | "List"
-  | "Plural";
+  | "Plural"
+  | "RemoveProps";
 
 export type FormatFunc =
   | "DateTimeFormat"
@@ -42,7 +43,8 @@ export interface FormatRule {
     | Intl.NumberFormatOptions
     | Intl.RelativeTimeFormatOptions
     | Intl.ListFormatOptions
-    | Intl.PluralRulesOptions;
+    | Intl.PluralRulesOptions
+    | string[];
 }
 
 export interface LocaleConfig {
@@ -228,6 +230,8 @@ export class FormatEngine {
    * Применить форматирование к одному значению
    */
   formatValue(value: any, rule: FormatRule): string {
+    console.log("------------------", rule.type);
+
     switch (rule.type) {
       case "Date":
       case "Time":
@@ -266,8 +270,41 @@ export class FormatEngine {
       case "Plural":
         return this.selectPlural(value, rule.params as Intl.PluralRulesOptions);
 
+      case "RemoveProps": {
+        const props = rule.params as string[];
+        return this.removeProps(value, props);
+      }
+
       default:
         return String(value);
     }
+  }
+
+  /**
+   * Удаляет перечисленные свойства из объекта или массива объектов
+   * - Date → возвращает без изменений
+   * - Не объект/не массив → возвращает без изменений
+   * - Массив → применяет удаление ко всем элементам рекурсивно
+   * - Объект → удаляет перечисленные свойства через PathResolver.deleteValue
+   */
+  private removeProps(value: any, props: string[]): any {
+    // Date → вернуть без изменений
+    if (value instanceof Date) return value;
+
+    // Не объект и не массив → вернуть без изменений
+    if (typeof value !== "object" || value === null) return value;
+
+    // Массив → применить ко всем элементам
+    if (Array.isArray(value)) {
+      return value.map((item) => this.removeProps(item, props));
+    }
+
+    // Объект → удалить перечисленные свойства
+    const result = structuredClone(value);
+    for (const prop of props) {
+      PathResolver.deleteValue(result, prop);
+    }
+
+    return result;
   }
 }

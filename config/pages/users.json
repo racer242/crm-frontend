@@ -103,7 +103,14 @@
                 "sortOrder": "{$state.users.sortOrder}",
                 "search": "{$state.users.search}",
                 "filters": "{$state.users.filters}"
-              }
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
             }
           }
         ]

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **FormatEngine RemoveProps type** — new formatting type for removing properties from objects/arrays (commit `[to-be-added]`)
+  - `RemoveProps` in `FormatType` — removes specified properties from input value
+  - `params` accepts array of property paths (e.g., `["id", "internal.secret"]`)
+  - Date objects → returned unchanged
+  - Non-object/non-array values → returned unchanged
+  - Arrays → applies removal to all elements recursively
+  - Objects → deletes listed properties via `PathResolver.deleteValue` (supports nested paths)
+  - `PathResolver.deleteValue()` — new method for complete property deletion using `delete` operator
+
 ### Fixed
 
 - **CommandExecutor: URL params serialize objects incorrectly** — `setUrlParams`, `mergeUrlParams`, and `setUrlParam` commands in `src/core/CommandExecutor.ts` were passing object values as `[object Object]` when using `String(value)`. Added a new private method `serializeUrlValue()` that properly serializes values for URL query parameters:

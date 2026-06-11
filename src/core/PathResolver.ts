@@ -154,6 +154,32 @@ export class PathResolver {
   }
 
   /**
+   * Удаляет свойство по пути в объекте
+   */
+  static deleteValue(obj: any, path: ElementPath): boolean {
+    const parts = this.parse(path);
+    if (parts.length === 0) return false;
+
+    let current = obj;
+
+    for (let i = 0; i < parts.length - 1; i++) {
+      const part = parts[i];
+      if (current === null || current === undefined || !(part in current)) {
+        return false;
+      }
+      current = current[part];
+    }
+
+    const lastPart = parts[parts.length - 1];
+    if (current === null || current === undefined || !(lastPart in current)) {
+      return false;
+    }
+
+    delete current[lastPart];
+    return true;
+  }
+
+  /**
    * Проверяет существование пути в объекте
    */
   static hasPath(obj: any, path: ElementPath): boolean {
