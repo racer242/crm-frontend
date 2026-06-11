@@ -24,6 +24,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **API Router: token expiration causes 401 on long-lived pages** — `src/app/api/[...route]/route.ts` now refreshes expired or expiring Bitrix access tokens before forwarding requests to external APIs. The fix mirrors the mechanism used in `src/proxy.ts` (middleware):
+  - Added `tryRefreshToken()` — calls Bitrix refresh endpoint directly via `bitrixClient` (without internal HTTP request), returns new token pair
+  - Added `setCookiesOnResponse()` — sets updated `access_token`, `refresh_token`, and `user_data` cookies on the response
+  - Modified `buildFetchOptions()` — accepts optional `accessTokenOverride` to use a refreshed token
+  - Token check flow before external API call: verify JWT locally via `verifyToken()`, if expired or expiring soon → refresh via `tryRefreshToken()`, then use new token and set updated cookies on response
+
 - **CommandExecutor: URL params serialize objects incorrectly** — `setUrlParams`, `mergeUrlParams`, and `setUrlParam` commands in `src/core/CommandExecutor.ts` were passing object values as `[object Object]` when using `String(value)`. Added a new private method `serializeUrlValue()` that properly serializes values for URL query parameters:
   - `null`/`undefined` → skip the parameter
   - `Date` → readable string (e.g., `"2026-06-11T14:00:00.000Z"`)

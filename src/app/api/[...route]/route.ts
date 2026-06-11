@@ -25,6 +25,7 @@ import {
   DataFeedMethod,
   MacroSources,
   DataFeedAdapter,
+  LoginResponse,
 } from "@/types";
 import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
@@ -32,6 +33,9 @@ import { applyAdapter } from "@/core/DataAdapterEngine";
 import { buildUrlWithParams, parseSearchParams } from "@/utils/http";
 import { getAccessTokenFromRequest } from "@/utils/getAccessToken";
 import { getServerLocation } from "@/utils/location";
+import { verifyToken, isTokenExpiringSoon } from "@/auth/tokenService";
+import { bitrixRequest } from "@/auth/bitrixClient";
+import { COOKIE_KEYS, AUTH_REFRESH_URL } from "@/auth/constants";
 
 /**
  * Converts a route path pattern like "users/[id]/docs" into a regex
@@ -89,13 +93,91 @@ function findRouteConfig(
 }
 
 /**
- * Builds fetch options for the external API request
+ * Попытка refresh токена напрямую через Битрикс (без внутреннего HTTP-запроса).
+ * Аналогично proxy.ts, но не создаёт NextResponse, а возвращает только токены.
+ * Возвращает новый access_token или undefined, если refresh не удался.
  */
-function buildFetchOptions(request: NextRequest): RequestInit {
+async function tryRefreshToken(
+  request: NextRequest,
+): Promise<{ accessToken?: string; refreshToken?: string; userData?: string }> {
+  const refreshToken = request.cookies.get(COOKIE_KEYS.REFRESH_TOKEN)?.value;
+
+  if (!refreshToken) {
+    return {};
+  }
+
+  try {
+    const response = await bitrixRequest<LoginResponse>(AUTH_REFRESH_URL, {
+      body: { refresh_token: refreshToken },
+    });
+
+    return {
+      accessToken: response.access_token,
+      refreshToken: response.refresh_token,
+      userData: JSON.stringify(response.user),
+    };
+  } catch (error) {
+    console.error("[api-router] Refresh token error:", error);
+    return {};
+  }
+}
+
+/**
+ * Устанавливает cookie с обновлёнными токенами на ответ
+ */
+function setCookiesOnResponse(
+  response: NextResponse,
+  tokens: { accessToken?: string; refreshToken?: string; userData?: string },
+): void {
+  const isProd = process.env.NODE_ENV === "production";
+  const lifetimeAccess =
+    Number(process.env.AUTH_TOKEN_LIFETIME_ACCESS) || 15 * 60;
+  const lifetimeRefresh =
+    Number(process.env.AUTH_TOKEN_LIFETIME_REFRESH) || 7 * 24 * 3600;
+  const lifetimeUser =
+    Number(process.env.AUTH_TOKEN_LIFETIME_USERDATA) || 7 * 24 * 3600;
+
+  if (tokens.accessToken) {
+    response.cookies.set(COOKIE_KEYS.ACCESS_TOKEN, tokens.accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: lifetimeAccess,
+    });
+  }
+  if (tokens.refreshToken) {
+    response.cookies.set(COOKIE_KEYS.REFRESH_TOKEN, tokens.refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: lifetimeRefresh,
+    });
+  }
+  if (tokens.userData) {
+    response.cookies.set(COOKIE_KEYS.USER_DATA, tokens.userData, {
+      httpOnly: false,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: lifetimeUser,
+    });
+  }
+}
+
+/**
+ * Builds fetch options for the external API request.
+ * Если передан accessTokenOverride — использует его вместо токена из запроса.
+ */
+function buildFetchOptions(
+  request: NextRequest,
+  accessTokenOverride?: string,
+): RequestInit {
   const headers: Record<string, string> = {};
 
-  // Inject access_token from Authorization header or httpOnly cookies
-  const accessToken = getAccessTokenFromRequest(request);
+  // Inject access_token from override, or from request (Authorization header or cookies)
+  const accessToken = accessTokenOverride || getAccessTokenFromRequest(request);
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
@@ -206,8 +288,41 @@ async function handleRequest(
       }
     }
 
-    // Build the fetch options with adapted body
-    const fetchOptions = buildFetchOptions(request);
+    // --- Проверка и обновление access_token ---
+    const accessToken = getAccessTokenFromRequest(request);
+    let refreshedAccessToken: string | undefined;
+    let refreshedTokens:
+      | { accessToken?: string; refreshToken?: string; userData?: string }
+      | undefined;
+
+    if (accessToken) {
+      const tokenResult = await verifyToken(accessToken);
+
+      // tokenResult is a discriminated union: { valid: true; payload } | { valid: false; reason }
+      const shouldRefresh =
+        // Токен истёк (valid=false, reason=expired) — пробуем refresh
+        (!tokenResult.valid && tokenResult.reason === "expired") ||
+        // Токен скоро истечёт (valid=true) — пробуем refresh
+        (tokenResult.valid && isTokenExpiringSoon(tokenResult.payload));
+
+      if (shouldRefresh) {
+        refreshedTokens = await tryRefreshToken(request);
+        refreshedAccessToken = refreshedTokens?.accessToken;
+      }
+    } else {
+      // access_token отсутствует, но есть refresh_token — пробуем refresh
+      const hasRefreshCookie = request.cookies.get(
+        COOKIE_KEYS.REFRESH_TOKEN,
+      )?.value;
+      if (hasRefreshCookie) {
+        refreshedTokens = await tryRefreshToken(request);
+        refreshedAccessToken = refreshedTokens?.accessToken;
+      }
+    }
+    // --- Конец проверки токена ---
+
+    // Build the fetch options with refreshed token if available
+    const fetchOptions = buildFetchOptions(request, refreshedAccessToken);
 
     if (adaptedBody) {
       if (["POST", "PUT", "PATCH"].includes(request.method)) {
@@ -228,10 +343,17 @@ async function handleRequest(
 
       console.log("------ Response Error --", errorBody);
 
-      return new NextResponse(errorBody, {
+      const errorResponse = new NextResponse(errorBody, {
         status: externalResponse.status,
         headers: { "Content-Type": "application/json" },
       });
+
+      // Если был refresh — проставляем обновлённые cookies в ответ с ошибкой
+      if (refreshedTokens) {
+        setCookiesOnResponse(errorResponse, refreshedTokens);
+      }
+
+      return errorResponse;
     }
 
     console.log("------ Response --", externalResponse);
@@ -258,10 +380,17 @@ async function handleRequest(
         responseHeaders["Content-Length"] = contentLength;
       }
 
-      return new NextResponse(blob, {
+      const fileResponse = new NextResponse(blob, {
         status: externalResponse.status,
         headers: responseHeaders,
       });
+
+      // Если был refresh — проставляем обновлённые cookies
+      if (refreshedTokens) {
+        setCookiesOnResponse(fileResponse, refreshedTokens);
+      }
+
+      return fileResponse;
     }
 
     // Get the response content type
@@ -308,7 +437,16 @@ async function handleRequest(
     // console.log("------ Adapted Data--", responseData);
 
     // Return the response with the same status code
-    return NextResponse.json(responseData, { status: externalResponse.status });
+    const jsonResponse = NextResponse.json(responseData, {
+      status: externalResponse.status,
+    });
+
+    // Если был refresh — проставляем обновлённые cookies в ответ
+    if (refreshedTokens) {
+      setCookiesOnResponse(jsonResponse, refreshedTokens);
+    }
+
+    return jsonResponse;
   } catch (error) {
     console.error("API Router error:", error);
     return NextResponse.json(
