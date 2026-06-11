@@ -25,8 +25,12 @@
     {
       "url": "{$config.baseURL}/api/users",
       "data": {
-        "first": 0,
-        "rows": 10
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
       },
       "method": "GET",
       "target": "state.users"
@@ -105,6 +109,11 @@
                 "filters": "{$state.users.filters}"
               },
               "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
                 {
                   "prop": "filters",
                   "type": "RemoveProps",
@@ -321,7 +330,8 @@
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
-                "selectionMode": "single"
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
                 {

@@ -242,8 +242,6 @@ export class FormatEngine {
    * Применить форматирование к одному значению
    */
   formatValue(value: any, rule: FormatRule): string {
-    console.log("------------------", rule.type);
-
     switch (rule.type) {
       case "Date":
       case "Time":
