@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **CommandExecutor: URL params serialize objects incorrectly** — `setUrlParams`, `mergeUrlParams`, and `setUrlParam` commands in `src/core/CommandExecutor.ts` were passing object values as `[object Object]` when using `String(value)`. Added a new private method `serializeUrlValue()` that properly serializes values for URL query parameters:
+  - `null`/`undefined` → skip the parameter
+  - `Date` → readable string (e.g., `"2026-06-11T14:00:00.000Z"`)
+  - Objects/arrays → `JSON.stringify(value)`
+  - Primitives → `String(value)`
+    This matches the existing behavior in `buildUrlWithParams` from `src/utils/http.ts`.
+
 ### Added
 
 - **API Router dynamic route matching and `{$location.routeParams.*}` macros** — `src/app/api/[...route]/route.ts` now supports pattern matching for routes with dynamic segments like `users/[id]`. Route params are automatically extracted from the URL and made available to URL macros via `{$location.routeParams.id}`.

@@ -116,6 +116,20 @@ export class CommandExecutor {
   }
 
   /**
+   * Serialize a value for URL query parameters.
+   * - null/undefined → null (skip the param)
+   * - Date → String (readable date string, e.g. "2026-06-11T14:00:00.000Z")
+   * - object/array → JSON.stringify
+   * - primitives → String
+   */
+  private serializeUrlValue(value: unknown): string | null {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date) return String(value);
+    if (typeof value === "object") return JSON.stringify(value);
+    return String(value);
+  }
+
+  /**
    * Apply formatting to a value if format rules are provided
    * Supports primitives, objects, and arrays
    */
@@ -677,8 +691,9 @@ export class CommandExecutor {
 
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(resolvedValues)) {
-      if (value !== undefined && value !== null) {
-        searchParams.set(key, String(value));
+      const serialized = this.serializeUrlValue(value);
+      if (serialized !== null) {
+        searchParams.set(key, serialized);
       }
     }
 
@@ -712,8 +727,9 @@ export class CommandExecutor {
     // Берём ТЕКУЩИЕ параметры и добавляем/обновляем новые
     const searchParams = new URLSearchParams(window.location.search);
     for (const [key, value] of Object.entries(resolvedValues)) {
-      if (value !== undefined && value !== null) {
-        searchParams.set(key, String(value));
+      const serialized = this.serializeUrlValue(value);
+      if (serialized !== null) {
+        searchParams.set(key, serialized);
       } else {
         searchParams.delete(key);
       }
@@ -748,8 +764,9 @@ export class CommandExecutor {
     if (!name) return;
 
     const searchParams = new URLSearchParams(window.location.search);
-    if (value !== undefined && value !== null) {
-      searchParams.set(name, String(value));
+    const serialized = this.serializeUrlValue(value);
+    if (serialized !== null) {
+      searchParams.set(name, serialized);
     } else {
       searchParams.delete(name);
     }
