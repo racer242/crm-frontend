@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **FormatEngine PopIfHasNullProps type** — new formatting type for filtering array elements with null/undefined properties (commit `[to-be-added]`)
+  - `PopIfHasNullProps` in `FormatType` — removes array elements where at least one specified property is null or undefined
+  - `params.props` accepts array of property paths to check
+  - Non-array input → returned unchanged
+  - Element removed if ANY of the specified properties is null/undefined
+  - Supports nested property paths via PathResolver
+
 - **FormatEngine RemoveProps type** — new formatting type for removing properties from objects/arrays (commit `[to-be-added]`)
   - `RemoveProps` in `FormatType` — removes specified properties from input value
   - `params` accepts array of property paths (e.g., `["id", "internal.secret"]`)

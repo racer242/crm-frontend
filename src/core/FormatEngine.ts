@@ -21,7 +21,8 @@ export type FormatType =
   | "RelativeTime"
   | "List"
   | "Plural"
-  | "RemoveProps";
+  | "RemoveProps"
+  | "PopIfHasNullProps";
 
 export type FormatFunc =
   | "DateTimeFormat"
@@ -32,6 +33,11 @@ export type FormatFunc =
 
 export interface RemovePropsParams {
   /** Массив путей к свойствам, которые нужно удалить */
+  props: string[];
+}
+
+export interface PopIfHasNullPropsParams {
+  /** Массив путей к свойствам для проверки на null/undefined */
   props: string[];
 }
 
@@ -49,7 +55,8 @@ export interface FormatRule {
     | Intl.RelativeTimeFormatOptions
     | Intl.ListFormatOptions
     | Intl.PluralRulesOptions
-    | RemovePropsParams;
+    | RemovePropsParams
+    | PopIfHasNullPropsParams;
 }
 
 export interface LocaleConfig {
@@ -280,6 +287,11 @@ export class FormatEngine {
         return this.removeProps(value, params?.props || []);
       }
 
+      case "PopIfHasNullProps": {
+        const params = rule.params as PopIfHasNullPropsParams;
+        return this.popIfHasNullProps(value, params?.props || []);
+      }
+
       default:
         return String(value);
     }
@@ -312,5 +324,30 @@ export class FormatEngine {
     }
 
     return result;
+  }
+
+  /**
+   * Удаляет элементы массива, у которых хотя бы одно из указанных свойств равно null или undefined
+   * - Если входное значение не массив → возвращает без изменений
+   * - Для каждого элемента проверяет указанные свойства
+   * - Если хотя бы одно свойство null/undefined → элемент удаляется
+   */
+  private popIfHasNullProps(value: any, props: string[]): any {
+    // Не массив → вернуть без изменений
+    if (!Array.isArray(value)) return value;
+
+    // Фильтруем массив: оставляем только элементы, у которых ВСЕ указанные свойства не null/undefined
+    return value.filter((item) => {
+      // Проверяем каждое указанное свойство
+      for (const prop of props) {
+        const propValue = PathResolver.getValue(item, prop);
+        // Если хотя бы одно свойство null или undefined → удаляем элемент
+        if (propValue === null || propValue === undefined) {
+          return false;
+        }
+      }
+      // Все свойства имеют значения → оставляем элемент
+      return true;
+    });
   }
 }
