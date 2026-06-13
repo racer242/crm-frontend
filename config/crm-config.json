@@ -28,7 +28,7 @@
       },
       {
         "label": "Призы",
-        "icon": "pi pi-star",
+        "icon": "pi pi-gift",
         "route": "/prizes"
       },
       {
@@ -38,7 +38,7 @@
       },
       {
         "label": "Коды",
-        "icon": "pi pi-key",
+        "icon": "pi pi-star",
         "route": "/codes"
       },
       {
