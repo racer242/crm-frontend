@@ -38,12 +38,12 @@
       },
       {
         "label": "Коды",
-        "icon": "pi pi-qrcode",
+        "icon": "pi pi-key",
         "route": "/codes"
       },
       {
         "label": "Коды ЧЗ",
-        "icon": "pi pi-shield",
+        "icon": "pi pi-qrcode",
         "route": "/gtins"
       },
       {
@@ -114,25 +114,6 @@
     { "$ref": "./pages/gtins.json" }
   ],
   "adapters": {
-    "stats.analytics.replace": {
-      "type": "replace",
-      "rules": {
-        "title": {
-          "name": "label"
-        },
-        "url": {
-          "name": "commands",
-          "value": [
-            {
-              "type": "navigate",
-              "params": {
-                "url": "$value$"
-              }
-            }
-          ]
-        }
-      }
-    },
     "stats.analytics.js": {
       "type": "js",
       "script": "./config/adapters/analytics2menu.js"
