@@ -1,0 +1,369 @@
+{
+  "id": "codes",
+  "type": "page",
+  "route": "/codes",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "filtersVisible": false,
+    "codes": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 10,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": [],
+      "search": ""
+    }
+  },
+  "meta": {
+    "title": "Коды — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/codes",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      },
+      "method": "GET",
+      "target": "state.codes"
+    }
+  ],
+  "shortcuts": {
+    "requestCodes": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "log",
+            "params": {
+              "message": {
+                "event": "{$event}",
+                "data": "{$state.codes}",
+                "toSend": {
+                  "event": "{$event}",
+                  "first": "{$state.codes.first}",
+                  "rows": "{$state.codes.rows}",
+                  "sortField": "{$state.codes.sortField}",
+                  "sortOrder": "{$state.codes.sortOrder}",
+                  "search": "{$state.codes.search}",
+                  "filters": "{$state.codes.filters}"
+                }
+              }
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/codes",
+              "method": "GET",
+              "target": "state.codes",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.codes.first}",
+                "rows": "{$state.codes.rows}",
+                "sortField": "{$state.codes.sortField}",
+                "sortOrder": "{$state.codes.sortOrder}",
+                "search": "{$state.codes.search}",
+                "filters": "{$state.codes.filters}"
+              },
+              "rules": {},
+              "onSuccess": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "success": "{$event}"
+                    }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "error": "{$event}"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.codes.first}",
+                "rows": "{$state.codes.rows}",
+                "sortField": "{$state.codes.sortField}",
+                "sortOrder": "{$state.codes.sortOrder}",
+                "search": "{$state.codes.search}",
+                "filters": "{$state.codes.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "codesHeader",
+      "type": "section",
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "codesTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "codesPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Коды",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "codesFilters",
+      "type": "section",
+      "className": "flex flex-wrap gap-3",
+      "blocks": [
+        {
+          "id": "codesSearchBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "className": "flex-grow-1"
+          },
+          "components": [
+            {
+              "id": "codesSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.codes.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.codes.search"
+                      }
+                    },
+                    "requestCodes"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "codesFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "flex-initial"
+          },
+          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
+          "components": [
+            {
+              "id": "codesToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "codesActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "codesActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.codes.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.codes.filters"
+                      }
+                    },
+                    "requestCodes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "codesFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.codes.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.codes.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestCodes"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "codesTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "codesTableBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "codesTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.codes.value",
+                "columns": "@state.codes.columns",
+                "totalRecords": "@state.codes.totalRecords",
+                "rows": "@state.codes.rows",
+                "first": "@state.codes.first",
+                "sortField": "@state.codes.sortField",
+                "sortOrder": "@state.codes.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestCodes"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestCodes"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event}"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/codes/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

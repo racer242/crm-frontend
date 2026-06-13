@@ -1,0 +1,369 @@
+{
+  "id": "receipts",
+  "type": "page",
+  "route": "/receipts",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "filtersVisible": false,
+    "receipts": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 10,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": [],
+      "search": ""
+    }
+  },
+  "meta": {
+    "title": "Чеки — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/receipts",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      },
+      "method": "GET",
+      "target": "state.receipts"
+    }
+  ],
+  "shortcuts": {
+    "requestReceipts": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "log",
+            "params": {
+              "message": {
+                "event": "{$event}",
+                "data": "{$state.receipts}",
+                "toSend": {
+                  "event": "{$event}",
+                  "first": "{$state.receipts.first}",
+                  "rows": "{$state.receipts.rows}",
+                  "sortField": "{$state.receipts.sortField}",
+                  "sortOrder": "{$state.receipts.sortOrder}",
+                  "search": "{$state.receipts.search}",
+                  "filters": "{$state.receipts.filters}"
+                }
+              }
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/receipts",
+              "method": "GET",
+              "target": "state.receipts",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "sortField": "{$state.receipts.sortField}",
+                "sortOrder": "{$state.receipts.sortOrder}",
+                "search": "{$state.receipts.search}",
+                "filters": "{$state.receipts.filters}"
+              },
+              "rules": {},
+              "onSuccess": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "success": "{$event}"
+                    }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "error": "{$event}"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "sortField": "{$state.receipts.sortField}",
+                "sortOrder": "{$state.receipts.sortOrder}",
+                "search": "{$state.receipts.search}",
+                "filters": "{$state.receipts.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "receiptsHeader",
+      "type": "section",
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
+      "blocks": [
+        {
+          "id": "receiptsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "receiptsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Чеки",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsFilters",
+      "type": "section",
+      "className": "flex flex-wrap gap-3",
+      "blocks": [
+        {
+          "id": "receiptsSearchBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "className": "flex-grow-1"
+          },
+          "components": [
+            {
+              "id": "receiptsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.receipts.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.receipts.search"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "receiptsFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "flex-initial"
+          },
+          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
+          "components": [
+            {
+              "id": "receiptsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "receiptsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "receiptsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.receipts.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.receipts.filters"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "receiptsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.receipts.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.receipts.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "receiptsTableBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "receiptsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.receipts.value",
+                "columns": "@state.receipts.columns",
+                "totalRecords": "@state.receipts.totalRecords",
+                "rows": "@state.receipts.rows",
+                "first": "@state.receipts.first",
+                "sortField": "@state.receipts.sortField",
+                "sortOrder": "@state.receipts.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestReceipts"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestReceipts"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event}"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/receipts/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

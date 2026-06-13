@@ -165,6 +165,10 @@
     "path": "prizes",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/prizes",
+    "adapter": {
+      "request": "prizes.request.js",
+      "response": "prizes.response.js"
+    },
     "note": "Призы: Список призов"
   },
   {
@@ -196,6 +200,10 @@
     "path": "receipts",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/receipts",
+    "adapter": {
+      "request": "receipts.request.js",
+      "response": "receipts.response.js"
+    },
     "note": "Чеки: Список чеков"
   },
   {
@@ -227,6 +235,10 @@
     "path": "acts",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/acts",
+    "adapter": {
+      "request": "acts.request.js",
+      "response": "acts.response.js"
+    },
     "note": "Акты: Список актов"
   },
   {
@@ -258,6 +270,10 @@
     "path": "codes",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/codes",
+    "adapter": {
+      "request": "codes.request.js",
+      "response": "codes.response.js"
+    },
     "note": "Коды участников: Список кодов"
   },
   {
@@ -308,6 +324,10 @@
     "path": "gtins",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/gtins",
+    "adapter": {
+      "request": "gtins.request.js",
+      "response": "gtins.response.js"
+    },
     "note": "Коды Честный Знак: Список кодов ЧЗ"
   },
   {

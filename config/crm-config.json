@@ -22,6 +22,31 @@
         "route": "/users"
       },
       {
+        "label": "Акты",
+        "icon": "pi pi-file",
+        "route": "/acts"
+      },
+      {
+        "label": "Призы",
+        "icon": "pi pi-star",
+        "route": "/prizes"
+      },
+      {
+        "label": "Чеки",
+        "icon": "pi pi-receipt",
+        "route": "/receipts"
+      },
+      {
+        "label": "Коды",
+        "icon": "pi pi-qrcode",
+        "route": "/codes"
+      },
+      {
+        "label": "Коды ЧЗ",
+        "icon": "pi pi-shield",
+        "route": "/gtins"
+      },
+      {
         "label": "Orders",
         "icon": "pi pi-shopping-cart",
         "route": "/orders"
@@ -81,7 +106,12 @@
     { "$ref": "./pages/settings.json" },
     { "$ref": "./pages/components.json" },
     { "$ref": "./pages/testing.json" },
-    { "$ref": "./pages/user.json" }
+    { "$ref": "./pages/user.json" },
+    { "$ref": "./pages/acts.json" },
+    { "$ref": "./pages/prizes.json" },
+    { "$ref": "./pages/receipts.json" },
+    { "$ref": "./pages/codes.json" },
+    { "$ref": "./pages/gtins.json" }
   ],
   "adapters": {
     "stats.analytics.replace": {
@@ -120,6 +150,46 @@
       "script": "./config/adapters/users-params.js"
     },
     "users.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "acts.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "acts.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "prizes.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "prizes.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "receipts.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "receipts.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "codes.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "codes.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "gtins.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "gtins.response.js": {
       "type": "js",
       "script": "./config/adapters/users-2-tabview.js"
     }

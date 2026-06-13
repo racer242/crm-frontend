@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **5 новых страниц: Акты, Призы, Чеки, Коды, Коды Честный Знак** — табличные страницы-списки с пагинацией, фильтрацией, поиском (commit `[to-be-added]`)
+  - `config/pages/acts.json` — страница "Акты" (колонки: win_date, prize, status; фильтры: status options, win_date period)
+  - `config/pages/prizes.json` — страница "Призы" (колонки: win_date, prize, retail_chain, status, comment; фильтры: status, prize_type, retail_chain options, win_date period)
+  - `config/pages/receipts.json` — страница "Чеки" (колонки: registration_date, purchase_date, promo_products_count, promo_products_amount, retail_chain, moderation_status; фильтры: moderation_status, retail_chain options, registration_date, purchase_date period, promo_products_amount range)
+  - `config/pages/codes.json` — страница "Коды" (колонки: user_id, user_name, email, registration_date, code; фильтры: registration_date period, code text)
+  - `config/pages/gtins.json" — страница "Коды Честный Знак" (колонки: user_id, user_name, email, registration_date, gtin, product, amount, status; фильтры: status options, registration_date period)
+- **Пункты навигации в sidebar** — `config/crm-config.json`: добавлены пункты Акты, Призы, Чеки, Коды, Коды ЧЗ после "Участники"
+- **Адаптеры request/response для новых страниц** — `config/crm-config.json`: acts.request.js, acts.response.js, prizes.request.js, prizes.response.js, receipts.request.js, receipts.response.js, codes.request.js, codes.response.js, gtins.request.js, gtins.response.js (переиспользуют users-params.js и users-2-tabview.js)
+- **API routes adapter registration** — `config/system/api-routes.json`: добавлены adapter поля для GET-роутов acts, prizes, receipts, codes, gtins
+
+### Added
+
 - **FormatEngine PopIfHasNullProps type** — new formatting type for filtering array elements with null/undefined properties (commit `[to-be-added]`)
   - `PopIfHasNullProps` in `FormatType` — removes array elements where at least one specified property is null or undefined
   - `params.props` accepts array of property paths to check
