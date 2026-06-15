@@ -2,7 +2,7 @@
  * Environment variable utilities
  *
  * - getServerEnv(): SERVER ONLY — returns ALL process.env variables
- * - getPublicEnv(): safe for client — returns process.env (which on client only contains NEXT_PUBLIC_*)
+ * - getPublicEnv(): safe for client — returns NEXT_PUBLIC_* variables
  */
 
 /**
@@ -23,18 +23,28 @@ export async function getServerEnv(): Promise<Record<string, string>> {
 }
 
 /**
- * Get environment variables available in the current context.
- * On the client this will only contain NEXT_PUBLIC_* variables (bundled by Next.js).
- * On the server this returns all process.env variables.
+ * Get NEXT_PUBLIC_* environment variables available in the current context.
+ *
+ * IMPORTANT: Each NEXT_PUBLIC_* variable MUST be listed explicitly here as a literal
+ * `process.env.NEXT_PUBLIC_*` reference. Next.js uses Webpack's DefinePlugin to replace
+ * these literal expressions at build time. Dynamic iteration (e.g., Object.entries(process.env))
+ * does NOT work on the client because process.env in the browser bundle is not enumerable.
+ *
  * Safe to call from any context.
  */
 export function getPublicEnv(): Record<string, string> {
-  if (typeof process === "undefined") {
-    return {};
+  const env: Record<string, string> = {};
+
+  // ── NEXT_PUBLIC_* variables ──────────────────────────────────
+  // Each property must be listed as a process.env.NEXT_PUBLIC_* literal
+  // so that Next.js can inline the actual value at build time.
+
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    env.NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   }
-  return Object.fromEntries(
-    Object.entries(process.env)
-      .filter(([_, val]) => val !== undefined)
-      .map(([key, val]) => [key, val as string]),
-  );
+  if (process.env.NEXT_PUBLIC_USE_SYSTEM_FONTS) {
+    env.NEXT_PUBLIC_USE_SYSTEM_FONTS = process.env.NEXT_PUBLIC_USE_SYSTEM_FONTS;
+  }
+
+  return env;
 }
