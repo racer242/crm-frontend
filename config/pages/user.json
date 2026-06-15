@@ -5,8 +5,7 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "userData": null,
-    "pointsData": null
+    "userData": null
   },
   "meta": {
     "title": "Пользователь — CRM Platform"
@@ -27,36 +26,50 @@
           "type": "log",
           "params": {
             "level": "info",
-            "message": "111{$config.baseURL}/api/users/{$location.routeParams.user_id}"
-          }
-        }
-      ]
-    },
-    {
-      "type": "onUnload",
-      "commands": [
-        {
-          "type": "log",
-          "params": {
-            "level": "info",
-            "message": "222{$config.baseURL}/api/users/{$location.routeParams.user_id}"
+            "message": "Загружена страница пользователя {$location.routeParams.user_id}"
           }
         }
       ]
     }
   ],
+  "shortcuts": {
+    "blockUser": {
+      "type": "sendRequest",
+      "params": {
+        "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+        "method": "PATCH",
+        "data": {
+          "is_blocked": true,
+          "block_reason": ""
+        },
+        "target": "state.userData",
+        "adapter": "user.response.js"
+      }
+    },
+    "unblockUser": {
+      "type": "sendRequest",
+      "params": {
+        "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+        "method": "PATCH",
+        "data": {
+          "is_blocked": false
+        },
+        "target": "state.userData",
+        "adapter": "user.response.js"
+      }
+    }
+  },
   "sections": [
     {
       "id": "userHeader",
       "type": "section",
-      "state": {
-        "visible": true
-      },
       "layout": {
         "type": "flex",
         "direction": "row",
-        "justifyContent": "between"
+        "justifyContent": "between",
+        "alignItems": "center"
       },
+      "className": "flex-wrap",
       "blocks": [
         {
           "id": "userTitleBlock",
@@ -73,19 +86,171 @@
               "state": {}
             }
           ]
+        },
+        {
+          "id": "userActionButtons",
+          "type": "block",
+          "className": "flex flex-row gap-2 flex-wrap",
+          "components": [
+            {
+              "id": "btnEditUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "Редактирование пользователя {$location.routeParams.user_id}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "state": {}
+            },
+            {
+              "id": "btnBlockUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-lock",
+                "label": "Заблокировать",
+                "size": "small",
+                "severity": "danger",
+                "outlined": true
+              },
+              "visible": {
+                "conditions": [
+                  {
+                    "path": "state.userData.is_blocked",
+                    "operator": "==",
+                    "value": false
+                  }
+                ],
+                "defaultVisible": false
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "confirm",
+                      "params": {
+                        "header": "Подтверждение",
+                        "message": "Вы уверены, что хотите заблокировать этого пользователя?",
+                        "icon": "pi pi-exclamation-triangle"
+                      },
+                      "onConfirm": ["blockUser"],
+                      "onCancel": [
+                        {
+                          "type": "log",
+                          "params": {
+                            "message": "Блокировка отменена"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "state": {}
+            },
+            {
+              "id": "btnUnblockUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-lock-open",
+                "label": "Разблокировать",
+                "size": "small",
+                "severity": "success",
+                "outlined": true
+              },
+              "visible": {
+                "conditions": [
+                  {
+                    "path": "state.userData.is_blocked",
+                    "operator": "==",
+                    "value": true
+                  }
+                ],
+                "defaultVisible": false
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "confirm",
+                      "params": {
+                        "header": "Подтверждение",
+                        "message": "Вы уверены, что хотите разблокировать этого пользователя?",
+                        "icon": "pi pi-exclamation-triangle"
+                      },
+                      "onConfirm": ["unblockUser"],
+                      "onCancel": [
+                        {
+                          "type": "log",
+                          "params": {
+                            "message": "Разблокировка отменена"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "state": {}
+            },
+            {
+              "id": "btnManageGroups",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-users",
+                "label": "Группы",
+                "size": "small",
+                "severity": "contrast",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "Управление группами пользователя {$location.routeParams.user_id}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "state": {}
+            }
+          ]
         }
       ]
     },
     {
-      "id": "userInfoSection",
+      "id": "userInfoGrid",
       "type": "section",
-      "state": {
-        "visible": true
-      },
+      "className": "grid",
       "blocks": [
         {
           "id": "profileCard",
           "type": "block",
+          "className": "col-12 md:col-6 lg:col-4",
           "wrapper": {
             "component": "Card",
             "props": {
@@ -98,11 +263,13 @@
               "type": "component",
               "componentType": "Avatar",
               "props": {
-                "icon": "pi pi-user",
+                "label": "@state.userData.initials",
                 "shape": "circle",
                 "size": "xlarge",
                 "style": {
-                  "backgroundColor": "#6366f1"
+                  "backgroundColor": "#6366f1",
+                  "color": "#ffffff",
+                  "fontWeight": "bold"
                 }
               },
               "state": {}
@@ -125,167 +292,62 @@
               "state": {}
             },
             {
-              "id": "userEmailField",
+              "id": "userEmailRow",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Text",
               "props": {
-                "placeholder": "Email",
-                "value": "@state.userData.email",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "value": "✉ {$state.userData.email}"
               },
               "state": {}
             },
             {
-              "id": "userPhoneField",
+              "id": "userPhoneRow",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Text",
               "props": {
-                "placeholder": "Телефон",
-                "value": "@state.userData.phone",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "value": "📞 {$state.userData.phone}"
               },
               "state": {}
             },
             {
-              "id": "userCityField",
+              "id": "userCityRow",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Text",
               "props": {
-                "placeholder": "Город",
-                "value": "@state.userData.city",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "userReferralField",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Реферальный код",
-                "value": "@state.userData.referral",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "userRegDate",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Дата регистрации",
-                "value": "@state.userData.reg_date_formatted",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "userAuthDate",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Последняя авторизация",
-                "value": "@state.userData.auth_date_formatted",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "userIpField",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "IP-адрес",
-                "value": "@state.userData.ip",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "value": "📍 {$state.userData.city}"
               },
               "state": {}
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "userStatusSection",
-      "type": "section",
-      "state": {
-        "visible": true
-      },
-      "blocks": [
+        },
         {
           "id": "statusCard",
           "type": "block",
+          "className": "col-12 md:col-6 lg:col-4",
           "wrapper": {
             "component": "Card",
             "props": {
-              "header": "Статус и группы"
+              "header": "Статус"
             }
           },
           "components": [
             {
-              "id": "blockStatusTagBlocked",
+              "id": "blockStatusTag",
               "type": "component",
               "componentType": "Tag",
               "props": {
-                "value": "Заблокирован",
-                "severity": "danger"
-              },
-              "visible": {
-                "conditions": [
-                  {
-                    "path": "state.userData.is_blocked",
-                    "operator": "==",
-                    "value": true
-                  }
-                ],
-                "defaultVisible": false
-              },
-              "state": {}
-            },
-            {
-              "id": "blockStatusTagActive",
-              "type": "component",
-              "componentType": "Tag",
-              "props": {
-                "value": "Активен",
-                "severity": "success"
-              },
-              "visible": {
-                "conditions": [
-                  {
-                    "path": "state.userData.is_blocked",
-                    "operator": "==",
-                    "value": false
-                  }
-                ],
-                "defaultVisible": false
+                "value": "{$state.userData.status_label}",
+                "severity": "{$state.userData.status_severity}",
+                "icon": "{$state.userData.status_icon}"
               },
               "state": {}
             },
             {
               "id": "blockReasonField",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Text",
               "props": {
-                "placeholder": "Причина блокировки",
-                "value": "@state.userData.block_reason",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "value": "Причина: {$state.userData.block_reason}"
               },
               "visible": {
                 "conditions": [
@@ -297,6 +359,13 @@
                 ],
                 "defaultVisible": false
               },
+              "state": {}
+            },
+            {
+              "id": "userDivider2",
+              "type": "component",
+              "componentType": "Divider",
+              "props": {},
               "state": {}
             },
             {
@@ -304,7 +373,90 @@
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Группы: {$state.userData.groups_text}"
+                "value": "Группы:"
+              },
+              "state": {}
+            },
+            {
+              "id": "groupsText",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "{$state.userData.groups_text}"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "detailsCard",
+          "type": "block",
+          "className": "col-12 md:col-6 lg:col-4",
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Детали"
+            }
+          },
+          "components": [
+            {
+              "id": "detailId",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "ID: {$state.userData.id}"
+              },
+              "state": {}
+            },
+            {
+              "id": "detailBotId",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Telegram ID: {$state.userData.bot_id}"
+              },
+              "state": {}
+            },
+            {
+              "id": "detailReferral",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Реферал: {$state.userData.referral}"
+              },
+              "state": {}
+            },
+            {
+              "id": "detailIp",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "IP: {$state.userData.ip}"
+              },
+              "state": {}
+            },
+            {
+              "id": "userDivider3",
+              "type": "component",
+              "componentType": "Divider",
+              "props": {},
+              "state": {}
+            },
+            {
+              "id": "detailRegDate",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Регистрация: {$state.userData.reg_date_formatted}"
+              },
+              "state": {}
+            },
+            {
+              "id": "detailAuthDate",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Авторизация: {$state.userData.auth_date_formatted}"
               },
               "state": {}
             }
@@ -315,13 +467,12 @@
     {
       "id": "userStatsSection",
       "type": "section",
-      "state": {
-        "visible": true
-      },
+      "className": "grid",
       "blocks": [
         {
           "id": "statsCard",
           "type": "block",
+          "className": "col-12",
           "wrapper": {
             "component": "Card",
             "props": {
@@ -330,166 +481,88 @@
           },
           "components": [
             {
+              "id": "statsContainer",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Баллы: {$state.userData.points} | Призы: {$state.userData.prizes} | Чеки: {$state.userData.receipts} | Коды: {$state.userData.codes} | Коды ЧЗ: {$state.userData.gtins} | Продукты: {$state.userData.products} | Сообщения: {$state.userData.messages}"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "statsGrid",
+          "type": "block",
+          "className": "col-12",
+          "components": [
+            {
               "id": "statPoints",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Баллы",
-                "value": "@state.userData.points",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Баллы: {$state.userData.points}",
+                "icon": "pi pi-star"
               },
               "state": {}
             },
             {
               "id": "statPrizes",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Призы",
-                "value": "@state.userData.prizes",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Призы: {$state.userData.prizes}",
+                "icon": "pi pi-gift"
               },
               "state": {}
             },
             {
               "id": "statReceipts",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Чеки",
-                "value": "@state.userData.receipts",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Чеки: {$state.userData.receipts}",
+                "icon": "pi pi-receipt"
               },
               "state": {}
             },
             {
               "id": "statCodes",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Коды",
-                "value": "@state.userData.codes",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Коды: {$state.userData.codes}",
+                "icon": "pi pi-qrcode"
               },
               "state": {}
             },
             {
               "id": "statGtins",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Коды ЧЗ",
-                "value": "@state.userData.gtins",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Коды ЧЗ: {$state.userData.gtins}",
+                "icon": "pi pi-qrcode"
               },
               "state": {}
             },
             {
               "id": "statProducts",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Продукты",
-                "value": "@state.userData.products",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
+                "label": "Продукты: {$state.userData.products}",
+                "icon": "pi pi-box"
               },
               "state": {}
             },
             {
               "id": "statMessages",
               "type": "component",
-              "componentType": "InputText",
+              "componentType": "Chip",
               "props": {
-                "placeholder": "Сообщения",
-                "value": "@state.userData.messages",
-                "readOnly": true,
-                "inline": "true",
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "userPointsSection",
-      "type": "section",
-      "state": {
-        "visible": true
-      },
-      "visible": {
-        "conditions": [
-          {
-            "path": "state.pointsData",
-            "operator": "!=",
-            "value": null
-          }
-        ],
-        "defaultVisible": false
-      },
-      "blocks": [
-        {
-          "id": "pointsCard",
-          "type": "block",
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Баллы (детально)"
-            }
-          },
-          "components": [
-            {
-              "id": "pointsCurrent",
-              "type": "component",
-              "componentType": "InputNumber",
-              "props": {
-                "value": "@state.pointsData.points_current",
-                "readOnly": true,
-                "inline": "true",
-                "mode": "decimal",
-                "minFractionDigits": 0,
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "pointsSpent",
-              "type": "component",
-              "componentType": "InputNumber",
-              "props": {
-                "value": "@state.pointsData.points_spent",
-                "readOnly": true,
-                "inline": "true",
-                "mode": "decimal",
-                "minFractionDigits": 0,
-                "className": "p-inputtext-sm"
-              },
-              "state": {}
-            },
-            {
-              "id": "pointsTotalEarned",
-              "type": "component",
-              "componentType": "InputNumber",
-              "props": {
-                "value": "@state.pointsData.points_total_earned",
-                "readOnly": true,
-                "inline": "true",
-                "mode": "decimal",
-                "minFractionDigits": 0,
-                "className": "p-inputtext-sm"
+                "label": "Сообщения: {$state.userData.messages}",
+                "icon": "pi pi-comments"
               },
               "state": {}
             }

@@ -8,13 +8,17 @@ All notable changes to this project will be documented in this file.
 
 - **`getPublicEnv()` returns empty object on client** — `src/utils/env.ts`: `getPublicEnv()` used `Object.entries(process.env)` which does not work in Next.js browser bundles. Webpack's DefinePlugin only replaces literal `process.env.NEXT_PUBLIC_*` expressions at build time; dynamic iteration over `process.env` yields an empty object on the client because the `process.env` object is not enumerable in the browser bundle. Fixed by explicitly listing each known `NEXT_PUBLIC_*` variable as a literal `process.env.NEXT_PUBLIC_*` reference (`NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_USE_SYSTEM_FONTS`). Any new `NEXT_PUBLIC_*` variable must be added to this list.
 
-### Added
-
 - **Страница просмотра пользователя `/users/[id]`** — страница выводит все доступные данные участника согласно эндпойнту (commit `[to-be-added]`)
   - `config/pages/user.json` — переписана с фейковых секций на реальные: основная информация (ФИО, email, телефон, город, реферал, даты, IP), статус блокировки и группы, статистика (баллы, призы, чеки, коды, ЧЗ, продукты, сообщения), детальный блок баллов
   - `dataFeed` — два параллельных запроса: `/api/users/{id}` и `/api/users/{id}/points` через API Router c макросом `{$location.param.0}`
   - `config/adapters/user.js` — новый JS-адаптер для трансформации ответа: склеивание full_name, форматирование дат, сбор текста групп
   - `config/crm-config.json` — зарегистрирован адаптер `user.response.js`
+
+### Added
+
+- **Страница просмотра пользователя `/users/[id]` — responsive редизайн** — страница пользователя переработана для корректного отображения на desktop и mobile (commit `[to-be-added]`)
+  - `config/pages/user.json` — полная переработка: PrimeFlex grid-сетка (`col-12 md:col-6 lg:col-4`) для карточек информации, заменены read-only InputText на Text/Chip/Tag/Avatar, добавлены кнопки действий (редактировать, заблокировать/разблокировать, группы), conditional visibility для блокировки, подтверждение через confirm, shortcodes для блокировки/разблокировки, flex-wrap для header на mobile
+  - `config/adapters/user.js` — расширен: добавлены initials, статус label/severity/icon, groups_badges, stats-массив для чиповой статистики
 
 - **5 новых страниц: Акты, Призы, Чеки, Коды, Коды Честный Знак** — табличные страницы-списки с пагинацией, фильтрацией, поиском (commit `[to-be-added]`)
   - `config/pages/acts.json` — страница "Акты" (колонки: win_date, prize, status; фильтры: status options, win_date period)
