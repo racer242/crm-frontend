@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Страница просмотра пользователя `/users/[id]`** — страница выводит все доступные данные участника согласно эндпойнту (commit `[to-be-added]`)
+  - `config/pages/user.json` — переписана с фейковых секций на реальные: основная информация (ФИО, email, телефон, город, реферал, даты, IP), статус блокировки и группы, статистика (баллы, призы, чеки, коды, ЧЗ, продукты, сообщения), детальный блок баллов
+  - `dataFeed` — два параллельных запроса: `/api/users/{id}` и `/api/users/{id}/points` через API Router c макросом `{$location.param.0}`
+  - `config/adapters/user.js` — новый JS-адаптер для трансформации ответа: склеивание full_name, форматирование дат, сбор текста групп
+  - `config/crm-config.json` — зарегистрирован адаптер `user.response.js`
+
 - **5 новых страниц: Акты, Призы, Чеки, Коды, Коды Честный Знак** — табличные страницы-списки с пагинацией, фильтрацией, поиском (commit `[to-be-added]`)
   - `config/pages/acts.json` — страница "Акты" (колонки: win_date, prize, status; фильтры: status options, win_date period)
   - `config/pages/prizes.json` — страница "Призы" (колонки: win_date, prize, retail_chain, status, comment; фильтры: status, prize_type, retail_chain options, win_date period)

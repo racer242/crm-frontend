@@ -173,6 +173,10 @@
     "gtins.response.js": {
       "type": "js",
       "script": "./config/adapters/users-2-tabview.js"
+    },
+    "user.response.js": {
+      "type": "js",
+      "script": "./config/adapters/user.js"
     }
   },
   "config": {

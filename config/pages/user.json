@@ -4,26 +4,45 @@
   "route": "/users/[user_id]",
   "state": {
     "loading": false,
-    "initialized": true
+    "initialized": true,
+    "userData": null,
+    "pointsData": null
   },
   "meta": {
-    "title": "Пользователь CRM"
+    "title": "Пользователь — CRM Platform"
   },
+  "dataFeed": [
+    {
+      "url": "/api/users/{$location.param.0}",
+      "method": "GET",
+      "target": "state.userData",
+      "adapter": "user.response.js"
+    },
+    {
+      "url": "/api/users/{$location.param.0}/points",
+      "method": "GET",
+      "target": "state.pointsData"
+    }
+  ],
   "sections": [
     {
-      "id": "settingsHeader",
+      "id": "userHeader",
       "type": "section",
       "state": {
         "visible": true
       },
+      "layout": {
+        "type": "flex",
+        "direction": "row",
+        "justifyContent": "between"
+      },
       "blocks": [
         {
-          "id": "settingsTitle",
+          "id": "userTitleBlock",
           "type": "block",
-          "state": {},
           "components": [
             {
-              "id": "settingsPageTitle",
+              "id": "userPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
@@ -37,65 +56,28 @@
       ]
     },
     {
-      "id": "userForm",
+      "id": "userInfoSection",
       "type": "section",
       "state": {
         "visible": true
       },
       "blocks": [
         {
-          "id": "profileForm",
+          "id": "profileCard",
           "type": "block",
-          "state": {
-            "formData": {}
-          },
           "wrapper": {
             "component": "Card",
             "props": {
-              "header": "Profile Settings"
+              "header": "Основная информация"
             }
           },
           "components": [
             {
-              "id": "displayName",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Display name"
-              },
-              "state": {
-                "value": "Admin User"
-              }
-            },
-            {
-              "id": "email",
-              "type": "component",
-              "componentType": "InputText",
-              "props": {
-                "placeholder": "Email address"
-              },
-              "state": {
-                "value": "admin@crm.com"
-              }
-            },
-            {
-              "id": "bio",
-              "type": "component",
-              "componentType": "InputTextarea",
-              "props": {
-                "placeholder": "Bio",
-                "rows": 3
-              },
-              "state": {
-                "value": "System administrator"
-              }
-            },
-            {
-              "id": "avatar",
+              "id": "userAvatar",
               "type": "component",
               "componentType": "Avatar",
               "props": {
-                "label": "AU",
+                "icon": "pi pi-user",
                 "shape": "circle",
                 "size": "xlarge",
                 "style": {
@@ -105,94 +87,390 @@
               "state": {}
             },
             {
-              "id": "chip1",
+              "id": "userFullName",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Text",
               "props": {
-                "label": "Admin",
-                "icon": "pi pi-user"
+                "value": "{$state.userData.full_name}",
+                "level": 2
               },
               "state": {}
             },
             {
-              "id": "chip2",
+              "id": "userDivider1",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Divider",
+              "props": {},
+              "state": {}
+            },
+            {
+              "id": "userEmailField",
+              "type": "component",
+              "componentType": "InputText",
               "props": {
-                "label": "Verified",
-                "icon": "pi pi-check-circle"
+                "placeholder": "Email",
+                "value": "@state.userData.email",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userPhoneField",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Телефон",
+                "value": "@state.userData.phone",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userCityField",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Город",
+                "value": "@state.userData.city",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userReferralField",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Реферальный код",
+                "value": "@state.userData.referral",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userRegDate",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Дата регистрации",
+                "value": "@state.userData.reg_date_formatted",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userAuthDate",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Последняя авторизация",
+                "value": "@state.userData.auth_date_formatted",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "userIpField",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "IP-адрес",
+                "value": "@state.userData.ip",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
               },
               "state": {}
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "userStatusSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
         {
-          "id": "notificationSettings",
+          "id": "statusCard",
           "type": "block",
-          "state": {},
           "wrapper": {
             "component": "Card",
             "props": {
-              "header": "Notifications"
+              "header": "Статус и группы"
             }
           },
           "components": [
             {
-              "id": "emailNotif",
+              "id": "blockStatusTagBlocked",
               "type": "component",
-              "componentType": "InputSwitch",
+              "componentType": "Tag",
               "props": {
-                "label": "Email notifications"
+                "value": "Заблокирован",
+                "severity": "danger"
               },
-              "state": {
-                "value": true
-              }
-            },
-            {
-              "id": "smsNotif",
-              "type": "component",
-              "componentType": "InputSwitch",
-              "props": {
-                "label": "SMS notifications"
-              },
-              "state": {
-                "value": false
-              }
-            },
-            {
-              "id": "pushNotif",
-              "type": "component",
-              "componentType": "InputSwitch",
-              "props": {
-                "label": "Push notifications"
-              },
-              "state": {
-                "value": true
-              }
-            },
-            {
-              "id": "notifFrequency",
-              "type": "component",
-              "componentType": "Dropdown",
-              "props": {
-                "options": [
+              "visible": {
+                "conditions": [
                   {
-                    "label": "Instant",
-                    "value": "instant"
-                  },
-                  {
-                    "label": "Daily digest",
-                    "value": "daily"
-                  },
-                  {
-                    "label": "Weekly digest",
-                    "value": "weekly"
+                    "path": "state.userData.is_blocked",
+                    "operator": "==",
+                    "value": true
                   }
-                ]
+                ],
+                "defaultVisible": false
               },
-              "state": {
-                "value": "instant"
-              }
+              "state": {}
+            },
+            {
+              "id": "blockStatusTagActive",
+              "type": "component",
+              "componentType": "Tag",
+              "props": {
+                "value": "Активен",
+                "severity": "success"
+              },
+              "visible": {
+                "conditions": [
+                  {
+                    "path": "state.userData.is_blocked",
+                    "operator": "==",
+                    "value": false
+                  }
+                ],
+                "defaultVisible": false
+              },
+              "state": {}
+            },
+            {
+              "id": "blockReasonField",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Причина блокировки",
+                "value": "@state.userData.block_reason",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "visible": {
+                "conditions": [
+                  {
+                    "path": "state.userData.is_blocked",
+                    "operator": "==",
+                    "value": true
+                  }
+                ],
+                "defaultVisible": false
+              },
+              "state": {}
+            },
+            {
+              "id": "groupsLabel",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Группы: {$state.userData.groups_text}"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "userStatsSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "blocks": [
+        {
+          "id": "statsCard",
+          "type": "block",
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Статистика"
+            }
+          },
+          "components": [
+            {
+              "id": "statPoints",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Баллы",
+                "value": "@state.userData.points",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statPrizes",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Призы",
+                "value": "@state.userData.prizes",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statReceipts",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Чеки",
+                "value": "@state.userData.receipts",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statCodes",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Коды",
+                "value": "@state.userData.codes",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statGtins",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Коды ЧЗ",
+                "value": "@state.userData.gtins",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statProducts",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Продукты",
+                "value": "@state.userData.products",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "statMessages",
+              "type": "component",
+              "componentType": "InputText",
+              "props": {
+                "placeholder": "Сообщения",
+                "value": "@state.userData.messages",
+                "readOnly": true,
+                "inline": "true",
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "userPointsSection",
+      "type": "section",
+      "state": {
+        "visible": true
+      },
+      "visible": {
+        "conditions": [
+          {
+            "path": "state.pointsData",
+            "operator": "!=",
+            "value": null
+          }
+        ],
+        "defaultVisible": false
+      },
+      "blocks": [
+        {
+          "id": "pointsCard",
+          "type": "block",
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "header": "Баллы (детально)"
+            }
+          },
+          "components": [
+            {
+              "id": "pointsCurrent",
+              "type": "component",
+              "componentType": "InputNumber",
+              "props": {
+                "value": "@state.pointsData.points_current",
+                "readOnly": true,
+                "inline": "true",
+                "mode": "decimal",
+                "minFractionDigits": 0,
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "pointsSpent",
+              "type": "component",
+              "componentType": "InputNumber",
+              "props": {
+                "value": "@state.pointsData.points_spent",
+                "readOnly": true,
+                "inline": "true",
+                "mode": "decimal",
+                "minFractionDigits": 0,
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
+            },
+            {
+              "id": "pointsTotalEarned",
+              "type": "component",
+              "componentType": "InputNumber",
+              "props": {
+                "value": "@state.pointsData.points_total_earned",
+                "readOnly": true,
+                "inline": "true",
+                "mode": "decimal",
+                "minFractionDigits": 0,
+                "className": "p-inputtext-sm"
+              },
+              "state": {}
             }
           ]
         }
