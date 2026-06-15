@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Component, Command } from "@/types";
 import { Linkage } from "@/core";
 import { useComponentContext } from "../ComponentContext";
+import { useCommandExecutor } from "./useCommandExecutor";
 
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
   handleEvent: (eventType: string, eventValue: any) => void;
+  /** Выполнить произвольный массив команд (не привязанных к component.events) */
+  executeCommands: (commands: Command[], eventValue?: any) => Promise<void>;
 }
 
 export function useComponentBindings({
@@ -18,23 +21,12 @@ export function useComponentBindings({
   const ctx = useComponentContext();
   const [resolvedProps, setResolvedProps] = useState<Record<string, any>>({});
 
-  const commandContextRef = useRef<{
-    pageId: string;
-    pageRoute?: string;
-    triggerComponentId: string;
-    appConfig: any;
-    stateManager: any;
-    elementIndex: any;
-    showToast?: (
-      message: string,
-      severity?: "success" | "info" | "warn" | "error",
-    ) => void;
-    navigate?: (url: string) => void;
-    confirm?: (message: string) => Promise<boolean>;
-    refresh?: (mode: string) => void;
-  } | null>(null);
+  const { stateManager, pageId, shortcuts } = ctx;
 
-  const { stateManager, pageId, elementIndex, shortcuts } = ctx;
+  // Единый экземпляр CommandExecutor для этого компонента
+  const executor = useCommandExecutor({
+    triggerComponentId: component.id || "",
+  });
 
   /**
    * Resolve a command reference: if string, look up in shortcuts; otherwise return as-is
@@ -54,35 +46,6 @@ export function useComponentBindings({
     if (!stateManager || !pageId) return null;
     return new Linkage(stateManager, pageId);
   }, [stateManager, pageId]);
-
-  // Создаём контекст для CommandExecutor
-  useEffect(() => {
-    if (pageId && ctx.appConfig && stateManager && elementIndex) {
-      commandContextRef.current = {
-        pageId,
-        pageRoute: ctx.pageRoute,
-        triggerComponentId: component.id || "",
-        appConfig: ctx.appConfig,
-        stateManager,
-        elementIndex,
-        showToast: ctx.showToast,
-        navigate: ctx.navigate,
-        confirm: ctx.confirm,
-        refresh: ctx.refresh,
-      };
-    }
-  }, [
-    pageId,
-    ctx.pageRoute,
-    ctx.appConfig,
-    stateManager,
-    component.id,
-    elementIndex,
-    ctx.showToast,
-    ctx.navigate,
-    ctx.confirm,
-    ctx.refresh,
-  ]);
 
   // Собираем все binding-строки из value и props
   const allBindings = useMemo(() => {
@@ -135,17 +98,19 @@ export function useComponentBindings({
     return unsubscribe;
   }, [linkage, allBindings, resolveAll]);
 
-  // Обработчик событий
+  // /**
+  //  * Выполнить команды из component.events по типу события
+  //  */
   const handleEvent = useCallback(
     (eventType: string, eventValue: any) => {
-      if (!component.events || !commandContextRef.current) return;
+      if (!component.events || !executor) return;
 
       const eventHandlers = component.events.filter(
         (e) => e.type === eventType,
       );
 
       for (const handler of eventHandlers) {
-        //Если в значении события есть тип и он равен типу обработчика, объединить команды
+        // Если в значении события есть тип и он равен типу обработчика, объединить команды
         let commands =
           eventValue?.type === handler.type
             ? [...handler.commands, ...eventValue?.commands]
@@ -159,17 +124,40 @@ export function useComponentBindings({
             );
             continue;
           }
-          const { CommandExecutor } = require("@/core");
-          const executor = new CommandExecutor(commandContextRef.current);
           executor.executeCommand(resolved.type, resolved.params, eventValue);
         }
       }
     },
-    [component.events, resolveCommand],
+    [component.events, resolveCommand, executor],
+  );
+
+  // /**
+  //  * Выполнить произвольный массив команд
+  //  */
+  const executeCommands = useCallback(
+    async (commands: Command[], eventValue?: any) => {
+      if (!executor) return;
+      for (const cmd of commands) {
+        const resolved = resolveCommand(cmd);
+        if (!resolved) {
+          console.warn(
+            `Shortcut command not found: ${typeof cmd === "string" ? cmd : "unknown"}`,
+          );
+          continue;
+        }
+        await executor.executeCommand(
+          resolved.type,
+          resolved.params,
+          eventValue,
+        );
+      }
+    },
+    [executor, resolveCommand],
   );
 
   return {
     resolvedProps,
     handleEvent,
+    executeCommands,
   };
 }

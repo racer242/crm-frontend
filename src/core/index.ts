@@ -6,4 +6,5 @@ export type { LinkageChangeListener } from "./Linkage";
 export { MacroEngine } from "./MacroEngine";
 export type { MacroSources, MacroOptions } from "@/types";
 export { CommandExecutor } from "./CommandExecutor";
+export type { CommandExecutionContext } from "./CommandExecutor";
 export { executeClientDataFeed } from "./DataFeedService";

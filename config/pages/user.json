@@ -13,15 +13,36 @@
   },
   "dataFeed": [
     {
-      "url": "/api/users/{$location.param.0}",
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
       "method": "GET",
       "target": "state.userData",
       "adapter": "user.response.js"
+    }
+  ],
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "111{$config.baseURL}/api/users/{$location.routeParams.user_id}"
+          }
+        }
+      ]
     },
     {
-      "url": "/api/users/{$location.param.0}/points",
-      "method": "GET",
-      "target": "state.pointsData"
+      "type": "onUnload",
+      "commands": [
+        {
+          "type": "log",
+          "params": {
+            "level": "info",
+            "message": "222{$config.baseURL}/api/users/{$location.routeParams.user_id}"
+          }
+        }
+      ]
     }
   ],
   "sections": [

@@ -45,8 +45,6 @@ async function handleLogin(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ user: response.user });
   } catch (error) {
-    console.log("!!!!! Error !!", error);
-
     if (error instanceof BitrixApiError) {
       // Return the original error body from Bitrix as-is
       return NextResponse.json(error.body || { error: error.message }, {

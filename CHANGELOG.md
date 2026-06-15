@@ -393,6 +393,13 @@ All notable changes to this project will be documented in this file.
   - Added dedicated `case "event"` for `{$event.*}` macro resolution
   - `resolveString` now merges `this.sources` with `extraSources` into a single `MacroSources` object
   - Ensures `{$location.query.*}` and `{$location.slug.*}` resolve correctly through standard switch-case
+- **PageRenderer onLoad/onUnload missing `pageRoute` in CommandExecutor context** — `PageRenderer.tsx` now uses `useCommandExecutor` hook instead of manually creating `CommandExecutor` via `import("@/core")`, which lacked `pageRoute`. As a result `createExtraSources()` in `CommandExecutor` now correctly creates `extra.location` for onLoad/onUnload commands, enabling `{$location.*}` macros. (commit `[to-be-added]`)
+  - `src/engine/hooks/useCommandExecutor.ts` — new hook that creates and caches `CommandExecutor` synchronously via `useMemo`
+  - `src/engine/hooks/useComponentBindings.ts` — refactored to use `useCommandExecutor`, added public `executeCommands` function, removed unused `commandContextRef` and `elementIndex`
+  - `src/engine/PageRenderer.tsx` — uses `useCommandExecutor` instead of dynamic `import("@/core")`, `pageRoute` now properly propagated
+  - `src/core/index.ts` — exported `CommandExecutionContext` type
+  - `src/core/CommandExecutor.ts` — `createMacroSources` now passes `appConfig?.config` (AppConfig) instead of the entire `App` object, matching the behavior in `DataFeedService`
+
 - **Location missing in command macros** — added `getClientLocation(route)` call in `CommandExecutor.createExtraSources()` (commit `7ea1ab8`)
   - Client `location` now passed to `MacroEngine` on every command execution
   - Requires `pageRoute` propagation through `ComponentContext`, `ComponentProvider`, and `useComponentBindings`

@@ -80,7 +80,7 @@ export class CommandExecutor {
     return {
       stateManager: this.context.stateManager,
       pageId: this.context.pageId,
-      config: this.context.appConfig,
+      config: this.context.appConfig?.config,
       env: getPublicEnv(),
     };
   }
