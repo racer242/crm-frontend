@@ -21,9 +21,9 @@ export function renderStatCard({
     value,
     icon,
     iconColor,
-    titleClassName = "text-xl font-semibold line-height-1 mb-0",
-    subTitleClassName = "text-xs line-height-1 mb-0",
-    valueClassName = "text-4xl font-bold mt-4",
+    titleClassName = "text-xl font-semibold line-height-1",
+    subTitleClassName = "text-xs line-height-1",
+    valueClassName = "text-5xl font-bold mt-3",
     iconClassName = "text-4xl",
     ...rest
   },
@@ -32,15 +32,20 @@ export function renderStatCard({
 }: ComponentRendererProps) {
   return (
     <Card
-      className={className}
+      className={className + " flex p-2"}
       style={style}
-      pt={{ content: { className: "p-0" } }}
+      pt={{
+        content: { className: "p-0 flex w-full" },
+        body: { className: "flex w-full" },
+      }}
       {...rest}
     >
-      <div className="flex align-items-start justify-content-between">
-        <div className="flex flex-column">
-          <p className={titleClassName}>{title}</p>
-          {subTitle && <p className={subTitleClassName}>{subTitle}</p>}
+      <div className="w-full flex align-items-stretch justify-content-between">
+        <div className="h-full flex flex-column justify-content-between">
+          <div className="flex flex-column">
+            <div className={titleClassName}>{title}</div>
+            {subTitle && <div className={subTitleClassName}>{subTitle}</div>}
+          </div>
           <span className={valueClassName}>{value}</span>
         </div>
         {icon && (

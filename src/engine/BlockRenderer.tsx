@@ -17,7 +17,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
 
   // Дефолтный класс: для grid-раскладки — "grid", иначе — "flex flex-column gap-2"
   const containerClassName = grid
-    ? className || "grid"
+    ? [className || "", "grid"].filter(Boolean).join(" ")
     : className || "flex flex-column gap-2";
 
   // Проверка на наличие компонентов
