@@ -4,6 +4,7 @@ export * from "./app";
 export * from "./page";
 export * from "./section";
 export * from "./block";
+export * from "./grid";
 export * from "./component";
 export * from "./commands";
 export * from "./datafeed";

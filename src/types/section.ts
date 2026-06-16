@@ -1,13 +1,8 @@
 import { BaseElement, ElementPath, LayoutConfig, VisibilityRule } from "./base";
 import { Block } from "./block";
+import { GridConfig } from "./grid";
 
-/** Конфигурация грид-раскладки секции */
-export interface GridConfig {
-  /** Массив col-классов для каждого блока (например ["col-12 md:col-10", "col-12 md:col-2"]) */
-  cols: string[];
-  /** PrimeFlex padding-класс для wrapper-ов блоков (например "px-1") */
-  padding?: string;
-}
+export type { GridConfig };
 
 /** Секция - контейнер для блоков */
 export interface Section extends BaseElement {

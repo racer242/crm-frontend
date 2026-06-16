@@ -1,5 +1,6 @@
 import { BaseElement, LayoutConfig, VisibilityRule } from "./base";
 import { Component } from "./component";
+import { GridConfig } from "./grid";
 
 /** Типы блоков */
 export type BlockType =
@@ -27,6 +28,8 @@ export interface Block extends BaseElement {
   className?: string;
   style?: React.CSSProperties;
   wrapper?: WrapperConfig;
+  /** Настройка грид-раскладки. Если указана, компоненты оборачиваются в div с классами из grid.cols */
+  grid?: GridConfig;
 }
 
 /** Конфигурация обертки блока */

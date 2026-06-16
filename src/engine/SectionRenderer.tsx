@@ -19,7 +19,7 @@ export function SectionRenderer({ section }: SectionRendererProps) {
 
   // Если указана grid-раскладка — оборачиваем блоки в div-ы с col-классами
   if (grid) {
-    const sectionClasses = [className || "", "grid", "grid-nogutter"]
+    const sectionClasses = [className || "mb-5", "grid"]
       .filter(Boolean)
       .join(" ");
 

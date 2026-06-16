@@ -251,15 +251,16 @@
 
 ### Параметры
 
-| Параметр     | Тип                       | Описание                                     | Обязательно |
-| ------------ | ------------------------- | -------------------------------------------- | ----------- |
-| `id`         | `string`                  | Уникальный ID блока                          | ✅          |
-| `type`       | `"block"`                 | Тип элемента                                 | ✅          |
-| `blockType`  | `string`                  | Тип блока (content, header, sidebar, и т.д.) | ❌          |
-| `state`      | `Record<string, any>`     | Состояние блока                              | ❌          |
-| `wrapper`    | `WrapperConfig`           | Настройки обёртки (Card, Panel, и т.д.)      | ❌          |
-| `components` | `Component[]`             | Компоненты внутри блока                      | ❌          |
-| `visible`    | `boolean\|VisibilityRule` | Условие видимости                            | ❌          |
+| Параметр     | Тип                       | Описание                                        | Обязательно |
+| ------------ | ------------------------- | ----------------------------------------------- | ----------- |
+| `id`         | `string`                  | Уникальный ID блока                             | ✅          |
+| `type`       | `"block"`                 | Тип элемента                                    | ✅          |
+| `blockType`  | `string`                  | Тип блока (content, header, sidebar, и т.д.)    | ❌          |
+| `state`      | `Record<string, any>`     | Состояние блока                                 | ❌          |
+| `wrapper`    | `WrapperConfig`           | Настройки обёртки (Card, Panel, и т.д.)         | ❌          |
+| `components` | `Component[]`             | Компоненты внутри блока                         | ❌          |
+| `visible`    | `boolean\|VisibilityRule` | Условие видимости                               | ❌          |
+| `grid`       | `GridConfig`              | Грид-раскладка для компонентов (см. GridConfig) | ❌          |
 
 ### WrapperConfig
 
@@ -268,6 +269,45 @@
 | `type`      | `string`  | Тип обёртки (card, panel, fieldset, и т.д.) |
 | `header`    | `string`  | Заголовок обёртки                           |
 | `collapsed` | `boolean` | Начальное состояние (свёрнут)               |
+
+---
+
+##### GridConfig на уровне блока
+
+Аналогично `grid` в секции, но работает на уровне компонентов внутри блока.
+
+**Пример:**
+
+```json
+{
+  "id": "statCards",
+  "type": "block",
+  "grid": {
+    "cols": ["col-6 md:col-3", "col-6 md:col-3", "col-6 md:col-3", "col-6 md:col-3"],
+    "padding": "p-2"
+  },
+  "components": [
+    { "id": "card1", "componentType": "StatCard", ... },
+    { "id": "card2", "componentType": "StatCard", ... }
+  ]
+}
+```
+
+Результат рендеринга:
+
+```html
+<div class="...">
+  <div class="col-6 md:col-3 p-2">
+    <StatCard ... />
+  </div>
+  <div class="col-6 md:col-3 p-2">
+    <StatCard ... />
+  </div>
+  ...
+</div>
+```
+
+> **Важно:** `GridConfig` описан в разделе [3. Section → GridConfig](#gridconfig). Тип переиспользуется, поэтому параметры `cols` и `padding` идентичны.
 
 ---
 

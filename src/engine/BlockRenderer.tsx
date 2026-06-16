@@ -18,6 +18,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     components,
     style,
     className = "flex flex-column gap-2",
+    grid,
   } = block;
 
   // Проверка на наличие компонентов
@@ -25,7 +26,23 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     return <div className={className} style={style}></div>;
   }
 
-  const content = (
+  const content = grid ? (
+    <div className={className} style={style}>
+      {components
+        .filter((c) => c !== null && c !== undefined)
+        .map((component, index) => {
+          const colClass = grid.cols[index] || "";
+          const wrapperClasses = [colClass, grid.padding]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <div key={component.id} className={wrapperClasses}>
+              <ComponentRenderer component={component} />
+            </div>
+          );
+        })}
+    </div>
+  ) : (
     <div className={className} style={style}>
       {components
         .filter((c) => c !== null && c !== undefined)
@@ -34,6 +51,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
         ))}
     </div>
   );
+
   const wrapperProps = wrapper?.props || {};
   if (wrapper) {
     switch (wrapper.component) {
