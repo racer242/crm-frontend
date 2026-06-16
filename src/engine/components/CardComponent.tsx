@@ -20,7 +20,12 @@ export function renderStatCard({
   style,
 }: ComponentRendererProps) {
   return (
-    <Card className={className} style={style} {...rest}>
+    <Card
+      className={className}
+      style={style}
+      pt={{ content: { className: "p-0" } }}
+      {...rest}
+    >
       <div className="flex align-items-start justify-content-between">
         <div>
           <p className="text-500 text-sm mb-1">{title}</p>
@@ -28,7 +33,7 @@ export function renderStatCard({
         </div>
         {icon && (
           <i
-            className={`${icon} text-2xl`}
+            className={`${icon} text-2xl ml-3`}
             style={{ color: color || "var(--primary-color)" }}
           />
         )}

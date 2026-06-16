@@ -150,10 +150,12 @@
             {
               "id": "activityReceipts",
               "type": "component",
-              "componentType": "Card",
+              "componentType": "StatCard",
+              "className": "w-1",
               "props": {
                 "title": "Чеки",
-                "subTitle": "@state.userData.receipts"
+                "value": "@state.userData.receipts",
+                "icon": "pi pi-users"
               }
             },
             {
