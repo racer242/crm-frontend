@@ -84,17 +84,20 @@ export function renderBreadcrumb({
 }: ComponentRendererProps) {
   const router = useRouter();
 
+  const { model, ...restProps } = props;
+
   const breadcrumbModel = processMenuItems(
-    props.model || [],
+    model || [],
     router,
     handleEvent,
-    false,
+    true,
   );
 
   return (
     <BreadCrumb
+      {...restProps}
       model={breadcrumbModel}
-      className={`mb-4 ${className || ""}`}
+      className={className}
       style={style}
     />
   );

@@ -20,9 +20,6 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     className = "flex flex-column gap-2",
   } = block;
 
-  const { style: wrapperStyle, className: wrapperClassName = "" } =
-    wrapper || {};
-
   // Проверка на наличие компонентов
   if (!components || components.length === 0) {
     return <div className={className} style={style}></div>;
@@ -37,46 +34,19 @@ export function BlockRenderer({ block }: BlockRendererProps) {
         ))}
     </div>
   );
-
+  const wrapperProps = wrapper?.props || {};
   if (wrapper) {
-    const wrapperProps = wrapper.props || {};
-
     switch (wrapper.component) {
       case "Card":
-        return (
-          <Card
-            title={wrapperProps.header}
-            className={wrapperClassName}
-            style={wrapperStyle}
-          >
-            {content}
-          </Card>
-        );
+        return <Card {...wrapperProps}>{content}</Card>;
       case "Panel":
-        return (
-          <Panel
-            header={wrapperProps.header}
-            className={wrapperClassName}
-            style={wrapperStyle}
-          >
-            {content}
-          </Panel>
-        );
+        return <Panel {...wrapperProps}>{content}</Panel>;
       case "Fieldset":
-        return (
-          <Fieldset
-            legend={wrapperProps.header}
-            className={wrapperClassName}
-            style={wrapperStyle}
-          >
-            {content}
-          </Fieldset>
-        );
+        return <Fieldset {...wrapperProps}>{content}</Fieldset>;
       case "Toolbar":
         return (
           <Toolbar
-            className={wrapperClassName}
-            style={wrapperStyle}
+            {...wrapperProps}
             start={
               <div className="flex align-items-center gap-2 flex-wrap">
                 {content}
@@ -87,9 +57,5 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     }
   }
 
-  return (
-    <div className={wrapperClassName} style={wrapperStyle}>
-      {content}
-    </div>
-  );
+  return <div {...wrapperProps}>{content}</div>;
 }

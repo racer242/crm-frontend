@@ -83,7 +83,9 @@ export type ComponentType =
   | "Container"
   // Фильтры
   | "FiltersPanel"
-  | "ActiveFiltersBar";
+  | "ActiveFiltersBar"
+  // Dashboard
+  | "StatCard";
 
 /** Привязка данных */
 export interface DataBinding {

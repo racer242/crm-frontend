@@ -48,31 +48,42 @@
       "adapter": "user.response.js"
     }
   ],
-  "events": [
+  "sections": [
     {
-      "type": "onLoad",
-      "commands": [
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
         {
-          "type": "log",
-          "params": {
-            "level": "info",
-            "message": "Загружена страница участника {$location.routeParams.user_id}"
-          }
+          "id": "userTitleBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/users" },
+                  { "label": "Участник" }
+                ]
+              }
+            }
+          ]
         }
       ]
-    }
-  ],
-  "sections": [
+    },
     {
       "id": "userHeader",
       "type": "section",
       "layout": {
         "type": "flex",
         "direction": "row",
-        "justifyContent": "between",
-        "alignItems": "center"
+        "justifyContent": "between"
       },
-      "className": "mb-4",
+      "className": "mb-4 align-items-center",
       "blocks": [
         {
           "id": "userTitleBlock",
@@ -85,14 +96,16 @@
               "props": {
                 "value": "Участник",
                 "level": 1
-              },
-              "state": {}
+              }
             }
           ]
         },
         {
           "id": "userActionButtons",
           "type": "block",
+          "wrapper": {
+            "className": "max-w-min"
+          },
           "components": [
             {
               "id": "btnEditUser",
@@ -112,12 +125,87 @@
                     {
                       "type": "log",
                       "params": {
-                        "message": "Редактирование участника {$location.routeParams.user_id}"
+                        "message": "{$state}"
                       }
                     }
                   ]
                 }
               ],
+              "state": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statsRow",
+      "type": "section",
+      "className": "gap-1",
+      "blocks": [
+        {
+          "id": "statCard1",
+          "type": "block",
+          "className": "flex flex-row",
+          "components": [
+            {
+              "id": "activityReceipts",
+              "type": "component",
+              "componentType": "Card",
+              "props": {
+                "title": "Чеки",
+                "subTitle": "@state.userData.receipts"
+              }
+            },
+            {
+              "id": "activityCodes",
+              "type": "component",
+              "componentType": "Card",
+              "props": {
+                "title": "Коды",
+                "subTitle": "@state.userData.codes"
+              },
+              "state": {}
+            },
+            {
+              "id": "activityGtins",
+              "type": "component",
+              "componentType": "Card",
+              "props": {
+                "title": "Коды ЧЗ",
+                "subTitle": "@state.userData.gtins"
+              },
+              "state": {}
+            },
+            {
+              "id": "activityProducts",
+              "type": "component",
+              "componentType": "Card",
+              "props": {
+                "title": "Продукты",
+                "subTitle": "@state.userData.products"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "statCard3",
+          "type": "block",
+          "wrapper": {
+            "component": "Card",
+            "props": {
+              "title": "Pending Orders"
+            }
+          },
+          "components": [
+            {
+              "id": "sv3",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "42",
+                "level": 1
+              },
               "state": {}
             }
           ]
@@ -132,13 +220,14 @@
         {
           "id": "leftColumn",
           "type": "block",
-          "className": "col-12 md:col-4",
           "wrapper": {
-            "component": "Card",
+            "className": "col-12 md:col-4",
+            "component": "Panel",
             "props": {
               "header": "Профиль"
             }
           },
+          "className": "gap-1",
           "components": [
             {
               "id": "userAvatar",
@@ -147,12 +236,7 @@
               "props": {
                 "label": "@state.userData.initials",
                 "shape": "circle",
-                "size": "xlarge",
-                "style": {
-                  "backgroundColor": "#6366f1",
-                  "color": "#ffffff",
-                  "fontWeight": "bold"
-                }
+                "size": "xlarge"
               },
               "state": {}
             },
@@ -170,6 +254,7 @@
               "id": "userDivider1",
               "type": "component",
               "componentType": "Divider",
+              "className": "w-full",
               "props": {},
               "state": {}
             },
@@ -402,53 +487,6 @@
               "props": {
                 "value": "Активность",
                 "level": 2
-              },
-              "state": {}
-            }
-          ]
-        },
-        {
-          "id": "activityGrid",
-          "type": "block",
-          "className": "grid",
-          "components": [
-            {
-              "id": "activityReceipts",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Чеки",
-                "subheader": "@state.userData.receipts"
-              },
-              "state": {}
-            },
-            {
-              "id": "activityCodes",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Коды",
-                "subheader": "@state.userData.codes"
-              },
-              "state": {}
-            },
-            {
-              "id": "activityGtins",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Коды ЧЗ",
-                "subheader": "@state.userData.gtins"
-              },
-              "state": {}
-            },
-            {
-              "id": "activityProducts",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Продукты",
-                "subheader": "@state.userData.products"
               },
               "state": {}
             }

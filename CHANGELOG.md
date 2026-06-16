@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **StatCard — готовая карточка статистики для дашбордов** — `src/engine/components/CardComponent.tsx`: добавлена новая функция `renderStatCard`, которая рендерит PrimeReact `Card` с иконкой справа вверху, заголовком (мелкий текст) и значением (крупный жирный текст) слева. Зарегистрирован как `"StatCard"` в `ComponentType`, экспортирован и подключён в `ComponentRenderer.tsx`.
+  - Props: `title`, `value`, `icon` (класс PrimeIcon), `color` (цвет иконки, по умолчанию `--primary-color`).
+
 ### Changed
 
 - **Removed unused `component.value` bindings from `useComponentBindings`** — `src/engine/hooks/useComponentBindings.ts`: `component.value` was being collected in `allBindings`, resolved via Linkage into `resolvedProps.value`, and listed as a dependency, but `resolvedProps.value` was never consumed anywhere — all data comes through `component.props`. Removed the value collection, resolution, and dependency tracking to eliminate unnecessary computations.

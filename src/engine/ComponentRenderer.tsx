@@ -26,6 +26,7 @@ import {
   renderButton,
   renderDataTable,
   renderCard,
+  renderStatCard,
   renderToast,
   renderMenubar,
   renderBreadcrumb,
@@ -109,6 +110,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderDataTable(renderProps);
     case "Card":
       return renderCard(renderProps);
+    case "StatCard":
+      return renderStatCard(renderProps);
     case "Toast":
       return renderToast(renderProps);
     case "Menubar":
