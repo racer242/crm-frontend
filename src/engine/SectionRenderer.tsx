@@ -9,66 +9,42 @@ interface SectionRendererProps {
 }
 
 export function SectionRenderer({ section }: SectionRendererProps) {
-  const { layout, className, visibility } = section;
+  const { className, visibility, grid } = section;
 
   if (visibility && visibility.defaultVisible === false) {
     return null;
   }
 
-  // const layoutClass = getLayoutClass(layout);
   const blocks = section.blocks || [];
 
+  // Если указана grid-раскладка — оборачиваем блоки в div-ы с col-классами
+  if (grid) {
+    const sectionClasses = [className || "", "grid", "grid-nogutter"]
+      .filter(Boolean)
+      .join(" ");
+
+    return (
+      <section className={sectionClasses}>
+        {blocks.map((block, index) => {
+          const colClass = grid.cols[index] || "";
+          const wrapperClasses = [colClass, grid.padding]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <div key={block.id} className={wrapperClasses}>
+              <BlockRenderer block={block} />
+            </div>
+          );
+        })}
+      </section>
+    );
+  }
+
   return (
-    <section className={`mb-5 flex ${className || ""}`}>
+    <section className={`${className || "flex mb-5"}`}>
       {blocks.map((block) => {
-        return block.wrapper ? (
-          <BlockRenderer key={block.id} block={block} />
-        ) : (
-          <div key={block.id} className="w-full">
-            <BlockRenderer block={block} />
-          </div>
-        );
+        return <BlockRenderer key={block.id} block={block} />;
       })}
     </section>
   );
 }
-
-// function getBlockWrapperClass(layout?: any): string {
-//   if (!layout) return "w-full";
-
-//   const { type, columns } = layout;
-
-//   if (type === "grid") {
-//     const cols = columns || 2;
-//     if (cols === 4) return "col-12 md:col-6 lg:col-3";
-//     if (cols === 3) return "col-12 md:col-6 lg:col-4";
-//     if (cols === 2) return "col-12 md:col-6";
-//     return "col-12";
-//   }
-
-//   if (type === "flex" && layout.direction === "row") {
-//     return "flex-1 min-w-0";
-//   }
-
-//   return "w-full";
-// }
-
-// function getLayoutClass(layout?: any): string {
-//   if (!layout) return "flex";
-
-//   const { type, direction, justifyContent } = layout;
-
-//   switch (type) {
-//     case "flex": {
-//       const dir = direction === "column" ? "flex-column" : "flex-row";
-//       const justify =
-//         justifyContent === "between" ? "justify-content-between" : "";
-//       const align = justifyContent === "between" ? "" : "align-items-start";
-//       return `flex ${dir} ${align} ${justify} gap-4`;
-//     }
-//     case "grid":
-//       return "grid";
-//     default:
-//       return "flex";
-//   }
-// }

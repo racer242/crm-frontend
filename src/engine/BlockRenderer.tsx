@@ -55,7 +55,8 @@ export function BlockRenderer({ block }: BlockRendererProps) {
           />
         );
     }
+    return <div {...wrapperProps}>{content}</div>;
   }
 
-  return <div {...wrapperProps}>{content}</div>;
+  return content;
 }

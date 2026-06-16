@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Added `grid` config to Section — replaces CSS gap with wrapper padding** — `src/engine/SectionRenderer.tsx`, `src/types/section.ts`: added new `GridConfig` interface and `grid` field on `Section`. When `section.grid` is specified, blocks are wrapped in `<div>` elements with `col-*` classes from `grid.cols` and optional padding class from `grid.padding`. Section gets `grid grid-nogutter` classes. This solves the PrimeFlex gap issue where `gap` breaks column width calculation. Updated `docs/config-reference.md` with GridConfig documentation. Migrated `config/pages/user.json` — `mainLayout` section now uses `grid` config instead of `className: "grid gap-3"` with col-classes on blocks.
+
 - **Removed unused `component.value` bindings from `useComponentBindings`** — `src/engine/hooks/useComponentBindings.ts`: `component.value` was being collected in `allBindings`, resolved via Linkage into `resolvedProps.value`, and listed as a dependency, but `resolvedProps.value` was never consumed anywhere — all data comes through `component.props`. Removed the value collection, resolution, and dependency tracking to eliminate unnecessary computations.
 
 ### Fixed
