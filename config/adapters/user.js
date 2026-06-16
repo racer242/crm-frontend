@@ -69,7 +69,31 @@ function transform(data) {
     { label: "Сообщения", value: data.messages ?? 0, icon: "pi pi-comments" },
   ];
 
-  // 7. Возвращаем плоский объект со всеми исходными полями + вычисляемыми
+  // 8. Строки для отображения с префиксами (для линковки)
+  const emailDisplay = data.email ? `✉ ${data.email}` : "✉ —";
+  const phoneDisplay = data.phone ? `📞 ${data.phone}` : "📞 —";
+  const cityDisplay = data.city ? `📍 ${data.city}` : "📍 —";
+  const idDisplay = `ID: ${data.id ?? "—"}`;
+  const botIdDisplay = `Telegram ID: ${data.bot_id ?? "—"}`;
+  const referralDisplay = `Реферал: ${data.referral ?? "—"}`;
+  const ipDisplay = `IP: ${data.ip ?? "—"}`;
+  const regDateDisplay = `Регистрация: ${regDateFormatted}`;
+  const authDateDisplay = `Авторизация: ${authDateFormatted}`;
+  const blockReasonDisplay = `Причина: ${data.block_reason || "—"}`;
+
+  // 9. Chip labels для статистики
+  const statPointsLabel = `Баллы: ${data.points ?? 0}`;
+  const statPrizesLabel = `Призы: ${data.prizes ?? 0}`;
+  const statReceiptsLabel = `Чеки: ${data.receipts ?? 0}`;
+  const statCodesLabel = `Коды: ${data.codes ?? 0}`;
+  const statGtinsLabel = `Коды ЧЗ: ${data.gtins ?? 0}`;
+  const statProductsLabel = `Продукты: ${data.products ?? 0}`;
+  const statMessagesLabel = `Сообщения: ${data.messages ?? 0}`;
+
+  // Сводка статистики одной строкой
+  const statsSummary = `Баллы: ${data.points ?? 0} | Призы: ${data.prizes ?? 0} | Чеки: ${data.receipts ?? 0} | Коды: ${data.codes ?? 0} | Коды ЧЗ: ${data.gtins ?? 0} | Продукты: ${data.products ?? 0} | Сообщения: ${data.messages ?? 0}`;
+
+  // 10. Возвращаем плоский объект со всеми исходными полями + вычисляемыми
   return {
     ...data,
     full_name: fullName,
@@ -84,5 +108,23 @@ function transform(data) {
     status_icon: statusIcon,
     block_reason: data.block_reason || "",
     stats: stats,
+    email_display: emailDisplay,
+    phone_display: phoneDisplay,
+    city_display: cityDisplay,
+    id_display: idDisplay,
+    bot_id_display: botIdDisplay,
+    referral_display: referralDisplay,
+    ip_display: ipDisplay,
+    reg_date_display: regDateDisplay,
+    auth_date_display: authDateDisplay,
+    block_reason_display: blockReasonDisplay,
+    stat_points_label: statPointsLabel,
+    stat_prizes_label: statPrizesLabel,
+    stat_receipts_label: statReceiptsLabel,
+    stat_codes_label: statCodesLabel,
+    stat_gtins_label: statGtinsLabel,
+    stat_products_label: statProductsLabel,
+    stat_messages_label: statMessagesLabel,
+    stats_summary: statsSummary,
   };
 }
