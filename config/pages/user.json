@@ -5,7 +5,39 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "userData": null
+    "userData": {
+      "id": "—",
+      "bot_id": "—",
+      "first_name": "",
+      "last_name": "",
+      "email": "—",
+      "phone": "—",
+      "reg_date": null,
+      "auth_date": null,
+      "referral": "—",
+      "city": "—",
+      "ip": "—",
+      "is_blocked": false,
+      "block_reason": "",
+      "groups": [],
+      "points": 0,
+      "prizes": 0,
+      "receipts": 0,
+      "codes": 0,
+      "gtins": 0,
+      "products": 0,
+      "messages": 0,
+      "full_name": "—",
+      "initials": "?",
+      "reg_date_formatted": "—",
+      "auth_date_formatted": "—",
+      "groups_text": "—",
+      "groups_badges": [],
+      "status_label": "Активен",
+      "status_severity": "success",
+      "status_icon": "pi pi-check-circle",
+      "stats": []
+    }
   },
   "meta": {
     "title": "Пользователь — CRM Platform"
