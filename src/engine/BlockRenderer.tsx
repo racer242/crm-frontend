@@ -13,21 +13,20 @@ interface BlockRendererProps {
 }
 
 export function BlockRenderer({ block }: BlockRendererProps) {
-  const {
-    wrapper,
-    components,
-    style,
-    className = "flex flex-column gap-2",
-    grid,
-  } = block;
+  const { wrapper, components, style, className, grid } = block;
+
+  // Дефолтный класс: для grid-раскладки — "grid", иначе — "flex flex-column gap-2"
+  const containerClassName = grid
+    ? className || "grid"
+    : className || "flex flex-column gap-2";
 
   // Проверка на наличие компонентов
   if (!components || components.length === 0) {
-    return <div className={className} style={style}></div>;
+    return <div className={containerClassName} style={style}></div>;
   }
 
   const content = grid ? (
-    <div className={className} style={style}>
+    <div className={containerClassName} style={style}>
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((component, index) => {
@@ -43,7 +42,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
         })}
     </div>
   ) : (
-    <div className={className} style={style}>
+    <div className={containerClassName} style={style}>
       {components
         .filter((c) => c !== null && c !== undefined)
         .map((component) => (
