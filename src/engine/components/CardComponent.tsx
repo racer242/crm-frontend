@@ -15,7 +15,18 @@ export function renderCard({
 
 export function renderStatCard({
   component,
-  props: { title, value, icon, color, ...rest },
+  props: {
+    title,
+    subTitle,
+    value,
+    icon,
+    iconColor,
+    titleClassName = "text-lg font-semibold text-900 mb-1",
+    subTitleClassName = "text-xs text-500 mb-2",
+    valueClassName = "text-3xl font-bold text-900",
+    iconClassName = "text-3xl",
+    ...rest
+  },
   className,
   style,
 }: ComponentRendererProps) {
@@ -27,14 +38,15 @@ export function renderStatCard({
       {...rest}
     >
       <div className="flex align-items-start justify-content-between">
-        <div>
-          <p className="text-500 text-sm mb-1">{title}</p>
-          <span className="text-2xl font-bold">{value}</span>
+        <div className="flex flex-column">
+          <p className={titleClassName}>{title}</p>
+          {subTitle && <p className={subTitleClassName}>{subTitle}</p>}
+          <span className={valueClassName}>{value}</span>
         </div>
         {icon && (
           <i
-            className={`${icon} text-2xl ml-3`}
-            style={{ color: color || "var(--primary-color)" }}
+            className={`${icon} ${iconClassName} ml-3`}
+            style={{ color: iconColor || "var(--primary-color)" }}
           />
         )}
       </div>

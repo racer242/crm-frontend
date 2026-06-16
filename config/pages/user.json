@@ -151,7 +151,7 @@
               "id": "activityReceipts",
               "type": "component",
               "componentType": "StatCard",
-              "className": "w-1",
+              "className": "w-2",
               "props": {
                 "title": "Чеки",
                 "value": "@state.userData.receipts",
@@ -161,30 +161,30 @@
             {
               "id": "activityCodes",
               "type": "component",
-              "componentType": "Card",
+              "componentType": "StatCard",
               "props": {
                 "title": "Коды",
-                "subTitle": "@state.userData.codes"
+                "value": "@state.userData.codes"
               },
               "state": {}
             },
             {
               "id": "activityGtins",
               "type": "component",
-              "componentType": "Card",
+              "componentType": "StatCard",
               "props": {
                 "title": "Коды ЧЗ",
-                "subTitle": "@state.userData.gtins"
+                "value": "@state.userData.gtins"
               },
               "state": {}
             },
             {
               "id": "activityProducts",
               "type": "component",
-              "componentType": "Card",
+              "componentType": "StatCard",
               "props": {
                 "title": "Продукты",
-                "subTitle": "@state.userData.products"
+                "value": "@state.userData.products"
               },
               "state": {}
             }
