@@ -6,17 +6,17 @@
     "loading": false,
     "initialized": true,
     "userData": {
-      "id": "—",
-      "bot_id": "—",
+      "id": "",
+      "bot_id": "",
       "first_name": "",
       "last_name": "",
-      "email": "—",
-      "phone": "—",
-      "reg_date": null,
-      "auth_date": null,
-      "referral": "—",
-      "city": "—",
-      "ip": "—",
+      "email": "",
+      "phone": "",
+      "reg_date": "",
+      "auth_date": "",
+      "referral": "",
+      "city": "",
+      "ip": "",
       "is_blocked": false,
       "block_reason": "",
       "groups": [],
@@ -27,38 +27,18 @@
       "gtins": 0,
       "products": 0,
       "messages": 0,
-      "full_name": "—",
-      "initials": "?",
-      "reg_date_formatted": "—",
-      "auth_date_formatted": "—",
-      "groups_text": "—",
-      "groups_badges": [],
-      "status_label": "Активен",
-      "status_severity": "success",
-      "status_icon": "pi pi-check-circle",
-      "stats": [],
-      "email_display": "✉ —",
-      "phone_display": "📞 —",
-      "city_display": "📍 —",
-      "id_display": "ID: —",
-      "bot_id_display": "Telegram ID: —",
-      "referral_display": "Реферал: —",
-      "ip_display": "IP: —",
-      "reg_date_display": "Регистрация: —",
-      "auth_date_display": "Авторизация: —",
-      "block_reason_display": "Причина: —",
-      "stat_points_label": "Баллы: 0",
-      "stat_prizes_label": "Призы: 0",
-      "stat_receipts_label": "Чеки: 0",
-      "stat_codes_label": "Коды: 0",
-      "stat_gtins_label": "Коды ЧЗ: 0",
-      "stat_products_label": "Продукты: 0",
-      "stat_messages_label": "Сообщения: 0",
-      "stats_summary": "Баллы: 0 | Призы: 0 | Чеки: 0 | Коды: 0 | Коды ЧЗ: 0 | Продукты: 0 | Сообщения: 0"
+      "fullName": "",
+      "initials": "",
+      "regDateFormatted": "",
+      "authDateFormatted": "",
+      "groupList": [],
+      "groupsText": "",
+      "statusLabel": "",
+      "statusSeverity": ""
     }
   },
   "meta": {
-    "title": "Пользователь — CRM Platform"
+    "title": "Участник — CRM Platform"
   },
   "dataFeed": [
     {
@@ -76,39 +56,12 @@
           "type": "log",
           "params": {
             "level": "info",
-            "message": "Загружена страница пользователя {$location.routeParams.user_id}"
+            "message": "Загружена страница участника {$location.routeParams.user_id}"
           }
         }
       ]
     }
   ],
-  "shortcuts": {
-    "blockUser": {
-      "type": "sendRequest",
-      "params": {
-        "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
-        "method": "PATCH",
-        "data": {
-          "is_blocked": true,
-          "block_reason": ""
-        },
-        "target": "state.userData",
-        "adapter": "user.response.js"
-      }
-    },
-    "unblockUser": {
-      "type": "sendRequest",
-      "params": {
-        "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
-        "method": "PATCH",
-        "data": {
-          "is_blocked": false
-        },
-        "target": "state.userData",
-        "adapter": "user.response.js"
-      }
-    }
-  },
   "sections": [
     {
       "id": "userHeader",
@@ -119,7 +72,7 @@
         "justifyContent": "between",
         "alignItems": "center"
       },
-      "className": "flex-wrap",
+      "className": "mb-4",
       "blocks": [
         {
           "id": "userTitleBlock",
@@ -130,7 +83,7 @@
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Пользователь",
+                "value": "Участник",
                 "level": 1
               },
               "state": {}
@@ -140,7 +93,6 @@
         {
           "id": "userActionButtons",
           "type": "block",
-          "className": "flex flex-row gap-2 flex-wrap",
           "components": [
             {
               "id": "btnEditUser",
@@ -160,127 +112,7 @@
                     {
                       "type": "log",
                       "params": {
-                        "message": "Редактирование пользователя {$location.routeParams.user_id}"
-                      }
-                    }
-                  ]
-                }
-              ],
-              "state": {}
-            },
-            {
-              "id": "btnBlockUser",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "icon": "pi pi-lock",
-                "label": "Заблокировать",
-                "size": "small",
-                "severity": "danger",
-                "outlined": true
-              },
-              "visible": {
-                "conditions": [
-                  {
-                    "path": "state.userData.is_blocked",
-                    "operator": "==",
-                    "value": false
-                  }
-                ],
-                "defaultVisible": false
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "confirm",
-                      "params": {
-                        "header": "Подтверждение",
-                        "message": "Вы уверены, что хотите заблокировать этого пользователя?",
-                        "icon": "pi pi-exclamation-triangle"
-                      },
-                      "onConfirm": ["blockUser"],
-                      "onCancel": [
-                        {
-                          "type": "log",
-                          "params": {
-                            "message": "Блокировка отменена"
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "state": {}
-            },
-            {
-              "id": "btnUnblockUser",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "icon": "pi pi-lock-open",
-                "label": "Разблокировать",
-                "size": "small",
-                "severity": "success",
-                "outlined": true
-              },
-              "visible": {
-                "conditions": [
-                  {
-                    "path": "state.userData.is_blocked",
-                    "operator": "==",
-                    "value": true
-                  }
-                ],
-                "defaultVisible": false
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "confirm",
-                      "params": {
-                        "header": "Подтверждение",
-                        "message": "Вы уверены, что хотите разблокировать этого пользователя?",
-                        "icon": "pi pi-exclamation-triangle"
-                      },
-                      "onConfirm": ["unblockUser"],
-                      "onCancel": [
-                        {
-                          "type": "log",
-                          "params": {
-                            "message": "Разблокировка отменена"
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "state": {}
-            },
-            {
-              "id": "btnManageGroups",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "icon": "pi pi-users",
-                "label": "Группы",
-                "size": "small",
-                "severity": "contrast",
-                "outlined": true
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": "Управление группами пользователя {$location.routeParams.user_id}"
+                        "message": "Редактирование участника {$location.routeParams.user_id}"
                       }
                     }
                   ]
@@ -293,18 +125,18 @@
       ]
     },
     {
-      "id": "userInfoGrid",
+      "id": "mainLayout",
       "type": "section",
       "className": "grid",
       "blocks": [
         {
-          "id": "profileCard",
+          "id": "leftColumn",
           "type": "block",
-          "className": "col-12 md:col-6 lg:col-4",
+          "className": "col-12 md:col-4",
           "wrapper": {
             "component": "Card",
             "props": {
-              "header": "Основная информация"
+              "header": "Профиль"
             }
           },
           "components": [
@@ -329,7 +161,7 @@
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.full_name",
+                "value": "@state.userData.fullName",
                 "level": 2
               },
               "state": {}
@@ -342,171 +174,212 @@
               "state": {}
             },
             {
-              "id": "userEmailRow",
+              "id": "userEmail",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.email_display"
+                "value": "@state.userData.email"
               },
               "state": {}
             },
             {
-              "id": "userPhoneRow",
+              "id": "userPhone",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.phone_display"
+                "value": "@state.userData.phone"
               },
               "state": {}
             },
             {
-              "id": "userCityRow",
+              "id": "userCity",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.city_display"
+                "value": "@state.userData.city"
               },
               "state": {}
             }
           ]
         },
         {
-          "id": "statusCard",
+          "id": "rightColumn",
           "type": "block",
-          "className": "col-12 md:col-6 lg:col-4",
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Статус"
-            }
-          },
+          "className": "col-12 md:col-8",
           "components": [
             {
-              "id": "blockStatusTag",
-              "type": "component",
-              "componentType": "Tag",
-              "props": {
-                "value": "@state.userData.status_label",
-                "severity": "@state.userData.status_severity",
-                "icon": "@state.userData.status_icon"
+              "id": "detailsCard",
+              "type": "block",
+              "className": "mb-4",
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Детали"
+                }
               },
-              "state": {}
+              "components": [
+                {
+                  "id": "detailId",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "ID: {@state.userData.id}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "detailBotId",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Telegram ID: {@state.userData.bot_id}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "detailReferral",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Реферал: {@state.userData.referral}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "detailIp",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "IP: {@state.userData.ip}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "detailRegDate",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Регистрация: {@state.userData.regDateFormatted}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "detailAuthDate",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Авторизация: {@state.userData.authDateFormatted}"
+                  },
+                  "state": {}
+                }
+              ]
             },
             {
-              "id": "blockReasonField",
+              "id": "statusCard",
+              "type": "block",
+              "wrapper": {
+                "component": "Card",
+                "props": {
+                  "header": "Статус"
+                }
+              },
+              "components": [
+                {
+                  "id": "blockStatusTag",
+                  "type": "component",
+                  "componentType": "Tag",
+                  "props": {
+                    "value": "@state.userData.statusLabel",
+                    "severity": "@state.userData.statusSeverity"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "blockReasonField",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Причина: {@state.userData.block_reason}"
+                  },
+                  "visible": {
+                    "conditions": [
+                      {
+                        "path": "state.userData.isBlocked",
+                        "operator": "==",
+                        "value": true
+                      }
+                    ],
+                    "defaultVisible": false
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "messagesCount",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "Сообщения: {@state.userData.messages}"
+                  },
+                  "state": {}
+                },
+                {
+                  "id": "groupsSection",
+                  "type": "component",
+                  "componentType": "Text",
+                  "props": {
+                    "value": "@state.userData.groupsText"
+                  },
+                  "state": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "achievementsSection",
+      "type": "section",
+      "className": "mb-4",
+      "blocks": [
+        {
+          "id": "achievementsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "achievementsHeading",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.block_reason_display"
-              },
-              "visible": {
-                "conditions": [
-                  {
-                    "path": "state.userData.is_blocked",
-                    "operator": "==",
-                    "value": true
-                  }
-                ],
-                "defaultVisible": false
-              },
-              "state": {}
-            },
-            {
-              "id": "userDivider2",
-              "type": "component",
-              "componentType": "Divider",
-              "props": {},
-              "state": {}
-            },
-            {
-              "id": "groupsLabel",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "Группы:"
-              },
-              "state": {}
-            },
-            {
-              "id": "groupsText",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.groups_text"
+                "value": "Достижения",
+                "level": 2
               },
               "state": {}
             }
           ]
         },
         {
-          "id": "detailsCard",
+          "id": "achievementsGrid",
           "type": "block",
-          "className": "col-12 md:col-6 lg:col-4",
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Детали"
-            }
-          },
+          "className": "grid",
           "components": [
             {
-              "id": "detailId",
+              "id": "achievementPoints",
               "type": "component",
-              "componentType": "Text",
+              "componentType": "Card",
               "props": {
-                "value": "@state.userData.id_display"
+                "header": "Баллы",
+                "subheader": "@state.userData.points"
               },
               "state": {}
             },
             {
-              "id": "detailBotId",
+              "id": "achievementPrizes",
               "type": "component",
-              "componentType": "Text",
+              "componentType": "Card",
               "props": {
-                "value": "@state.userData.bot_id_display"
-              },
-              "state": {}
-            },
-            {
-              "id": "detailReferral",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.referral_display"
-              },
-              "state": {}
-            },
-            {
-              "id": "detailIp",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.ip_display"
-              },
-              "state": {}
-            },
-            {
-              "id": "userDivider3",
-              "type": "component",
-              "componentType": "Divider",
-              "props": {},
-              "state": {}
-            },
-            {
-              "id": "detailRegDate",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.reg_date_display"
-              },
-              "state": {}
-            },
-            {
-              "id": "detailAuthDate",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.auth_date_display"
+                "header": "Призы",
+                "subheader": "@state.userData.prizes"
               },
               "state": {}
             }
@@ -515,104 +388,67 @@
       ]
     },
     {
-      "id": "userStatsSection",
+      "id": "activitySection",
       "type": "section",
-      "className": "grid",
       "blocks": [
         {
-          "id": "statsCard",
+          "id": "activityTitle",
           "type": "block",
-          "className": "col-12",
-          "wrapper": {
-            "component": "Card",
-            "props": {
-              "header": "Статистика"
-            }
-          },
           "components": [
             {
-              "id": "statsContainer",
+              "id": "activityHeading",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "@state.userData.stats_summary"
+                "value": "Активность",
+                "level": 2
               },
               "state": {}
             }
           ]
         },
         {
-          "id": "statsGrid",
+          "id": "activityGrid",
           "type": "block",
-          "className": "col-12",
+          "className": "grid",
           "components": [
             {
-              "id": "statPoints",
+              "id": "activityReceipts",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Card",
               "props": {
-                "label": "@state.userData.stat_points_label",
-                "icon": "pi pi-star"
+                "header": "Чеки",
+                "subheader": "@state.userData.receipts"
               },
               "state": {}
             },
             {
-              "id": "statPrizes",
+              "id": "activityCodes",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Card",
               "props": {
-                "label": "@state.userData.stat_prizes_label",
-                "icon": "pi pi-gift"
+                "header": "Коды",
+                "subheader": "@state.userData.codes"
               },
               "state": {}
             },
             {
-              "id": "statReceipts",
+              "id": "activityGtins",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Card",
               "props": {
-                "label": "@state.userData.stat_receipts_label",
-                "icon": "pi pi-receipt"
+                "header": "Коды ЧЗ",
+                "subheader": "@state.userData.gtins"
               },
               "state": {}
             },
             {
-              "id": "statCodes",
+              "id": "activityProducts",
               "type": "component",
-              "componentType": "Chip",
+              "componentType": "Card",
               "props": {
-                "label": "@state.userData.stat_codes_label",
-                "icon": "pi pi-qrcode"
-              },
-              "state": {}
-            },
-            {
-              "id": "statGtins",
-              "type": "component",
-              "componentType": "Chip",
-              "props": {
-                "label": "@state.userData.stat_gtins_label",
-                "icon": "pi pi-qrcode"
-              },
-              "state": {}
-            },
-            {
-              "id": "statProducts",
-              "type": "component",
-              "componentType": "Chip",
-              "props": {
-                "label": "@state.userData.stat_products_label",
-                "icon": "pi pi-box"
-              },
-              "state": {}
-            },
-            {
-              "id": "statMessages",
-              "type": "component",
-              "componentType": "Chip",
-              "props": {
-                "label": "@state.userData.stat_messages_label",
-                "icon": "pi pi-comments"
+                "header": "Продукты",
+                "subheader": "@state.userData.products"
               },
               "state": {}
             }
