@@ -47,10 +47,9 @@ export function useComponentBindings({
     return new Linkage(stateManager, pageId);
   }, [stateManager, pageId]);
 
-  // Собираем все binding-строки из value и props
+  // Собираем все binding-строки из props
   const allBindings = useMemo(() => {
     const bindings: (string | undefined)[] = [];
-    bindings.push(component.value);
 
     if (component.props) {
       const collectBindings = (obj: any) => {
@@ -68,19 +67,17 @@ export function useComponentBindings({
     }
 
     return bindings;
-  }, [component.value, component.props]);
+  }, [component.props]);
 
   // Разрешаем props через Linkage
   const resolveAll = useCallback(() => {
     if (!linkage) return;
 
-    const propsWithValues: Record<string, any> = {
-      value: linkage.resolveDeep(component.value),
-      ...(linkage.resolveDeep(component.props) || {}),
-    };
+    const propsWithValues: Record<string, any> =
+      linkage.resolveDeep(component.props) || {};
 
     setResolvedProps(propsWithValues);
-  }, [linkage, component.value, component.props]);
+  }, [linkage, component.props]);
 
   // Первоначальное разрешение
   useEffect(() => {

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Removed unused `component.value` bindings from `useComponentBindings`** — `src/engine/hooks/useComponentBindings.ts`: `component.value` was being collected in `allBindings`, resolved via Linkage into `resolvedProps.value`, and listed as a dependency, but `resolvedProps.value` was never consumed anywhere — all data comes through `component.props`. Removed the value collection, resolution, and dependency tracking to eliminate unnecessary computations.
+
 ### Fixed
 
 - **`getPublicEnv()` returns empty object on client** — `src/utils/env.ts`: `getPublicEnv()` used `Object.entries(process.env)` which does not work in Next.js browser bundles. Webpack's DefinePlugin only replaces literal `process.env.NEXT_PUBLIC_*` expressions at build time; dynamic iteration over `process.env` yields an empty object on the client because the `process.env` object is not enumerable in the browser bundle. Fixed by explicitly listing each known `NEXT_PUBLIC_*` variable as a literal `process.env.NEXT_PUBLIC_*` reference (`NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_USE_SYSTEM_FONTS`). Any new `NEXT_PUBLIC_*` variable must be added to this list.
