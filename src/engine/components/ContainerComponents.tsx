@@ -147,8 +147,13 @@ export function renderPanel(
     );
   };
 
+  // Если header не задан, добавляем класс для корректного отображения верхнего бордера
+  const panelClassName = !props.header
+    ? `${className || ""} p-panel-content-container`
+    : className || "";
+
   return (
-    <Panel {...panelProps} className={className} style={style}>
+    <Panel {...panelProps} className={panelClassName} style={style}>
       {renderComponents()}
     </Panel>
   );

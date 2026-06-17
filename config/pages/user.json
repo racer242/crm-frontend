@@ -343,6 +343,7 @@
               "type": "component",
               "componentType": "Panel",
               "props": {
+                "showHeaders": false,
                 "containerClassName": "flex flex-column gap-3 justify-content-center align-items-center",
                 "components": [
                   {
