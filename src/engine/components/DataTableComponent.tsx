@@ -11,11 +11,14 @@ export function renderDataTable({
   style,
   handleEvent,
 }: ComponentRendererProps) {
-  if (!props?.columns) return null;
+  const { columns, ...restProps } = props;
+  const columnList = columns || [];
+
+  if (!columnList || columnList.length === 0) return null;
 
   return (
     <DataTable
-      {...props}
+      {...restProps}
       value={props.value || []}
       className={`w-full ${className || ""}`}
       style={style}
@@ -23,7 +26,7 @@ export function renderDataTable({
       onSort={(e) => handleEvent("onSort", e)}
       onRowClick={(e) => handleEvent("onRowClick", e)}
     >
-      {props.columns?.map((col: any, index: number) => (
+      {columnList.map((col: any, index: number) => (
         <Column key={index} {...col} />
       ))}
     </DataTable>

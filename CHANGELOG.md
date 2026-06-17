@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Filtered internal props from being passed to PrimeReact components** — removed internal configuration properties (`components`, `columns`, `tabs`, `grid`, `containerClassName`, `label`, `labelClassName`, `labelStyle`) from being spread into PrimeReact component props, which was causing potential warnings and unexpected behavior
+  - `src/engine/components/ContainerComponents.tsx` — updated `renderTabView`, `renderAccordion`, `renderCarousel`, `renderPanel` to filter internal props before passing to PrimeReact
+  - `src/engine/components/LayoutComponents.tsx` — updated `renderLayoutGroup`, `renderLabelledGroup` to filter internal props before passing to DOM elements
+  - `src/engine/components/DataTableComponent.tsx` — updated `renderDataTable` to exclude `columns` from spread props
+  - `src/engine/components/CardComponents.tsx` — updated `renderCard` to exclude `components` from spread props
+
 ### Added
 
 - **Panel component in ContainerComponents** — added `renderPanel` function that wraps PrimeReact Panel with child components rendering, supporting grid layout similar to renderLabelledGroup (commit `[to-be-added]`)

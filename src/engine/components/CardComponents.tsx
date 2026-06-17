@@ -6,11 +6,11 @@ import { ComponentRendererProps } from "./types";
 
 export function renderCard({
   component,
-  props,
+  props: { components, ...restProps },
   className,
   style,
 }: ComponentRendererProps) {
-  return <Card {...props} className={className || ""} style={style}></Card>;
+  return <Card {...restProps} className={className || ""} style={style}></Card>;
 }
 
 export function renderStatCard({

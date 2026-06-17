@@ -13,7 +13,8 @@ export function renderTabView(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const tabs = props.tabs || [];
+  const { tabs, ...restProps } = props;
+  const tabList = tabs || [];
 
   const renderComponents = (components: Component[]) => (
     <div className="flex flex-column gap-3">
@@ -26,12 +27,8 @@ export function renderTabView(
   );
 
   return (
-    <TabView
-      className={`mb-4 ${className || ""}`}
-      style={style}
-      renderActiveOnly={props.renderActiveOnly}
-    >
-      {tabs.map((tab: any, index: number) => (
+    <TabView className={`mb-4 ${className || ""}`} style={style} {...restProps}>
+      {tabList.map((tab: any, index: number) => (
         <TabPanel key={tab.id || index} {...(tab.props || {})}>
           {tab.components ? renderComponents(tab.components) : null}
         </TabPanel>
@@ -44,7 +41,8 @@ export function renderAccordion(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const tabs = props.tabs || [];
+  const { tabs, activeIndex, ...restProps } = props;
+  const tabList = tabs || [];
 
   const renderComponents = (components: Component[]) => (
     <div className="flex flex-column gap-3">
@@ -58,12 +56,13 @@ export function renderAccordion(
 
   return (
     <Accordion
-      key={props.activeIndex}
+      key={activeIndex}
       className={className || ""}
       style={style}
-      activeIndex={props.activeIndex}
+      activeIndex={activeIndex}
+      {...restProps}
     >
-      {tabs.map((tab: any, index: number) => (
+      {tabList.map((tab: any, index: number) => (
         <AccordionTab key={tab.id || index} {...(tab.props || {})}>
           {tab.components ? renderComponents(tab.components) : null}
         </AccordionTab>
@@ -77,11 +76,12 @@ export function renderCarousel({
   className,
   style,
 }: ComponentRendererProps) {
-  const carouselValue = props.value || [];
+  const { components, value, ...restProps } = props;
+  const carouselValue = value || [];
 
   return (
     <Carousel
-      {...props}
+      {...restProps}
       value={carouselValue}
       className={`mb-4 ${className || ""}`}
       style={style}
@@ -99,31 +99,30 @@ export function renderPanel(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const components: Component[] = props.components || [];
-  const grid = props.grid;
-  const containerClassName: string =
-    props.containerClassName || "flex flex-column gap-2";
-
-  // Извлекаем containerClassName из props, чтобы не передавать в Panel
-  const { containerClassName: _, ...panelProps } = props;
+  const { components, grid, containerClassName, ...restProps } = props;
+  const componentList: Component[] = components || [];
+  const gridConfig = grid;
+  const containerClassNameValue: string =
+    containerClassName || "flex flex-column gap-2";
 
   const renderComponents = () => {
-    if (!components || components.length === 0) {
+    if (!componentList || componentList.length === 0) {
       return null;
     }
 
-    if (grid) {
-      const gridContainerClass = [containerClassName, "grid"]
+    if (gridConfig) {
+      const gridContainerClass = [containerClassNameValue, "grid"]
         .filter(Boolean)
         .join(" ");
       return (
         <div className={gridContainerClass}>
-          {components
+          {componentList
             .filter((c) => c !== null && c !== undefined)
             .map((component) => {
-              const index = components.indexOf(component);
-              const colClass = (grid.cols && grid.cols[index]) || "";
-              const wrapperClasses = [colClass, grid.padding]
+              const index = componentList.indexOf(component);
+              const colClass =
+                (gridConfig.cols && gridConfig.cols[index]) || "";
+              const wrapperClasses = [colClass, gridConfig.padding]
                 .filter(Boolean)
                 .join(" ");
               return (
@@ -137,8 +136,8 @@ export function renderPanel(
     }
 
     return (
-      <div className={containerClassName}>
-        {components
+      <div className={containerClassNameValue}>
+        {componentList
           .filter((c) => c !== null && c !== undefined)
           .map((component) => (
             <ComponentRenderer key={component.id} component={component} />
@@ -148,12 +147,17 @@ export function renderPanel(
   };
 
   // Если header не задан, добавляем inline-стиль для верхнего бордера
-  const panelStyle = !props.header
-    ? { ...style, borderTop: "1px solid var(--surface-d)" }
+  const panelStyle = !restProps.header
+    ? {
+        ...style,
+        "border-top": "1px solid var(--surface-border)",
+        "border-top-left-radius": "var(--border-radius)",
+        "border-top-right-radius": "var(--border-radius)",
+      }
     : style;
 
   return (
-    <Panel {...panelProps} className={className} style={panelStyle}>
+    <Panel {...restProps} className={className} style={panelStyle}>
       {renderComponents()}
     </Panel>
   );

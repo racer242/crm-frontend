@@ -9,25 +9,26 @@ export function renderLayoutGroup(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const components: Component[] = props.components || [];
-  const grid = props.grid;
+  const { components, grid, ...restProps } = props;
+  const componentList: Component[] = components || [];
+  const gridConfig = grid;
 
-  if (!components || components.length === 0) {
+  if (!componentList || componentList.length === 0) {
     return null;
   }
 
-  if (grid) {
+  if (gridConfig) {
     const gridContainerClass = [className || "", "grid"]
       .filter(Boolean)
       .join(" ");
     return (
       <div className={gridContainerClass} style={style}>
-        {components
+        {componentList
           .filter((c) => c !== null && c !== undefined)
           .map((component) => {
-            const index = components.indexOf(component);
-            const colClass = (grid.cols && grid.cols[index]) || "";
-            const wrapperClasses = [colClass, grid.padding]
+            const index = componentList.indexOf(component);
+            const colClass = (gridConfig.cols && gridConfig.cols[index]) || "";
+            const wrapperClasses = [colClass, gridConfig.padding]
               .filter(Boolean)
               .join(" ");
             return (
@@ -42,7 +43,7 @@ export function renderLayoutGroup(
 
   return (
     <div className={className} style={style}>
-      {components
+      {componentList
         .filter((c) => c !== null && c !== undefined)
         .map((component) => (
           <ComponentRenderer key={component.id} component={component} />
@@ -55,31 +56,40 @@ export function renderLabelledGroup(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const components: Component[] = props.components || [];
-  const label: string = props.label || "";
-  const labelClassName: string = props.labelClassName || "font-semibold";
-  const labelStyle = props.labelStyle;
-  const containerClassName: string =
-    props.containerClassName || "flex flex-column gap-2";
-  const grid = props.grid;
+  const {
+    components,
+    label,
+    labelClassName,
+    labelStyle,
+    containerClassName,
+    grid,
+    ...restProps
+  } = props;
+  const componentList: Component[] = components || [];
+  const labelText: string = label || "";
+  const labelClass: string = labelClassName || "font-semibold";
+  const labelStl = labelStyle;
+  const containerClass: string = containerClassName || "flex flex-column gap-2";
+  const gridConfig = grid;
 
   const renderComponents = () => {
-    if (!components || components.length === 0) {
+    if (!componentList || componentList.length === 0) {
       return null;
     }
 
-    if (grid) {
-      const gridContainerClass = [containerClassName, "grid"]
+    if (gridConfig) {
+      const gridContainerClass = [containerClass, "grid"]
         .filter(Boolean)
         .join(" ");
       return (
         <div className={gridContainerClass}>
-          {components
+          {componentList
             .filter((c) => c !== null && c !== undefined)
             .map((component) => {
-              const index = components.indexOf(component);
-              const colClass = (grid.cols && grid.cols[index]) || "";
-              const wrapperClasses = [colClass, grid.padding]
+              const index = componentList.indexOf(component);
+              const colClass =
+                (gridConfig.cols && gridConfig.cols[index]) || "";
+              const wrapperClasses = [colClass, gridConfig.padding]
                 .filter(Boolean)
                 .join(" ");
               return (
@@ -93,8 +103,8 @@ export function renderLabelledGroup(
     }
 
     return (
-      <div className={containerClassName}>
-        {components
+      <div className={containerClass}>
+        {componentList
           .filter((c) => c !== null && c !== undefined)
           .map((component) => (
             <ComponentRenderer key={component.id} component={component} />
@@ -103,9 +113,9 @@ export function renderLabelledGroup(
     );
   };
 
-  if (!label) {
+  if (!labelText) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} {...restProps}>
         {renderComponents()}
       </div>
     );
@@ -113,8 +123,8 @@ export function renderLabelledGroup(
 
   return (
     <div className={className} style={style}>
-      <label className={labelClassName} style={labelStyle}>
-        {label}
+      <label className={labelClass} style={labelStl}>
+        {labelText}
       </label>
       {renderComponents()}
     </div>
