@@ -49,6 +49,7 @@ import {
   renderActiveFiltersBar,
   renderLayoutGroup,
   renderLabelledGroup,
+  renderPanel,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -158,6 +159,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderLayoutGroup(renderProps);
     case "LabelledGroup":
       return renderLabelledGroup(renderProps);
+    case "Panel":
+      return renderPanel(renderProps);
     default:
       return (
         <div className={className} style={style}>

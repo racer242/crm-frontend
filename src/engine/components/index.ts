@@ -30,6 +30,7 @@ export {
   renderTabView,
   renderAccordion,
   renderCarousel,
+  renderPanel,
 } from "./ContainerComponents";
 export {
   renderSkeleton,

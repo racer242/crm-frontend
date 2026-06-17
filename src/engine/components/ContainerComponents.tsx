@@ -4,6 +4,7 @@ import React from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Carousel } from "primereact/carousel";
+import { Panel } from "primereact/panel";
 import { ComponentRendererProps } from "./types";
 import { ComponentRenderer } from "../ComponentRenderer";
 import { Component } from "@/types";
@@ -91,5 +92,57 @@ export function renderCarousel({
         </div>
       )}
     />
+  );
+}
+
+export function renderPanel(
+  renderProps: ComponentRendererProps & Record<string, any>,
+) {
+  const { props, className, style } = renderProps;
+  const components: Component[] = props.components || [];
+  const grid = props.grid;
+
+  const renderComponents = () => {
+    if (!components || components.length === 0) {
+      return null;
+    }
+
+    if (grid) {
+      const gridContainerClass = ["grid"].filter(Boolean).join(" ");
+      return (
+        <div className={gridContainerClass}>
+          {components
+            .filter((c) => c !== null && c !== undefined)
+            .map((component) => {
+              const index = components.indexOf(component);
+              const colClass = (grid.cols && grid.cols[index]) || "";
+              const wrapperClasses = [colClass, grid.padding]
+                .filter(Boolean)
+                .join(" ");
+              return (
+                <div key={component.id} className={wrapperClasses}>
+                  <ComponentRenderer component={component} />
+                </div>
+              );
+            })}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-column gap-2">
+        {components
+          .filter((c) => c !== null && c !== undefined)
+          .map((component) => (
+            <ComponentRenderer key={component.id} component={component} />
+          ))}
+      </div>
+    );
+  };
+
+  return (
+    <Panel {...props} className={className} style={style}>
+      {renderComponents()}
+    </Panel>
   );
 }

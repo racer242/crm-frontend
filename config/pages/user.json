@@ -67,7 +67,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Участники", "route": "/users" },
-                  { "label": "Участник" }
+                  { "label": "@state.userData.fullName" }
                 ]
               }
             }
@@ -75,64 +75,7 @@
         }
       ]
     },
-    {
-      "id": "titleSection",
-      "type": "section",
-      "className": "flex mb-3 align-items-center",
-      "blocks": [
-        {
-          "id": "userTitleBlock",
-          "type": "block",
-          "className": "w-full",
-          "components": [
-            {
-              "id": "userPageTitle",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "Участник",
-                "level": 1
-              }
-            }
-          ]
-        },
-        {
-          "id": "userActionButtons",
-          "type": "block",
-          "wrapper": {
-            "className": "max-w-min"
-          },
-          "components": [
-            {
-              "id": "btnEditUser",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "icon": "pi pi-pencil",
-                "label": "Редактировать",
-                "size": "small",
-                "severity": "info",
-                "outlined": true
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": "{$state}"
-                      }
-                    }
-                  ]
-                }
-              ],
-              "state": {}
-            }
-          ]
-        }
-      ]
-    },
+
     {
       "id": "statsRowSection",
       "type": "section",
@@ -222,7 +165,7 @@
               "header": "Профиль"
             }
           },
-          "className": "gap-1",
+          "className": "flex flex-column align-items-center gap-1",
           "components": [
             {
               "id": "userAvatarNameGroup",
@@ -248,7 +191,7 @@
                     "componentType": "Text",
                     "props": {
                       "value": "@state.userData.fullName",
-                      "level": 2
+                      "level": 1
                     },
                     "className": "text-center md:text-left",
                     "state": {}
@@ -260,15 +203,13 @@
               "id": "userDivider1",
               "type": "component",
               "componentType": "Divider",
-              "className": "w-full",
-              "props": {},
-              "state": {}
+              "className": "w-full"
             },
             {
               "id": "userEmailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "grid align-items-center mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
                 "label": "Email",
                 "labelClassName": "text-sm col-4 text-right",
@@ -291,7 +232,7 @@
               "id": "userPhoneGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "grid align-items-center mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
                 "label": "Телефон",
                 "labelClassName": "text-sm col-4 text-right",
@@ -314,7 +255,7 @@
               "id": "userCityGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "grid align-items-center",
+              "className": "w-full grid align-items-center",
               "props": {
                 "label": "Город",
                 "labelClassName": "text-sm col-4 text-right",
@@ -332,86 +273,98 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "userDivider2",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "btnEditUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$state}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "state": {}
             }
           ]
         },
         {
           "id": "rightColumnBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Детали"
-            }
-          },
-          "className": "flex flex-column gap-3",
+          "className": "flex flex-column",
           "components": [
             {
               "id": "detailsTable",
               "type": "component",
               "componentType": "DataTable",
+              "className": "mb-4",
               "props": {
+                "showHeaders": false,
                 "value": [
                   { "label": "ID", "value": "@state.userData.id" },
                   { "label": "Telegram ID", "value": "@state.userData.bot_id" },
                   { "label": "Реферал", "value": "@state.userData.referral" },
                   { "label": "IP", "value": "@state.userData.ip" },
                   {
-                    "label": "Регистрация",
+                    "label": "Дата регистрации",
                     "value": "@state.userData.regDateFormatted"
                   },
                   {
-                    "label": "Авторизация",
+                    "label": "Дата авторизации",
                     "value": "@state.userData.authDateFormatted"
                   }
                 ],
-                "columns": [
-                  { "field": "label", "header": "" },
-                  { "field": "value", "header": "" }
-                ]
+                "columns": [{ "field": "label" }, { "field": "value" }]
               },
               "state": {}
             },
             {
-              "id": "statusPanel",
-              "type": "block",
-              "wrapper": {
-                "component": "Card",
-                "props": {
-                  "header": "Статус"
-                }
-              },
-              "components": [
-                {
-                  "id": "blockStatusTag",
-                  "type": "component",
-                  "componentType": "Tag",
-                  "props": {
-                    "value": "@state.userData.statusLabel",
-                    "severity": "@state.userData.statusSeverity"
+              "id": "userStatusGroup",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "border-round-lg border-1 surface-border flex flex-column gap-3 justify-content-center align-items-center",
+              "props": {
+                "components": [
+                  {
+                    "id": "blockStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "props": {
+                      "value": "@state.userData.statusLabel",
+                      "severity": "@state.userData.statusSeverity"
+                    },
+                    "state": {}
                   },
-                  "state": {}
-                },
-                {
-                  "id": "blockReasonField",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Причина: {@state.userData.block_reason}"
-                  },
-                  "visible": {
-                    "conditions": [
-                      {
-                        "path": "state.userData.isBlocked",
-                        "operator": "==",
-                        "value": true
-                      }
-                    ],
-                    "defaultVisible": false
-                  },
-                  "state": {}
-                }
-              ]
+                  {
+                    "id": "blockReasonField",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.block_reason"
+                    }
+                  }
+                ]
+              }
             }
           ]
         }

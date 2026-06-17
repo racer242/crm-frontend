@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Panel component in ContainerComponents** — added `renderPanel` function that wraps PrimeReact Panel with child components rendering, supporting grid layout similar to renderLabelledGroup (commit `[to-be-added]`)
+  - `src/engine/components/ContainerComponents.tsx` — new `renderPanel` function with Panel wrapper and components rendering
+  - Supports `props.components` array for nested components
+  - Supports `props.grid` for grid-based layout (col classes + padding)
+  - Label handling delegated to Panel's own props (no separate label prop)
+  - Exported from `src/engine/components/index.ts`
+  - Registered as `"Panel"` case in `ComponentRenderer.tsx`
+
+### Added
+
 - **StatCard — готовая карточка статистики для дашбордов** — `src/engine/components/CardComponents.tsx`: добавлена новая функция `renderStatCard`, которая рендерит PrimeReact `Card` с иконкой справа вверху, заголовком (мелкий текст), значением (крупный жирный текст) слева и опциональным `subTitle`. Зарегистрирован как `"StatCard"` в `ComponentType`, экспортирован и подключён в `ComponentRenderer.tsx`.
   - Props: `title`, `subTitle`, `value`, `icon` (класс PrimeIcon), `iconColor` (цвет иконки, по умолчанию `--primary-color`).
   - Настраиваемые классы: `titleClassName` (`"text-lg font-semibold text-900 mb-1"`), `subTitleClassName` (`"text-xs text-500 mb-2"`), `valueClassName` (`"text-3xl font-bold text-900"`), `iconClassName` (`"text-3xl"`).
