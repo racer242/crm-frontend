@@ -101,6 +101,8 @@ export function renderPanel(
   const { props, className, style } = renderProps;
   const components: Component[] = props.components || [];
   const grid = props.grid;
+  const containerClassName: string =
+    props.containerClassName || "flex flex-column gap-2";
 
   const renderComponents = () => {
     if (!components || components.length === 0) {
@@ -108,7 +110,9 @@ export function renderPanel(
     }
 
     if (grid) {
-      const gridContainerClass = ["grid"].filter(Boolean).join(" ");
+      const gridContainerClass = [containerClassName, "grid"]
+        .filter(Boolean)
+        .join(" ");
       return (
         <div className={gridContainerClass}>
           {components
@@ -130,7 +134,7 @@ export function renderPanel(
     }
 
     return (
-      <div className="flex flex-column gap-2">
+      <div className={containerClassName}>
         {components
           .filter((c) => c !== null && c !== undefined)
           .map((component) => (

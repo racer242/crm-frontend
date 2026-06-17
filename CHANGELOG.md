@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
   - `src/engine/components/ContainerComponents.tsx` — new `renderPanel` function with Panel wrapper and components rendering
   - Supports `props.components` array for nested components
   - Supports `props.grid` for grid-based layout (col classes + padding)
+  - Supports `props.containerClassName` for customizing the inner container class (default: `"flex flex-column gap-2"`)
   - Label handling delegated to Panel's own props (no separate label prop)
   - Exported from `src/engine/components/index.ts`
   - Registered as `"Panel"` case in `ComponentRenderer.tsx`

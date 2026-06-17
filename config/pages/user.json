@@ -341,8 +341,8 @@
             {
               "id": "userStatusGroup",
               "type": "component",
-              "componentType": "LayoutGroup",
-              "className": "border-round-lg border-1 surface-border flex flex-column gap-3 justify-content-center align-items-center",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3 justify-content-center align-items-center",
               "props": {
                 "components": [
                   {
