@@ -206,6 +206,7 @@
     {
       "id": "mainLayout",
       "type": "section",
+      "className": "w-full",
       "grid": {
         "cols": ["col-12 md:col-6", "col-12 md:col-6"],
         "padding": "px-2"
@@ -226,9 +227,8 @@
               "id": "userAvatarNameGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "",
+              "className": "flex flex-column md:flex-row gap-3 align-items-center",
               "props": {
-                "containerClassName": "flex flex-column md:flex-row gap-3 align-items-center",
                 "components": [
                   {
                     "id": "userAvatar",
