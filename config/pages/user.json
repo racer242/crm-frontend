@@ -342,8 +342,8 @@
               "id": "userStatusGroup",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3 justify-content-center align-items-center",
               "props": {
+                "containerClassName": "flex flex-column gap-3 justify-content-center align-items-center",
                 "components": [
                   {
                     "id": "blockStatusTag",

@@ -104,6 +104,9 @@ export function renderPanel(
   const containerClassName: string =
     props.containerClassName || "flex flex-column gap-2";
 
+  // Извлекаем containerClassName из props, чтобы не передавать в Panel
+  const { containerClassName: _, ...panelProps } = props;
+
   const renderComponents = () => {
     if (!components || components.length === 0) {
       return null;
@@ -145,7 +148,7 @@ export function renderPanel(
   };
 
   return (
-    <Panel {...props} className={className} style={style}>
+    <Panel {...panelProps} className={className} style={style}>
       {renderComponents()}
     </Panel>
   );
