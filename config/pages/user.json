@@ -226,8 +226,9 @@
               "id": "userAvatarNameGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "flex flex-column md:flex-row gap-3 align-items-center",
+              "className": "",
               "props": {
+                "containerClassName": "flex flex-column md:flex-row gap-3 align-items-center",
                 "components": [
                   {
                     "id": "userAvatar",
@@ -266,10 +267,11 @@
               "id": "userEmailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1",
               "props": {
                 "label": "Email",
-                "labelPosition": "top",
-                "labelClassName": "text-sm text-500 mb-1",
+                "labelClassName": "text-sm text-500",
+                "containerClassName": "",
                 "components": [
                   {
                     "id": "userEmail",
@@ -287,10 +289,11 @@
               "id": "userPhoneGroup",
               "type": "component",
               "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1",
               "props": {
                 "label": "Телефон",
-                "labelPosition": "top",
-                "labelClassName": "text-sm text-500 mb-1",
+                "labelClassName": "text-sm text-500",
+                "containerClassName": "",
                 "components": [
                   {
                     "id": "userPhone",
@@ -308,10 +311,11 @@
               "id": "userCityGroup",
               "type": "component",
               "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1",
               "props": {
                 "label": "Город",
-                "labelPosition": "top",
-                "labelClassName": "text-sm text-500 mb-1",
+                "labelClassName": "text-sm text-500",
+                "containerClassName": "",
                 "components": [
                   {
                     "id": "userCity",

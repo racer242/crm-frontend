@@ -14,11 +14,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **LayoutComponents — два новых компонента для группировки и лэйаута** — `src/engine/components/LayoutComponents.tsx`: добавлены `LayoutGroup` (контейнер-группировщик дочерних компонентов) и `LabelledGroup` (контейнер с настраиваемой меткой). Поддерживают PrimeFlex grid-раскладку через `props.grid`. `LabelledGroup` поддерживает `labelPosition: "top" | "left"`, а также `labelClassName` и `labelStyle` для кастомизации метки. Зарегистрированы как `"LayoutGroup"` и `"LabelledGroup"` в `ComponentType`, подключены в `ComponentRenderer.tsx`.
+- **LayoutComponents — два новых компонента для группировки и лэйаута** — `src/engine/components/LayoutComponents.tsx`: добавлены `LayoutGroup` (контейнер-группировщик дочерних компонентов) и `LabelledGroup` (контейнер с настраиваемой меткой). Поддерживают PrimeFlex grid-раскладку через `props.grid`. `LabelledGroup` поддерживает управление расположением метки через `className`/`style` внешнего `<div>` и `containerClassName` для контейнера с компонентами. Также поддерживаются `labelClassName` и `labelStyle` для кастомизации метки. Зарегистрированы как `"LayoutGroup"` и `"LabelledGroup"` в `ComponentType`, подключены в `ComponentRenderer.tsx`.
 
 ### Changed
 
-- **`leftColumnBlock` в `config/pages/user.json` переработан с использованием LayoutComponents** — `userAvatar` и `userFullName` объединены в `LayoutGroup` с `flex-column md:flex-row` для перехода в ряд на md+. `userEmail`, `userPhone`, `userCity` обёрнуты в `LabelledGroup` с соответствующими лейблами (Email, Телефон, Город).
+- **`renderLabelledGroup` и `renderLayoutGroup` рефакторены** — `className` и `style` теперь применяются к внешнему оборачивающему `<div>`, а для внутреннего контейнера с компонентами используется новый пропс `containerClassName`. Удалён `labelPosition` из `LabelledGroup` — расположение метки управляется через CSS-классы внешнего дива (`"flex flex-column gap-1"` для вертикального, `"flex align-items-start gap-3"` для горизонтального). Обновлена документация в `docs/components-reference.md`.
+
+- **`leftColumnBlock` в `config/pages/user.json` переработан с использованием LayoutComponents** — `userAvatar` и `userFullName` объединены в `LayoutGroup` с `containerClassName: "flex flex-column md:flex-row gap-3 align-items-center"` для перехода в ряд на md+. `userEmail`, `userPhone`, `userCity` обёрнуты в `LabelledGroup` с `className: "flex flex-column gap-1"` и соответствующими лейблами (Email, Телефон, Город).
 
 - **`CardComponent.tsx` renamed to `CardComponents.tsx`** — файл переименован с единственного на множественное число, поскольку содержит два компонента (`renderCard` и `renderStatCard`). Обновлён импорт в `src/engine/components/index.ts`.
 
