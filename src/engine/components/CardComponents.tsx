@@ -24,7 +24,7 @@ export function renderStatCard({
     titleClassName = "text-xl font-semibold line-height-1",
     subTitleClassName = "text-xs line-height-1",
     valueClassName = "text-5xl font-bold mt-3",
-    iconClassName = "text-4xl",
+    iconClassName = "text-3xl",
     ...rest
   },
   className,
@@ -42,7 +42,7 @@ export function renderStatCard({
     >
       <div className="w-full flex align-items-stretch justify-content-between">
         <div className="h-full flex flex-column justify-content-between">
-          <div className="flex flex-column">
+          <div className="flex flex-column gap-1">
             <div className={titleClassName}>{title}</div>
             {subTitle && <div className={subTitleClassName}>{subTitle}</div>}
           </div>

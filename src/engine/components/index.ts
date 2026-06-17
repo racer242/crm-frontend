@@ -23,7 +23,7 @@ export {
 export { renderColorPicker, renderFileUpload } from "./MiscInputComponents";
 export { renderButton } from "./ButtonComponent";
 export { renderDataTable } from "./DataTableComponent";
-export { renderCard, renderStatCard } from "./CardComponent";
+export { renderCard, renderStatCard } from "./CardComponents";
 export { renderToast } from "./ToastComponent";
 export { renderMenubar, renderBreadcrumb, renderSteps } from "./NavComponents";
 export {

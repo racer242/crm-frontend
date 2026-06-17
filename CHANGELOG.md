@@ -6,13 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **StatCard — готовая карточка статистики для дашбордов** — `src/engine/components/CardComponent.tsx`: добавлена новая функция `renderStatCard`, которая рендерит PrimeReact `Card` с иконкой справа вверху, заголовком (мелкий текст), значением (крупный жирный текст) слева и опциональным `subTitle`. Зарегистрирован как `"StatCard"` в `ComponentType`, экспортирован и подключён в `ComponentRenderer.tsx`.
+- **StatCard — готовая карточка статистики для дашбордов** — `src/engine/components/CardComponents.tsx`: добавлена новая функция `renderStatCard`, которая рендерит PrimeReact `Card` с иконкой справа вверху, заголовком (мелкий текст), значением (крупный жирный текст) слева и опциональным `subTitle`. Зарегистрирован как `"StatCard"` в `ComponentType`, экспортирован и подключён в `ComponentRenderer.tsx`.
   - Props: `title`, `subTitle`, `value`, `icon` (класс PrimeIcon), `iconColor` (цвет иконки, по умолчанию `--primary-color`).
   - Настраиваемые классы: `titleClassName` (`"text-lg font-semibold text-900 mb-1"`), `subTitleClassName` (`"text-xs text-500 mb-2"`), `valueClassName` (`"text-3xl font-bold text-900"`), `iconClassName` (`"text-3xl"`).
   - Padding убран через `pt={{ content: { className: "p-0" } }}`.
   - `ml-3` на иконке для отступа от текста.
 
 ### Changed
+
+- **`CardComponent.tsx` renamed to `CardComponents.tsx`** — файл переименован с единственного на множественное число, поскольку содержит два компонента (`renderCard` и `renderStatCard`). Обновлён импорт в `src/engine/components/index.ts`.
 
 - **Added `grid` config to Section — replaces CSS gap with wrapper padding** — `src/engine/SectionRenderer.tsx`, `src/types/section.ts`: added new `GridConfig` interface and `grid` field on `Section`. When `section.grid` is specified, blocks are wrapped in `<div>` elements with `col-*` classes from `grid.cols` and optional padding class from `grid.padding`. Section gets `grid grid-nogutter` classes. This solves the PrimeFlex gap issue where `gap` breaks column width calculation. Updated `docs/config-reference.md` with GridConfig documentation. Migrated `config/pages/user.json` — `mainLayout` section now uses `grid` config instead of `className: "grid gap-3"` with col-classes on blocks.
 

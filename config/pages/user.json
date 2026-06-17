@@ -171,7 +171,7 @@
               "props": {
                 "title": "Коды",
                 "value": "@state.userData.codes",
-                "icon": "pi pi-qrcode"
+                "icon": "pi pi-star"
               },
               "state": {}
             },
@@ -183,7 +183,7 @@
               "props": {
                 "title": "Коды ЧЗ",
                 "value": "@state.userData.gtins",
-                "icon": "pi pi-barcode"
+                "icon": "pi pi-qrcode"
               },
               "state": {}
             },
@@ -195,7 +195,7 @@
               "props": {
                 "title": "Продукты",
                 "value": "@state.userData.products",
-                "icon": "pi pi-box"
+                "icon": "pi pi-shopping-cart"
               },
               "state": {}
             }
@@ -207,8 +207,8 @@
       "id": "mainLayout",
       "type": "section",
       "grid": {
-        "cols": ["col-12 md:col-10", "col-12 md:col-2"],
-        "padding": "px-1"
+        "cols": ["col-12 md:col-6", "col-12 md:col-6"],
+        "padding": "px-2"
       },
       "blocks": [
         {
