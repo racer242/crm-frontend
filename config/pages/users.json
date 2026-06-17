@@ -130,11 +130,7 @@
     {
       "id": "usersHeader",
       "type": "section",
-      "layout": {
-        "type": "flex",
-        "direction": "row",
-        "justifyContent": "between"
-      },
+      "className": "flex",
       "blocks": [
         {
           "id": "usersTitle",
@@ -156,15 +152,12 @@
     {
       "id": "usersFilters",
       "type": "section",
-      "className": "flex flex-wrap gap-3",
+      "className": "flex gap-3",
       "blocks": [
         {
           "id": "searchBlock",
           "type": "block",
           "className": "w-full",
-          "wrapper": {
-            "className": "flex-grow-1"
-          },
           "components": [
             {
               "id": "searchInput",
@@ -197,10 +190,6 @@
         {
           "id": "filterBlock",
           "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "components": [
             {
               "id": "toggleFilters",

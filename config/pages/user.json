@@ -99,7 +99,7 @@
               "id": "activityReceipts",
               "type": "component",
               "componentType": "StatCard",
-              "className": "h-full",
+              "className": "h-full p-1",
               "props": {
                 "title": "Чеки",
                 "subTitle": "проверены",
@@ -111,7 +111,7 @@
               "id": "activityCodes",
               "type": "component",
               "componentType": "StatCard",
-              "className": "h-full",
+              "className": "h-full p-1",
               "props": {
                 "title": "Коды",
                 "value": "@state.userData.codes",
@@ -123,7 +123,7 @@
               "id": "activityGtins",
               "type": "component",
               "componentType": "StatCard",
-              "className": "h-full",
+              "className": "h-full p-1",
               "props": {
                 "title": "Коды ЧЗ",
                 "value": "@state.userData.gtins",
@@ -135,7 +135,7 @@
               "id": "activityProducts",
               "type": "component",
               "componentType": "StatCard",
-              "className": "h-full",
+              "className": "h-full p-1",
               "props": {
                 "title": "Продукты",
                 "value": "@state.userData.products",
@@ -150,9 +150,9 @@
     {
       "id": "mainLayout",
       "type": "section",
-      "className": "mb-5",
+      "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 md:col-6", "col-12 md:col-6"],
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
         "padding": "p-2"
       },
       "blocks": [
@@ -171,7 +171,7 @@
               "id": "userAvatarNameGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "flex flex-column md:flex-row gap-3 justify-content-center align-items-center",
+              "className": "flex flex-column md:flex-row gap-3 justify-content-center align-items-center my-3 lg:my-6",
               "props": {
                 "components": [
                   {
@@ -220,6 +220,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
+                    "style": { "wordBreak": "break-all" },
                     "props": {
                       "value": "@state.userData.email"
                     },
@@ -288,8 +289,7 @@
                 "icon": "pi pi-pencil",
                 "label": "Редактировать",
                 "size": "small",
-                "severity": "info",
-                "outlined": true
+                "severity": "info"
               },
               "events": [
                 {
@@ -313,6 +313,58 @@
           "type": "block",
           "className": "flex flex-column",
           "components": [
+            {
+              "id": "userAvatarNameGroup",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "mb-3",
+              "props": {
+                "grid": {
+                  "cols": ["col-6", "col-6"],
+                  "padding": "p-2"
+                },
+                "components": [
+                  {
+                    "id": "activityPoints",
+                    "type": "component",
+                    "componentType": "StatCard",
+                    "className": "h-full",
+                    "style": {
+                      "backgroundColor": "var(--primary-color)",
+                      "color": "var(--primary-color-text)"
+                    },
+                    "props": {
+                      "titleClassName": "text-base",
+                      "valueClassName": "text-4xl font-bold mt-1",
+                      "iconClassName": "text-2xl text-primary",
+                      "title": "Баллы",
+                      "value": "@state.userData.points",
+                      "icon": "pi pi-trophy"
+                    },
+                    "state": {}
+                  },
+                  {
+                    "id": "activityPrizes",
+                    "type": "component",
+                    "componentType": "StatCard",
+                    "className": "h-full",
+                    "style": {
+                      "backgroundColor": "var(--primary-color)",
+                      "color": "var(--primary-color-text)"
+                    },
+                    "props": {
+                      "titleClassName": "text-base",
+                      "valueClassName": "text-4xl font-bold mt-1",
+                      "iconClassName": "text-2xl text-primary",
+                      "title": "Призы",
+                      "value": "@state.userData.prizes",
+                      "icon": "pi pi-gift"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
             {
               "id": "detailsTable",
               "type": "component",
@@ -339,17 +391,18 @@
               "state": {}
             },
             {
-              "id": "userStatusGroup",
+              "id": "userStatusPanel",
               "type": "component",
               "componentType": "Panel",
               "props": {
-                "showHeaders": false,
-                "containerClassName": "flex flex-column gap-3 justify-content-center align-items-center",
+                "header": "Статус",
+                "containerClassName": "flex gap-3 justify-content-center align-items-center",
                 "components": [
                   {
                     "id": "blockStatusTag",
                     "type": "component",
                     "componentType": "Tag",
+                    "className": "text-base px-4 py-2",
                     "props": {
                       "value": "@state.userData.statusLabel",
                       "severity": "@state.userData.statusSeverity"
@@ -366,81 +419,6 @@
                   }
                 ]
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "achievementsSection",
-      "type": "section",
-      "className": "mb-4",
-      "blocks": [
-        {
-          "id": "achievementsTitle",
-          "type": "block",
-          "components": [
-            {
-              "id": "achievementsHeading",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "Достижения",
-                "level": 2
-              },
-              "state": {}
-            }
-          ]
-        },
-        {
-          "id": "achievementsGrid",
-          "type": "block",
-          "grid": {
-            "cols": ["col-6", "col-6"],
-            "padding": "p-1"
-          },
-          "components": [
-            {
-              "id": "achievementPoints",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Баллы",
-                "subheader": "@state.userData.points"
-              },
-              "state": {}
-            },
-            {
-              "id": "achievementPrizes",
-              "type": "component",
-              "componentType": "Card",
-              "props": {
-                "header": "Призы",
-                "subheader": "@state.userData.prizes"
-              },
-              "state": {}
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "activitySection",
-      "type": "section",
-      "blocks": [
-        {
-          "id": "activityTitle",
-          "type": "block",
-          "components": [
-            {
-              "id": "activityHeading",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "Активность",
-                "level": 2
-              },
-              "state": {}
             }
           ]
         }

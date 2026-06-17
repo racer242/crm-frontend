@@ -150,9 +150,9 @@ export function renderPanel(
   const panelStyle = !restProps.header
     ? {
         ...style,
-        "border-top": "1px solid var(--surface-border)",
-        "border-top-left-radius": "var(--border-radius)",
-        "border-top-right-radius": "var(--border-radius)",
+        borderTop: "1px solid var(--surface-border)",
+        borderTopLeftRadius: "var(--border-radius)",
+        borderTopRightRadius: "var(--border-radius)",
       }
     : style;
 

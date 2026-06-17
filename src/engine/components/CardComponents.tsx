@@ -23,7 +23,7 @@ export function renderStatCard({
     iconColor,
     titleClassName = "text-xl font-semibold line-height-1",
     subTitleClassName = "text-xs line-height-1",
-    valueClassName = "text-5xl font-bold mt-3",
+    valueClassName = "text-5xl font-bold mt-4 line-height-1",
     iconClassName = "text-3xl",
     ...rest
   },
@@ -32,7 +32,7 @@ export function renderStatCard({
 }: ComponentRendererProps) {
   return (
     <Card
-      className={className + " flex p-2"}
+      className={className + " flex"}
       style={style}
       pt={{
         content: { className: "p-0 flex w-full" },
