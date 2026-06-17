@@ -147,13 +147,13 @@ export function renderPanel(
     );
   };
 
-  // Если header не задан, добавляем класс для корректного отображения верхнего бордера
-  const panelClassName = !props.header
-    ? `${className || ""} p-panel-content-container`
-    : className || "";
+  // Если header не задан, добавляем inline-стиль для верхнего бордера
+  const panelStyle = !props.header
+    ? { ...style, borderTop: "1px solid var(--surface-d)" }
+    : style;
 
   return (
-    <Panel {...panelProps} className={panelClassName} style={style}>
+    <Panel {...panelProps} className={className} style={panelStyle}>
       {renderComponents()}
     </Panel>
   );
