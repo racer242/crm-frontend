@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
   - Padding убран через `pt={{ content: { className: "p-0" } }}`.
   - `ml-3` на иконке для отступа от текста.
 
+### Added
+
+- **LayoutComponents — два новых компонента для группировки и лэйаута** — `src/engine/components/LayoutComponents.tsx`: добавлены `LayoutGroup` (контейнер-группировщик дочерних компонентов) и `LabelledGroup` (контейнер с настраиваемой меткой). Поддерживают PrimeFlex grid-раскладку через `props.grid`. `LabelledGroup` поддерживает `labelPosition: "top" | "left"`, а также `labelClassName` и `labelStyle` для кастомизации метки. Зарегистрированы как `"LayoutGroup"` и `"LabelledGroup"` в `ComponentType`, подключены в `ComponentRenderer.tsx`.
+
 ### Changed
 
 - **`CardComponent.tsx` renamed to `CardComponents.tsx`** — файл переименован с единственного на множественное число, поскольку содержит два компонента (`renderCard` и `renderStatCard`). Обновлён импорт в `src/engine/components/index.ts`.

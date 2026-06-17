@@ -47,6 +47,8 @@ import {
   renderChart,
   renderFiltersPanel,
   renderActiveFiltersBar,
+  renderLayoutGroup,
+  renderLabelledGroup,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -152,6 +154,10 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderFiltersPanel(renderProps);
     case "ActiveFiltersBar":
       return renderActiveFiltersBar(renderProps);
+    case "LayoutGroup":
+      return renderLayoutGroup(renderProps);
+    case "LabelledGroup":
+      return renderLabelledGroup(renderProps);
     default:
       return (
         <div className={className} style={style}>

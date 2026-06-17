@@ -84,6 +84,9 @@ export type ComponentType =
   // Фильтры
   | "FiltersPanel"
   | "ActiveFiltersBar"
+  // Layout
+  | "LayoutGroup"
+  | "LabelledGroup"
   // Dashboard
   | "StatCard";
 
