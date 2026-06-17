@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **`rightColumnBlock` в `config/pages/user.json` переработан** — детали пользователя (ID, Telegram ID, Реферал, IP, Регистрация, Авторизация) выведены в DataTable без хедера (первый столбец — название параметра, второй — значение через линковку). Статус и причина блокировки вынесены в отдельную панель (Card) под таблицей.
+
 - **`renderLabelledGroup` и `renderLayoutGroup` рефакторены** — `className` и `style` теперь применяются к внешнему оборачивающему `<div>`, а для внутреннего контейнера с компонентами используется новый пропс `containerClassName`. Удалён `labelPosition` из `LabelledGroup` — расположение метки управляется через CSS-классы внешнего дива (`"flex flex-column gap-1"` для вертикального, `"flex align-items-start gap-3"` для горизонтального). Обновлена документация в `docs/components-reference.md`.
 
 - **`leftColumnBlock` в `config/pages/user.json` переработан с использованием LayoutComponents** — `userAvatar` и `userFullName` объединены в `LayoutGroup` с `containerClassName: "flex flex-column md:flex-row gap-3 align-items-center"` для перехода в ряд на md+. `userEmail`, `userPhone`, `userCity` обёрнуты в `LabelledGroup` с `className: "flex flex-column gap-1"` и соответствующими лейблами (Email, Телефон, Город).

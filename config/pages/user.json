@@ -136,11 +136,12 @@
     {
       "id": "statsRowSection",
       "type": "section",
+      "className": "flex flex-column",
       "blocks": [
         {
           "id": "statCardsBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "mb-5",
           "grid": {
             "cols": [
               "col-6 lg:col-3",
@@ -206,10 +207,10 @@
     {
       "id": "mainLayout",
       "type": "section",
-      "className": "w-full",
+      "className": "mb-5",
       "grid": {
         "cols": ["col-12 md:col-6", "col-12 md:col-6"],
-        "padding": "px-2"
+        "padding": "p-2"
       },
       "blocks": [
         {
@@ -227,7 +228,7 @@
               "id": "userAvatarNameGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "flex flex-column md:flex-row gap-3 align-items-center",
+              "className": "flex flex-column md:flex-row gap-3 justify-content-center align-items-center",
               "props": {
                 "components": [
                   {
@@ -267,16 +268,17 @@
               "id": "userEmailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1",
+              "className": "grid align-items-center mb-2",
               "props": {
                 "label": "Email",
-                "labelClassName": "text-sm text-500",
-                "containerClassName": "",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "userEmail",
                     "type": "component",
                     "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
                     "props": {
                       "value": "@state.userData.email"
                     },
@@ -289,16 +291,17 @@
               "id": "userPhoneGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1",
+              "className": "grid align-items-center mb-2",
               "props": {
                 "label": "Телефон",
-                "labelClassName": "text-sm text-500",
-                "containerClassName": "",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "userPhone",
                     "type": "component",
                     "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
                     "props": {
                       "value": "@state.userData.phone"
                     },
@@ -311,16 +314,17 @@
               "id": "userCityGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1",
+              "className": "grid align-items-center",
               "props": {
                 "label": "Город",
-                "labelClassName": "text-sm text-500",
-                "containerClassName": "",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "userCity",
                     "type": "component",
                     "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
                     "props": {
                       "value": "@state.userData.city"
                     },
@@ -332,79 +336,44 @@
           ]
         },
         {
-          "id": "rightColumn",
+          "id": "rightColumnBlock",
           "type": "block",
-          "wrapper": {},
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Детали"
+            }
+          },
+          "className": "flex flex-column gap-3",
           "components": [
             {
-              "id": "detailsCard",
-              "type": "block",
-              "className": "mb-4",
-              "wrapper": {
-                "component": "Card",
-                "props": {
-                  "header": "Детали"
-                }
+              "id": "detailsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": [
+                  { "label": "ID", "value": "@state.userData.id" },
+                  { "label": "Telegram ID", "value": "@state.userData.bot_id" },
+                  { "label": "Реферал", "value": "@state.userData.referral" },
+                  { "label": "IP", "value": "@state.userData.ip" },
+                  {
+                    "label": "Регистрация",
+                    "value": "@state.userData.regDateFormatted"
+                  },
+                  {
+                    "label": "Авторизация",
+                    "value": "@state.userData.authDateFormatted"
+                  }
+                ],
+                "columns": [
+                  { "field": "label", "header": "" },
+                  { "field": "value", "header": "" }
+                ]
               },
-              "components": [
-                {
-                  "id": "detailId",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "ID: {@state.userData.id}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "detailBotId",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Telegram ID: {@state.userData.bot_id}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "detailReferral",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Реферал: {@state.userData.referral}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "detailIp",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "IP: {@state.userData.ip}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "detailRegDate",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Регистрация: {@state.userData.regDateFormatted}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "detailAuthDate",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Авторизация: {@state.userData.authDateFormatted}"
-                  },
-                  "state": {}
-                }
-              ]
+              "state": {}
             },
             {
-              "id": "statusCard",
+              "id": "statusPanel",
               "type": "block",
               "wrapper": {
                 "component": "Card",
@@ -439,24 +408,6 @@
                       }
                     ],
                     "defaultVisible": false
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "messagesCount",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "Сообщения: {@state.userData.messages}"
-                  },
-                  "state": {}
-                },
-                {
-                  "id": "groupsSection",
-                  "type": "component",
-                  "componentType": "Text",
-                  "props": {
-                    "value": "@state.userData.groupsText"
                   },
                   "state": {}
                 }
