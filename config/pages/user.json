@@ -212,7 +212,7 @@
       },
       "blocks": [
         {
-          "id": "leftColumn",
+          "id": "leftColumnBlock",
           "type": "block",
           "wrapper": {
             "component": "Panel",
@@ -223,25 +223,36 @@
           "className": "gap-1",
           "components": [
             {
-              "id": "userAvatar",
+              "id": "userAvatarNameGroup",
               "type": "component",
-              "componentType": "Avatar",
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column md:flex-row gap-3 align-items-center",
               "props": {
-                "label": "@state.userData.initials",
-                "shape": "circle",
-                "size": "xlarge"
-              },
-              "state": {}
-            },
-            {
-              "id": "userFullName",
-              "type": "component",
-              "componentType": "Text",
-              "props": {
-                "value": "@state.userData.fullName",
-                "level": 2
-              },
-              "state": {}
+                "components": [
+                  {
+                    "id": "userAvatar",
+                    "type": "component",
+                    "componentType": "Avatar",
+                    "props": {
+                      "label": "@state.userData.initials",
+                      "shape": "circle",
+                      "size": "xlarge"
+                    },
+                    "state": {}
+                  },
+                  {
+                    "id": "userFullName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.fullName",
+                      "level": 2
+                    },
+                    "className": "text-center md:text-left",
+                    "state": {}
+                  }
+                ]
+              }
             },
             {
               "id": "userDivider1",
@@ -252,31 +263,67 @@
               "state": {}
             },
             {
-              "id": "userEmail",
+              "id": "userEmailGroup",
               "type": "component",
-              "componentType": "Text",
+              "componentType": "LabelledGroup",
               "props": {
-                "value": "@state.userData.email"
-              },
-              "state": {}
+                "label": "Email",
+                "labelPosition": "top",
+                "labelClassName": "text-sm text-500 mb-1",
+                "components": [
+                  {
+                    "id": "userEmail",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.email"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
             },
             {
-              "id": "userPhone",
+              "id": "userPhoneGroup",
               "type": "component",
-              "componentType": "Text",
+              "componentType": "LabelledGroup",
               "props": {
-                "value": "@state.userData.phone"
-              },
-              "state": {}
+                "label": "Телефон",
+                "labelPosition": "top",
+                "labelClassName": "text-sm text-500 mb-1",
+                "components": [
+                  {
+                    "id": "userPhone",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.phone"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
             },
             {
-              "id": "userCity",
+              "id": "userCityGroup",
               "type": "component",
-              "componentType": "Text",
+              "componentType": "LabelledGroup",
               "props": {
-                "value": "@state.userData.city"
-              },
-              "state": {}
+                "label": "Город",
+                "labelPosition": "top",
+                "labelClassName": "text-sm text-500 mb-1",
+                "components": [
+                  {
+                    "id": "userCity",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.city"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
             }
           ]
         },

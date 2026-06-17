@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **`leftColumnBlock` в `config/pages/user.json` переработан с использованием LayoutComponents** — `userAvatar` и `userFullName` объединены в `LayoutGroup` с `flex-column md:flex-row` для перехода в ряд на md+. `userEmail`, `userPhone`, `userCity` обёрнуты в `LabelledGroup` с соответствующими лейблами (Email, Телефон, Город).
+
 - **`CardComponent.tsx` renamed to `CardComponents.tsx`** — файл переименован с единственного на множественное число, поскольку содержит два компонента (`renderCard` и `renderStatCard`). Обновлён импорт в `src/engine/components/index.ts`.
 
 - **Added `grid` config to Section — replaces CSS gap with wrapper padding** — `src/engine/SectionRenderer.tsx`, `src/types/section.ts`: added new `GridConfig` interface and `grid` field on `Section`. When `section.grid` is specified, blocks are wrapped in `<div>` elements with `col-*` classes from `grid.cols` and optional padding class from `grid.padding`. Section gets `grid grid-nogutter` classes. This solves the PrimeFlex gap issue where `gap` breaks column width calculation. Updated `docs/config-reference.md` with GridConfig documentation. Migrated `config/pages/user.json` — `mainLayout` section now uses `grid` config instead of `className: "grid gap-3"` with col-classes on blocks.
