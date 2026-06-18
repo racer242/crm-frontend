@@ -12,17 +12,13 @@
  *   format  — форматирование строки с плейсхолдерами {0}, {1}, ...
  */
 
-import type { Linkage } from "./Linkage";
-
 /** Реестр операций */
 type CalcHandler = (params: Record<string, any>) => any;
 
 export class CalcEngine {
-  private linkage: Linkage;
   private operations: Map<string, CalcHandler>;
 
-  constructor(linkage: Linkage) {
-    this.linkage = linkage;
+  constructor() {
     this.operations = new Map();
     this.registerDefaults();
   }
@@ -46,13 +42,6 @@ export class CalcEngine {
       return undefined;
     }
     return handler(params);
-  }
-
-  /**
-   * Получить доступ к Linkage для вложенных calc-операций
-   */
-  getLinkage(): Linkage {
-    return this.linkage;
   }
 
   /**

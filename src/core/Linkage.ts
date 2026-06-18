@@ -34,7 +34,7 @@ export class Linkage {
   constructor(stateManager: StateManager, pageId: string) {
     this.stateManager = stateManager;
     this.pageId = pageId;
-    this.calcEngine = new CalcEngine(this);
+    this.calcEngine = new CalcEngine();
   }
 
   /**

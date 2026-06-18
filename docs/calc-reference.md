@@ -264,16 +264,13 @@ Calc-выражения реактивны. Если любое поле state, 
 
 ```typescript
 class CalcEngine {
-  constructor(linkage: Linkage);
+  constructor();
 
   // Выполнить calc-операцию
   execute(name: string, params: Record<string, any>): any;
 
   // Зарегистрировать новую операцию
   register(name: string, handler: CalcHandler): void;
-
-  // Получить Linkage для кастомных операций
-  getLinkage(): Linkage;
 }
 ```
 
