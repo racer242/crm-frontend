@@ -94,11 +94,10 @@
               "id": "firstNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Имя",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "firstNameInput",
@@ -131,11 +130,10 @@
               "id": "lastNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Фамилия",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "lastNameInput",
@@ -168,11 +166,10 @@
               "id": "emailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "E-mail",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "emailInput",
@@ -206,11 +203,10 @@
               "id": "phoneGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Телефон",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "phoneInput",
@@ -257,11 +253,10 @@
               "id": "deliveryAddressGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Адрес",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "deliveryAddressInput",
@@ -294,11 +289,10 @@
               "id": "deliveryCommentGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Комментарий",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "deliveryCommentInput",
@@ -346,11 +340,10 @@
               "id": "blockedSwitchGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3 mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Заблокировать",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9 flex align-items-center",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "blockedSwitch",
@@ -381,11 +374,10 @@
               "id": "blockReasonGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex align-items-start gap-3",
+              "className": "flex flex-column gap-1",
               "props": {
                 "label": "Причина",
-                "labelClassName": "font-bold text-sm col-3",
-                "containerClassName": "col-9",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "blockReasonInput",
