@@ -287,7 +287,7 @@
               "id": "userDeliveryAddressGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center",
+              "className": "w-full grid align-items-start",
               "props": {
                 "label": "Адрес доставки",
                 "labelClassName": "text-sm col-4 text-right",
@@ -309,7 +309,7 @@
               "id": "userDeliveryCommentGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center",
+              "className": "w-full grid align-items-start",
               "props": {
                 "label": "Комментарий доставки",
                 "labelClassName": "text-sm col-4 text-right",
@@ -329,6 +329,57 @@
             },
             {
               "id": "userDivider3",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "userStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "blockStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.userData.statusLabel",
+                      "severity": "@state.userData.statusSeverity"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userStatusReasonGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start",
+              "props": {
+                "label": "Причина отклонения",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "blockReasonField",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.block_reason"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDivider4",
               "type": "component",
               "componentType": "Divider",
               "className": "w-full"
@@ -443,36 +494,6 @@
               "state": {}
             },
             {
-              "id": "userStatusPanel",
-              "type": "component",
-              "componentType": "Panel",
-              "props": {
-                "header": "Статус",
-                "containerClassName": "flex gap-3 justify-content-center align-items-center",
-                "components": [
-                  {
-                    "id": "blockStatusTag",
-                    "type": "component",
-                    "componentType": "Tag",
-                    "className": "text-base px-4 py-2",
-                    "props": {
-                      "value": "@state.userData.statusLabel",
-                      "severity": "@state.userData.statusSeverity"
-                    },
-                    "state": {}
-                  },
-                  {
-                    "id": "blockReasonField",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "@state.userData.block_reason"
-                    }
-                  }
-                ]
-              }
-            },
-            {
               "id": "groupsPanel",
               "type": "component",
               "componentType": "Panel",
@@ -485,6 +506,7 @@
                     "id": "groupsTable",
                     "type": "component",
                     "componentType": "DataTable",
+                    "className": "no-bottom-border",
                     "props": {
                       "showHeaders": false,
                       "value": "@state.userData.groupList",

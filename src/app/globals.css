@@ -84,3 +84,8 @@ input.p-inputtext {
     width: auto !important;
   }
 }
+
+/* Не показываем последнюю рамку в таблице */
+.no-bottom-border tr:last-child td {
+  border-bottom: none !important;
+}

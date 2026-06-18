@@ -19,12 +19,35 @@ export function renderInputText({
     value: props.value ?? "",
   };
 
+  const [localValue, setLocalValue] = useState(inputProps.value);
+  const isFirstRender = useRef(true);
+
+  // Синхронизация с внешним value (из dataFeed, setProperty и т.д.)
+  // Пропускаем первый рендер, чтобы не затереть начальное значение из useState
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setLocalValue(inputProps.value);
+  }, [inputProps.value]);
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setLocalValue(val);
+      handleEvent("onChange", { value: val });
+    },
+    [handleEvent],
+  );
+
   return (
     <InputText
       {...inputProps}
+      value={localValue}
       className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
-      onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+      onChange={onChange}
     />
   );
 }

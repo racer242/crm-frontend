@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **InputText cursor jumping to end when typing in the middle** — `src/engine/components/InputComponents.tsx`: `renderInputText` now uses local state (`localValue`) with `useState` and syncs with external `props.value` via `useEffect`. This prevents React from overwriting the input value on every re-render caused by Linkage subscription, which was causing the cursor to jump to the end. The fix follows the same pattern as `renderInputTextWithThrottle` but without the delay — `handleEvent("onChange")` is called immediately.
+  - First render skip: `isFirstRender` ref prevents overwriting initial `useState` value
+  - External changes (from `dataFeed`, `setProperty`) still sync correctly via `useEffect` dependency on `inputProps.value`
+
 ### Added
 
 - **Inline-линковка `{ @... }` в строки** — линковку теперь можно вставлять в произвольную строку, оборачивая в фигурные скобки: `"/users/{@state.userData.id}"` → `"/users/42"`. Поддерживается любое количество вставок в одной строке. Реактивность работает через `subscribe()` — изменения отслеживаются автоматически.

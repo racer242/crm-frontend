@@ -103,10 +103,10 @@
                     "id": "firstNameInput",
                     "type": "component",
                     "componentType": "InputText",
+                    "className": "w-full",
                     "props": {
                       "value": "@state.userData.first_name",
-                      "placeholder": "Введите имя",
-                      "className": "w-full"
+                      "placeholder": "Введите имя"
                     },
                     "events": [
                       {
