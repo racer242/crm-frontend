@@ -471,6 +471,28 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "groupsPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "mb-4",
+              "props": {
+                "header": "Группы",
+                "containerClassName": "",
+                "components": [
+                  {
+                    "id": "groupsTable",
+                    "type": "component",
+                    "componentType": "DataTable",
+                    "props": {
+                      "showHeaders": false,
+                      "value": "@state.userData.groupList",
+                      "columns": [{ "field": "name" }]
+                    }
+                  }
+                ]
+              }
             }
           ]
         }

@@ -36,7 +36,7 @@ function transform(data) {
   const regDateFormatted = formatDate(data.reg_date);
   const authDateFormatted = formatDate(data.auth_date);
 
-  // Группы — список названий и текст с переносами
+  // Группы — список названий (объекты для DataTable) и текст с переносами
   const groupList = [];
   let groupOptions = [];
   let selectedGroups = [];
@@ -47,12 +47,13 @@ function transform(data) {
     }));
     data.groups.forEach((g) => {
       if (g.is_member) {
-        groupList.push(g.title);
+        groupList.push({ name: g.title });
         selectedGroups.push(g.type);
       }
     });
   }
-  const groupsText = groupList.length > 0 ? groupList.join("\n") : "";
+  const groupsText =
+    groupList.length > 0 ? groupList.map((g) => g.name).join("\n") : "";
 
   // Поля для доставки (новые, могут отсутствовать)
   const delivery_address = data.delivery_address || "";

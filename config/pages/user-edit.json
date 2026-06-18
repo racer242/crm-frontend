@@ -55,7 +55,7 @@
                   { "label": "Участники", "route": "/users" },
                   {
                     "label": "@state.userData.fullName",
-                    "route": "/users/{$location.routeParams.user_id}"
+                    "route": "/users/{@state.userData.id}"
                   },
                   { "label": "Редактирование" }
                 ]
@@ -340,13 +340,14 @@
               "id": "blockedSwitchGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "flex align-items-center gap-2 mb-2",
+              "className": "flex align-items-center gap-3 mb-3",
               "props": {
                 "components": [
                   {
                     "id": "blockedSwitch",
                     "type": "component",
                     "componentType": "InputSwitch",
+                    "className": "mb-0",
                     "props": {
                       "value": "@state.userData.is_blocked"
                     },
