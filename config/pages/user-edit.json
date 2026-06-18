@@ -55,7 +55,7 @@
                   { "label": "Участники", "route": "/users" },
                   {
                     "label": "@state.userData.fullName",
-                    "route": "/users/{@state.userData.id}"
+                    "route": "/users/{$location.routeParams.user_id}"
                   },
                   { "label": "Редактирование" }
                 ]
@@ -68,390 +68,393 @@
     {
       "id": "formMainSection",
       "type": "section",
-      "className": "flex",
+      "className": "",
       "grid": {
-        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "cols": [
+          "col-12 lg:col-6",
+          "col-12 lg:col-6",
+          "col-12 lg:col-6",
+          "col-12 lg:col-6"
+        ],
         "padding": "p-2"
       },
       "blocks": [
         {
-          "id": "leftColumnBlock",
+          "id": "personalBlock",
           "type": "block",
-          "className": "flex flex-column gap-3",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Личные данные"
+            }
+          },
+          "className": "flex flex-column",
           "components": [
             {
-              "id": "personalPanel",
+              "id": "firstNameGroup",
               "type": "component",
-              "componentType": "Panel",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
               "props": {
-                "header": "Личные данные"
-              },
-              "components": [
-                {
-                  "id": "firstNameGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Имя",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
+                "label": "Имя",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "firstNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.first_name",
+                      "placeholder": "Введите имя",
+                      "className": "w-full"
+                    },
+                    "events": [
                       {
-                        "id": "firstNameInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.userData.first_name",
-                          "placeholder": "Введите имя",
-                          "className": "w-full"
-                        },
-                        "events": [
+                        "type": "onChange",
+                        "commands": [
                           {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.first_name"
-                                }
-                              }
-                            ]
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.first_name"
+                            }
                           }
                         ]
                       }
                     ]
                   }
-                },
-                {
-                  "id": "lastNameGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Фамилия",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
-                      {
-                        "id": "lastNameInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.userData.last_name",
-                          "placeholder": "Введите фамилию",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.last_name"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "emailGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "E-mail",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
-                      {
-                        "id": "emailInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.userData.email",
-                          "placeholder": "Введите e-mail",
-                          "keyfilter": "email",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.email"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "phoneGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Телефон",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
-                      {
-                        "id": "phoneInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.userData.phone",
-                          "placeholder": "Введите телефон",
-                          "keyfilter": "int",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.phone"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                }
-              ]
+                ]
+              }
             },
             {
-              "id": "addressPanel",
+              "id": "lastNameGroup",
               "type": "component",
-              "componentType": "Panel",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
               "props": {
-                "header": "Адрес доставки"
+                "label": "Фамилия",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "lastNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.last_name",
+                      "placeholder": "Введите фамилию",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.last_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "emailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
+              "props": {
+                "label": "E-mail",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "emailInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.email",
+                      "placeholder": "Введите e-mail",
+                      "keyfilter": "email",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.email"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "phoneGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
+              "props": {
+                "label": "Телефон",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "phoneInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.phone",
+                      "placeholder": "Введите телефон",
+                      "keyfilter": "int",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.phone"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "groupsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Группа"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "groupsMultiSelect",
+              "type": "component",
+              "componentType": "MultiSelect",
+              "props": {
+                "options": "@state.userData.groupOptions",
+                "value": "@state.userData.selectedGroups",
+                "placeholder": "Выберите группы",
+                "className": "w-full",
+                "maxSelectedLabels": 5,
+                "showClear": true
               },
-              "components": [
+              "events": [
                 {
-                  "id": "deliveryAddressGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Адрес",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
-                      {
-                        "id": "deliveryAddressInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.userData.delivery_address",
-                          "placeholder": "Введите адрес доставки",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.delivery_address"
-                                }
-                              }
-                            ]
-                          }
-                        ]
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.userData.selectedGroups"
                       }
-                    ]
-                  }
-                },
-                {
-                  "id": "deliveryCommentGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Комментарий",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
-                      {
-                        "id": "deliveryCommentInput",
-                        "type": "component",
-                        "componentType": "InputTextarea",
-                        "props": {
-                          "value": "@state.userData.delivery_comment",
-                          "placeholder": "Комментарий к доставке",
-                          "rows": 3,
-                          "autoResize": true,
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.delivery_comment"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
+                    }
+                  ]
                 }
               ]
             }
           ]
         },
         {
-          "id": "rightColumnBlock",
+          "id": "deliveryBlock",
           "type": "block",
-          "className": "flex flex-column gap-3",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Адрес доставки"
+            }
+          },
+          "className": "flex flex-column",
           "components": [
             {
-              "id": "groupsPanel",
+              "id": "deliveryAddressGroup",
               "type": "component",
-              "componentType": "Panel",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
               "props": {
-                "header": "Группа"
-              },
-              "components": [
-                {
-                  "id": "groupsMultiSelect",
-                  "type": "component",
-                  "componentType": "MultiSelect",
-                  "props": {
-                    "options": "@state.userData.groupOptions",
-                    "value": "@state.userData.selectedGroups",
-                    "placeholder": "Выберите группы",
-                    "className": "w-full",
-                    "maxSelectedLabels": 5,
-                    "showClear": true
-                  },
-                  "events": [
-                    {
-                      "type": "onChange",
-                      "commands": [
-                        {
-                          "type": "setProperty",
-                          "params": {
-                            "source": "event.value",
-                            "target": "state.userData.selectedGroups"
+                "label": "Адрес",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "deliveryAddressInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.delivery_address",
+                      "placeholder": "Введите адрес доставки",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.delivery_address"
+                            }
                           }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             },
             {
-              "id": "statusPanel",
+              "id": "deliveryCommentGroup",
               "type": "component",
-              "componentType": "Panel",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
               "props": {
-                "header": "Статус"
-              },
-              "components": [
-                {
-                  "id": "blockedSwitchGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3 mb-2",
-                  "props": {
-                    "label": "Заблокировать",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9 flex align-items-center",
-                    "components": [
+                "label": "Комментарий",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "deliveryCommentInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.userData.delivery_comment",
+                      "placeholder": "Комментарий к доставке",
+                      "rows": 3,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
                       {
-                        "id": "blockedSwitch",
-                        "type": "component",
-                        "componentType": "InputSwitch",
-                        "props": {
-                          "value": "@state.userData.is_blocked"
-                        },
-                        "events": [
+                        "type": "onChange",
+                        "commands": [
                           {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.is_blocked"
-                                }
-                              }
-                            ]
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.delivery_comment"
+                            }
                           }
                         ]
                       }
                     ]
                   }
-                },
-                {
-                  "id": "blockReasonGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex align-items-start gap-3",
-                  "props": {
-                    "label": "Причина",
-                    "labelClassName": "font-bold text-sm col-3",
-                    "containerClassName": "col-9",
-                    "components": [
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "statusBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Статус"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "blockedSwitchGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3 mb-2",
+              "props": {
+                "label": "Заблокировать",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9 flex align-items-center",
+                "components": [
+                  {
+                    "id": "blockedSwitch",
+                    "type": "component",
+                    "componentType": "InputSwitch",
+                    "props": {
+                      "value": "@state.userData.is_blocked"
+                    },
+                    "events": [
                       {
-                        "id": "blockReasonInput",
-                        "type": "component",
-                        "componentType": "InputTextarea",
-                        "props": {
-                          "value": "@state.userData.block_reason",
-                          "placeholder": "Причина блокировки",
-                          "rows": 3,
-                          "autoResize": true,
-                          "className": "w-full"
-                        },
-                        "events": [
+                        "type": "onChange",
+                        "commands": [
                           {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.userData.block_reason"
-                                }
-                              }
-                            ]
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.is_blocked"
+                            }
                           }
                         ]
                       }
                     ]
                   }
-                }
-              ]
+                ]
+              }
+            },
+            {
+              "id": "blockReasonGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex align-items-start gap-3",
+              "props": {
+                "label": "Причина",
+                "labelClassName": "font-bold text-sm col-3",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "blockReasonInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.userData.block_reason",
+                      "placeholder": "Причина блокировки",
+                      "rows": 3,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.block_reason"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ]
         }
