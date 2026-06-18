@@ -467,6 +467,13 @@
         {
           "id": "buttonsBlock",
           "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1"
+            }
+          },
           "components": [
             {
               "id": "btnSave",

@@ -56,8 +56,22 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     switch (wrapper.component) {
       case "Card":
         return <Card {...wrapperProps}>{content}</Card>;
-      case "Panel":
-        return <Panel {...wrapperProps}>{content}</Panel>;
+      case "Panel": {
+        // Если header не задан, добавляем inline-стиль для верхнего бордера
+        const panelStyle = wrapperProps.header
+          ? wrapperProps.style
+          : {
+              ...wrapperProps.style,
+              borderTop: "1px solid var(--surface-border)",
+              borderTopLeftRadius: "var(--border-radius)",
+              borderTopRightRadius: "var(--border-radius)",
+            };
+        return (
+          <Panel {...wrapperProps} style={panelStyle}>
+            {content}
+          </Panel>
+        );
+      }
       case "Fieldset":
         return <Fieldset {...wrapperProps}>{content}</Fieldset>;
       case "Toolbar":

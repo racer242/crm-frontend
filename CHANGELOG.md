@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **BlockRenderer Panel header-less styling** — added inline styles for Panel wrapper in BlockRenderer when header is not set (commit `[to-be-added]`)
+  - `src/engine/BlockRenderer.tsx` — case "Panel" now checks if `wrapperProps.header` is missing and adds `borderTop`, `borderTopLeftRadius`, `borderTopRightRadius` to match `renderPanel` behavior from `ContainerComponents.tsx`
+
 ### Fixed
 
 - **Cursor jumping to end when typing in the middle of input fields** — Applied local state pattern to all input components in `src/engine/components/InputComponents.tsx`:
