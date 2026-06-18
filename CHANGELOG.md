@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **BlockRenderer Panel header-less styling** — added inline styles for Panel wrapper in BlockRenderer when header is not set (commit `[to-be-added]`)
-  - `src/engine/BlockRenderer.tsx` — case "Panel" now checks if `wrapperProps.header` is missing and adds `borderTop`, `borderTopLeftRadius`, `borderTopRightRadius` to match `renderPanel` behavior from `ContainerComponents.tsx`
+- **BlockRenderer Panel header-less styling via CSS class** — when header is not set, adds `.no-header-panel-content` class to `.p-panel-content` element via PrimeReact passthrough (pt) API (commit `[to-be-added]`)
+  - `src/engine/BlockRenderer.tsx` — case "Panel" uses `pt.content.className` to inject custom class when `wrapperProps.header` is missing
+  - `src/app/globals.css` — new `.no-header-panel-content` class with `border-top`, `border-top-left-radius`, `border-top-right-radius` styles
 
 ### Fixed
 

@@ -57,20 +57,20 @@ export function BlockRenderer({ block }: BlockRendererProps) {
       case "Card":
         return <Card {...wrapperProps}>{content}</Card>;
       case "Panel": {
-        // Если header не задан, добавляем inline-стиль для верхнего бордера
-        const panelStyle = wrapperProps.header
-          ? wrapperProps.style
-          : {
-              ...wrapperProps.style,
-              borderTop: "1px solid var(--surface-border)",
-              borderTopLeftRadius: "var(--border-radius)",
-              borderTopRightRadius: "var(--border-radius)",
-            };
-        return (
-          <Panel {...wrapperProps} style={panelStyle}>
-            {content}
-          </Panel>
-        );
+        // Если header не задан, добавляем класс к .p-panel-content через pt
+        const panelProps = !wrapperProps.header
+          ? {
+              ...wrapperProps,
+              pt: {
+                ...wrapperProps.pt,
+                content: {
+                  className:
+                    `no-header-panel-content ${wrapperProps.pt?.content?.className || ""}`.trim(),
+                },
+              },
+            }
+          : wrapperProps;
+        return <Panel {...panelProps}>{content}</Panel>;
       }
       case "Fieldset":
         return <Fieldset {...wrapperProps}>{content}</Fieldset>;

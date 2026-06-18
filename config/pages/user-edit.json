@@ -471,15 +471,16 @@
             "showHeader": false,
             "component": "Panel",
             "props": {
-              "className": "flex-grow-1"
+              "className": "flex-grow-1",
+              "style": { "background": "var(--surface-500)" }
             }
           },
+          "className": "flex mb-2 gap-4",
           "components": [
             {
               "id": "btnSave",
               "type": "component",
               "componentType": "Button",
-              "className": "mr-2",
               "props": {
                 "label": "Сохранить",
                 "icon": "pi pi-check",

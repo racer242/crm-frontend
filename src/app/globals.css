@@ -89,3 +89,10 @@ input.p-inputtext {
 .no-bottom-border tr:last-child td {
   border-bottom: none !important;
 }
+
+/* Panel без header — добавляем верхний бордер и скругление */
+.no-header-panel-content {
+  border-top: 1px solid var(--surface-border) !important;
+  border-top-left-radius: var(--border-radius) !important;
+  border-top-right-radius: var(--border-radius) !important;
+}
