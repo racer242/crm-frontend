@@ -38,14 +38,25 @@ function transform(data) {
 
   // Группы — список названий и текст с переносами
   const groupList = [];
+  let groupOptions = [];
+  let selectedGroups = [];
   if (Array.isArray(data.groups) && data.groups.length > 0) {
+    groupOptions = data.groups.map((g) => ({
+      label: g.title,
+      value: g.type,
+    }));
     data.groups.forEach((g) => {
       if (g.is_member) {
         groupList.push(g.title);
+        selectedGroups.push(g.type);
       }
     });
   }
   const groupsText = groupList.length > 0 ? groupList.join("\n") : "";
+
+  // Поля для доставки (новые, могут отсутствовать)
+  const delivery_address = data.delivery_address || "";
+  const delivery_comment = data.delivery_comment || "";
 
   // Статус блокировки
   const isBlocked = data.is_blocked === true;
@@ -63,5 +74,9 @@ function transform(data) {
     isBlocked,
     statusLabel,
     statusSeverity,
+    delivery_address,
+    delivery_comment,
+    groupOptions,
+    selectedGroups,
   };
 }

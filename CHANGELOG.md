@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Страница редактирования участника `/users/[id]/edit`** — новая страница с формой редактирования данных участника (commit `[to-be-added]`)
+  - `config/pages/user-edit.json` — конфигурация страницы: маршрут `/users/[user_id]/edit`, dataFeed для загрузки данных через существующий адаптер `user.response.js`, форма с группировкой полей по панелям
+  - **Личные данные**: Имя (InputText), Фамилия (InputText), E-mail (InputText с keyfilter="email"), Телефон (InputText с keyfilter="int")
+  - **Адрес доставки**: Адрес (InputText), Комментарий (InputTextarea)
+  - **Группа**: MultiSelect с динамическими option из `groupOptions` (все группы) и `selectedGroups` (выбранные)
+  - **Статус**: InputSwitch (Заблокировать/Разблокировать), InputTextarea (Причина блокировки)
+  - **Панель кнопок**: Сохранить (с двумя последовательными вызовами: PATCH `/api/users/[id]` → PUT `/api/users/[id]/groups`) с блокадой кнопки через `state.saving`, Отменить (navigate на страницу пользователя, сброс изменений)
+  - Обработка ошибок: onError/toast для каждой стадии сохранения
+  - `config/adapters/user.js` — расширен: добавлены `groupOptions`, `selectedGroups`, `delivery_address`, `delivery_comment`
+  - `config/adapters/user-edit-request.js` — новый request-адаптер для формирования PATCH-payload
+  - `config/crm-config.json` — зарегистрирован адаптер `user-edit.request.js` и реф страницы `./pages/user-edit.json`
+
 ### Fixed
 
 - **Filtered internal props from being passed to PrimeReact components** — removed internal configuration properties (`components`, `columns`, `tabs`, `grid`, `containerClassName`, `label`, `labelClassName`, `labelStyle`) from being spread into PrimeReact component props, which was causing potential warnings and unexpected behavior

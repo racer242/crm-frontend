@@ -107,6 +107,7 @@
     { "$ref": "./pages/components.json" },
     { "$ref": "./pages/testing.json" },
     { "$ref": "./pages/user.json" },
+    { "$ref": "./pages/user-edit.json" },
     { "$ref": "./pages/acts.json" },
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/receipts.json" },
@@ -177,6 +178,10 @@
     "user.response.js": {
       "type": "js",
       "script": "./config/adapters/user.js"
+    },
+    "user-edit.request.js": {
+      "type": "js",
+      "script": "./config/adapters/user-edit-request.js"
     }
   },
   "config": {
