@@ -6,6 +6,7 @@ export {
   renderPassword,
   renderInputTextWithThrottle,
   renderInputTextWithButton,
+  renderInputMask,
 } from "./InputComponents";
 export {
   renderDropdown,

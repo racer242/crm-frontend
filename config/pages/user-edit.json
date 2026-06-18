@@ -317,11 +317,11 @@
                   {
                     "id": "phoneInput",
                     "type": "component",
-                    "componentType": "InputText",
+                    "componentType": "InputMask",
                     "props": {
                       "value": "@state.userData.phone",
                       "placeholder": "Введите телефон",
-                      "keyfilter": "int",
+                      "mask": "(999) 999-9999",
                       "className": "w-full"
                     },
                     "events": [

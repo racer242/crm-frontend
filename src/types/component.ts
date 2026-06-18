@@ -8,6 +8,7 @@ export type ComponentType =
   | "InputNumber"
   | "InputTextarea"
   | "Password"
+  | "InputMask"
   | "Dropdown"
   | "MultiSelect"
   | "AutoComplete"

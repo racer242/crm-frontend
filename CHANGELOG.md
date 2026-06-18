@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **InputMask component** — new masked input component based on `primereact/inputmask` for formatted data entry (phones, dates, cards, etc.):
+  - `src/engine/components/InputComponents.tsx` — added `renderInputMask` function with local state pattern
+  - `src/engine/components/index.ts` — exported `renderInputMask`
+  - `src/engine/ComponentRenderer.tsx` — registered `InputMask` case
+  - `src/types/component.ts` — added `"InputMask"` to `ComponentType` union
+  - `docs/components-reference.md` — added InputMask documentation with mask examples
+  - `config/pages/user-edit.json` — replaced `InputText` with `InputMask` for phone field using mask `(999) 999-9999`
+
 - **user-edit page: Save and Apply buttons** — added two separate buttons in user edit page:
   - "Сохранить" button saves data and navigates to user detail page (`/users/{user_id}`)
   - "Применить" button saves data without navigation (stays on edit page)

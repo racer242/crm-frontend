@@ -6,6 +6,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
+import { InputMask } from "primereact/inputmask";
 import { ComponentRendererProps } from "./types";
 
 export function renderInputText({
@@ -283,5 +284,84 @@ export function renderInputTextWithButton({
       />
       <Button {...buttonProps} icon={ButtonIcon} onClick={handleButtonClick} />
     </div>
+  );
+}
+
+/**
+ * InputMask — поле ввода с маской на основе primereact/inputmask.
+ *
+ * Props:
+ * - mask: string — маска ввода (например "(999) 999-9999" для телефона, "99/99/9999" для даты)
+ * - slotChar: string — символ заполнителя (по умолчанию "_")
+ * - autoClear: boolean — автоочистка при потере фокуса (по умолчанию true)
+ * - inline: string — если "true", убирает класс "field"
+ * - Все остальные пропсы InputMask из PrimeReact
+ *
+ * События:
+ * - onChange → { value: e.value }
+ *
+ * Пример использования в JSON-конфиге:
+ * {
+ *   "id": "phoneInput",
+ *   "componentType": "InputMask",
+ *   "props": {
+ *     "mask": "(999) 999-9999",
+ *     "placeholder": "Введите телефон",
+ *     "slotChar": "_"
+ *   },
+ *   "events": [
+ *     {
+ *       "type": "onChange",
+ *       "commands": [
+ *         {
+ *           "type": "setProperty",
+ *           "params": { "source": "event.value", "target": "state.phone" }
+ *         }
+ *       ]
+ *     }
+ *   ]
+ * }
+ */
+export function renderInputMask({
+  props,
+  className,
+  style,
+  handleEvent,
+}: ComponentRendererProps) {
+  const inputMaskProps = {
+    ...props,
+    value: props.value ?? "",
+  };
+
+  const [localValue, setLocalValue] = useState(inputMaskProps.value);
+  const isFirstRender = useRef(true);
+
+  // Синхронизация с внешним value (из dataFeed, setProperty и т.д.)
+  // Пропускаем первый рендер, чтобы не затереть начальное значение из useState
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setLocalValue(inputMaskProps.value);
+  }, [inputMaskProps.value]);
+
+  const onChange = useCallback(
+    (e: any) => {
+      const val = e.value;
+      setLocalValue(val);
+      handleEvent("onChange", { value: val });
+    },
+    [handleEvent],
+  );
+
+  return (
+    <InputMask
+      {...inputMaskProps}
+      value={localValue}
+      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
+      style={style}
+      onChange={onChange}
+    />
   );
 }
