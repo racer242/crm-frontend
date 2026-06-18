@@ -404,7 +404,7 @@ async function handleRequest(
       responseData = await externalResponse.text();
     }
 
-    // console.log("------ Response Data--", responseData);
+    console.log("------ Response Data--", responseData);
 
     // Apply response adapter if specified in the route config
     if (routeAdapter) {

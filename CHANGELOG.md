@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **user-edit page: Save and Apply buttons** — added two separate buttons in user edit page:
+  - "Сохранить" button saves data and navigates to user detail page (`/users/{user_id}`)
+  - "Применить" button saves data without navigation (stays on edit page)
+  - Extracted save logic into reusable `saveUserGroups` shortcut to avoid code duplication
+  - `config/pages/user-edit.json` — added `shortcuts.saveUserGroups` with sequence command, updated buttons section
+
 - **BlockRenderer Panel header-less styling via CSS class** — when header is not set, adds `.no-header-panel-content` class to `.p-panel-content` element via PrimeReact passthrough (pt) API (commit `[to-be-added]`)
   - `src/engine/BlockRenderer.tsx` — case "Panel" uses `pt.content.className` to inject custom class when `wrapperProps.header` is missing
   - `src/app/globals.css` — new `.no-header-panel-content` class with `border-top`, `border-top-left-radius`, `border-top-right-radius` styles

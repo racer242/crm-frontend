@@ -337,7 +337,7 @@
               "id": "userStatusGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start",
+              "className": "w-full grid align-items-center",
               "props": {
                 "label": "Статус",
                 "labelClassName": "text-sm col-4 text-right",
@@ -361,7 +361,7 @@
               "id": "userStatusReasonGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start",
+              "className": "w-full grid align-items-center",
               "props": {
                 "label": "Причина отклонения",
                 "labelClassName": "text-sm col-4 text-right",

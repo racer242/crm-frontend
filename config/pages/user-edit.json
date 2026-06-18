@@ -26,6 +26,112 @@
   "meta": {
     "title": "Редактирование участника — CRM Platform"
   },
+  "shortcuts": {
+    "saveUserGroups": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/users/{$location.routeParams.user_id}",
+              "method": "PATCH",
+              "data": "{$state.userData}",
+              "target": "state.saveResult",
+              "adapter": {
+                "request": "user-edit.request.js"
+              },
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "detail": "Не удалось сохранить данные участника"
+                  }
+                }
+              ],
+              "onSuccess": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/users/{$location.routeParams.user_id}/groups",
+                    "method": "PUT",
+                    "data": {
+                      "ids": "{$state.userData.selectedGroups}"
+                    },
+                    "target": "state.groupsSaveResult",
+                    "onError": [
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "target": "state.saving",
+                          "value": false
+                        }
+                      },
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "detail": "Данные сохранены, но не удалось обновить группы"
+                        }
+                      }
+                    ],
+                    "onSuccess": [
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "target": "state.saving",
+                          "value": false
+                        }
+                      },
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "target": "state.saved",
+                          "value": true
+                        }
+                      },
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "detail": "Данные участника сохранены"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
   "dataFeed": [
     {
       "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
@@ -462,7 +568,7 @@
     {
       "id": "buttonsSection",
       "type": "section",
-      "className": "flex justify-content-center mt-3",
+      "className": "flex justify-content-center",
       "blocks": [
         {
           "id": "buttonsBlock",
@@ -472,13 +578,17 @@
             "component": "Panel",
             "props": {
               "className": "flex-grow-1",
-              "style": { "background": "var(--surface-500)" }
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
             }
           },
-          "className": "flex mb-2 gap-4",
+          "className": "flex gap-4",
           "components": [
             {
-              "id": "btnSave",
+              "id": "btnSaveAndGo",
               "type": "component",
               "componentType": "Button",
               "props": {
@@ -491,104 +601,32 @@
                 {
                   "type": "onClick",
                   "commands": [
+                    "saveUserGroups",
                     {
-                      "type": "setProperty",
+                      "type": "navigate",
                       "params": {
-                        "target": "state.saving",
-                        "value": true
-                      }
-                    },
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "target": "state.saveResult",
-                        "value": null
-                      }
-                    },
-                    {
-                      "type": "sendRequest",
-                      "params": {
-                        "url": "/api/users/{$location.routeParams.user_id}",
-                        "method": "PATCH",
-                        "data": "{$state.userData}",
-                        "target": "state.saveResult",
-                        "adapter": {
-                          "request": "user-edit.request.js"
-                        },
-                        "onError": [
-                          {
-                            "type": "setProperty",
-                            "params": {
-                              "target": "state.saving",
-                              "value": false
-                            }
-                          },
-                          {
-                            "type": "showToast",
-                            "params": {
-                              "severity": "error",
-                              "summary": "Ошибка",
-                              "detail": "Не удалось сохранить данные участника"
-                            }
-                          }
-                        ],
-                        "onSuccess": [
-                          {
-                            "type": "sendRequest",
-                            "params": {
-                              "url": "/api/users/{$location.routeParams.user_id}/groups",
-                              "method": "PUT",
-                              "data": {
-                                "ids": "{$state.userData.selectedGroups}"
-                              },
-                              "target": "state.groupsSaveResult",
-                              "onError": [
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "target": "state.saving",
-                                    "value": false
-                                  }
-                                },
-                                {
-                                  "type": "showToast",
-                                  "params": {
-                                    "severity": "error",
-                                    "summary": "Ошибка",
-                                    "detail": "Данные сохранены, но не удалось обновить группы"
-                                  }
-                                }
-                              ],
-                              "onSuccess": [
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "target": "state.saving",
-                                    "value": false
-                                  }
-                                },
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "target": "state.saved",
-                                    "value": true
-                                  }
-                                },
-                                {
-                                  "type": "showToast",
-                                  "params": {
-                                    "severity": "success",
-                                    "summary": "Успешно",
-                                    "detail": "Данные участника сохранены"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
+                        "url": "/users/{$location.routeParams.user_id}"
                       }
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "id": "btnApply",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Применить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["saveUserGroups"]
                 }
               ]
             },

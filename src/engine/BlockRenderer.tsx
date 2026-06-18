@@ -64,6 +64,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
               pt: {
                 ...wrapperProps.pt,
                 content: {
+                  ...wrapperProps.pt.content,
                   className:
                     `no-header-panel-content ${wrapperProps.pt?.content?.className || ""}`.trim(),
                 },
