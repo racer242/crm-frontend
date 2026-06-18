@@ -146,18 +146,22 @@ export function renderPanel(
     );
   };
 
-  // Если header не задан, добавляем inline-стиль для верхнего бордера
-  const panelStyle = !restProps.header
+  // Если header не задан, добавляем класс к .p-panel-content через pt
+  const panelProps = !restProps.header
     ? {
-        ...style,
-        borderTop: "1px solid var(--surface-border)",
-        borderTopLeftRadius: "var(--border-radius)",
-        borderTopRightRadius: "var(--border-radius)",
+        ...restProps,
+        pt: {
+          ...restProps.pt,
+          content: {
+            className:
+              `no-header-panel-content ${restProps.pt?.content?.className || ""}`.trim(),
+          },
+        },
       }
-    : style;
+    : restProps;
 
   return (
-    <Panel {...restProps} className={className} style={panelStyle}>
+    <Panel {...panelProps} className={className} style={style}>
       {renderComponents()}
     </Panel>
   );
