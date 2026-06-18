@@ -585,7 +585,7 @@
               }
             }
           },
-          "className": "flex gap-4",
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
               "id": "btnSaveAndGo",
