@@ -12,6 +12,7 @@
  *   "@config.theme" → значение из config.state.theme (если config - элемент)
  */
 
+import { CalcEngine } from "./CalcEngine";
 import { StateManager } from "./StateManager";
 import {
   BindingRef,
@@ -21,7 +22,6 @@ import {
   extractInlineBindings,
   isCalcOperation,
 } from "@/types";
-import { CalcEngine } from "./CalcEngine";
 
 /** Callback для уведомлений об изменениях bindings */
 export type LinkageChangeListener = () => void;
