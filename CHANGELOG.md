@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Inline-линковка `{ @... }` в строки** — линковку теперь можно вставлять в произвольную строку, оборачивая в фигурные скобки: `"/users/{@state.userData.id}"` → `"/users/42"`. Поддерживается любое количество вставок в одной строке. Реактивность работает через `subscribe()` — изменения отслеживаются автоматически.
+  - `src/types/linkage.ts` — добавлены `hasInlineBindings()`, `extractInlineBindings()`
+  - `src/core/Linkage.ts` — добавлен `resolveInline()`, изменён `resolveDeep()` и `subscribe()` для поддержки inline-линковок
+
+- **Calc Engine — утилита трансформации данных** — позволяет описывать вычисляемые значения в конфигурации: склейка строк, условный выбор, значение по умолчанию, форматирование. Calc-выражения реактивны.
+  - `src/types/calc.ts` — типы CalcOperation, isCalcOperation, CalcHandler, CalcRegistry
+  - `src/core/CalcEngine.ts` — класс с 5 встроенными операциями: join, concat, if, default, format. Поддерживает регистрацию кастомных операций.
+  - `src/core/Linkage.ts` — интеграция CalcEngine в resolveDeep
+  - `docs/calc-reference.md` — полная документация по Calc Engine
+  - `docs/linkage-reference.md` — раздел "Inline-линковка (внутри строки)"
+
 - **Страница редактирования участника `/users/[id]/edit`** — новая страница с формой редактирования данных участника (commit `[to-be-added]`)
   - `config/pages/user-edit.json` — конфигурация страницы: маршрут `/users/[user_id]/edit`, dataFeed для загрузки данных через существующий адаптер `user.response.js`, форма с группировкой полей по панелям
   - **Личные данные**: Имя (InputText), Фамилия (InputText), E-mail (InputText с keyfilter="email"), Телефон (InputText с keyfilter="int")

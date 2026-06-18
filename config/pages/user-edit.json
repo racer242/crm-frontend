@@ -55,7 +55,7 @@
                   { "label": "Участники", "route": "/users" },
                   {
                     "label": "@state.userData.fullName",
-                    "route": "/users/{$location.routeParams.user_id}"
+                    "route": "/users/@state.userData.id"
                   },
                   { "label": "Редактирование" }
                 ]

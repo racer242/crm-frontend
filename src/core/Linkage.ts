@@ -13,7 +13,15 @@
  */
 
 import { StateManager } from "./StateManager";
-import { BindingRef, parseBinding, isBinding } from "@/types";
+import {
+  BindingRef,
+  parseBinding,
+  isBinding,
+  hasInlineBindings,
+  extractInlineBindings,
+  isCalcOperation,
+} from "@/types";
+import { CalcEngine } from "./CalcEngine";
 
 /** Callback для уведомлений об изменениях bindings */
 export type LinkageChangeListener = () => void;
@@ -21,10 +29,12 @@ export type LinkageChangeListener = () => void;
 export class Linkage {
   private stateManager: StateManager;
   private pageId: string;
+  private calcEngine: CalcEngine;
 
   constructor(stateManager: StateManager, pageId: string) {
     this.stateManager = stateManager;
     this.pageId = pageId;
+    this.calcEngine = new CalcEngine(this);
   }
 
   /**
@@ -46,8 +56,31 @@ export class Linkage {
   }
 
   /**
+   * Разрешить inline-линковки { @... } внутри строки
+   *
+   * Ищет все вхождения вида "{@ELEMENT_ID.source.PATH}" и заменяет их на значения.
+   * Значения приводятся к строке.
+   *
+   * Пример: "/users/{@state.userData.id}" → "/users/42"
+   *
+   * @param str строка, содержащая inline-линковки
+   * @returns строка с подставленными значениями
+   */
+  resolveInline(str: string): string {
+    return str.replace(/\{@([^}]+)\}/g, (_match, bindingContent: string) => {
+      const resolved = this.resolve("@" + bindingContent);
+      if (resolved === null || resolved === undefined) {
+        return "";
+      }
+      return String(resolved);
+    });
+  }
+
+  /**
    * Рекурсивно разрешить bindings в любом значении
    * - Строка с @ → разрешает binding
+   * - Строка с { @... } → разрешает inline-линковки
+   * - Объект { calc, params } → выполняет calc-операцию
    * - Объект → рекурсивно проходит все поля
    * - Массив → рекурсивно проходит элементы
    * - Примитив → возвращает как есть
@@ -62,7 +95,13 @@ export class Linkage {
     }
 
     if (typeof value === "string") {
-      return this.resolve(value);
+      if (isBinding(value)) {
+        return this.resolve(value);
+      }
+      if (hasInlineBindings(value)) {
+        return this.resolveInline(value);
+      }
+      return value;
     }
 
     if (Array.isArray(value)) {
@@ -70,6 +109,14 @@ export class Linkage {
     }
 
     if (typeof value === "object") {
+      // Проверяем calc-операцию
+      if (isCalcOperation(value)) {
+        // Сначала разрешаем bindings внутри params рекурсивно,
+        // затем передаём в CalcEngine
+        const resolvedParams = this.resolveDeep(value.params);
+        return this.calcEngine.execute(value.calc, resolvedParams);
+      }
+
       const result: Record<string, any> = {};
       for (const [key, val] of Object.entries(value)) {
         result[key] = this.resolveDeep(val);
@@ -93,10 +140,21 @@ export class Linkage {
     // Парсим все bindings
     const parsedBindings: BindingRef[] = [];
     for (const b of bindings) {
-      if (b && isBinding(b)) {
+      if (!b) continue;
+
+      if (isBinding(b)) {
         const parsed = parseBinding(b);
         if (parsed) {
           parsedBindings.push(parsed);
+        }
+      } else if (hasInlineBindings(b)) {
+        // Извлекаем inline-линковки из строки
+        const inlineBindings = extractInlineBindings(b);
+        for (const inlineBinding of inlineBindings) {
+          const parsed = parseBinding(inlineBinding);
+          if (parsed) {
+            parsedBindings.push(parsed);
+          }
         }
       }
     }

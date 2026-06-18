@@ -8,3 +8,5 @@ export type { MacroSources, MacroOptions } from "@/types";
 export { CommandExecutor } from "./CommandExecutor";
 export type { CommandExecutionContext } from "./CommandExecutor";
 export { executeClientDataFeed } from "./DataFeedService";
+export { CalcEngine } from "./CalcEngine";
+export type { CalcOperation, CalcHandler, CalcRegistry } from "@/types";

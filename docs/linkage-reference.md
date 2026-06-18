@@ -136,6 +136,35 @@ interface BindingRef {
 }
 ```
 
+### Inline-линковка (внутри строки)
+
+```json
+{
+  "id": "breadcrumb",
+  "type": "Breadcrumb",
+  "props": {
+    "model": [
+      { "label": "Участники", "route": "/users" },
+      {
+        "label": "{@state.userData.fullName}",
+        "route": "/users/{@state.userData.id}"
+      }
+    ]
+  }
+}
+```
+
+Inline-линковка работает для любого количества вставок в одной строке:
+
+```json
+"label": "{@state.firstName} {@state.lastName} ({@state.role})"
+// → "Иван Иванов (admin)"
+```
+
+Если binding разрешается в null/undefined — вставляется пустая строка.
+
+---
+
 ### В model компонентов
 
 ```json
@@ -297,7 +326,11 @@ class Linkage {
   // Разрешить binding-строку
   resolve(binding: string | undefined): any;
 
+  // Разрешить inline-линковки { @... } внутри строки
+  resolveInline(str: string): string;
+
   // Рекурсивно разрешить bindings в любом значении
+  // (включая inline-линковки и calc-операции)
   resolveDeep(value: any): any;
 
   // Подписаться на изменения bindings
