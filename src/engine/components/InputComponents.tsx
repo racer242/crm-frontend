@@ -63,12 +63,35 @@ export function renderInputNumber({
     value: props.value ?? 0,
   };
 
+  const [localValue, setLocalValue] = useState(inputNumberProps.value);
+  const isFirstRender = useRef(true);
+
+  // Синхронизация с внешним value (из dataFeed, setProperty и т.д.)
+  // Пропускаем первый рендер, чтобы не затереть начальное значение из useState
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setLocalValue(inputNumberProps.value);
+  }, [inputNumberProps.value]);
+
+  const onValueChange = useCallback(
+    (e: any) => {
+      const val = e.value;
+      setLocalValue(val);
+      handleEvent("onChange", { value: val });
+    },
+    [handleEvent],
+  );
+
   return (
     <InputNumber
       {...inputNumberProps}
+      value={localValue}
       className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
-      onValueChange={(e) => handleEvent("onChange", { value: e.value })}
+      onValueChange={onValueChange}
     />
   );
 }
@@ -84,12 +107,35 @@ export function renderInputTextarea({
     value: props.value ?? "",
   };
 
+  const [localValue, setLocalValue] = useState(textareaProps.value);
+  const isFirstRender = useRef(true);
+
+  // Синхронизация с внешним value (из dataFeed, setProperty и т.д.)
+  // Пропускаем первый рендер, чтобы не затереть начальное значение из useState
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setLocalValue(textareaProps.value);
+  }, [textareaProps.value]);
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const val = e.target.value;
+      setLocalValue(val);
+      handleEvent("onChange", { value: val });
+    },
+    [handleEvent],
+  );
+
   return (
     <InputTextarea
       {...textareaProps}
+      value={localValue}
       className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
-      onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+      onChange={onChange}
     />
   );
 }
@@ -105,12 +151,35 @@ export function renderPassword({
     value: props.value ?? "",
   };
 
+  const [localValue, setLocalValue] = useState(passwordProps.value);
+  const isFirstRender = useRef(true);
+
+  // Синхронизация с внешним value (из dataFeed, setProperty и т.д.)
+  // Пропускаем первый рендер, чтобы не затереть начальное значение из useState
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setLocalValue(passwordProps.value);
+  }, [passwordProps.value]);
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setLocalValue(val);
+      handleEvent("onChange", { value: val });
+    },
+    [handleEvent],
+  );
+
   return (
     <Password
       {...passwordProps}
+      value={localValue}
       className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
-      onChange={(e) => handleEvent("onChange", { value: e.target.value })}
+      onChange={onChange}
     />
   );
 }
@@ -212,15 +281,7 @@ export function renderInputTextWithButton({
         className="w-full"
         onChange={(e) => handleEvent("onChange", { value: e.target.value })}
       />
-      <Button
-        {...buttonProps}
-        icon={ButtonIcon}
-        // label={buttonProps.label}
-        // severity={buttonProps.severity || "primary"}
-        // outlined={buttonProps.outlined ?? true}
-        // className={buttonProps.className || ""}
-        onClick={handleButtonClick}
-      />
+      <Button {...buttonProps} icon={ButtonIcon} onClick={handleButtonClick} />
     </div>
   );
 }

@@ -6,9 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- **InputText cursor jumping to end when typing in the middle** — `src/engine/components/InputComponents.tsx`: `renderInputText` now uses local state (`localValue`) with `useState` and syncs with external `props.value` via `useEffect`. This prevents React from overwriting the input value on every re-render caused by Linkage subscription, which was causing the cursor to jump to the end. The fix follows the same pattern as `renderInputTextWithThrottle` but without the delay — `handleEvent("onChange")` is called immediately.
+- **Cursor jumping to end when typing in the middle of input fields** — Applied local state pattern to all input components in `src/engine/components/InputComponents.tsx`:
+  - `renderInputText` — InputText with local state
+  - `renderInputNumber` — InputNumber with local state
+  - `renderInputTextarea` — InputTextarea with local state
+  - `renderPassword` — Password with local state
+
+  All components now use `useState` for `localValue` and sync with external `props.value` via `useEffect`. This prevents React from overwriting the input value on every re-render caused by Linkage subscription, which was causing the cursor to jump to the end. The fix follows the same pattern as `renderInputTextWithThrottle` but without the delay — `handleEvent("onChange")` is called immediately.
   - First render skip: `isFirstRender` ref prevents overwriting initial `useState` value
-  - External changes (from `dataFeed`, `setProperty`) still sync correctly via `useEffect` dependency on `inputProps.value`
+  - External changes (from `dataFeed`, `setProperty`) still sync correctly via `useEffect` dependency on props value
 
 ### Added
 
