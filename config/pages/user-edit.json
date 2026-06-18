@@ -339,11 +339,9 @@
             {
               "id": "blockedSwitchGroup",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "componentType": "LayoutGroup",
+              "className": "flex align-items-center gap-2 mb-2",
               "props": {
-                "label": "Заблокировать",
-                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "blockedSwitch",
@@ -366,6 +364,14 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "id": "blockedLabel",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "Заблокировать"
+                    }
                   }
                 ]
               }
