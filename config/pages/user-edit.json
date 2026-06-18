@@ -243,46 +243,6 @@
           ]
         },
         {
-          "id": "groupsBlock",
-          "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Группа"
-            }
-          },
-          "className": "flex flex-column",
-          "components": [
-            {
-              "id": "groupsMultiSelect",
-              "type": "component",
-              "componentType": "MultiSelect",
-              "props": {
-                "options": "@state.userData.groupOptions",
-                "value": "@state.userData.selectedGroups",
-                "placeholder": "Выберите группы",
-                "className": "w-full",
-                "maxSelectedLabels": 5,
-                "showClear": true
-              },
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.userData.selectedGroups"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
           "id": "deliveryBlock",
           "type": "block",
           "wrapper": {
@@ -455,6 +415,46 @@
                   }
                 ]
               }
+            }
+          ]
+        },
+        {
+          "id": "groupsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Группа"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "groupsMultiSelect",
+              "type": "component",
+              "componentType": "MultiSelect",
+              "props": {
+                "options": "@state.userData.groupOptions",
+                "value": "@state.userData.selectedGroups",
+                "placeholder": "Выберите группы",
+                "className": "w-full",
+                "maxSelectedLabels": 5,
+                "showClear": true
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.userData.selectedGroups"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
