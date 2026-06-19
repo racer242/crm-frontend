@@ -114,7 +114,8 @@
     { "$ref": "./pages/codes.json" },
     { "$ref": "./pages/gtins.json" },
     { "$ref": "./pages/user-docs.json" },
-    { "$ref": "./pages/user-docs-edit.json" }
+    { "$ref": "./pages/user-docs-edit.json" },
+    { "$ref": "./pages/user-acts.json" }
   ],
   "adapters": {
     "stats.analytics.js": {

@@ -1,0 +1,371 @@
+{
+  "id": "user-acts",
+  "type": "page",
+  "route": "/users/[user_id]/acts",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "filtersVisible": false,
+    "userData": {
+      "id": "",
+      "fullName": ""
+    },
+    "acts": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": [],
+      "search": ""
+    }
+  },
+  "meta": {
+    "title": "Акты участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData",
+      "adapter": "user.response.js"
+    },
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/acts",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      },
+      "method": "GET",
+      "target": "state.acts"
+    }
+  ],
+  "shortcuts": {
+    "requestUserActs": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/users/{$location.routeParams.user_id}/acts",
+              "method": "GET",
+              "target": "state.acts",
+              "data": {
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.acts.sortField}",
+                "sortOrder": "{$state.acts.sortOrder}",
+                "search": "{$state.acts.search}",
+                "filters": "{$state.acts.filters}"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.acts.sortField}",
+                "sortOrder": "{$state.acts.sortOrder}",
+                "search": "{$state.acts.search}",
+                "filters": "{$state.acts.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/users" },
+                  { "label": "@state.userData.fullName" },
+                  { "label": "Акты" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "docs",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsFilters",
+      "type": "section",
+      "className": "flex flex-wrap gap-3",
+      "blocks": [
+        {
+          "id": "actsSearchBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "className": "flex-grow-1"
+          },
+          "components": [
+            {
+              "id": "actsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.acts.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.acts.search"
+                      }
+                    },
+                    "requestUserActs"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "actsFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "flex-initial"
+          },
+          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
+          "components": [
+            {
+              "id": "actsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsBtnAdd",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-plus",
+                "severity": "success",
+                "size": "small",
+                "label": "Добавить акт"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/acts/add"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "actsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "actsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.acts.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.acts.filters"
+                      }
+                    },
+                    "requestUserActs"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.acts.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.acts.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestUserActs"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "actsTableBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "actsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.acts.value",
+                "columns": "@state.acts.columns",
+                "totalRecords": "@state.acts.totalRecords",
+                "rows": "@state.acts.rows",
+                "first": "@state.acts.first",
+                "sortField": "@state.acts.sortField",
+                "sortOrder": "@state.acts.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestUserActs"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestUserActs"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

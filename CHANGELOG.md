@@ -22,6 +22,11 @@ All notable changes to this project will be documented in this file.
   - `config/adapters/user-docs-edit-request.js` — request-адаптер для PATCH /api/users/[id]/docs: фильтрация редактируемых полей паспорта и ИНН
   - `config/crm-config.json` — зарегистрирован адаптер `user-docs-edit.request.js` и реф страницы `./pages/user-docs-edit.json`
 
+- **Страница актов участника `/users/[id]/acts`** — страница со списком актов участника с поиском, фильтрацией и пагинацией.
+  - `config/pages/user-acts.json` — конфигурация страницы: маршрут `/users/[user_id]/acts`, два dataFeed (основные данные пользователя + акты), lazy DataTable с поиском/фильтрами/пагинацией, кнопка "Добавить акт" с навигацией на `/acts/add`
+  - `config/system/api-routes.json` — добавлен adapter (acts.request.js/acts.response.js) для роута `users/[id]/acts`
+  - `config/crm-config.json` — зарегистрирован реф страницы `./pages/user-acts.json`
+
 ### Added
 
 - **Menubar `activeItemId` prop** — new optional prop for highlighting active menu items with `p-focus` class. The parameter is extracted from props and does not pass through to the PrimeReact component. **Only applies to top-level menu items.**

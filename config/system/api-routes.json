@@ -74,6 +74,10 @@
     "path": "users/[id]/acts",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts",
+    "adapter": {
+      "request": "acts.request.js",
+      "response": "acts.response.js"
+    },
     "note": "Участники: Акты участника"
   },
   {
