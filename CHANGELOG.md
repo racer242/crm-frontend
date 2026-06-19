@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Image component** — new display component for rendering images using `primereact/image` with optional preview (zoom) support.
+  - `src/engine/components/DisplayComponents.tsx` — added `renderImage` function with `src`, `alt`, `width`, `height`, `preview` props
+  - `src/engine/components/index.ts` — exported `renderImage`
+  - `src/engine/ComponentRenderer.tsx` — registered `Image` case
+  - `docs/components-reference.md` — added Image component documentation
+
+- **Страница документов участника `/users/[id]/docs`** — read-only страница просмотра паспортных данных и ИНН участника.
+  - `config/pages/user-docs.json` — конфигурация страницы: маршрут `/users/[user_id]/docs`, два dataFeed (основные данные + документы через `user-docs.response.js`), две колонки (Паспорт и ИНН) с read-only отображением полей через LabelledGroup + Text/Image/Tag
+  - `config/adapters/user-docs.js` — JS-адаптер для ответа `/api/users/[id]/docs`: форматирование дат, преобразование moderation_status в label/severity, склейка fullName для breadcrumb
+  - `config/crm-config.json` — зарегистрирован адаптер `user-docs.response.js` и реф страницы `./pages/user-docs.json`
+
+### Added
+
 - **Menubar `activeItemId` prop** — new optional prop for highlighting active menu items with `p-focus` class. The parameter is extracted from props and does not pass through to the PrimeReact component. **Only applies to top-level menu items.**
   - `src/engine/components/NavComponents.tsx` — updated `renderMenubar` to extract `activeItemId` from props, add `p-focus` className to matching item by `id`
   - `docs/components-reference.md` — added `activeItemId` documentation to Menubar section

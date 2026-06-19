@@ -80,7 +80,6 @@
     {
       "id": "menuSection",
       "type": "section",
-      "className": "",
       "blocks": [
         {
           "id": "menuBlock",
@@ -91,22 +90,11 @@
               "id": "menubar",
               "type": "component",
               "componentType": "Menubar",
-              "props": { "$ref": "../menus/user.json" },
-              "events": [
-                {
-                  "type": "onNavigate",
-                  "commands": [
-                    {
-                      "type": "log",
-                      "params": {
-                        "message": {
-                          "event": "{$event}"
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
+              "props": {
+                "activeItemId": "profile",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
             }
           ]
         }

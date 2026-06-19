@@ -51,6 +51,7 @@ import {
   renderLayoutGroup,
   renderLabelledGroup,
   renderPanel,
+  renderImage,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -164,6 +165,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderLabelledGroup(renderProps);
     case "Panel":
       return renderPanel(renderProps);
+    case "Image":
+      return renderImage(renderProps);
     default:
       return (
         <div className={className} style={style}>

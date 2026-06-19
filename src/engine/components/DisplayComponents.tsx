@@ -6,6 +6,7 @@ import { Chip } from "primereact/chip";
 import { Avatar } from "primereact/avatar";
 import { Badge } from "primereact/badge";
 import { Tag } from "primereact/tag";
+import { Image } from "primereact/image";
 import { ComponentRendererProps } from "./types";
 
 export function renderSkeleton({
@@ -33,9 +34,7 @@ export function renderAvatar({
   className,
   style,
 }: ComponentRendererProps) {
-  return (
-    <Avatar {...props} className={`${className || ""} mr-2`} style={style} />
-  );
+  return <Avatar {...props} className={className || ""} style={style} />;
 }
 
 export function renderBadge({
@@ -48,4 +47,19 @@ export function renderBadge({
 
 export function renderTag({ props, className, style }: ComponentRendererProps) {
   return <Tag {...props} className={className || ""} style={style} />;
+}
+
+export function renderImage({
+  props,
+  className,
+  style,
+}: ComponentRendererProps) {
+  return (
+    <Image
+      {...props}
+      className={className || ""}
+      style={style}
+      alt={props.alt || ""}
+    />
+  );
 }

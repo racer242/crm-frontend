@@ -112,7 +112,8 @@
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/receipts.json" },
     { "$ref": "./pages/codes.json" },
-    { "$ref": "./pages/gtins.json" }
+    { "$ref": "./pages/gtins.json" },
+    { "$ref": "./pages/user-docs.json" }
   ],
   "adapters": {
     "stats.analytics.js": {
@@ -182,6 +183,10 @@
     "user-edit.request.js": {
       "type": "js",
       "script": "./config/adapters/user-edit-request.js"
+    },
+    "user-docs.response.js": {
+      "type": "js",
+      "script": "./config/adapters/user-docs.js"
     }
   },
   "config": {

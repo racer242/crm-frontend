@@ -39,6 +39,7 @@ export {
   renderAvatar,
   renderBadge,
   renderTag,
+  renderImage,
 } from "./DisplayComponents";
 export { renderProgressBar, renderProgressSpinner } from "./ProgressComponents";
 export {
