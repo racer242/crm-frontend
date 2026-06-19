@@ -360,6 +360,17 @@
                 {
                   "type": "onSort",
                   "commands": ["requestUserActs"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
+                      }
+                    }
+                  ]
                 }
               ]
             }
