@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Menubar `activeItemId` prop** — new optional prop for highlighting active menu items with `p-focus` class. The parameter is extracted from props and does not pass through to the PrimeReact component. **Only applies to top-level menu items.**
+  - `src/engine/components/NavComponents.tsx` — updated `renderMenubar` to extract `activeItemId` from props, add `p-focus` className to matching item by `id`
+  - `docs/components-reference.md` — added `activeItemId` documentation to Menubar section
+
+### Changed
+
 - **InputMask component** — new masked input component based on `primereact/inputmask` for formatted data entry (phones, dates, cards, etc.):
   - `src/engine/components/InputComponents.tsx` — added `renderInputMask` function with local state pattern
   - `src/engine/components/index.ts` — exported `renderInputMask`
