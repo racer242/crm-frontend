@@ -7,6 +7,7 @@ import { Steps } from "primereact/steps";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ComponentRendererProps } from "./types";
+import { classNames } from "primereact/utils";
 
 function processMenuItems(
   items: any[],
@@ -60,17 +61,28 @@ export function renderMenubar({
 }: ComponentRendererProps) {
   const router = useRouter();
 
-  const menuModel = processMenuItems(
-    props.model || [],
+  const { activeItemId, ...restProps } = props as any;
+
+  let menuModel = processMenuItems(
+    restProps.model || [],
     router,
     handleEvent,
     true,
   );
 
+  if (activeItemId) {
+    menuModel = menuModel.map((item) =>
+      item.id === activeItemId
+        ? { ...item, className: classNames(item.className, "p-focus") }
+        : item,
+    );
+  }
+
   return (
     <Menubar
+      {...restProps}
       model={menuModel}
-      className={`w-full ${className || ""} ${props.allowMobile === true ? "" : "custom-menubar-fixed"}`}
+      className={`w-full ${className || ""} ${restProps.allowMobile === true ? "" : "custom-menubar-fixed"}`}
       style={style}
     />
   );

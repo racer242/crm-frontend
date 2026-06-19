@@ -321,7 +321,7 @@
                     "props": {
                       "value": "@state.userData.phone",
                       "placeholder": "Введите телефон",
-                      "mask": "(999) 999-9999",
+                      "mask": "+9 (999) 999-99-99",
                       "className": "w-full"
                     },
                     "events": [

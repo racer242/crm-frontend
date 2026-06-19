@@ -57,7 +57,7 @@
       "className": "",
       "blocks": [
         {
-          "id": "userTitleBlock",
+          "id": "breadcrumbBlock",
           "type": "block",
           "components": [
             {
@@ -77,7 +77,41 @@
         }
       ]
     },
-
+    {
+      "id": "menuSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": { "$ref": "../menus/user.json" },
+              "events": [
+                {
+                  "type": "onNavigate",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": {
+                          "event": "{$event}"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "statsRowSection",
       "type": "section",
