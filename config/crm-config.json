@@ -113,7 +113,8 @@
     { "$ref": "./pages/receipts.json" },
     { "$ref": "./pages/codes.json" },
     { "$ref": "./pages/gtins.json" },
-    { "$ref": "./pages/user-docs.json" }
+    { "$ref": "./pages/user-docs.json" },
+    { "$ref": "./pages/user-docs-edit.json" }
   ],
   "adapters": {
     "stats.analytics.js": {
@@ -187,6 +188,10 @@
     "user-docs.response.js": {
       "type": "js",
       "script": "./config/adapters/user-docs.js"
+    },
+    "user-docs-edit.request.js": {
+      "type": "js",
+      "script": "./config/adapters/user-docs-edit-request.js"
     }
   },
   "config": {

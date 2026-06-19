@@ -17,6 +17,11 @@ All notable changes to this project will be documented in this file.
   - `config/adapters/user-docs.js` — JS-адаптер для ответа `/api/users/[id]/docs`: форматирование дат, преобразование moderation_status в label/severity, склейка fullName для breadcrumb
   - `config/crm-config.json` — зарегистрирован адаптер `user-docs.response.js` и реф страницы `./pages/user-docs.json`
 
+- **Страница редактирования документов участника `/users/[id]/docs/edit`** — форма редактирования паспортных данных и ИНН участника.
+  - `config/pages/user-docs-edit.json` — конфигурация страницы: маршрут `/users/[user_id]/docs/edit`, dataFeed для загрузки документов, форма с двумя панелями (Паспорт и ИНН) с полями InputText/Calendar/InputTextarea, shortcut `saveUserDocs` для PATCH `/api/users/[id]/docs`, кнопки Сохранить/Применить/Отменить с тостами
+  - `config/adapters/user-docs-edit-request.js` — request-адаптер для PATCH /api/users/[id]/docs: фильтрация редактируемых полей паспорта и ИНН
+  - `config/crm-config.json` — зарегистрирован адаптер `user-docs-edit.request.js` и реф страницы `./pages/user-docs-edit.json`
+
 ### Added
 
 - **Menubar `activeItemId` prop** — new optional prop for highlighting active menu items with `p-focus` class. The parameter is extracted from props and does not pass through to the PrimeReact component. **Only applies to top-level menu items.**

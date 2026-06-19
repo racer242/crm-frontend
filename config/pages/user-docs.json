@@ -501,7 +501,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "{$config.baseURL}/users/{$location.routeParams.user_id}/docs-edit"
+                        "url": "{$config.baseURL}/users/{$location.routeParams.user_id}/docs/edit"
                       }
                     }
                   ]

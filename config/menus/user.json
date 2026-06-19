@@ -12,7 +12,7 @@
       "icon": "pi pi-file",
       "items": [
         {
-          "label": "Личные документы",
+          "label": "Личные",
           "icon": "pi pi-id-card",
           "route": "/users/{@state.userData.id}/docs"
         },
