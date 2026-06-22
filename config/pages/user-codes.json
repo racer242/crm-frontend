@@ -1,7 +1,7 @@
 {
-  "id": "user-acts",
+  "id": "user-codes",
   "type": "page",
-  "route": "/users/[user_id]/acts",
+  "route": "/users/[user_id]/codes",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,7 @@
       "id": "",
       "fullName": ""
     },
-    "acts": {
+    "codes": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -23,7 +23,7 @@
     }
   },
   "meta": {
-    "title": "Акты участника — CRM Platform"
+    "title": "Коды участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -33,7 +33,7 @@
       "adapter": "user.response.js"
     },
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/acts",
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/codes",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -43,27 +43,27 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.acts"
+      "target": "state.codes"
     }
   ],
   "shortcuts": {
-    "requestUserActs": {
+    "requestUserCodes": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/acts",
+              "url": "/api/users/{$location.routeParams.user_id}/codes",
               "method": "GET",
-              "target": "state.acts",
+              "target": "state.codes",
               "data": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.codes.first}",
+                "rows": "{$state.codes.rows}",
+                "sortField": "{$state.codes.sortField}",
+                "sortOrder": "{$state.codes.sortOrder}",
+                "search": "{$state.codes.search}",
+                "filters": "{$state.codes.filters}"
               }
             }
           },
@@ -71,12 +71,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.codes.first}",
+                "rows": "{$state.codes.rows}",
+                "sortField": "{$state.codes.sortField}",
+                "sortOrder": "{$state.codes.sortOrder}",
+                "search": "{$state.codes.search}",
+                "filters": "{$state.codes.filters}"
               },
               "format": [
                 {
@@ -119,7 +119,7 @@
                     "label": "@state.userData.fullName",
                     "route": "/users/{@state.userData.id}"
                   },
-                  { "label": "Акты" }
+                  { "label": "Коды" }
                 ]
               }
             }
@@ -141,7 +141,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "docs",
+                "activeItemId": "production",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }
@@ -151,24 +151,24 @@
       ]
     },
     {
-      "id": "actsFilters",
+      "id": "codesFilters",
       "type": "section",
       "className": "flex gap-3",
       "blocks": [
         {
-          "id": "actsSearchBlock",
+          "id": "codesSearchBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "actsSearchInput",
+              "id": "codesSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.acts.search"
+                "value": "@state.codes.search"
               },
               "events": [
                 {
@@ -178,10 +178,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.search"
+                        "target": "state.codes.search"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserCodes"
                   ]
                 }
               ]
@@ -189,7 +189,7 @@
           ]
         },
         {
-          "id": "actsFilterBlock",
+          "id": "codesFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "flex-initial"
@@ -197,7 +197,7 @@
           "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "components": [
             {
-              "id": "actsToggleFilters",
+              "id": "codesToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -223,7 +223,7 @@
               ]
             },
             {
-              "id": "actsBtnAdd",
+              "id": "codesBtnAdd",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -231,16 +231,18 @@
                 "icon": "pi pi-plus",
                 "severity": "success",
                 "size": "small",
-                "label": "Добавить акт"
+                "label": "Добавить"
               },
               "events": [
                 {
                   "type": "onClick",
                   "commands": [
                     {
-                      "type": "navigate",
+                      "type": "showMessage",
                       "params": {
-                        "url": "/acts/add"
+                        "severity": "info",
+                        "summary": "Заглушка",
+                        "detail": "Функция добавления кода ещё не реализована"
                       }
                     }
                   ]
@@ -250,18 +252,18 @@
           ]
         },
         {
-          "id": "actsActiveFilterBlock",
+          "id": "codesActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "actsActiveFilterChips",
+              "id": "codesActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.acts.filters"
+                "value": "@state.codes.filters"
               },
               "events": [
                 {
@@ -271,20 +273,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.codes.filters"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserCodes"
                   ]
                 }
               ]
             },
             {
-              "id": "actsFilterDrawer",
+              "id": "codesFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.acts.filters",
+                "value": "@state.codes.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -297,7 +299,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.codes.filters"
                       }
                     },
                     {
@@ -306,7 +308,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserCodes"
                   ]
                 },
                 {
@@ -327,50 +329,38 @@
       ]
     },
     {
-      "id": "actsTableSection",
+      "id": "codesTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "actsTableBlock",
+          "id": "codesTableBlock",
           "type": "block",
           "components": [
             {
-              "id": "actsTable",
+              "id": "codesTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.acts.value",
-                "columns": "@state.acts.columns",
-                "totalRecords": "@state.acts.totalRecords",
-                "rows": "@state.acts.rows",
-                "first": "@state.acts.first",
-                "sortField": "@state.acts.sortField",
-                "sortOrder": "@state.acts.sortOrder",
+                "value": "@state.codes.value",
+                "columns": "@state.codes.columns",
+                "totalRecords": "@state.codes.totalRecords",
+                "rows": "@state.codes.rows",
+                "first": "@state.codes.first",
+                "sortField": "@state.codes.sortField",
+                "sortOrder": "@state.codes.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
-                "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserActs"]
+                  "commands": ["requestUserCodes"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserActs"]
-                },
-                {
-                  "type": "onRowClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
-                      }
-                    }
-                  ]
+                  "commands": ["requestUserCodes"]
                 }
               ]
             }

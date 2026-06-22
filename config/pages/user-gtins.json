@@ -1,7 +1,7 @@
 {
-  "id": "user-acts",
+  "id": "user-gtins",
   "type": "page",
-  "route": "/users/[user_id]/acts",
+  "route": "/users/[user_id]/gtins",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,7 @@
       "id": "",
       "fullName": ""
     },
-    "acts": {
+    "gtins": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -23,7 +23,7 @@
     }
   },
   "meta": {
-    "title": "Акты участника — CRM Platform"
+    "title": "Коды ЧЗ участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -33,7 +33,7 @@
       "adapter": "user.response.js"
     },
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/acts",
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/gtins",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -43,27 +43,27 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.acts"
+      "target": "state.gtins"
     }
   ],
   "shortcuts": {
-    "requestUserActs": {
+    "requestUserGtins": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/acts",
+              "url": "/api/users/{$location.routeParams.user_id}/gtins",
               "method": "GET",
-              "target": "state.acts",
+              "target": "state.gtins",
               "data": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.gtins.first}",
+                "rows": "{$state.gtins.rows}",
+                "sortField": "{$state.gtins.sortField}",
+                "sortOrder": "{$state.gtins.sortOrder}",
+                "search": "{$state.gtins.search}",
+                "filters": "{$state.gtins.filters}"
               }
             }
           },
@@ -71,12 +71,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.gtins.first}",
+                "rows": "{$state.gtins.rows}",
+                "sortField": "{$state.gtins.sortField}",
+                "sortOrder": "{$state.gtins.sortOrder}",
+                "search": "{$state.gtins.search}",
+                "filters": "{$state.gtins.filters}"
               },
               "format": [
                 {
@@ -119,7 +119,7 @@
                     "label": "@state.userData.fullName",
                     "route": "/users/{@state.userData.id}"
                   },
-                  { "label": "Акты" }
+                  { "label": "Коды ЧЗ" }
                 ]
               }
             }
@@ -141,7 +141,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "docs",
+                "activeItemId": "production",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }
@@ -151,24 +151,24 @@
       ]
     },
     {
-      "id": "actsFilters",
+      "id": "gtinsFilters",
       "type": "section",
       "className": "flex gap-3",
       "blocks": [
         {
-          "id": "actsSearchBlock",
+          "id": "gtinsSearchBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "actsSearchInput",
+              "id": "gtinsSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.acts.search"
+                "value": "@state.gtins.search"
               },
               "events": [
                 {
@@ -178,10 +178,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.search"
+                        "target": "state.gtins.search"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserGtins"
                   ]
                 }
               ]
@@ -189,7 +189,7 @@
           ]
         },
         {
-          "id": "actsFilterBlock",
+          "id": "gtinsFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "flex-initial"
@@ -197,7 +197,7 @@
           "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "components": [
             {
-              "id": "actsToggleFilters",
+              "id": "gtinsToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -221,47 +221,22 @@
                   ]
                 }
               ]
-            },
-            {
-              "id": "actsBtnAdd",
-              "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
-              "props": {
-                "icon": "pi pi-plus",
-                "severity": "success",
-                "size": "small",
-                "label": "Добавить акт"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/acts/add"
-                      }
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },
         {
-          "id": "actsActiveFilterBlock",
+          "id": "gtinsActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "actsActiveFilterChips",
+              "id": "gtinsActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.acts.filters"
+                "value": "@state.gtins.filters"
               },
               "events": [
                 {
@@ -271,20 +246,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.gtins.filters"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserGtins"
                   ]
                 }
               ]
             },
             {
-              "id": "actsFilterDrawer",
+              "id": "gtinsFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.acts.filters",
+                "value": "@state.gtins.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -297,7 +272,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.gtins.filters"
                       }
                     },
                     {
@@ -306,7 +281,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserGtins"
                   ]
                 },
                 {
@@ -327,50 +302,38 @@
       ]
     },
     {
-      "id": "actsTableSection",
+      "id": "gtinsTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "actsTableBlock",
+          "id": "gtinsTableBlock",
           "type": "block",
           "components": [
             {
-              "id": "actsTable",
+              "id": "gtinsTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.acts.value",
-                "columns": "@state.acts.columns",
-                "totalRecords": "@state.acts.totalRecords",
-                "rows": "@state.acts.rows",
-                "first": "@state.acts.first",
-                "sortField": "@state.acts.sortField",
-                "sortOrder": "@state.acts.sortOrder",
+                "value": "@state.gtins.value",
+                "columns": "@state.gtins.columns",
+                "totalRecords": "@state.gtins.totalRecords",
+                "rows": "@state.gtins.rows",
+                "first": "@state.gtins.first",
+                "sortField": "@state.gtins.sortField",
+                "sortOrder": "@state.gtins.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
-                "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserActs"]
+                  "commands": ["requestUserGtins"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserActs"]
-                },
-                {
-                  "type": "onRowClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
-                      }
-                    }
-                  ]
+                  "commands": ["requestUserGtins"]
                 }
               ]
             }

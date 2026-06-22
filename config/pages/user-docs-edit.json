@@ -131,12 +131,12 @@
                 "model": [
                   { "label": "Участники", "route": "/users" },
                   {
-                    "label": "@state.docsData.fullName",
-                    "route": "/users/{$location.routeParams.user_id}"
+                    "label": "@state.userData.fullName",
+                    "route": "/users/{@state.userData.id}"
                   },
                   {
                     "label": "Документы",
-                    "route": "/users/{$location.routeParams.user_id}/docs"
+                    "route": "/users/{@state.userData.id}/docs"
                   },
                   { "label": "Редактирование" }
                 ]

@@ -1,7 +1,7 @@
 {
-  "id": "user-acts",
+  "id": "user-prizes",
   "type": "page",
-  "route": "/users/[user_id]/acts",
+  "route": "/users/[user_id]/prizes",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,7 @@
       "id": "",
       "fullName": ""
     },
-    "acts": {
+    "prizes": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -23,7 +23,7 @@
     }
   },
   "meta": {
-    "title": "Акты участника — CRM Platform"
+    "title": "Призы участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -33,7 +33,7 @@
       "adapter": "user.response.js"
     },
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/acts",
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/prizes",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -43,27 +43,27 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.acts"
+      "target": "state.prizes"
     }
   ],
   "shortcuts": {
-    "requestUserActs": {
+    "requestUserPrizes": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/acts",
+              "url": "/api/users/{$location.routeParams.user_id}/prizes",
               "method": "GET",
-              "target": "state.acts",
+              "target": "state.prizes",
               "data": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "sortField": "{$state.prizes.sortField}",
+                "sortOrder": "{$state.prizes.sortOrder}",
+                "search": "{$state.prizes.search}",
+                "filters": "{$state.prizes.filters}"
               }
             }
           },
@@ -71,12 +71,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "sortField": "{$state.prizes.sortField}",
+                "sortOrder": "{$state.prizes.sortOrder}",
+                "search": "{$state.prizes.search}",
+                "filters": "{$state.prizes.filters}"
               },
               "format": [
                 {
@@ -119,7 +119,7 @@
                     "label": "@state.userData.fullName",
                     "route": "/users/{@state.userData.id}"
                   },
-                  { "label": "Акты" }
+                  { "label": "Призы" }
                 ]
               }
             }
@@ -141,7 +141,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "docs",
+                "activeItemId": "achievements",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }
@@ -151,24 +151,24 @@
       ]
     },
     {
-      "id": "actsFilters",
+      "id": "prizesFilters",
       "type": "section",
       "className": "flex gap-3",
       "blocks": [
         {
-          "id": "actsSearchBlock",
+          "id": "prizesSearchBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "actsSearchInput",
+              "id": "prizesSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.acts.search"
+                "value": "@state.prizes.search"
               },
               "events": [
                 {
@@ -178,10 +178,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.search"
+                        "target": "state.prizes.search"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPrizes"
                   ]
                 }
               ]
@@ -189,7 +189,7 @@
           ]
         },
         {
-          "id": "actsFilterBlock",
+          "id": "prizesFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "flex-initial"
@@ -197,7 +197,7 @@
           "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "components": [
             {
-              "id": "actsToggleFilters",
+              "id": "prizesToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -223,7 +223,7 @@
               ]
             },
             {
-              "id": "actsBtnAdd",
+              "id": "prizesBtnAdd",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -231,16 +231,18 @@
                 "icon": "pi pi-plus",
                 "severity": "success",
                 "size": "small",
-                "label": "Добавить акт"
+                "label": "Добавить"
               },
               "events": [
                 {
                   "type": "onClick",
                   "commands": [
                     {
-                      "type": "navigate",
+                      "type": "showMessage",
                       "params": {
-                        "url": "/acts/add"
+                        "severity": "info",
+                        "summary": "Заглушка",
+                        "detail": "Функция добавления приза ещё не реализована"
                       }
                     }
                   ]
@@ -250,18 +252,18 @@
           ]
         },
         {
-          "id": "actsActiveFilterBlock",
+          "id": "prizesActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "actsActiveFilterChips",
+              "id": "prizesActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.acts.filters"
+                "value": "@state.prizes.filters"
               },
               "events": [
                 {
@@ -271,20 +273,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.prizes.filters"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPrizes"
                   ]
                 }
               ]
             },
             {
-              "id": "actsFilterDrawer",
+              "id": "prizesFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.acts.filters",
+                "value": "@state.prizes.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -297,7 +299,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.prizes.filters"
                       }
                     },
                     {
@@ -306,7 +308,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPrizes"
                   ]
                 },
                 {
@@ -327,25 +329,25 @@
       ]
     },
     {
-      "id": "actsTableSection",
+      "id": "prizesTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "actsTableBlock",
+          "id": "prizesTableBlock",
           "type": "block",
           "components": [
             {
-              "id": "actsTable",
+              "id": "prizesTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.acts.value",
-                "columns": "@state.acts.columns",
-                "totalRecords": "@state.acts.totalRecords",
-                "rows": "@state.acts.rows",
-                "first": "@state.acts.first",
-                "sortField": "@state.acts.sortField",
-                "sortOrder": "@state.acts.sortOrder",
+                "value": "@state.prizes.value",
+                "columns": "@state.prizes.columns",
+                "totalRecords": "@state.prizes.totalRecords",
+                "rows": "@state.prizes.rows",
+                "first": "@state.prizes.first",
+                "sortField": "@state.prizes.sortField",
+                "sortOrder": "@state.prizes.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -355,11 +357,11 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserActs"]
+                  "commands": ["requestUserPrizes"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserActs"]
+                  "commands": ["requestUserPrizes"]
                 },
                 {
                   "type": "onRowClick",
@@ -367,7 +369,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
+                        "url": "/users/{$location.routeParams.user_id}/prizes/{$event.data.id}"
                       }
                     }
                   ]

@@ -76,7 +76,10 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Участники", "route": "/users" },
-                  { "label": "@state.docsData.fullName" },
+                  {
+                    "label": "@state.userData.fullName",
+                    "route": "/users/{@state.userData.id}"
+                  },
                   { "label": "Документы" }
                 ]
               }

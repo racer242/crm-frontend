@@ -1,7 +1,7 @@
 {
-  "id": "user-acts",
+  "id": "user-points",
   "type": "page",
-  "route": "/users/[user_id]/acts",
+  "route": "/users/[user_id]/points",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,12 @@
       "id": "",
       "fullName": ""
     },
-    "acts": {
+    "pointsData": {
+      "points_current": 0,
+      "points_spent": 0,
+      "points_total_earned": 0
+    },
+    "pointsHistory": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -23,7 +28,7 @@
     }
   },
   "meta": {
-    "title": "Акты участника — CRM Platform"
+    "title": "Баллы участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -33,7 +38,12 @@
       "adapter": "user.response.js"
     },
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/acts",
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/points",
+      "method": "GET",
+      "target": "state.pointsData"
+    },
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/points/history",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -43,27 +53,27 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.acts"
+      "target": "state.pointsHistory"
     }
   ],
   "shortcuts": {
-    "requestUserActs": {
+    "requestUserPointsHistory": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/acts",
+              "url": "/api/users/{$location.routeParams.user_id}/points/history",
               "method": "GET",
-              "target": "state.acts",
+              "target": "state.pointsHistory",
               "data": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.pointsHistory.first}",
+                "rows": "{$state.pointsHistory.rows}",
+                "sortField": "{$state.pointsHistory.sortField}",
+                "sortOrder": "{$state.pointsHistory.sortOrder}",
+                "search": "{$state.pointsHistory.search}",
+                "filters": "{$state.pointsHistory.filters}"
               }
             }
           },
@@ -71,12 +81,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}",
-                "sortField": "{$state.acts.sortField}",
-                "sortOrder": "{$state.acts.sortOrder}",
-                "search": "{$state.acts.search}",
-                "filters": "{$state.acts.filters}"
+                "first": "{$state.pointsHistory.first}",
+                "rows": "{$state.pointsHistory.rows}",
+                "sortField": "{$state.pointsHistory.sortField}",
+                "sortOrder": "{$state.pointsHistory.sortOrder}",
+                "search": "{$state.pointsHistory.search}",
+                "filters": "{$state.pointsHistory.filters}"
               },
               "format": [
                 {
@@ -119,7 +129,7 @@
                     "label": "@state.userData.fullName",
                     "route": "/users/{@state.userData.id}"
                   },
-                  { "label": "Акты" }
+                  { "label": "Баллы" }
                 ]
               }
             }
@@ -141,7 +151,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "docs",
+                "activeItemId": "achievements",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }
@@ -151,24 +161,148 @@
       ]
     },
     {
-      "id": "actsFilters",
+      "id": "pointsStatsSection",
+      "type": "section",
+      "className": "flex flex-column",
+      "blocks": [
+        {
+          "id": "pointsStatCardsBlock",
+          "type": "block",
+          "className": "mb-5",
+          "grid": {
+            "cols": [
+              "col-12 sm:col-6 lg:col-4",
+              "col-12 sm:col-6 lg:col-4",
+              "col-12 sm:col-6 lg:col-4"
+            ],
+            "padding": "p-2"
+          },
+          "components": [
+            {
+              "id": "pointsCurrent",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "style": {
+                "backgroundColor": "var(--primary-color)",
+                "color": "var(--primary-color-text)"
+              },
+              "props": {
+                "titleClassName": "text-base",
+                "valueClassName": "text-4xl font-bold mt-1",
+                "iconClassName": "text-2xl text-primary",
+                "title": "Текущее",
+                "value": "@state.pointsData.points_current",
+                "icon": "pi pi-trophy"
+              },
+              "state": {}
+            },
+            {
+              "id": "pointsSpent",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "props": {
+                "titleClassName": "text-base",
+                "valueClassName": "text-4xl font-bold mt-1",
+                "title": "Потратил",
+                "value": "@state.pointsData.points_spent",
+                "icon": "pi pi-arrow-up"
+              },
+              "state": {}
+            },
+            {
+              "id": "pointsTotalEarned",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "props": {
+                "titleClassName": "text-base",
+                "valueClassName": "text-4xl font-bold mt-1",
+                "title": "Всего",
+                "value": "@state.pointsData.points_total_earned",
+                "icon": "pi pi-star"
+              },
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "pointsBtnBlock",
+          "type": "block",
+          "className": "mb-3",
+          "components": [
+            {
+              "id": "pointsBtnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-pencil",
+                "severity": "info",
+                "size": "small",
+                "label": "Изменить"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "showMessage",
+                      "params": {
+                        "severity": "info",
+                        "summary": "Заглушка",
+                        "detail": "Функция изменения баллов ещё не реализована"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pointsHistorySection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "pointsHistoryBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "pointsHistoryTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "История начислений",
+                "level": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pointsHistoryFilters",
       "type": "section",
       "className": "flex gap-3",
       "blocks": [
         {
-          "id": "actsSearchBlock",
+          "id": "pointsHistorySearchBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "actsSearchInput",
+              "id": "pointsHistorySearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.acts.search"
+                "value": "@state.pointsHistory.search"
               },
               "events": [
                 {
@@ -178,10 +312,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.search"
+                        "target": "state.pointsHistory.search"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPointsHistory"
                   ]
                 }
               ]
@@ -189,7 +323,7 @@
           ]
         },
         {
-          "id": "actsFilterBlock",
+          "id": "pointsHistoryFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "flex-initial"
@@ -197,7 +331,7 @@
           "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
           "components": [
             {
-              "id": "actsToggleFilters",
+              "id": "pointsHistoryToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -221,47 +355,22 @@
                   ]
                 }
               ]
-            },
-            {
-              "id": "actsBtnAdd",
-              "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
-              "props": {
-                "icon": "pi pi-plus",
-                "severity": "success",
-                "size": "small",
-                "label": "Добавить акт"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/acts/add"
-                      }
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },
         {
-          "id": "actsActiveFilterBlock",
+          "id": "pointsHistoryActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "actsActiveFilterChips",
+              "id": "pointsHistoryActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.acts.filters"
+                "value": "@state.pointsHistory.filters"
               },
               "events": [
                 {
@@ -271,20 +380,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.pointsHistory.filters"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPointsHistory"
                   ]
                 }
               ]
             },
             {
-              "id": "actsFilterDrawer",
+              "id": "pointsHistoryFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.acts.filters",
+                "value": "@state.pointsHistory.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -297,7 +406,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.acts.filters"
+                        "target": "state.pointsHistory.filters"
                       }
                     },
                     {
@@ -306,7 +415,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserActs"
+                    "requestUserPointsHistory"
                   ]
                 },
                 {
@@ -327,50 +436,38 @@
       ]
     },
     {
-      "id": "actsTableSection",
+      "id": "pointsHistoryTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "actsTableBlock",
+          "id": "pointsHistoryTableBlock",
           "type": "block",
           "components": [
             {
-              "id": "actsTable",
+              "id": "pointsHistoryTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.acts.value",
-                "columns": "@state.acts.columns",
-                "totalRecords": "@state.acts.totalRecords",
-                "rows": "@state.acts.rows",
-                "first": "@state.acts.first",
-                "sortField": "@state.acts.sortField",
-                "sortOrder": "@state.acts.sortOrder",
+                "value": "@state.pointsHistory.value",
+                "columns": "@state.pointsHistory.columns",
+                "totalRecords": "@state.pointsHistory.totalRecords",
+                "rows": "@state.pointsHistory.rows",
+                "first": "@state.pointsHistory.first",
+                "sortField": "@state.pointsHistory.sortField",
+                "sortOrder": "@state.pointsHistory.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
-                "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserActs"]
+                  "commands": ["requestUserPointsHistory"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserActs"]
-                },
-                {
-                  "type": "onRowClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
-                      }
-                    }
-                  ]
+                  "commands": ["requestUserPointsHistory"]
                 }
               ]
             }

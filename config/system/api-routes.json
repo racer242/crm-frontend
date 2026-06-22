@@ -84,6 +84,10 @@
     "path": "users/[id]/prizes",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes",
+    "adapter": {
+      "request": "prizes.request.js",
+      "response": "prizes.response.js"
+    },
     "note": "Участники: Призы участника"
   },
   {
@@ -102,18 +106,30 @@
     "path": "users/[id]/points/history",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history",
+    "adapter": {
+      "request": "points-history.request.js",
+      "response": "points-history.response.js"
+    },
     "note": "Участники: История баллов участника"
   },
   {
     "path": "users/[id]/receipts",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts",
+    "adapter": {
+      "request": "receipts.request.js",
+      "response": "receipts.response.js"
+    },
     "note": "Участники: Чеки участника"
   },
   {
     "path": "users/[id]/codes",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
+    "adapter": {
+      "request": "codes.request.js",
+      "response": "codes.response.js"
+    },
     "note": "Участники: Коды участника"
   },
   {
@@ -126,12 +142,20 @@
     "path": "users/[id]/gtins",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins",
+    "adapter": {
+      "request": "gtins.request.js",
+      "response": "gtins.response.js"
+    },
     "note": "Участники: Коды ЧЗ участника"
   },
   {
     "path": "users/[id]/products",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products",
+    "adapter": {
+      "request": "products.request.js",
+      "response": "products.response.js"
+    },
     "note": "Участники: Акционные продукты участника"
   },
   {
@@ -150,18 +174,30 @@
     "path": "users/[id]/log/events",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events",
+    "adapter": {
+      "request": "events.request.js",
+      "response": "events.response.js"
+    },
     "note": "Участники: Журнал действий участника"
   },
   {
     "path": "users/[id]/log/transactions",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions",
+    "adapter": {
+      "request": "transactions.request.js",
+      "response": "transactions.response.js"
+    },
     "note": "Участники: Журнал транзакций участника"
   },
   {
     "path": "users/[id]/messages",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages",
+    "adapter": {
+      "request": "messages.request.js",
+      "response": "messages.response.js"
+    },
     "note": "Участники: Сообщения от участника"
   },
 

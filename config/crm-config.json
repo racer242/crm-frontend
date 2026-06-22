@@ -115,7 +115,16 @@
     { "$ref": "./pages/gtins.json" },
     { "$ref": "./pages/user-docs.json" },
     { "$ref": "./pages/user-docs-edit.json" },
-    { "$ref": "./pages/user-acts.json" }
+    { "$ref": "./pages/user-acts.json" },
+    { "$ref": "./pages/user-prizes.json" },
+    { "$ref": "./pages/user-points.json" },
+    { "$ref": "./pages/user-receipts.json" },
+    { "$ref": "./pages/user-codes.json" },
+    { "$ref": "./pages/user-gtins.json" },
+    { "$ref": "./pages/user-products.json" },
+    { "$ref": "./pages/user-events.json" },
+    { "$ref": "./pages/user-transactions.json" },
+    { "$ref": "./pages/user-messages.json" }
   ],
   "adapters": {
     "stats.analytics.js": {
@@ -193,6 +202,54 @@
     "user-docs-edit.request.js": {
       "type": "js",
       "script": "./config/adapters/user-docs-edit-request.js"
+    },
+    "points.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "points.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "points-history.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "points-history.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "products.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "products.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "events.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "events.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "transactions.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "transactions.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
+    },
+    "messages.request.js": {
+      "type": "js",
+      "script": "./config/adapters/users-params.js"
+    },
+    "messages.response.js": {
+      "type": "js",
+      "script": "./config/adapters/users-2-tabview.js"
     }
   },
   "config": {

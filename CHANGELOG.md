@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **9 страниц деятельности пользователя `/users/[id]/...`** — страницы активности участника с таблицами, поиском, фильтрацией и пагинацией.
+  - `config/pages/user-prizes.json` — страница "Призы": маршрут `/users/[user_id]/prizes`, GET `/api/users/{id}/prizes`, кнопка "Добавить" (заглушка)
+  - `config/pages/user-points.json` — страница "Баллы": маршрут `/users/[user_id]/points`, три StatCard (Текущее/Потратил/Всего) через GET `/api/users/{id}/points`, таблица истории начислений через GET `/api/users/{id}/points/history`, кнопка "Изменить" (заглушка)
+  - `config/pages/user-receipts.json` — страница "Чеки": маршрут `/users/[user_id]/receipts`, GET `/api/users/{id}/receipts`
+  - `config/pages/user-codes.json` — страница "Коды": маршрут `/users/[user_id]/codes`, GET `/api/users/{id}/codes`, кнопка "Добавить" (заглушка)
+  - `config/pages/user-gtins.json` — страница "Коды ЧЗ": маршрут `/users/[user_id]/gtins`, GET `/api/users/{id}/gtins`
+  - `config/pages/user-products.json` — страница "Продукты": маршрут `/users/[user_id]/products`, GET `/api/users/{id}/products`
+  - `config/pages/user-events.json` — страница "Действия": маршрут `/users/[user_id]/events`, GET `/api/users/{id}/log/events`
+  - `config/pages/user-transactions.json` — страница "Транзакции": маршрут `/users/[user_id]/transactions`, GET `/api/users/{id}/log/transactions`
+  - `config/pages/user-messages.json` — страница "Сообщения": маршрут `/users/[user_id]/messages`, GET `/api/users/{id}/messages`
+  - `config/crm-config.json` — зарегистрированы рефы всех 9 страниц в секции `pages`
+- **Адаптеры для GET-роутов участников** — добавлены request/response адаптеры для табличных роутов activity участника (по аналогии с существующими acts/prizes/receipts/codes/gtins)
+  - `config/system/api-routes.json` — добавлен adapter для роутов: `users/[id]/prizes`, `users/[id]/points/history`, `users/[id]/receipts`, `users/[id]/codes`, `users/[id]/gtins`, `users/[id]/products`, `users/[id]/log/events`, `users/[id]/log/transactions`, `users/[id]/messages`
+  - `config/crm-config.json` — зарегистрированы адаптеры: `points.request.js`, `points.response.js`, `points-history.request.js`, `points-history.response.js`, `products.request.js`, `products.response.js`, `events.request.js`, `events.response.js`, `transactions.request.js`, `transactions.response.js`, `messages.request.js`, `messages.response.js` (все переиспользуют существующие скрипты `users-params.js` и `users-2-tabview.js`)
+
 - **Image component** — new display component for rendering images using `primereact/image` with optional preview (zoom) support.
   - `src/engine/components/DisplayComponents.tsx` — added `renderImage` function with `src`, `alt`, `width`, `height`, `preview` props
   - `src/engine/components/index.ts` — exported `renderImage`
