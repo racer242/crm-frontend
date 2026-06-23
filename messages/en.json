@@ -40,5 +40,8 @@
   },
   "auth": {
     "loginFailed": "Login failed"
+  },
+  "datatable": {
+    "emptyMessage": "No data available"
   }
 }

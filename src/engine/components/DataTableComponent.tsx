@@ -4,6 +4,7 @@ import React from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ComponentRendererProps } from "./types";
+import { useTranslations } from "next-intl";
 
 export function renderDataTable({
   props,
@@ -11,7 +12,8 @@ export function renderDataTable({
   style,
   handleEvent,
 }: ComponentRendererProps) {
-  const { columns, ...restProps } = props;
+  const t = useTranslations("datatable");
+  const { columns, emptyMessage, ...restProps } = props;
   const columnList = columns || [];
 
   if (!columnList || columnList.length === 0) return null;
@@ -20,6 +22,7 @@ export function renderDataTable({
     <DataTable
       {...restProps}
       value={props.value || []}
+      emptyMessage={emptyMessage || t("emptyMessage")}
       className={`w-full ${className || ""}`}
       style={style}
       {...(props.lazy ? { onPage: (e) => handleEvent("onPage", e) } : {})}

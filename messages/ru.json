@@ -40,5 +40,8 @@
   },
   "auth": {
     "loginFailed": "Ошибка входа"
+  },
+  "datatable": {
+    "emptyMessage": "Нет данных"
   }
 }
