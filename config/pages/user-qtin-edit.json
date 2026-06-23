@@ -1,0 +1,394 @@
+{
+  "id": "user-qtin-edit",
+  "type": "page",
+  "route": "/users/[user_id]/gtins/[gtin_id]/edit",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "userData": {
+      "id": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "fullName": ""
+    },
+    "qtinData": {
+      "id": "",
+      "registration_date": "",
+      "purchase_date": "",
+      "moderation_status": "",
+      "comment": ""
+    },
+    "formData": { "moderation_status": "", "comment": "" },
+    "moderationStatuses": []
+  },
+  "meta": { "title": "Модерация кода ЧЗ — CRM Platform" },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "{$config.baseURL}/api/gtins/{$location.routeParams.gtin_id}",
+      "method": "GET",
+      "target": "state.qtinData"
+    }
+  ],
+  "shortcuts": {
+    "saveQtin": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.saving", "value": true }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/gtins/{$location.routeParams.gtin_id}",
+              "method": "PATCH",
+              "data": "{$state.formData}",
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.saving", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "detail": "Код сохранен"
+                  }
+                },
+                {
+                  "type": "navigate",
+                  "params": {
+                    "url": "/users/{$location.routeParams.user_id}/gtins/{$location.routeParams.gtin_id}"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.saving", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "detail": "Не удалось сохранить код"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/users" },
+                  {
+                    "label": "@state.userData.fullName",
+                    "route": "/users/{@state.userData.id}"
+                  },
+                  {
+                    "label": "Честный Знак",
+                    "route": "/users/{@state.userData.id}/gtins"
+                  },
+                  {
+                    "label": "Код #@state.qtinData.id",
+                    "route": "/users/{@state.userData.id}/gtins/{@state.qtinData.id}"
+                  },
+                  { "label": "Модерация" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "production",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": { "cols": ["col-12"], "padding": "p-2" },
+      "blocks": [
+        {
+          "id": "infoBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "Информация о коде" }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "userInfoGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Участник",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userInfo",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": { "value": "@state.userData.fullName" }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userEmail",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": { "value": "@state.userData.email" }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "registrationDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата регистрации",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "registrationDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": { "value": "@state.qtinData.registration_date" }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "purchaseDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата покупки",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "purchaseDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": { "value": "@state.qtinData.purchase_date" }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "moderationBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "Модерация" }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "moderationStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус модерации",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "moderationStatusDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.moderationStatuses",
+                      "value": "@state.formData.moderation_status",
+                      "optionLabel": "name",
+                      "optionValue": "id",
+                      "placeholder": "Выберите статус",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.moderation_status"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "commentGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start mb-2",
+              "props": {
+                "label": "Комментарий",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "commentInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.formData.comment",
+                      "rows": 3,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.comment"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "className": "flex flex-wrap gap-3 justify-content-center",
+          "components": [
+            {
+              "id": "btnSave",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Сохранить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [{ "type": "onClick", "commands": ["saveQtin"] }]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/gtins/{$location.routeParams.gtin_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,539 @@
+{
+  "id": "user-prize",
+  "type": "page",
+  "route": "/users/[user_id]/prizes/[prize_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "fullName": ""
+    },
+    "prizeData": {
+      "id": "",
+      "user_id": "",
+      "win_date": "",
+      "prize_name": "",
+      "retail_chain_name": "",
+      "status": "",
+      "comment": "",
+      "winDateFormatted": "",
+      "statusLabel": "",
+      "statusSeverity": ""
+    }
+  },
+  "meta": {
+    "title": "Приз участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "{$config.baseURL}/api/prizes/{$location.routeParams.prize_id}",
+      "method": "GET",
+      "target": "state.prizeData",
+      "adapter": {
+        "response": "prize.response.js"
+      }
+    }
+  ],
+  "shortcuts": {
+    "deletePrize": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "showConfirmDialog",
+            "params": {
+              "header": "Подтверждение удаления",
+              "message": "Вы уверены, что хотите удалить этот приз?",
+              "icon": "pi pi-exclamation-triangle",
+              "acceptLabel": "Удалить",
+              "rejectLabel": "Отмена"
+            },
+            "onAccept": [
+              {
+                "type": "sendRequest",
+                "params": {
+                  "url": "/api/prizes/{$location.routeParams.prize_id}",
+                  "method": "DELETE",
+                  "onSuccess": [
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "detail": "Приз удален"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/prizes"
+                      }
+                    }
+                  ],
+                  "onError": [
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "error",
+                        "summary": "Ошибка",
+                        "detail": "Не удалось удалить приз"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/users" },
+                  {
+                    "label": "@state.userData.fullName",
+                    "route": "/users/{@state.userData.id}"
+                  },
+                  {
+                    "label": "Призы",
+                    "route": "/users/{@state.userData.id}/prizes"
+                  },
+                  { "label": "@state.prizeData.prize_name" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "achievements",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "prizeDetailsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о призе"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "prizeIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID приза",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeId",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Участник",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userNameLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg cursor-pointer text-primary",
+                    "props": {
+                      "value": "@state.userData.fullName"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{@state.prizeData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userEmailLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg cursor-pointer text-primary",
+                    "props": {
+                      "value": "@state.userData.email"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "executeCommand",
+                            "params": {
+                              "command": "window.open('mailto:{@state.userData.email}', '_blank')"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "winDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата выигрыша",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "winDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.winDateFormatted"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prizeNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Приз",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.prize_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "retailChainGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Торговая сеть",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "retailChain",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.retail_chain_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.statusLabel",
+                      "severity": "@state.prizeData.statusSeverity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "commentGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start mb-2",
+              "props": {
+                "label": "Комментарий",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "comment",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "@state.prizeData.comment"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docsSection",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "docsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Документы"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "personalDocsButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-id-card",
+                "label": "Личные документы",
+                "size": "small",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/docs"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-file-pdf",
+                "label": "Акт",
+                "size": "small",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/acts"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actionsSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "actionsBlock",
+          "type": "block",
+          "className": "flex justify-content-center gap-3 mt-3",
+          "components": [
+            {
+              "id": "btnAddAct",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-plus",
+                "label": "Добавить акт",
+                "size": "small",
+                "severity": "success"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/acts/add?prize_id={$location.routeParams.prize_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/prizes/{$location.routeParams.prize_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnDelete",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-trash",
+                "label": "Удалить",
+                "size": "small",
+                "severity": "danger",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["deletePrize"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

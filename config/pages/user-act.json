@@ -1,0 +1,473 @@
+{
+  "id": "user-act",
+  "type": "page",
+  "route": "/users/[user_id]/acts/[act_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "fullName": ""
+    },
+    "actData": {
+      "id": "",
+      "user_id": "",
+      "issue_date": "",
+      "prize_name": "",
+      "status": "",
+      "document_blank_url": "",
+      "signed_scan_url": "",
+      "issueDateFormatted": "",
+      "statusLabel": "",
+      "statusSeverity": ""
+    }
+  },
+  "meta": {
+    "title": "Акт участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "{$config.baseURL}/api/acts/{$location.routeParams.act_id}",
+      "method": "GET",
+      "target": "state.actData",
+      "adapter": {
+        "response": "act.response.js"
+      }
+    }
+  ],
+  "shortcuts": {
+    "deleteAct": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "showConfirmDialog",
+            "params": {
+              "header": "Подтверждение удаления",
+              "message": "Вы уверены, что хотите удалить этот акт?",
+              "icon": "pi pi-exclamation-triangle",
+              "acceptLabel": "Удалить",
+              "rejectLabel": "Отмена"
+            },
+            "onAccept": [
+              {
+                "type": "sendRequest",
+                "params": {
+                  "url": "/api/acts/{$location.routeParams.act_id}",
+                  "method": "DELETE",
+                  "onSuccess": [
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "detail": "Акт удален"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/acts"
+                      }
+                    }
+                  ],
+                  "onError": [
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "error",
+                        "summary": "Ошибка",
+                        "detail": "Не удалось удалить акт"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/users" },
+                  {
+                    "label": "@state.userData.fullName",
+                    "route": "/users/{@state.userData.id}"
+                  },
+                  {
+                    "label": "Акты",
+                    "route": "/users/{@state.userData.id}/acts"
+                  },
+                  { "label": "Акт #@state.actData.id" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "docs",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "actDetailsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация об акте"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "actIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID акта",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "actId",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Участник",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userNameLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg cursor-pointer text-primary",
+                    "props": {
+                      "value": "@state.userData.fullName"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{@state.actData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userEmailLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg cursor-pointer text-primary",
+                    "props": {
+                      "value": "@state.userData.email"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "executeCommand",
+                            "params": {
+                              "command": "window.open('mailto:{@state.userData.email}', '_blank')"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "issueDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата выдачи",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "issueDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.issueDateFormatted"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prizeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Приз",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.prize_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.actData.statusLabel",
+                      "severity": "@state.actData.statusSeverity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "documentBlankGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Бланк документа",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "documentBlankLink",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "label": "Скачать",
+                      "icon": "pi pi-download",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "executeCommand",
+                            "params": {
+                              "command": "window.open('{@state.actData.document_blank_url}', '_blank')"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "signedScanGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Фото подписанного скана",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "signedScanLink",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "label": "Скачать",
+                      "icon": "pi pi-download",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "executeCommand",
+                            "params": {
+                              "command": "window.open('{@state.actData.signed_scan_url}', '_blank')"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actionsSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "actionsBlock",
+          "type": "block",
+          "className": "flex justify-content-center gap-3 mt-3",
+          "components": [
+            {
+              "id": "btnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/acts/{$location.routeParams.act_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnDelete",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-trash",
+                "label": "Удалить",
+                "size": "small",
+                "severity": "danger",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["deleteAct"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
