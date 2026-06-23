@@ -33,7 +33,7 @@ function convertDateValue(value) {
 function convertDateColumns(values, columns) {
   const dateColumnIds = new Set(
     (columns || [])
-      .filter((col) => col.type === "datetime")
+      .filter((col) => col.type === "datetime" || col.type === "date")
       .map((col) => col.id),
   );
 
