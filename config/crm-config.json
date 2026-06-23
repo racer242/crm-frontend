@@ -124,7 +124,17 @@
     { "$ref": "./pages/user-products.json" },
     { "$ref": "./pages/user-events.json" },
     { "$ref": "./pages/user-transactions.json" },
-    { "$ref": "./pages/user-messages.json" }
+    { "$ref": "./pages/user-messages.json" },
+    { "$ref": "./pages/user-act.json" },
+    { "$ref": "./pages/user-act-add.json" },
+    { "$ref": "./pages/user-act-edit.json" },
+    { "$ref": "./pages/user-prize.json" },
+    { "$ref": "./pages/user-prize-add.json" },
+    { "$ref": "./pages/user-prize-edit.json" },
+    { "$ref": "./pages/user-receipt.json" },
+    { "$ref": "./pages/user-receipt-edit.json" },
+    { "$ref": "./pages/user-qtin.json" },
+    { "$ref": "./pages/user-qtin-edit.json" }
   ],
   "adapters": {
     "stats.analytics.js": {
