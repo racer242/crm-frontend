@@ -19,23 +19,6 @@ function convertDateValue(value) {
 }
 
 /**
- * Преобразует поля с датами в объекте значений
- * @param {Object} values - Объект со значениями
- * @returns {Object} Объект с преобразованными датами
- */
-function convertDatesInValues(values) {
-  const result = { ...values };
-
-  Object.keys(result).forEach((key) => {
-    if (key.toLowerCase().includes("date")) {
-      result[key] = convertDateValue(result[key]);
-    }
-  });
-
-  return result;
-}
-
-/**
  * Преобразует формат API (columns/rows/meta) в формат таблицы (value/flat columns)
  * @param {Object} source - Исходный ответ сервера
  * @returns {Object} Преобразованные данные
@@ -49,17 +32,35 @@ function transform(source) {
     ...col.props,
   }));
 
-  // 2. Преобразуем строки: из { values: {...} } в плоские объекты
-  const value = (source.rows || []).map((row) => ({
-    ...convertDatesInValues(row.values),
-    // Опционально: сохраняем ID строки, если он есть и нужен
-    ...(row.id && { _rowId: row.id }),
-  }));
+  // 2. Находим ID колонок с типом 'datetime' (вычисляем один раз)
+  const dateColumnIds = new Set(
+    (source.columns || [])
+      .filter((col) => col.type === "datetime")
+      .map((col) => col.id),
+  );
 
-  // 3. Преобразуем направление сортировки: asc→1, desc→-1
+  // 3. Преобразуем строки: из { values: {...} } в плоские объекты
+  const value = (source.rows || []).map((row) => {
+    const flatValues = { ...row.values };
+
+    // Преобразуем только поля, соответствующие datetime-колонкам
+    dateColumnIds.forEach((key) => {
+      if (flatValues[key] !== undefined) {
+        flatValues[key] = convertDateValue(flatValues[key]);
+      }
+    });
+
+    return {
+      ...flatValues,
+      // Опционально: сохраняем ID строки, если он есть и нужен
+      ...(row.id && { _rowId: row.id }),
+    };
+  });
+
+  // 4. Преобразуем направление сортировки: asc→1, desc→-1
   const sortOrder = source.meta?.direction === "desc" ? -1 : 1;
 
-  // 4. Формируем итоговый объект
+  // 5. Формируем итоговый объект
   return {
     value,
     columns,

@@ -336,14 +336,60 @@ function transform(source) {
 
 ### Преобразование дат
 
-Если в `row.values` есть поле, имя которого содержит "date" (регистронезависимо), его значение автоматически преобразуется из ISO формата в локальный формат `DD.MM.YYYY HH:mm`.
+Поля в `row.values`, соответствующие колонкам с `type: 'datetime'` в `source.columns`, автоматически преобразуются из ISO формата в локальный формат `DD.MM.YYYY HH:mm`.
 
 **Пример:**
 
 - Вход: `"2026-04-11T16:17:04+03:00"`
 - Выход: `"11.04.2026 16:17"`
 
-**Реализация через вспомогательные функции:**
+**Как это работает:**
+
+1. Список ID колонок с `type === 'datetime'` вычисляется **один раз** перед обработкой строк
+2. Для каждой строки преобразуются только поля, чьи ключи совпадают с ID datetime-колонок
+3. Это обеспечивает оптимальную производительность без повторного поиска колонок для каждой строки
+
+**Реализация:**
+
+```javascript
+function transform(source) {
+  // 1. Преобразуем колонки
+  const columns = (source.columns || []).map((col) => ({
+    field: col.id,
+    header: col.title || col.id,
+    sortable: !!col.sortable,
+    ...col.props,
+  }));
+
+  // 2. Находим ID колонок с типом 'datetime' (вычисляем один раз)
+  const dateColumnIds = new Set(
+    (source.columns || [])
+      .filter((col) => col.type === "datetime")
+      .map((col) => col.id),
+  );
+
+  // 3. Преобразуем строки
+  const value = (source.rows || []).map((row) => {
+    const flatValues = { ...row.values };
+
+    // Преобразуем только поля, соответствующие datetime-колонкам
+    dateColumnIds.forEach((key) => {
+      if (flatValues[key] !== undefined) {
+        flatValues[key] = convertDateValue(flatValues[key]);
+      }
+    });
+
+    return {
+      ...flatValues,
+      ...(row.id && { _rowId: row.id }),
+    };
+  });
+
+  // ... остальной код
+}
+```
+
+**Функция преобразования:**
 
 ```javascript
 /**
@@ -363,30 +409,6 @@ function convertDateValue(value) {
 
   return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
-
-/**
- * Преобразует поля с датами в объекте значений
- */
-function convertDatesInValues(values) {
-  const result = { ...values };
-
-  Object.keys(result).forEach((key) => {
-    if (key.toLowerCase().includes("date")) {
-      result[key] = convertDateValue(result[key]);
-    }
-  });
-
-  return result;
-}
-```
-
-**Использование в transform:**
-
-```javascript
-const value = (source.rows || []).map((row) => ({
-  ...convertDatesInValues(row.values),
-  ...(row.id && { _rowId: row.id }),
-}));
 ```
 
 ---

@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **Преобразование дат в users.response.js** — добавлены функции `convertDateValue` и `convertDatesInValues` для автоматического преобразования полей, содержащих "date" в имени, из ISO формата (`2026-04-11T16:17:04+03:00`) в локальный формат (`11.04.2026 16:17`).
-  - `config/adapters/users.response.js` — добавлены две вспомогательные функции для преобразования дат; функция `transform` теперь использует `convertDatesInValues` при маппинге строк
+- **Преобразование дат в users.response.js по типу колонки** — изменена логика определения datetime-полей: вместо проверки имени поля на наличие "date", теперь проверяется `type: 'datetime'` в соответствующей колонке из `source.columns`. Список datetime-колонок вычисляется один раз перед обработкой строк для оптимизации производительности.
+  - `config/adapters/users.response.js` — функция `convertDateValue` преобразует ISO-дату в локальный формат; `dateColumnIds` (Set) вычисляется единожды; при маппинге каждой строки преобразуются только поля, соответствующие datetime-колонкам
 
 ### Added
 
