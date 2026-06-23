@@ -74,6 +74,37 @@
                 "search": "{$state.users.search}",
                 "filters": "{$state.users.filters}"
               },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                },
+                {
+                  "prop": "event.value",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "event.value",
+                  "type": "RemoveProps",
+                  "params": {
+                    "props": ["name", "type", "opts"]
+                  }
+                },
+                {
+                  "prop": "event",
+                  "type": "RemoveProps",
+                  "params": {
+                    "props": ["filters"]
+                  }
+                }
+              ],
               "rules": {},
               "onSuccess": [
                 {
@@ -152,17 +183,17 @@
     {
       "id": "usersFilters",
       "type": "section",
-      "className": "flex gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "searchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "searchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -184,13 +215,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "filterBlock",
-          "type": "block",
-          "components": [
+            },
             {
               "id": "toggleFilters",
               "type": "component",

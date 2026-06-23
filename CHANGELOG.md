@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Преобразование дат в users.response.js** — добавлены функции `convertDateValue` и `convertDatesInValues` для автоматического преобразования полей, содержащих "date" в имени, из ISO формата (`2026-04-11T16:17:04+03:00`) в локальный формат (`11.04.2026 16:17`).
+  - `config/adapters/users.response.js` — добавлены две вспомогательные функции для преобразования дат; функция `transform` теперь использует `convertDatesInValues` при маппинге строк
+
+### Added
+
 - **9 страниц деятельности пользователя `/users/[id]/...`** — страницы активности участника с таблицами, поиском, фильтрацией и пагинацией.
   - `config/pages/user-prizes.json` — страница "Призы": маршрут `/users/[user_id]/prizes`, GET `/api/users/{id}/prizes`, кнопка "Добавить" (заглушка)
   - `config/pages/user-points.json` — страница "Баллы": маршрут `/users/[user_id]/points`, три StatCard (Текущее/Потратил/Всего) через GET `/api/users/{id}/points`, таблица истории начислений через GET `/api/users/{id}/points/history`, кнопка "Изменить" (заглушка)

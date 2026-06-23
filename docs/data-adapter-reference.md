@@ -300,6 +300,97 @@ applyReplace(data, rules):
 
 ---
 
+## Response-адаптеры (JS)
+
+Response-адаптеры — это JS-скрипты в `config/adapters/`, которые преобразуют ответы API перед передачей в компонент.
+
+### Стандартный формат ответа
+
+Большинство response-адаптеров используют функцию `transform(source)`, которая преобразует ответ API в формат таблицы:
+
+```javascript
+function transform(source) {
+  // 1. Преобразуем колонки
+  const columns = (source.columns || []).map((col) => ({
+    field: col.id,
+    header: col.title || col.id,
+    sortable: !!col.sortable,
+    ...col.props,
+  }));
+
+  // 2. Преобразуем строки
+  const value = (source.rows || []).map((row) => ({
+    ...row.values,
+    ...(row.id && { _rowId: row.id }),
+  }));
+
+  // 3. Возвращаем итоговый объект
+  return {
+    value,
+    columns,
+    totalRecords: source.meta?.total_count ?? value.length,
+    // ... другие поля
+  };
+}
+```
+
+### Преобразование дат
+
+Если в `row.values` есть поле, имя которого содержит "date" (регистронезависимо), его значение автоматически преобразуется из ISO формата в локальный формат `DD.MM.YYYY HH:mm`.
+
+**Пример:**
+
+- Вход: `"2026-04-11T16:17:04+03:00"`
+- Выход: `"11.04.2026 16:17"`
+
+**Реализация через вспомогательные функции:**
+
+```javascript
+/**
+ * Преобразует значение даты из ISO формата в локальный формат DD.MM.YYYY HH:mm
+ */
+function convertDateValue(value) {
+  if (!value) return value;
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
+/**
+ * Преобразует поля с датами в объекте значений
+ */
+function convertDatesInValues(values) {
+  const result = { ...values };
+
+  Object.keys(result).forEach((key) => {
+    if (key.toLowerCase().includes("date")) {
+      result[key] = convertDateValue(result[key]);
+    }
+  });
+
+  return result;
+}
+```
+
+**Использование в transform:**
+
+```javascript
+const value = (source.rows || []).map((row) => ({
+  ...convertDatesInValues(row.values),
+  ...(row.id && { _rowId: row.id }),
+}));
+```
+
+---
+
 ## API
 
 ```typescript

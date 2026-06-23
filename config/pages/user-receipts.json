@@ -339,9 +339,15 @@
                   "type": "onRowClick",
                   "commands": [
                     {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event.data}"
+                      }
+                    },
+                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{$event.data.id}"
+                        "url": "/users/{$location.routeParams.user_id}/receipts/{$event.data._rowId}"
                       }
                     }
                   ]
