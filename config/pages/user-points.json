@@ -67,13 +67,15 @@
               "method": "GET",
               "target": "state.pointsHistory",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.pointsHistory.first}",
                 "rows": "{$state.pointsHistory.rows}",
                 "sortField": "{$state.pointsHistory.sortField}",
                 "sortOrder": "{$state.pointsHistory.sortOrder}",
                 "search": "{$state.pointsHistory.search}",
                 "filters": "{$state.pointsHistory.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {

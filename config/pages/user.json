@@ -384,7 +384,7 @@
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center",
               "props": {
-                "label": "Причина отклонения",
+                "label": "Причина блокировки",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
@@ -529,6 +529,7 @@
                     "componentType": "DataTable",
                     "className": "no-bottom-border",
                     "props": {
+                      "emptyMessage": "В группах не состоит",
                       "showHeaders": false,
                       "value": "@state.userData.groupList",
                       "columns": [{ "field": "name" }]

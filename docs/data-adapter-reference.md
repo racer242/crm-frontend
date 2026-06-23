@@ -304,35 +304,16 @@ applyReplace(data, rules):
 
 Response-адаптеры — это JS-скрипты в `config/adapters/`, которые преобразуют ответы API перед передачей в компонент.
 
-### Стандартный формат ответа
+### Общий файл `_shared.js`
 
-Большинство response-адаптеров используют функцию `transform(source)`, которая преобразует ответ API в формат таблицы:
+Функции, общие для всех адаптеров, вынесены в `config/adapters/_shared.js`. Этот файл автоматически подгружается `DataAdapterEngine` перед выполнением любого JS-адаптера, поэтому его функции доступны во всех скриптах без дублирования.
 
-```javascript
-function transform(source) {
-  // 1. Преобразуем колонки
-  const columns = (source.columns || []).map((col) => ({
-    field: col.id,
-    header: col.title || col.id,
-    sortable: !!col.sortable,
-    ...col.props,
-  }));
+**Доступные функции:**
 
-  // 2. Преобразуем строки
-  const value = (source.rows || []).map((row) => ({
-    ...row.values,
-    ...(row.id && { _rowId: row.id }),
-  }));
-
-  // 3. Возвращаем итоговый объект
-  return {
-    value,
-    columns,
-    totalRecords: source.meta?.total_count ?? value.length,
-    // ... другие поля
-  };
-}
-```
+| Функция                               | Описание                                                     |
+| ------------------------------------- | ------------------------------------------------------------ |
+| `convertDateValue(value)`             | Преобразует ISO-дату в `DD.MM.YYYY HH:mm`                    |
+| `convertDateColumns(values, columns)` | Преобразует datetime-поля в объекте значений по типу колонок |
 
 ### Преобразование дат
 
@@ -345,51 +326,20 @@ function transform(source) {
 
 **Как это работает:**
 
-1. Список ID колонок с `type === 'datetime'` вычисляется **один раз** перед обработкой строк
+1. Список ID колонок с `type === 'datetime'` вычисляется **один раз** внутри `convertDateColumns`
 2. Для каждой строки преобразуются только поля, чьи ключи совпадают с ID datetime-колонок
 3. Это обеспечивает оптимальную производительность без повторного поиска колонок для каждой строки
 
-**Реализация:**
+**Использование в адаптере:**
 
 ```javascript
-function transform(source) {
-  // 1. Преобразуем колонки
-  const columns = (source.columns || []).map((col) => ({
-    field: col.id,
-    header: col.title || col.id,
-    sortable: !!col.sortable,
-    ...col.props,
-  }));
-
-  // 2. Находим ID колонок с типом 'datetime' (вычисляем один раз)
-  const dateColumnIds = new Set(
-    (source.columns || [])
-      .filter((col) => col.type === "datetime")
-      .map((col) => col.id),
-  );
-
-  // 3. Преобразуем строки
-  const value = (source.rows || []).map((row) => {
-    const flatValues = { ...row.values };
-
-    // Преобразуем только поля, соответствующие datetime-колонкам
-    dateColumnIds.forEach((key) => {
-      if (flatValues[key] !== undefined) {
-        flatValues[key] = convertDateValue(flatValues[key]);
-      }
-    });
-
-    return {
-      ...flatValues,
-      ...(row.id && { _rowId: row.id }),
-    };
-  });
-
-  // ... остальной код
-}
+const value = (source.rows || []).map((row) => ({
+  ...convertDateColumns(row.values, source.columns),
+  ...(row.id && { _rowId: row.id }),
+}));
 ```
 
-**Функция преобразования:**
+**Реализация в `_shared.js`:**
 
 ```javascript
 /**
@@ -408,6 +358,58 @@ function convertDateValue(value) {
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
   return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
+/**
+ * Находит ID колонок с типом 'datetime' и преобразует соответствующие поля
+ */
+function convertDateColumns(values, columns) {
+  const dateColumnIds = new Set(
+    (columns || [])
+      .filter((col) => col.type === "datetime")
+      .map((col) => col.id),
+  );
+
+  const result = { ...values };
+  dateColumnIds.forEach((key) => {
+    if (result[key] !== undefined) {
+      result[key] = convertDateValue(result[key]);
+    }
+  });
+
+  return result;
+}
+```
+
+---
+
+### Стандартный формат ответа
+
+Большинство response-адаптеров используют функцию `transform(source)`, которая преобразует ответ API в формат таблицы:
+
+```javascript
+function transform(source) {
+  // 1. Преобразуем колонки
+  const columns = (source.columns || []).map((col) => ({
+    field: col.id,
+    header: col.title || col.id,
+    sortable: !!col.sortable,
+    ...col.props,
+  }));
+
+  // 2. Преобразуем строки
+  const value = (source.rows || []).map((row) => ({
+    ...convertDateColumns(row.values, source.columns),
+    ...(row.id && { _rowId: row.id }),
+  }));
+
+  // 3. Возвращаем итоговый объект
+  return {
+    value,
+    columns,
+    totalRecords: source.meta?.total_count ?? value.length,
+    // ... другие поля
+  };
 }
 ```
 

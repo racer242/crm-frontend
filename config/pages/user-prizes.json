@@ -57,13 +57,15 @@
               "method": "GET",
               "target": "state.prizes",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.prizes.first}",
                 "rows": "{$state.prizes.rows}",
                 "sortField": "{$state.prizes.sortField}",
                 "sortOrder": "{$state.prizes.sortOrder}",
                 "search": "{$state.prizes.search}",
                 "filters": "{$state.prizes.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {

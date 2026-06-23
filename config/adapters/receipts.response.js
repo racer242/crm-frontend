@@ -13,8 +13,9 @@ function transform(source) {
   }));
 
   // 2. Преобразуем строки: из { values: {...} } в плоские объекты
+  //    Поля c type: 'datetime' в колонках автоматически преобразуются в DD.MM.YYYY HH:mm
   const value = (source.rows || []).map((row) => ({
-    ...row.values,
+    ...convertDateColumns(row.values, source.columns),
     // Опционально: сохраняем ID строки, если он есть и нужен
     ...(row.id && { _rowId: row.id }),
   }));

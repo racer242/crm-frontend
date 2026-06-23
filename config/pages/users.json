@@ -74,38 +74,7 @@
                 "search": "{$state.users.search}",
                 "filters": "{$state.users.filters}"
               },
-              "format": [
-                {
-                  "prop": "filters",
-                  "type": "PopIfHasNullProps",
-                  "params": { "props": ["value"] }
-                },
-                {
-                  "prop": "filters",
-                  "type": "RemoveProps",
-                  "params": { "props": ["name", "type", "opts"] }
-                },
-                {
-                  "prop": "event.value",
-                  "type": "PopIfHasNullProps",
-                  "params": { "props": ["value"] }
-                },
-                {
-                  "prop": "event.value",
-                  "type": "RemoveProps",
-                  "params": {
-                    "props": ["name", "type", "opts"]
-                  }
-                },
-                {
-                  "prop": "event",
-                  "type": "RemoveProps",
-                  "params": {
-                    "props": ["filters"]
-                  }
-                }
-              ],
-              "rules": {},
+              "format": { "$ref": "../system/list-request-format.json" },
               "onSuccess": [
                 {
                   "type": "log",

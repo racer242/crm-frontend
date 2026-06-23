@@ -57,13 +57,15 @@
               "method": "GET",
               "target": "state.acts",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.acts.first}",
                 "rows": "{$state.acts.rows}",
                 "sortField": "{$state.acts.sortField}",
                 "sortOrder": "{$state.acts.sortOrder}",
                 "search": "{$state.acts.search}",
                 "filters": "{$state.acts.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {
@@ -152,17 +154,17 @@
     {
       "id": "actsFilters",
       "type": "section",
-      "className": "flex gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "actsSearchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "actsSearchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -184,17 +186,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "actsFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
               "id": "actsToggleFilters",
               "type": "component",
@@ -332,6 +324,7 @@
         {
           "id": "actsTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "actsTable",

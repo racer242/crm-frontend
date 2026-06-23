@@ -57,13 +57,15 @@
               "method": "GET",
               "target": "state.receipts",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.receipts.first}",
                 "rows": "{$state.receipts.rows}",
                 "sortField": "{$state.receipts.sortField}",
                 "sortOrder": "{$state.receipts.sortOrder}",
                 "search": "{$state.receipts.search}",
                 "filters": "{$state.receipts.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {

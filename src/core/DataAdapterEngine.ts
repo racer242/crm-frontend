@@ -11,9 +11,25 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { Adapter } from "@/types/adapter";
 
+/** Путь к общему файлу с shared-функциями для адаптеров */
+const SHARED_PATH = path.join(process.cwd(), "config/adapters/_shared.js");
+
+/**
+ * Загружает shared-функции из `config/adapters/_shared.js`
+ * @returns Содержимое shared-файла или пустая строка, если файл не найден
+ */
+async function loadSharedContent(): Promise<string> {
+  try {
+    return await fs.readFile(SHARED_PATH, "utf-8");
+  } catch {
+    return "";
+  }
+}
+
 /**
  * Apply a JS adapter to data
  * Loads the script from public/ directory and executes it
+ * Shared functions from config/adapters/_shared.js are automatically available
  */
 async function applyJs(data: any, scriptPath: string): Promise<any> {
   const fullPath = path.join(process.cwd(), scriptPath);
@@ -27,13 +43,16 @@ async function applyJs(data: any, scriptPath: string): Promise<any> {
     );
   }
 
+  // Загружаем shared-функции (если файл существует)
+  const sharedContent = await loadSharedContent();
+
   // Execute the script in a sandboxed function
   // The script should be a function that takes `data` and returns transformed data
   // We wrap it to handle both export default and direct function
   try {
     const adapterFn = new Function(
       "data",
-      `${scriptContent}; return transform(data);`,
+      `${sharedContent}; ${scriptContent}; return transform(data);`,
     );
     return adapterFn(data);
   } catch (error) {
@@ -42,6 +61,7 @@ async function applyJs(data: any, scriptPath: string): Promise<any> {
       // Wrap the script content and execute
       const wrappedScript = `
         const exports = {};
+        ${sharedContent};
         ${scriptContent}
         const fn = exports.default || exports.transform || transform;
         return fn(data);

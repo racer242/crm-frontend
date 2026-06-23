@@ -6,8 +6,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **Преобразование дат в users.response.js по типу колонки** — изменена логика определения datetime-полей: вместо проверки имени поля на наличие "date", теперь проверяется `type: 'datetime'` в соответствующей колонке из `source.columns`. Список datetime-колонок вычисляется один раз перед обработкой строк для оптимизации производительности.
-  - `config/adapters/users.response.js` — функция `convertDateValue` преобразует ISO-дату в локальный формат; `dateColumnIds` (Set) вычисляется единожды; при маппинге каждой строки преобразуются только поля, соответствующие datetime-колонкам
+- **Shared-функции для преобразования дат во всех response-адаптерах** — создан общий файл `config/adapters/_shared.js` с функциями `convertDateValue` и `convertDateColumns`. Модифицирован `DataAdapterEngine` для автоматической подгрузки shared-функций при выполнении любого JS-адаптера. Все response-адаптеры с `columns`/`rows` теперь используют `convertDateColumns(row.values, source.columns)` для преобразования полей с `type: 'datetime'` из ISO формата в локальный `DD.MM.YYYY HH:mm`.
+  - `config/adapters/_shared.js` — новый файл с общими функциями (`convertDateValue`, `convertDateColumns`)
+  - `src/core/DataAdapterEngine.ts` — добавлена загрузка `_shared.js` перед выполнением любого JS-адаптера
+  - `config/adapters/users.response.js` — упрощён, использует `convertDateColumns` из shared
+  - `config/adapters/acts.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/codes.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/events.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/gtins.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/messages.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/points-history.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/prizes.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/products.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/receipts.response.js` — добавлена конвертация datetime-полей
+  - `config/adapters/transactions.response.js` — добавлена конвертация datetime-полей
 
 ### Added
 

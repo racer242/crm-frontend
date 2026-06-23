@@ -57,13 +57,15 @@
               "method": "GET",
               "target": "state.gtins",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.gtins.first}",
                 "rows": "{$state.gtins.rows}",
                 "sortField": "{$state.gtins.sortField}",
                 "sortOrder": "{$state.gtins.sortOrder}",
                 "search": "{$state.gtins.search}",
                 "filters": "{$state.gtins.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {

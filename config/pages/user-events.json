@@ -57,13 +57,15 @@
               "method": "GET",
               "target": "state.events",
               "data": {
+                "event": "{$event}",
                 "first": "{$state.events.first}",
                 "rows": "{$state.events.rows}",
                 "sortField": "{$state.events.sortField}",
                 "sortOrder": "{$state.events.sortOrder}",
                 "search": "{$state.events.search}",
                 "filters": "{$state.events.filters}"
-              }
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {
