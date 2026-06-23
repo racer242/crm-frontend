@@ -46,8 +46,7 @@
     {
       "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
       "method": "GET",
-      "target": "state.userData",
-      "adapter": "user.response.js"
+      "target": "state.userData"
     }
   ],
   "sections": [

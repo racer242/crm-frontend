@@ -44,6 +44,10 @@
     "path": "users/[id]",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "adapter": {
+      "request": "user.request.js",
+      "response": "user.response.js"
+    },
     "note": "Участники: Состояние участника"
   },
   {
@@ -56,6 +60,10 @@
     "path": "users/[id]/docs",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "adapter": {
+      "request": "user-docs.request.js",
+      "response": "user-docs.response.js"
+    },
     "note": "Участники: Личные документы участника"
   },
   {
