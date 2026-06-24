@@ -61,7 +61,7 @@ export function renderMenubar({
 }: ComponentRendererProps) {
   const router = useRouter();
 
-  const { activeItemId, ...restProps } = props as any;
+  const { activeItemId, activeSubitemId, ...restProps } = props as any;
 
   let menuModel = processMenuItems(
     restProps.model || [],
@@ -76,6 +76,20 @@ export function renderMenubar({
         ? { ...item, className: classNames(item.className, "p-focus") }
         : item,
     );
+  }
+
+  if (activeItemId && activeSubitemId) {
+    menuModel = menuModel.map((parent) => {
+      if (parent.id === activeItemId && parent.items) {
+        const sub = parent.items.find(
+          (child: any) => child.id === activeSubitemId,
+        );
+        if (sub) {
+          return { ...parent, label: sub.label, icon: sub.icon };
+        }
+      }
+      return parent;
+    });
   }
 
   return (
