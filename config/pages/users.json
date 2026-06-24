@@ -297,6 +297,7 @@
         {
           "id": "usersTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "usersTable",

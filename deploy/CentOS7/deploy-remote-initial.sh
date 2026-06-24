@@ -17,6 +17,10 @@ LOCAL_IMAGE_NAME="crm-frontend-crm-frontend:latest"
 export HOST_PORT="${HOST_PORT:-3030}" # ДОБАВЛЕНО export для Docker Compose
 DOMAIN="dev.ssd26.srv08.ru"
 EXTERNAL_PORT="3003"
+NGINX_CONF_SRC="./deploy/CentOS7/nginx-crm.conf"
+NGINX_CONF_NAME="nginx-crm.conf"
+NGINX_AVAILABLE="/etc/nginx/bx/site_avaliable"
+NGINX_ENABLED="/etc/nginx/bx/site_enabled"
 COMPOSE_FILE="docker-compose.yml"
 ENV_FILE=".env.production"
 TEMP_ARCHIVE="crm-image.tar.gz"
@@ -81,6 +85,8 @@ main() {
   # Проверяем наличие папок перед копированием
   if [ -d "config" ]; then scp -P "$REMOTE_PORT" -r config/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp config failed"; fi
   if [ -d "messages" ]; then scp -P "$REMOTE_PORT" -r messages/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp messages failed"; fi
+  scp -P "$REMOTE_PORT" "$NGINX_CONF_SRC" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/" || fail "scp nginx config failed"
+
   rm -f "$TEMP_ARCHIVE"
   ok "All files copied."
 
@@ -96,6 +102,18 @@ main() {
     || fail "Remote deployment failed."
   ok "Container started."
 
+  # Install nginx config (Bitrix CentOS 7)
+  info "Installing nginx config for Bitrix environment..."
+  # ИСПРАВЛЕНО: Добавлена смена владельца конфига на root:root после копирования
+  ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
+    "sudo cp $REMOTE_DIR/$NGINX_CONF_NAME $NGINX_AVAILABLE/ && \
+     sudo chown root:root $NGINX_AVAILABLE/$NGINX_CONF_NAME && \
+     sudo chmod 644 $NGINX_AVAILABLE/$NGINX_CONF_NAME && \
+     sudo ln -sf $NGINX_AVAILABLE/$NGINX_CONF_NAME $NGINX_ENABLED/$NGINX_CONF_NAME && \
+     sudo nginx -t && sudo systemctl reload nginx" \
+    || fail "Nginx config installation failed."
+  ok "Nginx config installed and reloaded."
+
   # Show URL
   echo ""
   echo -e "${GREEN}============================================${NC}"
@@ -107,6 +125,7 @@ main() {
   echo "  Restart:  ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && sudo docker compose restart'"
   echo "  Stop:     ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd $REMOTE_DIR && sudo docker compose down'"
   echo ""
+  echo "  Nginx config: $NGINX_AVAILABLE/$NGINX_CONF_NAME"
 }
 
 main
