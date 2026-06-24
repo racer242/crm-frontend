@@ -327,7 +327,7 @@
                         "componentType": "Button",
                         "props": {
                           "icon": "pi pi-envelope",
-                          "label": "Отправить"
+                          "label": "@field"
                         },
                         "events": [
                           {
@@ -338,7 +338,7 @@
                                 "params": {
                                   "message": {
                                     "email": "field",
-                                    "subject": "row.email"
+                                    "subject": "{$event}"
                                   }
                                 }
                               }

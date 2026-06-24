@@ -1,9 +1,11 @@
 /**
- * Recursively resolves @field and @row.* macros in a component definition
+ * Recursively resolves {#field} and {#row.*} macros in a component definition
  * tree using the current row data from the DataTable.
  *
- * - "@field" -> rowData[fieldName]   (the current column's field value)
- * - "@row.some.path" -> _.get(rowData, "some.path") style resolution
+ * - "{#field}" -> rowData[fieldName]   (the current column's field value)
+ * - "{#row.some.path}" -> nested property access from rowData
+ *
+ * Uses {#...} syntax to avoid conflicts with @state linkage system.
  */
 
 function resolveValue(
@@ -12,12 +14,13 @@ function resolveValue(
   fieldName: string,
 ): any {
   if (typeof value === "string") {
-    if (value === "@field") {
+    if (value === "{#field}") {
       return rowData[fieldName];
     }
-    if (value.startsWith("@row.")) {
-      const path = value.slice(5); // remove "@row."
-      return path
+    if (value.startsWith("{#row.")) {
+      // Remove "{#row." prefix and trailing "}"
+      const inner = value.slice(6, -1); // removes "{#row." and "}"
+      return inner
         .split(".")
         .reduce(
           (obj, key) => (obj && obj[key] !== undefined ? obj[key] : undefined),
