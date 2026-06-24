@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Modified
+
+- **config/crm-config.json** — вынесены `navbar` и `adapters` в отдельные файлы через `$ref`:
+  - `config/menus/navbar.json` — новый файл с конфигурацией навбара
+  - `config/system/adapters.json` — новый файл со списком адаптеров
+
 ### Added
 
 - **Shared-функции для преобразования дат во всех response-адаптерах** — создан общий файл `config/adapters/_shared.js` с функциями `convertDateValue` и `convertDateColumns`. Модифицирован `DataAdapterEngine` для автоматической подгрузки shared-функций при выполнении любого JS-адаптера. Все response-адаптеры с `columns`/`rows` теперь используют `convertDateColumns(row.values, source.columns)` для преобразования полей с `type: 'datetime'` из ISO формата в локальный `DD.MM.YYYY HH:mm`.

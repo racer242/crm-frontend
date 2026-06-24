@@ -1,0 +1,126 @@
+{
+  "stats.analytics.js": {
+    "type": "js",
+    "script": "./config/adapters/analytics2menu.js"
+  },
+  "stats.review.js": {
+    "type": "js",
+    "script": "./config/adapters/stats-review-2-tabview.js"
+  },
+  "stats.week.js": {
+    "type": "js",
+    "script": "./config/adapters/weeks-2-select-list.js"
+  },
+  "users.request.js": {
+    "type": "js",
+    "script": "./config/adapters/users.request.js"
+  },
+  "users.response.js": {
+    "type": "js",
+    "script": "./config/adapters/users.response.js"
+  },
+  "user.request.js": {
+    "type": "js",
+    "script": "./config/adapters/user.request.js"
+  },
+  "user-docs.request.js": {
+    "type": "js",
+    "script": "./config/adapters/user-docs.request.js"
+  },
+  "acts.request.js": {
+    "type": "js",
+    "script": "./config/adapters/acts.request.js"
+  },
+  "acts.response.js": {
+    "type": "js",
+    "script": "./config/adapters/acts.response.js"
+  },
+  "prizes.request.js": {
+    "type": "js",
+    "script": "./config/adapters/prizes.request.js"
+  },
+  "prizes.response.js": {
+    "type": "js",
+    "script": "./config/adapters/prizes.response.js"
+  },
+  "receipts.request.js": {
+    "type": "js",
+    "script": "./config/adapters/receipts.request.js"
+  },
+  "receipts.response.js": {
+    "type": "js",
+    "script": "./config/adapters/receipts.response.js"
+  },
+  "codes.request.js": {
+    "type": "js",
+    "script": "./config/adapters/codes.request.js"
+  },
+  "codes.response.js": {
+    "type": "js",
+    "script": "./config/adapters/codes.response.js"
+  },
+  "gtins.request.js": {
+    "type": "js",
+    "script": "./config/adapters/gtins.request.js"
+  },
+  "gtins.response.js": {
+    "type": "js",
+    "script": "./config/adapters/gtins.response.js"
+  },
+  "user.response.js": {
+    "type": "js",
+    "script": "./config/adapters/user.js"
+  },
+  "user-edit.request.js": {
+    "type": "js",
+    "script": "./config/adapters/user-edit-request.js"
+  },
+  "user-docs.response.js": {
+    "type": "js",
+    "script": "./config/adapters/user-docs.js"
+  },
+  "user-docs-edit.request.js": {
+    "type": "js",
+    "script": "./config/adapters/user-docs-edit-request.js"
+  },
+  "points-history.request.js": {
+    "type": "js",
+    "script": "./config/adapters/points-history.request.js"
+  },
+  "points-history.response.js": {
+    "type": "js",
+    "script": "./config/adapters/points-history.response.js"
+  },
+  "products.request.js": {
+    "type": "js",
+    "script": "./config/adapters/products.request.js"
+  },
+  "products.response.js": {
+    "type": "js",
+    "script": "./config/adapters/products.response.js"
+  },
+  "events.request.js": {
+    "type": "js",
+    "script": "./config/adapters/events.request.js"
+  },
+  "events.response.js": {
+    "type": "js",
+    "script": "./config/adapters/events.response.js"
+  },
+  "transactions.request.js": {
+    "type": "js",
+    "script": "./config/adapters/transactions.request.js"
+  },
+  "transactions.response.js": {
+    "type": "js",
+    "script": "./config/adapters/transactions.response.js"
+  },
+  "messages.request.js": {
+    "type": "js",
+    "script": "./config/adapters/messages.request.js"
+  },
+  "messages.response.js": {
+    "type": "js",
+    "script": "./config/adapters/messages.response.js"
+  }
+}

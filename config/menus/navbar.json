@@ -1,0 +1,75 @@
+{
+  "id": "mainNavbar",
+  "items": [
+    {
+      "label": "Dashboard",
+      "icon": "pi pi-home",
+      "route": "/"
+    },
+    {
+      "label": "Статистика",
+      "icon": "pi pi-chart-bar",
+      "route": "/statistics"
+    },
+    {
+      "label": "Участники",
+      "icon": "pi pi-users",
+      "route": "/users"
+    },
+    {
+      "label": "Акты",
+      "icon": "pi pi-file",
+      "route": "/acts"
+    },
+    {
+      "label": "Призы",
+      "icon": "pi pi-gift",
+      "route": "/prizes"
+    },
+    {
+      "label": "Чеки",
+      "icon": "pi pi-receipt",
+      "route": "/receipts"
+    },
+    {
+      "label": "Коды",
+      "icon": "pi pi-star",
+      "route": "/codes"
+    },
+    {
+      "label": "Коды ЧЗ",
+      "icon": "pi pi-qrcode",
+      "route": "/gtins"
+    },
+    {
+      "label": "Orders",
+      "icon": "pi pi-shopping-cart",
+      "route": "/orders"
+    },
+    {
+      "label": "Products",
+      "icon": "pi pi-box",
+      "route": "/products"
+    },
+    {
+      "label": "Reports",
+      "icon": "pi pi-chart-bar",
+      "route": "/reports"
+    },
+    {
+      "label": "Settings",
+      "icon": "pi pi-cog",
+      "route": "/settings"
+    },
+    {
+      "label": "Components",
+      "icon": "pi pi-th-large",
+      "route": "/components"
+    },
+    {
+      "label": "Testing",
+      "icon": "pi pi-th-large",
+      "route": "/stats/testing"
+    }
+  ]
+}
