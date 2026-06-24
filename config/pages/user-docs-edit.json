@@ -6,6 +6,17 @@
     "loading": false,
     "saving": false,
     "saved": false,
+    "userData": {
+      "id": "",
+      "fullName": "",
+      "initials": "",
+      "regDateFormatted": "",
+      "authDateFormatted": "",
+      "groupList": [],
+      "groupsText": "",
+      "statusLabel": "",
+      "statusSeverity": ""
+    },
     "docsData": {
       "passport_photo_first_page": "",
       "passport_photo_registration_page": "",
@@ -104,6 +115,11 @@
     }
   },
   "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
     {
       "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/docs",
       "method": "GET",

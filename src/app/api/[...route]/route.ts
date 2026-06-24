@@ -237,7 +237,7 @@ async function handleRequest(
       }
     } else {
       const searchParams = request.nextUrl.searchParams;
-      if (searchParams.size > 0) {
+      if (searchParams) {
         requestBody = parseSearchParams(searchParams);
       }
     }

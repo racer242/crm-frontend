@@ -120,7 +120,7 @@
                     "label": "@state.userData.fullName",
                     "route": "/users/{@state.userData.id}"
                   },
-                  { "label": "Коды ЧЗ" }
+                  { "label": "Коды Честный Знак" }
                 ]
               }
             }
@@ -154,17 +154,17 @@
     {
       "id": "gtinsFilters",
       "type": "section",
-      "className": "flex gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "gtinsSearchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "gtinsSearchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -186,17 +186,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "gtinsFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
               "id": "gtinsToggleFilters",
               "type": "component",
@@ -309,6 +299,7 @@
         {
           "id": "gtinsTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "gtinsTable",
@@ -325,6 +316,7 @@
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
+                "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
@@ -335,6 +327,23 @@
                 {
                   "type": "onSort",
                   "commands": ["requestUserGtins"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event.data}"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/gtins/{$event.data._rowId}"
+                      }
+                    }
+                  ]
                 }
               ]
             }

@@ -154,17 +154,17 @@
     {
       "id": "receiptsFilters",
       "type": "section",
-      "className": "flex gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "receiptsSearchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "receiptsSearchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -186,17 +186,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "receiptsFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
               "id": "receiptsToggleFilters",
               "type": "component",
@@ -309,6 +299,7 @@
         {
           "id": "receiptsTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "receiptsTable",

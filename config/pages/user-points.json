@@ -172,9 +172,9 @@
           "className": "mb-5",
           "grid": {
             "cols": [
-              "col-12 sm:col-6 lg:col-4",
-              "col-12 sm:col-6 lg:col-4",
-              "col-12 sm:col-6 lg:col-4"
+              "col-12 sm:col-6 md:col-4",
+              "col-12 sm:col-6 md:col-4",
+              "col-12 sm:col-6 md:col-4"
             ],
             "padding": "p-2"
           },
@@ -249,11 +249,10 @@
                   "type": "onClick",
                   "commands": [
                     {
-                      "type": "showMessage",
+                      "type": "showToast",
                       "params": {
                         "severity": "info",
-                        "summary": "Заглушка",
-                        "detail": "Функция изменения баллов ещё не реализована"
+                        "message": "Заглушка"
                       }
                     }
                   ]
@@ -267,6 +266,7 @@
     {
       "id": "pointsHistorySection",
       "type": "section",
+      "className": "mb-0",
       "blocks": [
         {
           "id": "pointsHistoryBlock",
@@ -288,17 +288,17 @@
     {
       "id": "pointsHistoryFilters",
       "type": "section",
-      "className": "flex gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "pointsHistorySearchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "pointsHistorySearchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -320,17 +320,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "pointsHistoryFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
               "id": "pointsHistoryToggleFilters",
               "type": "component",
@@ -443,6 +433,7 @@
         {
           "id": "pointsHistoryTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "pointsHistoryTable",

@@ -141,7 +141,7 @@
                     "label": "Чеки",
                     "route": "/users/{@state.userData.id}/receipts"
                   },
-                  { "label": "Чек #@state.receiptData.id" }
+                  { "label": "Чек №{@state.receiptData.id}" }
                 ]
               }
             }

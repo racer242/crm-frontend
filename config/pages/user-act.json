@@ -37,10 +37,7 @@
     {
       "url": "{$config.baseURL}/api/acts/{$location.routeParams.act_id}",
       "method": "GET",
-      "target": "state.actData",
-      "adapter": {
-        "response": "act.response.js"
-      }
+      "target": "state.actData"
     }
   ],
   "shortcuts": {
@@ -124,7 +121,7 @@
                     "label": "Акты",
                     "route": "/users/{@state.userData.id}/acts"
                   },
-                  { "label": "Акт #@state.actData.id" }
+                  { "label": "@state.actData.prize_name" }
                 ]
               }
             }
