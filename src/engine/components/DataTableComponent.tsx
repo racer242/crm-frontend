@@ -17,13 +17,8 @@ type CustomColumnDefinition = {
 };
 
 // Keys that are internal to custom column config and should not be merged into Column props
-const CUSTOM_COLUMN_INTERNAL_KEYS = new Set([
-  "field",
-  "header",
-  "sortable",
-  "order",
-  "body",
-]);
+// "body" is NOT here because it needs to be passed through for custom rendering
+const CUSTOM_COLUMN_INTERNAL_KEYS = new Set(["order"]);
 
 /**
  * Merges customColumns into the standard columns array.
