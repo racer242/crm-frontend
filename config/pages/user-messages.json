@@ -143,6 +143,7 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "communication",
+                "activeSubitemId": "messages",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }

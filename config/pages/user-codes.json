@@ -142,6 +142,7 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "production",
+                "activeSubitemId": "codes",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }

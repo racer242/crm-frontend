@@ -153,6 +153,7 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "achievements",
+                "activeSubitemId": "points",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }

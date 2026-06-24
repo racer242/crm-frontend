@@ -12,11 +12,13 @@
       "icon": "pi pi-file",
       "items": [
         {
+          "id": "personal-docs",
           "label": "Личные",
           "icon": "pi pi-id-card",
           "route": "/users/{@state.userData.id}/docs"
         },
         {
+          "id": "acts",
           "label": "Акты",
           "icon": "pi pi-verified",
           "route": "/users/{@state.userData.id}/acts"
@@ -29,11 +31,13 @@
       "icon": "pi pi-crown",
       "items": [
         {
+          "id": "points",
           "label": "Баллы",
           "icon": "pi pi-trophy",
           "route": "/users/{@state.userData.id}/points"
         },
         {
+          "id": "prizes",
           "label": "Призы",
           "icon": "pi pi-gift",
           "route": "/users/{@state.userData.id}/prizes"
@@ -46,22 +50,26 @@
       "icon": "pi pi-shopping-cart",
       "items": [
         {
+          "id": "receipts",
           "label": "Чеки",
           "icon": "pi pi-receipt",
           "route": "/users/{@state.userData.id}/receipts"
         },
         {
+          "id": "codes",
           "label": "Коды",
           "icon": "pi pi-star",
           "route": "/users/{@state.userData.id}/codes"
         },
         {
+          "id": "gtins",
           "label": "Честный знак",
           "icon": "pi pi-qrcode",
           "route": "/users/{@state.userData.id}/gtins"
         },
         {
-          "label": "Акционные продукты",
+          "id": "products",
+          "label": "Покупки",
           "icon": "pi pi-shopping-bag",
           "route": "/users/{@state.userData.id}/products"
         }
@@ -73,11 +81,13 @@
       "icon": "pi pi-play-circle",
       "items": [
         {
+          "id": "events",
           "label": "Действия",
           "icon": "pi pi-calendar",
           "route": "/users/{@state.userData.id}/events"
         },
         {
+          "id": "transactions",
           "label": "Транзакции",
           "icon": "pi pi-list-check",
           "route": "/users/{@state.userData.id}/transactions"

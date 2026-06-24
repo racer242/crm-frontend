@@ -138,29 +138,6 @@
       ]
     },
     {
-      "id": "menuSection",
-      "type": "section",
-      "blocks": [
-        {
-          "id": "menuBlock",
-          "type": "block",
-          "className": "w-full",
-          "components": [
-            {
-              "id": "menubar",
-              "type": "component",
-              "componentType": "Menubar",
-              "props": {
-                "activeItemId": "achievements",
-                "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "mainLayout",
       "type": "section",
       "className": "flex mb-5",

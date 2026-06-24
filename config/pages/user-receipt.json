@@ -164,6 +164,7 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "production",
+                "activeSubitemId": "receipts",
                 "pt": { "menu": { "className": "gap-1" } },
                 "$ref": "../menus/user.json"
               }
