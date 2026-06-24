@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **DataTable customColumns support** — ability to add columns with arbitrary components in cells (buttons, icons, inputs, etc.) via `customColumns` prop.
+  - `src/engine/components/DataTableComponent.tsx` — added `mergeCustomColumns()` for merging/replacing columns by field match, `renderCustomColumnBody()` for rendering component arrays per row cell
+  - `src/engine/utils/resolveRowBindings.ts` — new utility for resolving `@field` and `@row.*` macros at render time using current row data
+  - `docs/components-reference.md` — added documentation for `customColumns` prop with structure, rules, and usage example
+
 ### Modified
 
 - **config/crm-config.json** — вынесены `navbar` и `adapters` в отдельные файлы через `$ref`:
