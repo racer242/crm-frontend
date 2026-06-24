@@ -2,11 +2,36 @@
  * Recursively resolves {#field} and {#row.*} macros in a component definition
  * tree using the current row data from the DataTable.
  *
- * - "{#field}" -> rowData[fieldName]   (the current column's field value)
- * - "{#row.some.path}" -> nested property access from rowData
+ * Supports both exact matches ("{#field}") and inline macros ("mailto:{#field}", "/users/{#row.id}/edit").
  *
  * Uses {#...} syntax to avoid conflicts with @state linkage system.
  */
+
+// Regex to match {#field} or {#row.*} patterns within strings
+const MACRO_REGEX = /\{#(?:field|row\.[^}]+)\}/g;
+
+function resolveMacro(
+  match: string,
+  rowData: Record<string, any>,
+  fieldName: string,
+): string {
+  if (match === "{#field}") {
+    const val = rowData[fieldName];
+    return val !== undefined && val !== null ? String(val) : match;
+  }
+  if (match.startsWith("{#row.")) {
+    // Remove "{#row." prefix and trailing "}"
+    const inner = match.slice(6, -1);
+    const result = inner
+      .split(".")
+      .reduce(
+        (obj, key) => (obj && obj[key] !== undefined ? obj[key] : undefined),
+        rowData as any,
+      );
+    return result !== undefined && result !== null ? String(result) : match;
+  }
+  return match;
+}
 
 function resolveValue(
   value: any,
@@ -14,18 +39,14 @@ function resolveValue(
   fieldName: string,
 ): any {
   if (typeof value === "string") {
-    if (value === "{#field}") {
-      return rowData[fieldName];
-    }
-    if (value.startsWith("{#row.")) {
-      // Remove "{#row." prefix and trailing "}"
-      const inner = value.slice(6, -1); // removes "{#row." and "}"
-      return inner
-        .split(".")
-        .reduce(
-          (obj, key) => (obj && obj[key] !== undefined ? obj[key] : undefined),
-          rowData as any,
-        );
+    // Check if the string contains any macros to replace
+    if (MACRO_REGEX.test(value)) {
+      // Reset regex state
+      MACRO_REGEX.lastIndex = 0;
+      // Replace all occurrences of {#field} or {#row.*} in the string
+      return value.replace(MACRO_REGEX, (match) =>
+        resolveMacro(match, rowData, fieldName),
+      );
     }
     return value;
   }

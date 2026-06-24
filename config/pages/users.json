@@ -327,19 +327,19 @@
                         "componentType": "Button",
                         "props": {
                           "icon": "pi pi-envelope",
-                          "label": "@field"
+                          "label": "{#field}",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
                         },
                         "events": [
                           {
                             "type": "onClick",
                             "commands": [
                               {
-                                "type": "log",
+                                "type": "navigate",
                                 "params": {
-                                  "message": {
-                                    "email": "field",
-                                    "subject": "{$event}"
-                                  }
+                                  "url": "{#field}"
                                 }
                               }
                             ]
