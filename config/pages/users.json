@@ -339,7 +339,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "{#field}"
+                                  "url": "mailto:{#field}"
                                 }
                               }
                             ]
