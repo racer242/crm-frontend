@@ -42,26 +42,6 @@
       "route": "/gtins"
     },
     {
-      "label": "Orders",
-      "icon": "pi pi-shopping-cart",
-      "route": "/orders"
-    },
-    {
-      "label": "Products",
-      "icon": "pi pi-box",
-      "route": "/products"
-    },
-    {
-      "label": "Reports",
-      "icon": "pi pi-chart-bar",
-      "route": "/reports"
-    },
-    {
-      "label": "Settings",
-      "icon": "pi pi-cog",
-      "route": "/settings"
-    },
-    {
       "label": "Components",
       "icon": "pi pi-th-large",
       "route": "/components"
