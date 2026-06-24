@@ -345,6 +345,36 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "field": "button",
+                    "header": "Перейти",
+                    "order": 0,
+                    "body": [
+                      {
+                        "id": "sendButton",
+                        "componentType": "Button",
+                        "props": {
+                          "label": "Подробнее",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "mailto:{#row.email}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               },

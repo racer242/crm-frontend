@@ -24,8 +24,8 @@ const CUSTOM_COLUMN_INTERNAL_KEYS = new Set(["order"]);
  * Merges customColumns into the standard columns array.
  * - If a custom column's `field` matches an existing column, it merges with that column.
  * - Original column properties are preserved unless overridden by custom column.
- * - If no match, the custom column is ignored.
- * - `order`: 0 = first, -1 = last, 1,2,3... = sorted position in middle.
+ * - If no match (or no field), the custom column is added as a new column.
+ * - `order`: 0 = first, -1 = last (default for new columns), 1,2,3... = sorted position in middle.
  * - If `order` is not specified and the column replaces an existing one, it keeps the original position.
  */
 function mergeCustomColumns(
@@ -34,16 +34,24 @@ function mergeCustomColumns(
 ): any[] {
   if (!customColumns || customColumns.length === 0) return baseColumns;
 
-  // Filter custom columns that match an existing column field
-  const validCustomColumns = customColumns.filter((cc) =>
-    baseColumns.some((bc) => bc.field === cc.field),
-  );
+  // Build a set of existing base column fields
+  const baseFields = new Set(baseColumns.map((bc) => bc.field));
 
-  if (validCustomColumns.length === 0) return baseColumns;
+  // Separate custom columns into replacing and new
+  const replacingColumns: CustomColumnDefinition[] = [];
+  const newColumns: CustomColumnDefinition[] = [];
 
-  // Build a map of custom columns by field for quick lookup
+  for (const cc of customColumns) {
+    if (cc.field && baseFields.has(cc.field)) {
+      replacingColumns.push(cc);
+    } else {
+      newColumns.push(cc);
+    }
+  }
+
+  // Build a map of replacing columns by field for quick lookup
   const customByField = new Map<string, CustomColumnDefinition>();
-  for (const cc of validCustomColumns) {
+  for (const cc of replacingColumns) {
     customByField.set(cc.field, cc);
   }
 
@@ -57,7 +65,6 @@ function mergeCustomColumns(
     const customCol = customByField.get(baseCol.field);
     if (customCol) {
       // Merge: start with base column properties, then override with custom column properties
-      // Extract only the Column-relevant props from customCol (exclude internal keys)
       const customColProps: Record<string, any> = {};
       for (const [key, val] of Object.entries(customCol)) {
         if (!CUSTOM_COLUMN_INTERNAL_KEYS.has(key)) {
@@ -74,12 +81,32 @@ function mergeCustomColumns(
       } else if (customCol.order !== undefined && customCol.order > 0) {
         middle.push(merged);
       } else {
-        // order is undefined or <= 0 but not -1: preserve original position
+        // order is undefined: preserve original position
         result.push(merged);
       }
     } else {
       // Base column not replaced, keep it
       result.push(baseCol);
+    }
+  }
+
+  // Process new columns (those without matching base column or without field)
+  for (const newCol of newColumns) {
+    const colProps: Record<string, any> = {};
+    for (const [key, val] of Object.entries(newCol)) {
+      if (!CUSTOM_COLUMN_INTERNAL_KEYS.has(key)) {
+        colProps[key] = val;
+      }
+    }
+
+    // Determine position for new columns
+    if (newCol.order === 0) {
+      first.push(colProps);
+    } else if (newCol.order !== undefined && newCol.order > 0) {
+      middle.push(colProps);
+    } else {
+      // order is undefined, -1, or not specified: add to end (default for new columns)
+      last.push(colProps);
     }
   }
 
