@@ -21,6 +21,7 @@ type CustomColumnDefinition = {
  * - If a custom column's `field` matches an existing column, it replaces that column.
  * - If no match, the custom column is ignored.
  * - `order`: 0 = first, -1 = last, 1,2,3... = sorted position in middle.
+ * - If `order` is not specified and the column replaces an existing one, it keeps the original position.
  */
 function mergeCustomColumns(
   baseColumns: any[],
@@ -35,32 +36,43 @@ function mergeCustomColumns(
 
   if (validCustomColumns.length === 0) return baseColumns;
 
-  // Remove base columns that are replaced by custom ones
-  const replacedFields = new Set(validCustomColumns.map((cc) => cc.field));
-  const remainingBaseColumns = baseColumns.filter(
-    (bc) => !replacedFields.has(bc.field),
-  );
-
-  // Separate custom columns by order
-  const first: CustomColumnDefinition[] = [];
-  const last: CustomColumnDefinition[] = [];
-  const middle: CustomColumnDefinition[] = [];
-
+  // Build a map of custom columns by field for quick lookup
+  const customByField = new Map<string, CustomColumnDefinition>();
   for (const cc of validCustomColumns) {
-    if (cc.order === 0) {
-      first.push(cc);
-    } else if (cc.order === -1 || cc.order === undefined) {
-      last.push(cc);
+    customByField.set(cc.field, cc);
+  }
+
+  // Build result by iterating over baseColumns
+  const result: any[] = [];
+  const first: CustomColumnDefinition[] = [];
+  const middle: CustomColumnDefinition[] = [];
+  const last: CustomColumnDefinition[] = [];
+
+  for (const baseCol of baseColumns) {
+    const customCol = customByField.get(baseCol.field);
+    if (customCol) {
+      // This base column is replaced by a custom column
+      if (customCol.order === 0) {
+        first.push(customCol);
+      } else if (customCol.order === -1) {
+        last.push(customCol);
+      } else if (customCol.order !== undefined && customCol.order > 0) {
+        middle.push(customCol);
+      } else {
+        // order is undefined or <= 0 but not -1: preserve original position
+        result.push(customCol);
+      }
     } else {
-      middle.push(cc);
+      // Base column not replaced, keep it
+      result.push(baseCol);
     }
   }
 
   // Sort middle by order ascending
   middle.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Build final column list: first + middle + remainingBaseColumns + last
-  return [...first, ...middle, ...remainingBaseColumns, ...last];
+  // Build final column list: first + middle + result (preserved positions + non-replaced) + last
+  return [...first, ...middle, ...result, ...last];
 }
 
 /**
