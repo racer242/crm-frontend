@@ -133,8 +133,8 @@
     { "$ref": "./pages/user-prize-edit.json" },
     { "$ref": "./pages/user-receipt.json" },
     { "$ref": "./pages/user-receipt-edit.json" },
-    { "$ref": "./pages/user-qtin.json" },
-    { "$ref": "./pages/user-qtin-edit.json" }
+    { "$ref": "./pages/user-gtin.json" },
+    { "$ref": "./pages/user-gtin-edit.json" }
   ],
   "adapters": {
     "stats.analytics.js": {
