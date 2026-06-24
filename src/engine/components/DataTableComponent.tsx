@@ -16,9 +16,19 @@ type CustomColumnDefinition = {
   body?: Record<string, any>[];
 };
 
+// Keys that are internal to custom column config and should not be merged into Column props
+const CUSTOM_COLUMN_INTERNAL_KEYS = new Set([
+  "field",
+  "header",
+  "sortable",
+  "order",
+  "body",
+]);
+
 /**
  * Merges customColumns into the standard columns array.
- * - If a custom column's `field` matches an existing column, it replaces that column.
+ * - If a custom column's `field` matches an existing column, it merges with that column.
+ * - Original column properties are preserved unless overridden by custom column.
  * - If no match, the custom column is ignored.
  * - `order`: 0 = first, -1 = last, 1,2,3... = sorted position in middle.
  * - If `order` is not specified and the column replaces an existing one, it keeps the original position.
@@ -44,23 +54,33 @@ function mergeCustomColumns(
 
   // Build result by iterating over baseColumns
   const result: any[] = [];
-  const first: CustomColumnDefinition[] = [];
-  const middle: CustomColumnDefinition[] = [];
-  const last: CustomColumnDefinition[] = [];
+  const first: any[] = [];
+  const middle: any[] = [];
+  const last: any[] = [];
 
   for (const baseCol of baseColumns) {
     const customCol = customByField.get(baseCol.field);
     if (customCol) {
-      // This base column is replaced by a custom column
+      // Merge: start with base column properties, then override with custom column properties
+      // Extract only the Column-relevant props from customCol (exclude internal keys)
+      const customColProps: Record<string, any> = {};
+      for (const [key, val] of Object.entries(customCol)) {
+        if (!CUSTOM_COLUMN_INTERNAL_KEYS.has(key)) {
+          customColProps[key] = val;
+        }
+      }
+      const merged = { ...baseCol, ...customColProps };
+
+      // Determine position based on order
       if (customCol.order === 0) {
-        first.push(customCol);
+        first.push(merged);
       } else if (customCol.order === -1) {
-        last.push(customCol);
+        last.push(merged);
       } else if (customCol.order !== undefined && customCol.order > 0) {
-        middle.push(customCol);
+        middle.push(merged);
       } else {
         // order is undefined or <= 0 but not -1: preserve original position
-        result.push(customCol);
+        result.push(merged);
       }
     } else {
       // Base column not replaced, keep it

@@ -319,8 +319,6 @@
                 "customColumns": [
                   {
                     "field": "email",
-                    "header": "Email",
-                    "sortable": true,
                     "body": [
                       {
                         "id": "sendButton",
