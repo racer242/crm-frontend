@@ -56,7 +56,6 @@ import {
 
 export function ComponentRenderer({ component }: { component: Component }) {
   const t = useTranslations("component");
-  const tf = useTranslations("filters");
   const { componentType, className, style } = component;
 
   const { resolvedProps, handleEvent } = useComponentBindings({
@@ -69,7 +68,6 @@ export function ComponentRenderer({ component }: { component: Component }) {
     className,
     style,
     handleEvent,
-    t: tf,
   };
 
   switch (componentType) {

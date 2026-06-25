@@ -96,3 +96,7 @@ input.p-inputtext {
   border-top-left-radius: var(--border-radius) !important;
   border-top-right-radius: var(--border-radius) !important;
 }
+
+.__p-button {
+  transition: none !important;
+}

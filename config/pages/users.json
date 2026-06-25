@@ -328,7 +328,10 @@
                           "label": "{#field}",
                           "link": true,
                           "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
+                          "pt": {
+                            "label": { "className": "font-normal" },
+                            "root": { "className": "p-1" }
+                          }
                         },
                         "events": [
                           {
@@ -348,14 +351,12 @@
                   },
                   {
                     "field": "button",
-                    "header": "Перейти",
-                    "order": 0,
+                    "order": -1,
                     "body": [
                       {
-                        "id": "sendButton",
                         "componentType": "Button",
                         "props": {
-                          "label": "Подробнее",
+                          "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
                           "pt": { "label": { "className": "font-normal" } }
@@ -367,7 +368,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "mailto:{#row.email}"
+                                  "url": "/users/{#row.id}"
                                 }
                               }
                             ]

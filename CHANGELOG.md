@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **useComponentBindings**: Исправлена двухфазная проблема рендера, при которой компоненты сначала отображались с пустыми пропсами, а затем получали актуальные данные линковки. Теперь `resolvedProps` инициализируется синхронно на этапе рендера через `useMemo`, а не через асинхронный `useEffect`.
+
 ### Added
 
 - **DataTable customColumns support** — ability to add columns with arbitrary components in cells (buttons, icons, inputs, etc.) via `customColumns` prop.

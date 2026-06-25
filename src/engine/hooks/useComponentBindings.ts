@@ -19,7 +19,6 @@ export function useComponentBindings({
   component: Component;
 }): ComponentBindings {
   const ctx = useComponentContext();
-  const [resolvedProps, setResolvedProps] = useState<Record<string, any>>({});
 
   const { stateManager, pageId, shortcuts } = ctx;
 
@@ -69,31 +68,33 @@ export function useComponentBindings({
     return bindings;
   }, [component.props]);
 
-  // Разрешаем props через Linkage
-  const resolveAll = useCallback(() => {
-    if (!linkage) return;
-
-    const propsWithValues: Record<string, any> =
-      linkage.resolveDeep(component.props) || {};
-
-    setResolvedProps(propsWithValues);
+  // Синхронное разрешение всех линковок на этапе рендера (без useEffect)
+  // Позволяет избежать пустого первого рендера с {} в resolvedProps
+  const initiallyResolved = useMemo(() => {
+    if (!linkage) return component.props || {};
+    return linkage.resolveDeep(component.props) || {};
   }, [linkage, component.props]);
 
-  // Первоначальное разрешение
+  // Инициализируем состояние сразу разрешёнными пропсами
+  const [resolvedProps, setResolvedProps] =
+    useState<Record<string, any>>(initiallyResolved);
+
+  // Синхронизация состояния, если initiallyResolved изменился после первоначальной инициализации
   useEffect(() => {
-    resolveAll();
-  }, [resolveAll]);
+    setResolvedProps(initiallyResolved);
+  }, [initiallyResolved]);
 
   // Подписка на изменения bindings через Linkage
   useEffect(() => {
     if (!linkage) return;
 
     const unsubscribe = linkage.subscribe(allBindings, () => {
-      resolveAll();
+      const propsWithValues = linkage.resolveDeep(component.props) || {};
+      setResolvedProps(propsWithValues);
     });
 
     return unsubscribe;
-  }, [linkage, allBindings, resolveAll]);
+  }, [linkage, allBindings, component.props]);
 
   // /**
   //  * Выполнить команды из component.events по типу события
