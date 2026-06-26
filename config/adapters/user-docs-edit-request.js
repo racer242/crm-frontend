@@ -18,7 +18,9 @@ function transform(data) {
     passport_issued_by: data.passport_issued_by || "",
     passport_issue_date: data.passport_issue_date || "",
     passport_registration_address: data.passport_registration_address || "",
+    passport_moderation_status: data.passport_moderation_status,
     inn: data.inn || "",
     inn_photo: data.inn_photo || "",
+    inn_moderation_status: data.inn_moderation_status,
   };
 }

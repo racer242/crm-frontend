@@ -544,6 +544,40 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "passportModerationGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Статус модерации паспорта",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportModerationSwitch",
+                    "type": "component",
+                    "componentType": "InputSwitch",
+                    "props": {
+                      "value": "@state.docsData.passport_moderation_status"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_moderation_status"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ]
         },
@@ -621,6 +655,40 @@
                             "params": {
                               "source": "event.value",
                               "target": "state.docsData.inn"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "innModerationGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Статус модерации ИНН",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "innModerationSwitch",
+                    "type": "component",
+                    "componentType": "InputSwitch",
+                    "props": {
+                      "value": "@state.docsData.inn_moderation_status"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.inn_moderation_status"
                             }
                           }
                         ]
