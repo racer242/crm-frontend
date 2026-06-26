@@ -60,7 +60,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Акт добавлен"
+                    "message": "Акт добавлен"
                   }
                 },
                 {
@@ -83,7 +83,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось добавить акт"
+                    "message": "Не удалось добавить акт"
                   }
                 }
               ]

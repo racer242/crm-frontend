@@ -72,7 +72,7 @@
                       "params": {
                         "severity": "success",
                         "summary": "Успешно",
-                        "detail": "Код удален"
+                        "message": "Код удален"
                       }
                     },
                     {
@@ -88,7 +88,7 @@
                       "params": {
                         "severity": "error",
                         "summary": "Ошибка",
-                        "detail": "Не удалось удалить код"
+                        "message": "Не удалось удалить код"
                       }
                     }
                   ]

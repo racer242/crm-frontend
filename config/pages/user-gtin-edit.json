@@ -60,7 +60,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Код сохранен"
+                    "message": "Код сохранен"
                   }
                 },
                 {
@@ -80,7 +80,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось сохранить код"
+                    "message": "Не удалось сохранить код"
                   }
                 }
               ]

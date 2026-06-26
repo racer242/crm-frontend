@@ -68,7 +68,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Приз сохранен"
+                    "message": "Приз сохранен"
                   }
                 },
                 {
@@ -88,7 +88,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось сохранить приз"
+                    "message": "Не удалось сохранить приз"
                   }
                 }
               ]

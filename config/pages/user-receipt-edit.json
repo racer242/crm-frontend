@@ -59,7 +59,7 @@
             "params": {
               "severity": "success",
               "summary": "Проверка",
-              "detail": "Чек успешно проверен"
+              "message": "Чек успешно проверен"
             }
           }
         ],
@@ -69,7 +69,7 @@
             "params": {
               "severity": "error",
               "summary": "Ошибка",
-              "detail": "Ошибка при проверке чека"
+              "message": "Ошибка при проверке чека"
             }
           }
         ]
@@ -99,7 +99,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Чек сохранен"
+                    "message": "Чек сохранен"
                   }
                 },
                 {
@@ -119,7 +119,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось сохранить чек"
+                    "message": "Не удалось сохранить чек"
                   }
                 }
               ]

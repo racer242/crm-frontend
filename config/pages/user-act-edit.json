@@ -53,7 +53,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Акт сохранен"
+                    "message": "Акт сохранен"
                   }
                 },
                 {
@@ -73,7 +73,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось сохранить акт"
+                    "message": "Не удалось сохранить акт"
                   }
                 }
               ]

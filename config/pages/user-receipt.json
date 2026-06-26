@@ -83,7 +83,7 @@
                       "params": {
                         "severity": "success",
                         "summary": "Успешно",
-                        "detail": "Чек удален"
+                        "message": "Чек удален"
                       }
                     },
                     {
@@ -99,7 +99,7 @@
                       "params": {
                         "severity": "error",
                         "summary": "Ошибка",
-                        "detail": "Не удалось удалить чек"
+                        "message": "Не удалось удалить чек"
                       }
                     }
                   ]

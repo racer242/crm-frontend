@@ -70,7 +70,7 @@
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
-                    "detail": "Приз добавлен"
+                    "message": "Приз добавлен"
                   }
                 },
                 {
@@ -93,7 +93,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "detail": "Не удалось добавить приз"
+                    "message": "Не удалось добавить приз"
                   }
                 }
               ]
