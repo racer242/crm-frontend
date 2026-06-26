@@ -6,6 +6,7 @@
     "loading": false,
     "saving": false,
     "saved": false,
+    "sentSuccessfully": false,
     "userData": {
       "id": "",
       "fullName": "",
@@ -72,6 +73,13 @@
                   }
                 },
                 {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
                   "type": "showToast",
                   "params": {
                     "severity": "error",
@@ -96,11 +104,25 @@
                   }
                 },
                 {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                },
+                {
                   "type": "showToast",
                   "params": {
                     "severity": "success",
                     "summary": "Успешно",
                     "message": "Документы участника сохранены"
+                  }
+                },
+                {
+                  "type": "navigate",
+                  "params": {
+                    "url": "/users/{$location.routeParams.user_id}/docs",
+                    "condition": "{$state.sentSuccessfully}"
                   }
                 }
               ]
@@ -665,15 +687,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "saveUserDocs",
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/docs"
-                      }
-                    }
-                  ]
+                  "commands": ["saveUserDocs"]
                 }
               ]
             },

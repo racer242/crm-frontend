@@ -1124,12 +1124,26 @@ export class CommandExecutor {
   // ========== EXECUTE COMMAND ==========
   /**
    * Общая функция исполнения команд
+   * Поддерживает параметр condition для условного выполнения любой команды
    */
   async executeCommand(
     type: string,
     params: Record<string, any>,
     commandExtraSources: any,
   ): Promise<void> {
+    // Проверяем условие перед выполнением любой команды
+    if (params.condition) {
+      const extraSources = this.createExtraSources(commandExtraSources);
+      const conditionValue = this.macroEngine.apply(
+        params.condition,
+        0,
+        extraSources,
+      );
+      if (!conditionValue) {
+        return; // Условие не выполнено — пропускаем команду
+      }
+    }
+
     const extraSources = this.createExtraSources(commandExtraSources);
 
     switch (type) {
