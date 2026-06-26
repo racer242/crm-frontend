@@ -112,7 +112,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-4", "col-12 lg:col-4", "col-12 lg:col-4"],
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
         "padding": "p-2"
       },
       "blocks": [
@@ -364,100 +364,107 @@
           ]
         },
         {
-          "id": "innColumn",
+          "id": "rightColumn",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "ИНН"
-            }
-          },
           "className": "flex flex-column gap-3",
-          "components": [
+          "blocks": [
             {
-              "id": "innPhotoGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
-              "props": {
-                "label": "Фото ИНН",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "innPhoto",
-                    "type": "component",
-                    "componentType": "Image",
-                    "props": {
-                      "src": "@state.docsData.inn_photo",
-                      "alt": "Фото ИНН",
-                      "preview": true,
-                      "width": "250"
-                    },
-                    "state": {}
+              "id": "innBlock",
+              "type": "block",
+              "wrapper": {
+                "component": "Panel",
+                "props": {
+                  "header": "ИНН"
+                }
+              },
+              "className": "flex flex-column gap-3",
+              "components": [
+                {
+                  "id": "innPhotoGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "w-full grid align-items-start mb-2",
+                  "props": {
+                    "label": "Фото ИНН",
+                    "labelClassName": "text-sm col-4 text-right",
+                    "containerClassName": "col-8",
+                    "components": [
+                      {
+                        "id": "innPhoto",
+                        "type": "component",
+                        "componentType": "Image",
+                        "props": {
+                          "src": "@state.docsData.inn_photo",
+                          "alt": "Фото ИНН",
+                          "preview": true,
+                          "width": "250"
+                        },
+                        "state": {}
+                      }
+                    ]
                   }
-                ]
-              }
+                },
+                {
+                  "id": "innNumberGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "w-full grid align-items-center mb-2",
+                  "props": {
+                    "label": "Номер ИНН",
+                    "labelClassName": "text-sm col-4 text-right",
+                    "containerClassName": "col-8",
+                    "components": [
+                      {
+                        "id": "innNumber",
+                        "type": "component",
+                        "componentType": "Text",
+                        "className": "m-0 font-bold text-lg",
+                        "props": {
+                          "value": "@state.docsData.inn"
+                        },
+                        "state": {}
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
-              "id": "innNumberGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Номер ИНН",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "innNumber",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.docsData.inn"
-                    },
-                    "state": {}
+              "id": "moderationBlock",
+              "type": "block",
+              "wrapper": {
+                "component": "Panel",
+                "props": {
+                  "header": "Статус модерации"
+                }
+              },
+              "className": "flex flex-column gap-3",
+              "components": [
+                {
+                  "id": "moderationStatusGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "w-full grid align-items-center mb-2",
+                  "props": {
+                    "label": "Общий статус",
+                    "labelClassName": "text-sm col-4 text-right",
+                    "containerClassName": "col-8",
+                    "components": [
+                      {
+                        "id": "moderationTag",
+                        "type": "component",
+                        "componentType": "Tag",
+                        "className": "text-sm px-2 py-1",
+                        "props": {
+                          "value": "@state.docsData.moderation_label",
+                          "severity": "@state.docsData.moderation_severity"
+                        },
+                        "state": {}
+                      }
+                    ]
                   }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "moderationColumn",
-          "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Статус модерации"
-            }
-          },
-          "className": "flex flex-column gap-3",
-          "components": [
-            {
-              "id": "moderationStatusGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Общий статус",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "moderationTag",
-                    "type": "component",
-                    "componentType": "Tag",
-                    "className": "text-sm px-2 py-1",
-                    "props": {
-                      "value": "@state.docsData.moderation_label",
-                      "severity": "@state.docsData.moderation_severity"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
+                }
+              ]
             }
           ]
         }
