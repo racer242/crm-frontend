@@ -6,6 +6,7 @@
     "loading": false,
     "saving": false,
     "saved": false,
+    "sentSuccessfully": false,
     "userData": {
       "id": "",
       "bot_id": "",
@@ -61,11 +62,16 @@
                   }
                 },
                 {
-                  "type": "showToast",
+                  "type": "setProperty",
                   "params": {
-                    "severity": "error",
-                    "summary": "Ошибка",
-                    "message": "Не удалось сохранить данные участника"
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.dataFeedErrors}"
                   }
                 }
               ],
@@ -112,11 +118,10 @@
                         }
                       },
                       {
-                        "type": "showToast",
+                        "type": "setProperty",
                         "params": {
-                          "severity": "success",
-                          "summary": "Успешно",
-                          "message": "Данные участника сохранены"
+                          "target": "state.sentSuccessfully",
+                          "value": true
                         }
                       }
                     ]
@@ -601,7 +606,8 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/users/{$location.routeParams.user_id}"
+                        "url": "/users/{$location.routeParams.user_id}",
+                        "condition": "{$state.sentSuccessfully}"
                       }
                     }
                   ]
@@ -622,7 +628,17 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": ["saveUserGroups"]
+                  "commands": [
+                    "saveUserGroups",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Данные участника сохранены"
+                      }
+                    }
+                  ]
                 }
               ]
             },
