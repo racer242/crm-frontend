@@ -37,10 +37,7 @@
     {
       "url": "{$config.baseURL}/api/prizes/{$location.routeParams.prize_id}",
       "method": "GET",
-      "target": "state.prizeData",
-      "adapter": {
-        "response": "prize.response.js"
-      }
+      "target": "state.prizeData"
     }
   ],
   "shortcuts": {

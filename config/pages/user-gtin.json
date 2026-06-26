@@ -43,10 +43,7 @@
     {
       "url": "{$config.baseURL}/api/gtins/{$location.routeParams.gtin_id}",
       "method": "GET",
-      "target": "state.gtinData",
-      "adapter": {
-        "response": "gtin.response.js"
-      }
+      "target": "state.gtinData"
     }
   ],
   "shortcuts": {

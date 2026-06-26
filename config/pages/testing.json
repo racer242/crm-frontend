@@ -92,8 +92,7 @@
         "end": "{$location.params.end}"
       },
       "method": "GET",
-      "target": "state.analytics",
-      "adapter": "stats.analytics.js"
+      "target": "state.analytics"
     }
   ],
   "events": [

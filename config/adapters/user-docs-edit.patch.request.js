@@ -4,6 +4,8 @@
  * @returns {Object} Поля для отправки на сервер
  */
 function transform(data) {
+  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!", data);
+
   if (!data || typeof data !== "object") return data;
 
   return {

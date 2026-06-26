@@ -73,15 +73,26 @@ function matchRoutePattern(
 }
 
 /**
- * Finds a route configuration by path name with support for dynamic segments.
+ * Finds a route configuration by path name and method with support for dynamic segments.
  * Returns the route config and extracted route params (e.g., { id: "123" }).
  */
 function findRouteConfig(
   routeName: string,
+  requestMethod: string,
   apiRoutes: ApiRouteConfig[] | undefined,
 ): { config: ApiRouteConfig; routeParams: Record<string, string> } | undefined {
   if (!apiRoutes) return undefined;
 
+  // First pass: try to match both path and method
+  for (const route of apiRoutes) {
+    if (route.method !== requestMethod) continue;
+    const routeParams = matchRoutePattern(routeName, route);
+    if (routeParams !== null) {
+      return { config: route, routeParams };
+    }
+  }
+
+  // Second pass: fallback — match path only (for backward compatibility)
   for (const route of apiRoutes) {
     const routeParams = matchRoutePattern(routeName, route);
     if (routeParams !== null) {
@@ -222,7 +233,7 @@ async function handleRequest(
     const apiRoutes = config.apiRoutes;
 
     // Find the route configuration (with pattern matching and route params)
-    const routeResult = findRouteConfig(routeName, apiRoutes);
+    const routeResult = findRouteConfig(routeName, request.method, apiRoutes);
 
     // Read request body — from JSON body for POST/PUT/PATCH, from URL params for others
     let requestBody: any;

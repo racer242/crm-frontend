@@ -52,9 +52,6 @@
               "method": "PATCH",
               "data": "{$state.userData}",
               "target": "state.saveResult",
-              "adapter": {
-                "request": "user-edit.request.js"
-              },
               "onError": [
                 {
                   "type": "setProperty",

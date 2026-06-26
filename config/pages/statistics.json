@@ -21,20 +21,17 @@
     {
       "url": "{$config.baseURL}/api/stats/analytics",
       "method": "GET",
-      "target": "state.analytics",
-      "adapter": "stats.analytics.js"
+      "target": "state.analytics"
     },
     {
       "url": "{$config.baseURL}/api/stats/review",
       "method": "GET",
-      "target": "state.review",
-      "adapter": "stats.review.js"
+      "target": "state.review"
     },
     {
       "url": "{$config.baseURL}/api/stats/weeks",
       "method": "GET",
-      "target": "state.weeks",
-      "adapter": "stats.week.js"
+      "target": "state.weeks"
     }
   ],
   "events": [

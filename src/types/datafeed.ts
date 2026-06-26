@@ -44,6 +44,8 @@ export interface DataFeedConfig {
 export interface ApiRouteConfig {
   /** Route name, used as /api/ROUTE_NAME */
   path: string;
+  /** HTTP method for this route */
+  method?: DataFeedMethod;
   /** Full URL of the external API endpoint */
   url: string;
   /**

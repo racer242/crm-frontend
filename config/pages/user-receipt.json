@@ -49,10 +49,7 @@
     {
       "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
       "method": "GET",
-      "target": "state.receiptData",
-      "adapter": {
-        "response": "receipt.response.js"
-      }
+      "target": "state.receiptData"
     },
     {
       "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",

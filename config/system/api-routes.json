@@ -29,8 +29,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users",
     "adapter": {
-      "request": "users.request.js",
-      "response": "users.response.js"
+      "request": "users.get.request.js",
+      "response": "users.get.response.js"
     },
     "note": "Участники: Список участников"
   },
@@ -45,8 +45,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
     "adapter": {
-      "request": "user.request.js",
-      "response": "user.response.js"
+      "request": "user.get.request.js",
+      "response": "user.get.response.js"
     },
     "note": "Участники: Состояние участника"
   },
@@ -54,6 +54,9 @@
     "path": "users/[id]",
     "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "adapter": {
+      "request": "user-edit.patch.request.js"
+    },
     "note": "Участники: Редактировать участника"
   },
   {
@@ -61,8 +64,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
     "adapter": {
-      "request": "user-docs.request.js",
-      "response": "user-docs.response.js"
+      "request": "user-docs.get.request.js",
+      "response": "user-docs.get.response.js"
     },
     "note": "Участники: Личные документы участника"
   },
@@ -70,6 +73,9 @@
     "path": "users/[id]/docs",
     "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "adapter": {
+      "request": "user-docs-edit.patch.request.js"
+    },
     "note": "Участники: Редактировать документы участника"
   },
   {
@@ -83,18 +89,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts",
     "adapter": {
-      "request": "acts.request.js",
-      "response": "acts.response.js"
-    },
-    "note": "Участники: Акты участника"
-  },
-  {
-    "path": "users/[id]/acts",
-    "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts",
-    "adapter": {
-      "request": "acts.request.js",
-      "response": "acts.response.js"
+      "request": "acts.get.request.js",
+      "response": "acts.get.response.js"
     },
     "note": "Участники: Акты участника"
   },
@@ -103,8 +99,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes",
     "adapter": {
-      "request": "prizes.request.js",
-      "response": "prizes.response.js"
+      "request": "prizes.get.request.js",
+      "response": "prizes.get.response.js"
     },
     "note": "Участники: Призы участника"
   },
@@ -125,8 +121,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history",
     "adapter": {
-      "request": "points-history.request.js",
-      "response": "points-history.response.js"
+      "request": "points-history.get.request.js",
+      "response": "points-history.get.response.js"
     },
     "note": "Участники: История баллов участника"
   },
@@ -135,8 +131,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts",
     "adapter": {
-      "request": "receipts.request.js",
-      "response": "receipts.response.js"
+      "request": "receipts.get.request.js",
+      "response": "receipts.get.response.js"
     },
     "note": "Участники: Чеки участника"
   },
@@ -145,8 +141,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
     "adapter": {
-      "request": "codes.request.js",
-      "response": "codes.response.js"
+      "request": "codes.get.request.js",
+      "response": "codes.get.response.js"
     },
     "note": "Участники: Коды участника"
   },
@@ -161,8 +157,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins",
     "adapter": {
-      "request": "gtins.request.js",
-      "response": "gtins.response.js"
+      "request": "gtins.get.request.js",
+      "response": "gtins.get.response.js"
     },
     "note": "Участники: Коды ЧЗ участника"
   },
@@ -171,8 +167,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products",
     "adapter": {
-      "request": "products.request.js",
-      "response": "products.response.js"
+      "request": "products.get.request.js",
+      "response": "products.get.response.js"
     },
     "note": "Участники: Акционные продукты участника"
   },
@@ -193,8 +189,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events",
     "adapter": {
-      "request": "events.request.js",
-      "response": "events.response.js"
+      "request": "events.get.request.js",
+      "response": "events.get.response.js"
     },
     "note": "Участники: Журнал действий участника"
   },
@@ -203,8 +199,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions",
     "adapter": {
-      "request": "transactions.request.js",
-      "response": "transactions.response.js"
+      "request": "transactions.get.request.js",
+      "response": "transactions.get.response.js"
     },
     "note": "Участники: Журнал транзакций участника"
   },
@@ -213,8 +209,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages",
     "adapter": {
-      "request": "messages.request.js",
-      "response": "messages.response.js"
+      "request": "messages.get.request.js",
+      "response": "messages.get.response.js"
     },
     "note": "Участники: Сообщения от участника"
   },
@@ -224,8 +220,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/prizes",
     "adapter": {
-      "request": "prizes.request.js",
-      "response": "prizes.response.js"
+      "request": "prizes.get.request.js",
+      "response": "prizes.get.response.js"
     },
     "note": "Призы: Список призов"
   },
@@ -259,8 +255,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/receipts",
     "adapter": {
-      "request": "receipts.request.js",
-      "response": "receipts.response.js"
+      "request": "receipts.get.request.js",
+      "response": "receipts.get.response.js"
     },
     "note": "Чеки: Список чеков"
   },
@@ -294,8 +290,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/acts",
     "adapter": {
-      "request": "acts.request.js",
-      "response": "acts.response.js"
+      "request": "acts.get.request.js",
+      "response": "acts.get.response.js"
     },
     "note": "Акты: Список актов"
   },
@@ -329,8 +325,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/codes",
     "adapter": {
-      "request": "codes.request.js",
-      "response": "codes.response.js"
+      "request": "codes.get.request.js",
+      "response": "codes.get.response.js"
     },
     "note": "Коды участников: Список кодов"
   },
@@ -383,8 +379,8 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/gtins",
     "adapter": {
-      "request": "gtins.request.js",
-      "response": "gtins.response.js"
+      "request": "gtins.get.request.js",
+      "response": "gtins.get.response.js"
     },
     "note": "Коды Честный Знак: Список кодов ЧЗ"
   },
