@@ -117,246 +117,252 @@
       },
       "blocks": [
         {
-          "id": "passportColumn",
+          "id": "passportBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Паспорт"
-            }
-          },
-          "className": "flex flex-column gap-3",
+          "className": "",
           "components": [
             {
-              "id": "passportPhotoFirstPageGroup",
+              "id": "passportPanel",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
+              "componentType": "Panel",
+              "className": "mb-4",
               "props": {
-                "label": "Фото первой страницы",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
+                "header": "Паспорт",
+                "containerClassName": "flex flex-column gap-3",
                 "components": [
                   {
-                    "id": "passportPhotoFirstPage",
+                    "id": "passportPhotoFirstPageGroup",
                     "type": "component",
-                    "componentType": "Image",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-start mb-2",
                     "props": {
-                      "src": "@state.docsData.passport_photo_first_page",
-                      "alt": "Фото первой страницы паспорта",
-                      "preview": true,
-                      "width": "250"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportPhotoRegPageGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
-              "props": {
-                "label": "Фото страницы регистрации",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Фото первой страницы",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportPhotoFirstPage",
+                          "type": "component",
+                          "componentType": "Image",
+                          "props": {
+                            "src": "@state.docsData.passport_photo_first_page",
+                            "alt": "Фото первой страницы паспорта",
+                            "preview": true,
+                            "width": "250"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportPhotoRegPage",
+                    "id": "passportPhotoRegPageGroup",
                     "type": "component",
-                    "componentType": "Image",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-start mb-2",
                     "props": {
-                      "src": "@state.docsData.passport_photo_registration_page",
-                      "alt": "Фото страницы регистрации",
-                      "preview": true,
-                      "width": "250"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportLastNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Фамилия",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Фото страницы регистрации",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportPhotoRegPage",
+                          "type": "component",
+                          "componentType": "Image",
+                          "props": {
+                            "src": "@state.docsData.passport_photo_registration_page",
+                            "alt": "Фото страницы регистрации",
+                            "preview": true,
+                            "width": "250"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportLastName",
+                    "id": "passportLastNameGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_last_name"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportFirstNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Имя",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Фамилия",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportLastName",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_last_name"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportFirstName",
+                    "id": "passportFirstNameGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_first_name"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportMiddleNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Отчество",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Имя",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportFirstName",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_first_name"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportMiddleName",
+                    "id": "passportMiddleNameGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_middle_name"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportDateOfBirthGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Дата рождения",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Отчество",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportMiddleName",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_middle_name"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportDateOfBirth",
+                    "id": "passportDateOfBirthGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_date_of_birth_formatted"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportSeriesNumberGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Серия и номер паспорта",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Дата рождения",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportDateOfBirth",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_date_of_birth_formatted"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportSeriesNumber",
+                    "id": "passportSeriesNumberGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_series_number"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportIssuedByGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
-              "props": {
-                "label": "Кем выдан",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Серия и номер паспорта",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportSeriesNumber",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_series_number"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportIssuedBy",
+                    "id": "passportIssuedByGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-start mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_issued_by"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportIssueDateGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Дата выдачи паспорта",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Кем выдан",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportIssuedBy",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_issued_by"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportIssueDate",
+                    "id": "passportIssueDateGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_issue_date_formatted"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
-            },
-            {
-              "id": "passportRegistrationAddressGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
-              "props": {
-                "label": "Адрес регистрации",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                      "label": "Дата выдачи паспорта",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportIssueDate",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_issue_date_formatted"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "passportRegistrationAddress",
+                    "id": "passportRegistrationAddressGroup",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-start mb-2",
                     "props": {
-                      "value": "@state.docsData.passport_registration_address"
-                    },
-                    "state": {}
+                      "label": "Адрес регистрации",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "passportRegistrationAddress",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.passport_registration_address"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
                   }
                 ]
               }
@@ -364,107 +370,105 @@
           ]
         },
         {
-          "id": "rightColumn",
+          "id": "rightColumnBlock",
           "type": "block",
-          "className": "flex flex-column gap-3",
-          "blocks": [
+          "className": "flex flex-column",
+          "components": [
             {
-              "id": "innBlock",
-              "type": "block",
-              "wrapper": {
-                "component": "Panel",
-                "props": {
-                  "header": "ИНН"
-                }
-              },
-              "className": "flex flex-column gap-3",
-              "components": [
-                {
-                  "id": "innPhotoGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "w-full grid align-items-start mb-2",
-                  "props": {
-                    "label": "Фото ИНН",
-                    "labelClassName": "text-sm col-4 text-right",
-                    "containerClassName": "col-8",
-                    "components": [
-                      {
-                        "id": "innPhoto",
-                        "type": "component",
-                        "componentType": "Image",
-                        "props": {
-                          "src": "@state.docsData.inn_photo",
-                          "alt": "Фото ИНН",
-                          "preview": true,
-                          "width": "250"
-                        },
-                        "state": {}
-                      }
-                    ]
+              "id": "innPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "mb-4",
+              "props": {
+                "header": "ИНН",
+                "containerClassName": "flex flex-column gap-3",
+                "components": [
+                  {
+                    "id": "innPhotoGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-start mb-2",
+                    "props": {
+                      "label": "Фото ИНН",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "innPhoto",
+                          "type": "component",
+                          "componentType": "Image",
+                          "props": {
+                            "src": "@state.docsData.inn_photo",
+                            "alt": "Фото ИНН",
+                            "preview": true,
+                            "width": "250"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "innNumberGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Номер ИНН",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "innNumber",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": {
+                            "value": "@state.docsData.inn"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
                   }
-                },
-                {
-                  "id": "innNumberGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "w-full grid align-items-center mb-2",
-                  "props": {
-                    "label": "Номер ИНН",
-                    "labelClassName": "text-sm col-4 text-right",
-                    "containerClassName": "col-8",
-                    "components": [
-                      {
-                        "id": "innNumber",
-                        "type": "component",
-                        "componentType": "Text",
-                        "className": "m-0 font-bold text-lg",
-                        "props": {
-                          "value": "@state.docsData.inn"
-                        },
-                        "state": {}
-                      }
-                    ]
-                  }
-                }
-              ]
+                ]
+              }
             },
             {
-              "id": "moderationBlock",
-              "type": "block",
-              "wrapper": {
-                "component": "Panel",
-                "props": {
-                  "header": "Статус модерации"
-                }
-              },
-              "className": "flex flex-column gap-3",
-              "components": [
-                {
-                  "id": "moderationStatusGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "w-full grid align-items-center mb-2",
-                  "props": {
-                    "label": "Общий статус",
-                    "labelClassName": "text-sm col-4 text-right",
-                    "containerClassName": "col-8",
-                    "components": [
-                      {
-                        "id": "moderationTag",
-                        "type": "component",
-                        "componentType": "Tag",
-                        "className": "text-sm px-2 py-1",
-                        "props": {
-                          "value": "@state.docsData.moderation_label",
-                          "severity": "@state.docsData.moderation_severity"
-                        },
-                        "state": {}
-                      }
-                    ]
+              "id": "moderationPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "mb-4",
+              "props": {
+                "header": "Статус модерации",
+                "containerClassName": "flex flex-column gap-3",
+                "components": [
+                  {
+                    "id": "moderationStatusGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Общий статус",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "moderationTag",
+                          "type": "component",
+                          "componentType": "Tag",
+                          "className": "text-sm px-2 py-1",
+                          "props": {
+                            "value": "@state.docsData.moderation_label",
+                            "severity": "@state.docsData.moderation_severity"
+                          },
+                          "state": {}
+                        }
+                      ]
+                    }
                   }
-                }
-              ]
+                ]
+              }
             }
           ]
         }
