@@ -130,11 +130,7 @@
     {
       "id": "actsHeader",
       "type": "section",
-      "layout": {
-        "type": "flex",
-        "direction": "row",
-        "justifyContent": "between"
-      },
+      "className": "flex",
       "blocks": [
         {
           "id": "actsTitle",
@@ -156,20 +152,17 @@
     {
       "id": "actsFilters",
       "type": "section",
-      "className": "flex flex-wrap gap-3",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
           "id": "actsSearchBlock",
           "type": "block",
-          "className": "w-full",
-          "wrapper": {
-            "className": "flex-grow-1"
-          },
+          "className": "w-full flex gap-3",
           "components": [
             {
               "id": "actsSearchInput",
               "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
@@ -191,17 +184,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "actsFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
               "id": "actsToggleFilters",
               "type": "component",
@@ -314,6 +297,7 @@
         {
           "id": "actsTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "actsTable",
@@ -354,7 +338,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/acts/{$event.data.id}"
+                        "url": "/acts/{$event.data._rowId}"
                       }
                     }
                   ]

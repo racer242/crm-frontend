@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **passport_moderation_status / inn_moderation_status**: Тип полей изменён со строки (`""`, `"approved"`, `"rejected"`, `"pending"`) на boolean (`false` — Не принят, `true` — Принят). Обновлён адаптер `user-docs.js` (функция `getModerationInfo`) и начальные значения state в `user-docs.json` и `user-docs-edit.json`.
+
 ### Fixed
 
 - **useComponentBindings**: Исправлена двухфазная проблема рендера, при которой компоненты сначала отображались с пустыми пропсами, а затем получали актуальные данные линковки. Теперь `resolvedProps` инициализируется синхронно на этапе рендера через `useMemo`, а не через асинхронный `useEffect`.

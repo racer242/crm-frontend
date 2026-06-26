@@ -23,12 +23,12 @@ function transform(data) {
 
   // Статус модерации
   const getModerationInfo = (status) => {
-    const map = {
-      approved: { label: "Одобрено", severity: "success" },
-      rejected: { label: "Отклонено", severity: "danger" },
-      pending: { label: "На проверке", severity: "warning" },
-    };
-    return map[status] || { label: status || "Не указан", severity: "info" };
+    if (status === true) return { label: "Принят", severity: "success" };
+    if (status === false) return { label: "Не принят", severity: "danger" };
+    if (status === null || status === undefined)
+      return { label: "Не указан", severity: "info" };
+    // fallback для неожиданных значений
+    return { label: "Не указан", severity: "info" };
   };
 
   const passportModeration = getModerationInfo(data.passport_moderation_status);
