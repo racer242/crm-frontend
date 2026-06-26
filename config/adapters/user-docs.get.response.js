@@ -21,18 +21,11 @@ function transform(data) {
     }
   };
 
-  // Статус модерации
-  const getModerationInfo = (status) => {
-    if (status === true) return { label: "Принят", severity: "success" };
-    if (status === false) return { label: "Не принят", severity: "danger" };
-    if (status === null || status === undefined)
-      return { label: "Не указан", severity: "info" };
-    // fallback для неожиданных значений
-    return { label: "Не указан", severity: "info" };
-  };
-
-  const passportModeration = getModerationInfo(data.passport_moderation_status);
-  const innModeration = getModerationInfo(data.inn_moderation_status);
+  // Статус модерации - единое поле true/false
+  const moderationLabel =
+    data.moderation_status === true ? "Принят" : "Не принят";
+  const moderationSeverity =
+    data.moderation_status === true ? "success" : "danger";
 
   // Полное имя для breadcrumb
   const firstName = data.passport_first_name || "";
@@ -44,9 +37,7 @@ function transform(data) {
     fullName,
     passport_issue_date_formatted: formatDate(data.passport_issue_date),
     passport_date_of_birth_formatted: formatDate(data.passport_date_of_birth),
-    passport_moderation_label: passportModeration.label,
-    passport_moderation_severity: passportModeration.severity,
-    inn_moderation_label: innModeration.label,
-    inn_moderation_severity: innModeration.severity,
+    moderation_label: moderationLabel,
+    moderation_severity: moderationSeverity,
   };
 }

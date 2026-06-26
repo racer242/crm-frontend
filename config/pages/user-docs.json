@@ -29,14 +29,11 @@
       "passport_issue_date": "",
       "passport_issue_date_formatted": "",
       "passport_registration_address": "",
-      "passport_moderation_status": false,
-      "passport_moderation_label": "",
-      "passport_moderation_severity": "",
       "inn": "",
       "inn_photo": "",
-      "inn_moderation_status": false,
-      "inn_moderation_label": "",
-      "inn_moderation_severity": "",
+      "moderation_status": false,
+      "moderation_label": "",
+      "moderation_severity": "",
       "fullName": ""
     }
   },
@@ -115,7 +112,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "cols": ["col-12 lg:col-4", "col-12 lg:col-4", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -363,30 +360,6 @@
                   }
                 ]
               }
-            },
-            {
-              "id": "passportModerationStatusGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Статус модерации",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "passportModerationTag",
-                    "type": "component",
-                    "componentType": "Tag",
-                    "className": "text-sm px-2 py-1",
-                    "props": {
-                      "value": "@state.docsData.passport_moderation_label",
-                      "severity": "@state.docsData.passport_moderation_severity"
-                    },
-                    "state": {}
-                  }
-                ]
-              }
             }
           ]
         },
@@ -448,25 +421,38 @@
                   }
                 ]
               }
-            },
+            }
+          ]
+        },
+        {
+          "id": "moderationColumn",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Статус модерации"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
             {
-              "id": "innModerationStatusGroup",
+              "id": "moderationStatusGroup",
               "type": "component",
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
               "props": {
-                "label": "Статус модерации",
+                "label": "Общий статус",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "innModerationTag",
+                    "id": "moderationTag",
                     "type": "component",
                     "componentType": "Tag",
                     "className": "text-sm px-2 py-1",
                     "props": {
-                      "value": "@state.docsData.inn_moderation_label",
-                      "severity": "@state.docsData.inn_moderation_severity"
+                      "value": "@state.docsData.moderation_label",
+                      "severity": "@state.docsData.moderation_severity"
                     },
                     "state": {}
                   }
