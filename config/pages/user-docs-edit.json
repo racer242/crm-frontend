@@ -80,17 +80,9 @@
                   }
                 },
                 {
-                  "type": "showToast",
-                  "params": {
-                    "severity": "error",
-                    "summary": "Ошибка",
-                    "message": "Не удалось сохранить документы участника"
-                  }
-                },
-                {
                   "type": "log",
                   "params": {
-                    "message": "{$state.requestErrors}"
+                    "message": "{$state.dataFeedErrors}"
                   }
                 }
               ],
@@ -114,14 +106,6 @@
                   "params": {
                     "target": "state.sentSuccessfully",
                     "value": true
-                  }
-                },
-                {
-                  "type": "showToast",
-                  "params": {
-                    "severity": "success",
-                    "summary": "Успешно",
-                    "message": "Документы участника сохранены"
                   }
                 }
               ]
@@ -623,10 +607,11 @@
                   {
                     "id": "innNumberInput",
                     "type": "component",
-                    "componentType": "InputText",
+                    "componentType": "InputNumber",
                     "props": {
                       "value": "@state.docsData.inn",
                       "placeholder": "Введите номер ИНН",
+                      "useGrouping": false,
                       "className": "w-full"
                     },
                     "events": [
@@ -713,7 +698,17 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": ["saveUserDocs"]
+                  "commands": [
+                    "saveUserDocs",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Документы участника сохранены"
+                      }
+                    }
+                  ]
                 }
               ]
             },

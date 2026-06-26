@@ -427,7 +427,7 @@ HTTP-запрос к API с записью результата в state и по
 **Особенности:**
 
 - URL и data разрешают макросы перед запросом
-- При ошибке — запись в `state.requestErrors`
+- При ошибке — запись в `state.dataFeedErrors`
 - API-маршруты `/api/ROUTE` резолвятся из `config.apiRoutes`
 - **onSuccess** — выполняется при успешном ответе (доступен `{$event.result}`)
 - **onError** — выполняется при ошибке (доступен `{$event.error}`)

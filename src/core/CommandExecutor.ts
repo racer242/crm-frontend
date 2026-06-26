@@ -542,10 +542,10 @@ export class CommandExecutor {
 
         console.error(`sendRequest error: ${errorMessage}`);
 
-        // Сохраняем полный объект ошибки в requestErrors
+        // Сохраняем полный объект ошибки в dataFeedErrors
         this.context.stateManager.setStateField(
           this.context.pageId,
-          "requestErrors",
+          "dataFeedErrors",
           [errorObj as any],
         );
 
@@ -1156,7 +1156,6 @@ export class CommandExecutor {
         0,
         extraSources,
       );
-      console.log("???", conditionValue);
 
       if (!conditionValue) {
         return; // Условие не выполнено — пропускаем команду
