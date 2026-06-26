@@ -635,7 +635,8 @@
                       "params": {
                         "severity": "success",
                         "summary": "Успешно",
-                        "message": "Данные участника сохранены"
+                        "message": "Данные участника сохранены",
+                        "condition": "{$state.sentSuccessfully}"
                       }
                     }
                   ]

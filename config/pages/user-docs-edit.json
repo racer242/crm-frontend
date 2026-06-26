@@ -607,12 +607,12 @@
                   {
                     "id": "innNumberInput",
                     "type": "component",
-                    "componentType": "InputNumber",
+                    "componentType": "InputText",
                     "props": {
                       "value": "@state.docsData.inn",
                       "placeholder": "Введите номер ИНН",
-                      "useGrouping": false,
-                      "className": "w-full"
+                      "className": "w-full",
+                      "keyfilter": "pint"
                     },
                     "events": [
                       {
@@ -705,7 +705,8 @@
                       "params": {
                         "severity": "success",
                         "summary": "Успешно",
-                        "message": "Документы участника сохранены"
+                        "message": "Документы участника сохранены",
+                        "condition": "{$state.sentSuccessfully}"
                       }
                     }
                   ]
