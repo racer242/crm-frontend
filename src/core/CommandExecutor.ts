@@ -41,6 +41,7 @@ import { getPublicEnv } from "@/utils/env";
 import { getClientLocation } from "@/utils/location";
 import { FormatEngine, FormatRule } from "./FormatEngine";
 import { applyRules } from "./RulesEngine";
+import { ApiError } from "@/utils/parseApiError";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -530,38 +531,54 @@ export class CommandExecutor {
       }
 
       if (!result.success) {
-        const errorMsg = result.error || "Unknown error";
-        console.error(`sendRequest error: ${errorMsg}`);
+        // result.error теперь ApiError объект или string
+        const errorObj: ApiError | string = result.error || {
+          rawText: "Unknown error",
+        };
+        const errorMessage =
+          typeof errorObj === "string"
+            ? errorObj
+            : errorObj.message || errorObj.rawText || "Unknown error";
+
+        console.error(`sendRequest error: ${errorMessage}`);
+
+        // Сохраняем полный объект ошибки в requestErrors
         this.context.stateManager.setStateField(
           this.context.pageId,
-          "dataFeedErrors",
-          [errorMsg],
+          "requestErrors",
+          [errorObj as any],
         );
 
         if (params.onError) {
           for (const cmd of params.onError) {
             await this.executeCommand(cmd.type, cmd.params, {
               ...extraSources,
-              error: result.error,
+              error: errorObj,
             });
           }
         }
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error(`sendRequest error: ${errorMessage}`);
+    } catch (error: any) {
+      const errorObj: ApiError = error?.apiError || {
+        message: error instanceof Error ? error.message : String(error),
+        rawText: String(error),
+      };
+      console.error(
+        `sendRequest error: ${errorObj.message || errorObj.rawText}`,
+      );
+
+      // Сохраняем полный объект ошибки в dataFeedErrors
       this.context.stateManager.setStateField(
         this.context.pageId,
         "dataFeedErrors",
-        [errorMessage],
+        [errorObj as any],
       );
 
       if (params.onError) {
         for (const cmd of params.onError) {
           await this.executeCommand(cmd.type, cmd.params, {
             ...extraSources,
-            error: errorMessage,
+            error: errorObj,
           });
         }
       }

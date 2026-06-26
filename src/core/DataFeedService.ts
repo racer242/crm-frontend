@@ -12,7 +12,7 @@ import { MacroEngine } from "./MacroEngine";
 import { PathResolver } from "./PathResolver";
 import { getPublicEnv } from "@/utils/env";
 import { buildUrlWithParams } from "@/utils/http";
-import { parseApiError } from "@/utils/parseApiError";
+import { parseApiError, ApiError } from "@/utils/parseApiError";
 
 /**
  * Resolves the target element ID for a data feed request.
@@ -79,7 +79,11 @@ async function executeRequest(
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => "");
-    throw new Error(parseApiError(errorText) || `HTTP ${response.status}`);
+    const apiError = parseApiError(errorText);
+    const errorMessage = apiError.message || `HTTP ${response.status}`;
+    const error: Error & { apiError?: ApiError } = new Error(errorMessage);
+    error.apiError = apiError;
+    throw error;
   }
 
   // Parse JSON response
@@ -179,9 +183,16 @@ export async function executeClientDataFeed(
 
     result.success = true;
     result.data = responseData;
-  } catch (error) {
+  } catch (error: any) {
     result.success = false;
-    result.error = error instanceof Error ? error.message : String(error);
+    // Сохраняем полный объект ошибки если он есть
+    if (error?.apiError) {
+      result.error = error.apiError;
+    } else if (error instanceof Error) {
+      result.error = { message: error.message, rawText: error.message };
+    } else {
+      result.error = { rawText: String(error) };
+    }
   }
 
   return result;

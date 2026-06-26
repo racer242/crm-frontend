@@ -11,6 +11,7 @@ import { PageIndex } from "@/core/config";
 import { usePathname, useRouter } from "next/navigation";
 import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
+import { ApiError } from "@/utils/parseApiError";
 import { PathResolver } from "@/core/PathResolver";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { ComponentProvider } from "./ComponentContext";
@@ -26,7 +27,7 @@ export function AppEngine({
 }: {
   config: App;
   elementIndex: PageIndex;
-  dataFeedErrors?: string[];
+  dataFeedErrors?: ApiError[];
   initialDataFeed?: DataFeedResult[];
   initialPageId?: string | null;
   route?: string;
@@ -140,14 +141,19 @@ export function AppEngine({
   const t = useTranslations("app");
 
   // Deduplicate server-side data feed errors to avoid double toast in Strict Mode
-  const shownErrorsRef = useRef<string[]>([]);
+  const shownErrorsRef = useRef<ApiError[]>([]);
+
+  // Helper to get message from ApiError for dedup comparison
+  const getErrorKey = (err: ApiError): string =>
+    err.message || err.rawText || "";
 
   // Show server-side data feed errors on mount
   useEffect(() => {
     if (initialErrors && initialErrors.length > 0 && toastRef.current) {
       // Only show errors that haven't been shown before
+      const shownKeys = shownErrorsRef.current.map(getErrorKey);
       const newErrors = initialErrors.filter(
-        (err) => !shownErrorsRef.current.includes(err),
+        (err) => !shownKeys.includes(getErrorKey(err)),
       );
       if (newErrors.length > 0) {
         shownErrorsRef.current = [...initialErrors];
@@ -155,7 +161,7 @@ export function AppEngine({
           toastRef.current?.show({
             severity: "error",
             summary: t("dataFeedError"),
-            detail: error,
+            detail: getErrorKey(error),
             life: 5000,
           });
         });
@@ -164,14 +170,14 @@ export function AppEngine({
   }, [initialErrors, t]);
 
   // Track client-side data feed errors from page state
-  const [dataFeedErrors, setDataFeedErrors] = useState<string[]>([]);
+  const [dataFeedErrors, setDataFeedErrors] = useState<ApiError[]>([]);
 
   useEffect(() => {
     const unsubscribe = stateManager.subscribe(
       (elementPath, changedPath, oldState, newState) => {
         // Check if dataFeedErrors changed in page state
         if (currentPage && elementPath === currentPage.id) {
-          const newErrors = newState?.dataFeedErrors || [];
+          const newErrors: ApiError[] = newState?.dataFeedErrors || [];
           setDataFeedErrors(newErrors);
         }
       },

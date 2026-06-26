@@ -1,7 +1,7 @@
 /**
  * parseApiError
  *
- * Парсит строку ошибки в читаемый формат для отображения в Toast.
+ * Парсит строку ошибки от сервера в объект для дальнейшего использования.
  *
  * Поддерживаемые форматы на входе:
  *   1. Сырой ответ API:   { "error": { "code": "...", "message": "...", "details": [...] } }
@@ -9,66 +9,60 @@
  *   3. Простая строка:    "Неверный логин или пароль"
  *
  * Результат:
- *   [AUTH_REQUIRED] Для выполнения действия нужна авторизация.
- *   email: Неверный формат почты; password: Пароль слишком короткий
+ *   { code: "AUTH_REQUIRED", message: "Для выполнения действия нужна авторизация", details: [...] }
  */
 
-interface ErrorShape {
+export interface ApiErrorDetail {
+  field?: string;
+  issue?: string;
+}
+
+export interface ApiError {
   code?: string;
   message?: string;
-  details?: Array<{ field?: string; issue?: string }>;
+  details?: ApiErrorDetail[];
+  rawText?: string; // Для случаев когда не удалось распарсить
 }
 
-function formatErrorObj(obj: ErrorShape): string {
-  const parts: string[] = [];
-  const { code, message, details } = obj;
+function parseErrorObj(obj: any): ApiError {
+  const result: ApiError = {};
 
-  // [CODE] message
-  if (code || message) {
-    let mainMsg = "";
-    if (code) mainMsg += `[${code}] `;
-    if (message) mainMsg += message;
-    if (mainMsg) parts.push(mainMsg.trim());
+  if (obj.code) result.code = obj.code;
+  if (obj.message) result.message = obj.message;
+  if (obj.details && Array.isArray(obj.details)) {
+    result.details = obj.details.map((d: any) => ({
+      field: d.field,
+      issue: d.issue,
+    }));
   }
 
-  // details: field — issue
-  if (details && details.length > 0) {
-    for (const d of details) {
-      if (d.field && d.issue) {
-        parts.push(`${d.field}: ${d.issue}`);
-      } else if (d.issue) {
-        parts.push(d.issue);
-      }
-    }
-  }
-
-  return parts.join("; ");
+  return result;
 }
 
-export function parseApiError(text: string): string {
-  if (!text) return "";
+export function parseApiError(text: string): ApiError {
+  if (!text) {
+    return { rawText: "" };
+  }
 
   // Пробуем распарсить как JSON
   let parsed: any;
   try {
     parsed = JSON.parse(text);
   } catch {
-    // Не JSON — возвращаем как есть
-    return text;
+    // Не JSON — возвращаем как rawText
+    return { rawText: text };
   }
 
   // Формат 1: { error: { code, message, details } }
   if (parsed?.error) {
-    const formatted = formatErrorObj(parsed.error);
-    if (formatted) return formatted;
+    return parseErrorObj(parsed.error);
   }
 
   // Формат 2: { code, message, details } (уже извлечённый объект)
   if (parsed?.code || parsed?.message) {
-    const formatted = formatErrorObj(parsed);
-    if (formatted) return formatted;
+    return parseErrorObj(parsed);
   }
 
-  // Ничего не распознано — возвращаем исходный текст
-  return text;
+  // Ничего не распознано — возвращаем как rawText
+  return { rawText: text };
 }

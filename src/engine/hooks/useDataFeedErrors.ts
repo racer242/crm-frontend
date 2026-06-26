@@ -4,6 +4,10 @@
  * Monitors page state for data feed errors and triggers Toast notifications.
  * This handles client-side sendRequest command errors.
  *
+ * Now expects ApiError objects instead of strings:
+ * - Shows error.message in Toast detail
+ * - Falls back to error.rawText or "Unknown error" if message is missing
+ *
  * Deduplication strategy:
  * - Uses prevDataFeedErrorsRef to detect new payload by reference identity
  * - Uses hasShownRef to prevent double-toast from React Strict Mode double-invoke
@@ -14,16 +18,24 @@
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Toast } from "primereact/toast";
+import { ApiError } from "@/utils/parseApiError";
+
+/**
+ * Extract error message from ApiError object
+ */
+function getErrorMessage(error: ApiError): string {
+  return error.message || error.rawText || "Unknown error";
+}
 
 /**
  * Hook that watches page state for dataFeedErrors and shows Toast notifications
  */
 export function useDataFeedErrors(
   toastRef: React.RefObject<Toast | null>,
-  dataFeedErrors: string[] | undefined,
+  dataFeedErrors: ApiError[] | undefined,
 ): void {
   const t = useTranslations("app");
-  const prevDataFeedErrorsRef = useRef<string[] | undefined>(undefined);
+  const prevDataFeedErrorsRef = useRef<ApiError[] | undefined>(undefined);
   const hasShownRef = useRef(false);
 
   useEffect(() => {
@@ -46,7 +58,7 @@ export function useDataFeedErrors(
         toastRef.current?.show({
           severity: "error",
           summary: t("dataFeedError"),
-          detail: error,
+          detail: getErrorMessage(error), // Показываем только message
           life: 5000,
         });
       });

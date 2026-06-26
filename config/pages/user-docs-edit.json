@@ -86,6 +86,12 @@
                     "summary": "Ошибка",
                     "message": "Не удалось сохранить документы участника"
                   }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.requestErrors}"
+                  }
                 }
               ],
               "onSuccess": [

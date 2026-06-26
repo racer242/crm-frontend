@@ -3,6 +3,8 @@
  * Configuration for external API data fetching and state population
  */
 
+import { ApiError } from "@/utils/parseApiError";
+
 /** HTTP method for data feed requests */
 export type DataFeedMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -84,8 +86,8 @@ export interface DataFeedResult {
   success: boolean;
   /** Response data (if successful) */
   data?: any;
-  /** Error message (if failed) */
-  error?: string;
+  /** Error object or message (if failed) */
+  error?: string | ApiError;
   /** Target address where data should be stored */
   target: string;
 }
