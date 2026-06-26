@@ -117,13 +117,6 @@
                     "summary": "Успешно",
                     "message": "Документы участника сохранены"
                   }
-                },
-                {
-                  "type": "navigate",
-                  "params": {
-                    "url": "/users/{$location.routeParams.user_id}/docs",
-                    "condition": "{$state.sentSuccessfully}"
-                  }
                 }
               ]
             }
@@ -687,7 +680,16 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": ["saveUserDocs"]
+                  "commands": [
+                    "saveUserDocs",
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/docs",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
                 }
               ]
             },

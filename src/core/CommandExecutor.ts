@@ -1132,13 +1132,15 @@ export class CommandExecutor {
     commandExtraSources: any,
   ): Promise<void> {
     // Проверяем условие перед выполнением любой команды
-    if (params.condition) {
+    if (params?.condition) {
       const extraSources = this.createExtraSources(commandExtraSources);
       const conditionValue = this.macroEngine.apply(
         params.condition,
         0,
         extraSources,
       );
+      console.log("???", conditionValue);
+
       if (!conditionValue) {
         return; // Условие не выполнено — пропускаем команду
       }

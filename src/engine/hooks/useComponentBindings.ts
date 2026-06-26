@@ -3,14 +3,85 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Component, Command } from "@/types";
 import { Linkage } from "@/core";
+
+/**
+ * Рекурсивно разрешает shortcut строки в командах.
+ * Если команда — строка, заменяет на соответствующий shortcut из объекта.
+ * Если команда — объект с commands (sequence), рекурсивно обрабатывает его commands.
+ */
+function resolveShortcutCommands(
+  commands: (string | Command)[],
+  shortcutsMap: Record<string, Command>,
+): (Command | null)[] {
+  return commands.map((cmd): Command | null => {
+    if (typeof cmd === "string") {
+      // Строка — это ссылка на shortcut
+      return shortcutsMap[cmd] || null;
+    } else if (typeof cmd === "object" && cmd !== null) {
+      const result: Command = { ...cmd };
+      if (result.params) {
+        // Проверяем callback поля которые могут содержать команды
+        for (const cbKey of ["onSuccess", "onError", "onConfirm", "onCancel"]) {
+          if (result.params?.[cbKey] && Array.isArray(result.params[cbKey])) {
+            result.params = {
+              ...result.params,
+              [cbKey]: result.params[cbKey]
+                .map((subCmd: string | Command) => {
+                  if (typeof subCmd === "string") {
+                    return shortcutsMap[subCmd] || null;
+                  }
+                  // Рекурсивно для nested объектов (на случай вложенных sequence)
+                  if (
+                    typeof subCmd === "object" &&
+                    subCmd.params?.commands &&
+                    Array.isArray(subCmd.params.commands)
+                  ) {
+                    const resolvedNested = resolveShortcutCommands(
+                      subCmd.params.commands,
+                      shortcutsMap,
+                    );
+                    return {
+                      ...subCmd,
+                      params: {
+                        ...subCmd.params,
+                        commands: resolvedNested.filter(Boolean) as Command[],
+                      },
+                    };
+                  }
+                  return subCmd as Command;
+                })
+                .filter(Boolean) as Command[],
+            };
+          }
+        }
+        // Обрабатываем params.commands для sequence команд
+        if (result.params.commands && Array.isArray(result.params.commands)) {
+          const resolvedNested = resolveShortcutCommands(
+            result.params.commands,
+            shortcutsMap,
+          );
+          result.params = {
+            ...result.params,
+            commands: resolvedNested.filter(Boolean) as Command[],
+          };
+        }
+      }
+      return result;
+    }
+    return cmd as Command;
+  });
+}
 import { useComponentContext } from "../ComponentContext";
 import { useCommandExecutor } from "./useCommandExecutor";
 
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
   handleEvent: (eventType: string, eventValue: any) => void;
-  /** Выполнить произвольный массив команд (не привязанных к component.events) */
-  executeCommands: (commands: Command[], eventValue?: any) => Promise<void>;
+  /** Выполнить произвольный массив команд с поддержкой shortcut строк */
+  executeCommands: (
+    commands: (string | Command)[],
+    eventValue?: any,
+  ) => Promise<void>;
 }
 
 export function useComponentBindings({
@@ -20,25 +91,12 @@ export function useComponentBindings({
 }): ComponentBindings {
   const ctx = useComponentContext();
 
-  const { stateManager, pageId, shortcuts } = ctx;
+  const { stateManager, pageId } = ctx;
 
   // Единый экземпляр CommandExecutor для этого компонента
   const executor = useCommandExecutor({
     triggerComponentId: component.id || "",
   });
-
-  /**
-   * Resolve a command reference: if string, look up in shortcuts; otherwise return as-is
-   */
-  const resolveCommand = useCallback(
-    (cmd: string | Command): Command | null => {
-      if (typeof cmd === "string") {
-        return shortcuts?.[cmd] || null;
-      }
-      return cmd;
-    },
-    [shortcuts],
-  );
 
   // Создаём Linkage instance
   const linkage = useMemo(() => {
@@ -100,7 +158,7 @@ export function useComponentBindings({
   //  * Выполнить команды из component.events по типу события
   //  */
   const handleEvent = useCallback(
-    (eventType: string, eventValue: any) => {
+    async (eventType: string, eventValue: any) => {
       if (!component.events || !executor) return;
 
       const eventHandlers = component.events.filter(
@@ -114,43 +172,48 @@ export function useComponentBindings({
             ? [...handler.commands, ...eventValue?.commands]
             : handler.commands;
 
-        for (const cmd of commands) {
-          const resolved = resolveCommand(cmd);
-          if (!resolved) {
-            console.warn(
-              `Shortcut command not found: ${typeof cmd === "string" ? cmd : "unknown"}`,
-            );
-            continue;
-          }
-          executor.executeCommand(resolved.type, resolved.params, eventValue);
+        // Рекурсивно резолвим все shortcut строки перед выполнением
+        const shortcutsMap = ctx.shortcuts ?? {};
+        const fullyResolved = resolveShortcutCommands(
+          commands,
+          shortcutsMap,
+        ).filter(Boolean) as Command[];
+
+        for (const resolvedCmd of fullyResolved) {
+          await executor.executeCommand(
+            resolvedCmd.type,
+            resolvedCmd.params,
+            eventValue,
+          );
         }
       }
     },
-    [component.events, resolveCommand, executor],
+    [component.events, executor, ctx.shortcuts],
   );
 
   // /**
   //  * Выполнить произвольный массив команд
   //  */
   const executeCommands = useCallback(
-    async (commands: Command[], eventValue?: any) => {
+    async (commands: (string | Command)[], eventValue?: any) => {
       if (!executor) return;
-      for (const cmd of commands) {
-        const resolved = resolveCommand(cmd);
-        if (!resolved) {
-          console.warn(
-            `Shortcut command not found: ${typeof cmd === "string" ? cmd : "unknown"}`,
-          );
-          continue;
-        }
+
+      // Рекурсивно резолвим все shortcut строки перед выполнением
+      const shortcutsMap = ctx.shortcuts ?? {};
+      const fullyResolved = resolveShortcutCommands(
+        commands,
+        shortcutsMap,
+      ).filter(Boolean) as Command[];
+
+      for (const resolvedCmd of fullyResolved) {
         await executor.executeCommand(
-          resolved.type,
-          resolved.params,
+          resolvedCmd.type,
+          resolvedCmd.params,
           eventValue,
         );
       }
     },
-    [executor, resolveCommand],
+    [executor, ctx.shortcuts],
   );
 
   return {
