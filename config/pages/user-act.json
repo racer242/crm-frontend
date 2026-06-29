@@ -51,44 +51,44 @@
           {
             "type": "confirm",
             "params": {
-              "message": "Вы уверены, что хотите удалить этот акт?"
-            },
-            "onConfirm": [
-              {
-                "type": "sendRequest",
-                "params": {
-                  "url": "/api/acts/{$location.routeParams.act_id}",
-                  "method": "DELETE",
-                  "onSuccess": [
-                    {
-                      "type": "showToast",
-                      "params": {
-                        "severity": "success",
-                        "summary": "Успешно",
-                        "message": "Акт удален"
+              "message": "Вы уверены, что хотите удалить этот акт?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/acts/{$location.routeParams.act_id}",
+                    "method": "DELETE",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Акт удален"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/users/{$location.routeParams.user_id}/acts"
+                        }
                       }
-                    },
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось удалить акт"
+                        }
                       }
-                    }
-                  ],
-                  "onError": [
-                    {
-                      "type": "showToast",
-                      "params": {
-                        "severity": "error",
-                        "summary": "Ошибка",
-                        "message": "Не удалось удалить акт"
-                      }
-                    }
-                  ]
+                    ]
+                  }
                 }
-              }
-            ],
-            "onCancel": []
+              ],
+              "onCancel": []
+            }
           }
         ]
       }
