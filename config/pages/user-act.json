@@ -49,15 +49,11 @@
       "params": {
         "commands": [
           {
-            "type": "showConfirmDialog",
+            "type": "confirm",
             "params": {
-              "header": "Подтверждение удаления",
-              "message": "Вы уверены, что хотите удалить этот акт?",
-              "icon": "pi pi-exclamation-triangle",
-              "acceptLabel": "Удалить",
-              "rejectLabel": "Отмена"
+              "message": "Вы уверены, что хотите удалить этот акт?"
             },
-            "onAccept": [
+            "onConfirm": [
               {
                 "type": "sendRequest",
                 "params": {
@@ -91,7 +87,8 @@
                   ]
                 }
               }
-            ]
+            ],
+            "onCancel": []
           }
         ]
       }
