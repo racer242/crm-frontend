@@ -49,6 +49,13 @@
       "params": {
         "commands": [
           {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
             "type": "confirm",
             "params": {
               "message": "Вы уверены, что хотите удалить этот акт?",
@@ -58,6 +65,7 @@
                   "params": {
                     "url": "/api/acts/{$location.routeParams.act_id}",
                     "method": "DELETE",
+                    "target": "state.saveResult",
                     "onSuccess": [
                       {
                         "type": "showToast",
