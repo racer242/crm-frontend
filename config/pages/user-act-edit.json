@@ -58,6 +58,7 @@
             "params": {
               "url": "/api/acts/{$location.routeParams.act_id}",
               "method": "PATCH",
+              "target": "state.saveResult",
               "data": {
                 "issue_date": "{$state.actData.issue_date}",
                 "status": "{$state.actData.status}"
