@@ -1151,13 +1151,34 @@ export class CommandExecutor {
     // Проверяем условие перед выполнением любой команды
     if (params?.condition) {
       const extraSources = this.createExtraSources(commandExtraSources);
-      const conditionValue = this.macroEngine.apply(
-        params.condition,
-        0,
-        extraSources,
-      );
 
-      if (!conditionValue) {
+      let conditionValue: any;
+      let invertResult = false;
+
+      if (
+        typeof params.condition === "object" &&
+        !Array.isArray(params.condition)
+      ) {
+        // Объектный формат: { value: "...", not: true }
+        conditionValue = this.macroEngine.apply(
+          params.condition.value,
+          0,
+          extraSources,
+        );
+        invertResult = !!params.condition.not;
+      } else {
+        // Строковый формат (как было)
+        conditionValue = this.macroEngine.apply(
+          params.condition,
+          0,
+          extraSources,
+        );
+      }
+
+      // Инвертируем результат, если требуется
+      const finalCondition = invertResult ? !conditionValue : conditionValue;
+
+      if (!finalCondition) {
         return; // Условие не выполнено — пропускаем команду
       }
     }

@@ -7,6 +7,7 @@
     "saving": false,
     "saved": false,
     "sentSuccessfully": false,
+    "act_id": "{$location.routeParams.act_id}",
     "userData": {
       "id": "",
       "first_name": "",
@@ -155,7 +156,7 @@
                   },
                   {
                     "label": "@state.actData.prize_name",
-                    "route": "/users/{@state.userData.id}/acts/{$location.routeParams.act_id}"
+                    "route": "/users/{@state.userData.id}/acts/{@state.act_id}"
                   },
                   { "label": "Редактирование" }
                 ]
