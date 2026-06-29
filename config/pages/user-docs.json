@@ -475,13 +475,26 @@
       ]
     },
     {
-      "id": "actionsSection",
+      "id": "buttonsSection",
       "type": "section",
+      "className": "flex justify-content-center",
       "blocks": [
         {
-          "id": "actionsBlock",
+          "id": "buttonsBlock",
           "type": "block",
-          "className": "flex justify-content-center mt-3",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
               "id": "btnEditDocs",
