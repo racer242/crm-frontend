@@ -392,18 +392,21 @@
                           {
                             "type": "log",
                             "params": {
-                              "message": "Download {$state.actData.signed_scan_url}"
-                            },
-                            "condition": "{$state.actData.signed_scan_url}"
+                              "message": "Download {$state.actData.signed_scan_url}",
+                              "condition": "{$state.actData.signed_scan_url}"
+                            }
                           },
                           {
                             "type": "showToast",
                             "params": {
                               "severity": "warn",
                               "summary": "Скан отсутствует",
-                              "message": "Фото подписанного скана для данного акта не загружено"
-                            },
-                            "condition": "!{$state.actData.signed_scan_url}"
+                              "message": "Фото подписанного скана для данного акта не загружено",
+                              "condition": {
+                                "value": "{$state.actData.signed_scan_url}",
+                                "not": true
+                              }
+                            }
                           }
                         ]
                       }
