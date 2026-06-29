@@ -15,7 +15,6 @@
       "fullName": ""
     },
     "actData": {
-      "id": "",
       "user_id": "",
       "issue_date": "",
       "prize_name": "",
@@ -156,7 +155,7 @@
                   },
                   {
                     "label": "@state.actData.prize_name",
-                    "route": "/users/{@state.userData.id}/acts/{@state.actData.id}"
+                    "route": "/users/{@state.userData.id}/acts/{$location.routeParams.act_id}"
                   },
                   { "label": "Редактирование" }
                 ]
@@ -187,34 +186,14 @@
           "className": "flex flex-column gap-3",
           "components": [
             {
-              "id": "actIdGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
-              "props": {
-                "label": "ID акта",
-                "labelClassName": "font-bold text-sm",
-                "components": [
-                  {
-                    "id": "actId",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.actData.id"
-                    }
-                  }
-                ]
-              }
-            },
-            {
               "id": "userNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
                 "label": "Участник",
-                "labelClassName": "font-bold text-sm",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "userName",
@@ -232,10 +211,11 @@
               "id": "userEmailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
                 "label": "Email",
-                "labelClassName": "font-bold text-sm",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "userEmail",
@@ -253,10 +233,11 @@
               "id": "prizeNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
                 "label": "Приз",
-                "labelClassName": "font-bold text-sm",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
                 "components": [
                   {
                     "id": "prizeName",
