@@ -343,7 +343,8 @@ async function handleRequest(
       }
     }
 
-    console.log("------ Request --", resolvedUrl, fetchOptions);
+    console.log("------ Request --", resolvedUrl);
+    console.dir(adaptedBody, { depth: null, colors: true });
 
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
@@ -415,7 +416,8 @@ async function handleRequest(
       responseData = await externalResponse.text();
     }
 
-    console.log("------ Response Data--", responseData);
+    console.log("------ Response Data--");
+    console.dir(responseData, { depth: null, colors: true });
 
     // Apply response adapter if specified in the route config
     if (routeAdapter) {

@@ -6,31 +6,13 @@
 function transform(data) {
   if (!data || typeof data !== "object") return data;
 
-  // Форматирование даты выдачи акта
-  const formatDate = (iso) => {
-    if (!iso) return "";
-    try {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return "";
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return "";
-    }
-  };
-
-  const issueDateFormatted = formatDate(data.issue_date);
-
-  // Статус акта для отображения
-  const statusMap = {
-    pending: "Ожидает",
-    approved: "Одобрен",
-    delivered: "Доставлен",
-    rejected: "Отклонен",
-  };
-  const statusLabel = statusMap[data.status] || data.status || "";
+  // Статус акта для отображения — извлекаем label из словаря statuses по id
+  const statuses = data.statuses || [];
+  const currentStatusId = data.status;
+  const currentStatusObj = statuses.find((s) => s.id === currentStatusId);
+  const statusLabel = currentStatusObj
+    ? currentStatusObj.name
+    : currentStatusId || "";
 
   // Severity для Tag компонента
   const severityMap = {
@@ -39,18 +21,21 @@ function transform(data) {
     delivered: "info",
     rejected: "danger",
   };
-  const statusSeverity = severityMap[data.status] || "secondary";
+  const statusSeverity = severityMap[currentStatusId] || "secondary";
 
-  // Ссылки для скачивания
-  const documentBlankUrl = data.document_blank_url || "";
-  const signedScanUrl = data.signed_scan_url || "";
+  // Форматирование даты выдачи акта через _shared.js функцию
+  const issueDateFormatted = data.act_issue_date
+    ? convertDateValue(data.act_issue_date)
+    : "";
 
   return {
     ...data,
+    issue_date: data.act_issue_date || "",
     issueDateFormatted,
     statusLabel,
     statusSeverity,
-    documentBlankUrl,
-    signedScanUrl,
+    prize_name: data.prize || "",
+    prize_variants: data.prize_variants || [],
+    statuses: statuses,
   };
 }

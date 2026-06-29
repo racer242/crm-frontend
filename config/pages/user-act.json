@@ -22,7 +22,11 @@
       "signed_scan_url": "",
       "issueDateFormatted": "",
       "statusLabel": "",
-      "statusSeverity": ""
+      "statusSeverity": "",
+      "prize_id": "",
+      "act_issue_date": "",
+      "prize_variants": [],
+      "statuses": []
     }
   },
   "meta": {

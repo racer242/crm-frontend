@@ -305,6 +305,9 @@
     "path": "acts/[id]",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "adapter": {
+      "response": "act.get.response.js"
+    },
     "note": "Акты: Подробно об акте"
   },
   {
