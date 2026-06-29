@@ -213,31 +213,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "id": "actsBtnAdd",
-              "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
-              "props": {
-                "icon": "pi pi-plus",
-                "severity": "success",
-                "size": "small",
-                "label": "Добавить акт"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/acts/add"
-                      }
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },

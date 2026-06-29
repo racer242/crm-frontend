@@ -365,7 +365,17 @@
                             "type": "executeCommand",
                             "params": {
                               "command": "window.open('{@state.actData.document_blank_url}', '_blank')"
-                            }
+                            },
+                            "condition": "{$state.actData.document_blank_url}"
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "severity": "warn",
+                              "summary": "Бланк отсутствует",
+                              "message": "Бланк документа для данного акта не загружен"
+                            },
+                            "condition": "!{$state.actData.document_blank_url}"
                           }
                         ]
                       }
@@ -403,7 +413,17 @@
                             "type": "executeCommand",
                             "params": {
                               "command": "window.open('{@state.actData.signed_scan_url}', '_blank')"
-                            }
+                            },
+                            "condition": "{$state.actData.signed_scan_url}"
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "severity": "warn",
+                              "summary": "Скан отсутствует",
+                              "message": "Фото подписанного скана для данного акта не загружено"
+                            },
+                            "condition": "!{$state.actData.signed_scan_url}"
                           }
                         ]
                       }
