@@ -184,8 +184,29 @@
               "header": "Информация об акте"
             }
           },
-          "className": "flex flex-column",
+          "className": "flex flex-column gap-3",
           "components": [
+            {
+              "id": "actIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "ID акта",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "actId",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.id"
+                    }
+                  }
+                ]
+              }
+            },
             {
               "id": "userNameGroup",
               "type": "component",
@@ -278,6 +299,7 @@
                     "props": {
                       "value": "@state.actData.issue_date",
                       "dateFormat": "dd.mm.yy",
+                      "showTime": true,
                       "showIcon": true,
                       "className": "w-full"
                     },
