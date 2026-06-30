@@ -155,19 +155,24 @@ export function renderRadioButtonGroup({
 
   return (
     <div className={`${layoutClass} ${className || ""}`} style={style}>
-      {groupOptions.map((option, index) => (
-        <div key={option.id || index} className="flex align-items-center">
-          <RadioButton
-            {...restProps}
-            inputId={`radio-${name}-${index}`}
-            name={name}
-            value={option.value}
-            checked={value === option.value}
-            onChange={(e) => handleEvent("onChange", { value: e.value })}
-          />
-          <label className="ml-2 text-200">{option.label}</label>
-        </div>
-      ))}
+      {groupOptions.map((option, index) => {
+        const inputId = `radio-${name}-${index}`;
+        return (
+          <div key={option.id || index} className="flex align-items-center">
+            <RadioButton
+              {...restProps}
+              inputId={inputId}
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={(e) => handleEvent("onChange", { value: e.value })}
+            />
+            <label htmlFor={inputId} className="ml-2 text-200">
+              {option.label}
+            </label>
+          </div>
+        );
+      })}
     </div>
   );
 }
