@@ -411,7 +411,7 @@
                                 },
                                 "events": [
                                   {
-                                    "type": "onValueChanged",
+                                    "type": "onChange",
                                     "commands": [
                                       {
                                         "type": "setProperty",
