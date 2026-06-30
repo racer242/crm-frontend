@@ -6,45 +6,39 @@
 function transform(data) {
   if (!data || typeof data !== "object") return data;
 
-  // Форматирование даты выигрыша
-  const formatDate = (iso) => {
-    if (!iso) return "";
-    try {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return "";
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return "";
-    }
-  };
-
-  const winDateFormatted = formatDate(data.win_date);
-
-  // Статус приза для отображения
-  const statusMap = {
-    pending: "Ожидает",
-    approved: "Одобрен",
-    delivered: "Доставлен",
-    rejected: "Отклонен",
-  };
-  const statusLabel = statusMap[data.status] || data.status || "";
+  // Статус приза для отображения — извлекаем label из словаря statuses по id
+  const statuses = data.statuses || [];
+  const currentStatusId = data.status;
+  const currentStatusObj = statuses.find((s) => s.id === currentStatusId);
+  const statusLabel = currentStatusObj
+    ? currentStatusObj.name
+    : currentStatusId || "";
 
   // Severity для Tag компонента
   const severityMap = {
-    pending: "warn",
-    approved: "success",
-    delivered: "info",
-    rejected: "danger",
+    SENDING: "info",
+    SENT: "success",
+    ERROR: "danger",
+    RECEIVED: "success",
+    DOWNLOAD: "info",
+    DATA_NEEDED: "warn",
+    PROCESSING: "warn",
+    NEED_CODE: "warn",
+    DELETED: "secondary",
   };
-  const statusSeverity = severityMap[data.status] || "secondary";
+  const statusSeverity = severityMap[currentStatusId] || "secondary";
+
+  // Форматирование даты выигрыша через _shared.js функцию
+  const winDateFormatted = data.win_date ? convertDateValue(data.win_date) : "";
 
   return {
     ...data,
     winDateFormatted,
     statusLabel,
     statusSeverity,
+    prize_name: data.prize_name || "",
+    prize_types: data.prize_types || [],
+    statuses: statuses,
+    retail_chains: data.retail_chains || [],
   };
 }

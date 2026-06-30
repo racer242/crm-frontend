@@ -235,6 +235,9 @@
     "path": "prizes/[id]",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "adapter": {
+      "response": "prize.get.response.js"
+    },
     "note": "Призы: Подробно о призе"
   },
   {

@@ -22,8 +22,12 @@
       "comment": "",
       "winDateFormatted": "",
       "statusLabel": "",
-      "statusSeverity": ""
-    }
+      "statusSeverity": "",
+      "prize_types": [],
+      "statuses": [],
+      "retail_chains": []
+    },
+    "saveResult": null
   },
   "meta": {
     "title": "Приз участника — CRM Platform"
@@ -46,49 +50,54 @@
       "params": {
         "commands": [
           {
-            "type": "showConfirmDialog",
+            "type": "setProperty",
             "params": {
-              "header": "Подтверждение удаления",
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "confirm",
+            "params": {
               "message": "Вы уверены, что хотите удалить этот приз?",
-              "icon": "pi pi-exclamation-triangle",
-              "acceptLabel": "Удалить",
-              "rejectLabel": "Отмена"
-            },
-            "onAccept": [
-              {
-                "type": "sendRequest",
-                "params": {
-                  "url": "/api/prizes/{$location.routeParams.prize_id}",
-                  "method": "DELETE",
-                  "onSuccess": [
-                    {
-                      "type": "showToast",
-                      "params": {
-                        "severity": "success",
-                        "summary": "Успешно",
-                        "message": "Приз удален"
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/prizes/{$location.routeParams.prize_id}",
+                    "method": "DELETE",
+                    "target": "state.saveResult",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Приз удален"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/users/{$location.routeParams.user_id}/prizes"
+                        }
                       }
-                    },
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/users/{$location.routeParams.user_id}/prizes"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось удалить приз"
+                        }
                       }
-                    }
-                  ],
-                  "onError": [
-                    {
-                      "type": "showToast",
-                      "params": {
-                        "severity": "error",
-                        "summary": "Ошибка",
-                        "message": "Не удалось удалить приз"
-                      }
-                    }
-                  ]
+                    ]
+                  }
                 }
-              }
-            ]
+              ],
+              "onCancel": []
+            }
           }
         ]
       }
@@ -455,13 +464,26 @@
       ]
     },
     {
-      "id": "actionsSection",
+      "id": "buttonsSection",
       "type": "section",
+      "className": "flex justify-content-center",
       "blocks": [
         {
-          "id": "actionsBlock",
+          "id": "buttonsBlock",
           "type": "block",
-          "className": "flex justify-content-center gap-3 mt-3",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
               "id": "btnAddAct",
