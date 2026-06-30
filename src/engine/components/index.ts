@@ -20,6 +20,7 @@ export {
   renderInputSwitch,
   renderSlider,
   renderRating,
+  renderRadioButtonGroup,
 } from "./ToggleComponents";
 export { renderColorPicker, renderFileUpload } from "./MiscInputComponents";
 export { renderButton } from "./ButtonComponent";

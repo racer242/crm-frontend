@@ -15,6 +15,7 @@ export type ComponentType =
   | "Calendar"
   | "Checkbox"
   | "RadioButton"
+  | "RadioButtonGroup"
   | "InputSwitch"
   | "InputTextWithThrottle"
   | "InputTextWithButton"

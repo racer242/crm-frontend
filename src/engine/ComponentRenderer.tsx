@@ -53,6 +53,7 @@ import {
   renderPanel,
   renderDialog,
   renderImage,
+  renderRadioButtonGroup,
 } from "./components";
 
 export function ComponentRenderer({ component }: { component: Component }) {
@@ -100,6 +101,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderCheckbox(renderProps);
     case "RadioButton":
       return renderRadioButton(renderProps);
+    case "RadioButtonGroup":
+      return renderRadioButtonGroup(renderProps);
     case "InputSwitch":
       return renderInputSwitch(renderProps);
     case "Slider":

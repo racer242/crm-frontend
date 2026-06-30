@@ -337,19 +337,7 @@
                   ]
                 }
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "editDialogSection",
-      "type": "section",
-      "blocks": [
-        {
-          "id": "editDialogBlock",
-          "type": "block",
-          "components": [
+            },
             {
               "id": "editPointsDialog",
               "type": "component",
@@ -382,41 +370,17 @@
                       "label": "Операция",
                       "components": [
                         {
-                          "id": "operationRadio",
+                          "id": "operationRadioGroup",
                           "type": "component",
-                          "componentType": "RadioButton",
+                          "componentType": "RadioButtonGroup",
                           "props": {
-                            "inputId": "op_add",
                             "name": "operation",
                             "value": "@state.editForm.operation",
-                            "optionValue": "add",
-                            "label": "Добавить"
-                          },
-                          "events": [
-                            {
-                              "type": "onChange",
-                              "commands": [
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "source": "event.value",
-                                    "target": "state.editForm.operation"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "id": "operationRadioRemove",
-                          "type": "component",
-                          "componentType": "RadioButton",
-                          "props": {
-                            "inputId": "op_remove",
-                            "name": "operation",
-                            "value": "@state.editForm.operation",
-                            "optionValue": "remove",
-                            "label": "Отнять"
+                            "options": [
+                              { "label": "Добавить", "value": "add" },
+                              { "label": "Отнять", "value": "remove" }
+                            ],
+                            "orientation": "vertical"
                           },
                           "events": [
                             {

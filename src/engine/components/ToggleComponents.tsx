@@ -124,3 +124,47 @@ export function renderRating({
     />
   );
 }
+
+interface RadioOption {
+  label: string;
+  value: any;
+  id?: string;
+}
+
+export function renderRadioButtonGroup({
+  props,
+  className,
+  style,
+  handleEvent,
+}: ComponentRendererProps) {
+  const {
+    options,
+    value,
+    name,
+    orientation = "vertical",
+    ...restProps
+  } = props;
+  const groupOptions: RadioOption[] = options || [];
+  const layoutClass =
+    orientation === "horizontal"
+      ? "flex flex-row gap-3"
+      : "flex flex-column gap-3";
+
+  return (
+    <div className={`${layoutClass} ${className || ""}`} style={style}>
+      {groupOptions.map((option, index) => (
+        <div key={option.id || index} className="flex align-items-center">
+          <RadioButton
+            {...restProps}
+            inputId={`radio-${name}-${index}`}
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={(e) => handleEvent("onChange", { value: e.value })}
+          />
+          <label className="ml-2 text-200">{option.label}</label>
+        </div>
+      ))}
+    </div>
+  );
+}
