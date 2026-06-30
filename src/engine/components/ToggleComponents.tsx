@@ -43,6 +43,7 @@ export function renderRadioButton({
     ...props,
     value: props.value,
   };
+  const inputId = props.inputId;
 
   return (
     <div
@@ -54,7 +55,9 @@ export function renderRadioButton({
         onChange={(e) => handleEvent("onChange", { value: e.value })}
       />
       {props.label && (
-        <label className="ml-2 text-200">{props.label as string}</label>
+        <label htmlFor={inputId} className="ml-2 text-200">
+          {props.label as string}
+        </label>
       )}
     </div>
   );

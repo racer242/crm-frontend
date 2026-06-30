@@ -18,7 +18,7 @@
     },
     "editForm": {
       "operation": "add",
-      "points_amount": 0,
+      "points_amount": 1,
       "comment": ""
     },
     "pointsHistory": {
@@ -350,7 +350,7 @@
                 "draggable": false,
                 "resizable": false,
                 "style": { "width": "450px" },
-                "containerClassName": "flex flex-column gap-3",
+                "containerClassName": "flex flex-column gap-3 pt-3",
                 "components": [
                   {
                     "id": "operationAndAmountRow",
@@ -359,77 +359,76 @@
                     "props": {
                       "grid": {
                         "cols": ["col-6", "col-6"]
-                      }
-                    },
-                    "className": "",
-                    "components": [
-                      {
-                        "id": "operationRadioGroup",
-                        "type": "component",
-                        "componentType": "RadioButtonGroup",
-                        "props": {
-                          "name": "operation",
-                          "value": "@state.editForm.operation",
-                          "options": [
-                            { "label": "Добавить баллы", "value": "add" },
-                            { "label": "Отнять баллы", "value": "remove" }
-                          ],
-                          "orientation": "vertical"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.editForm.operation"
-                                }
-                              }
-                            ]
-                          }
-                        ]
                       },
-                      {
-                        "id": "amountGroup",
-                        "type": "component",
-                        "componentType": "LabelledGroup",
-                        "className": "flex flex-column gap-1",
-                        "props": {
-                          "label": "Количество баллов",
-                          "components": [
+                      "components": [
+                        {
+                          "id": "operationRadioGroup",
+                          "type": "component",
+                          "componentType": "RadioButtonGroup",
+                          "props": {
+                            "name": "operation",
+                            "value": "@state.editForm.operation",
+                            "options": [
+                              { "label": "Добавить баллы", "value": "add" },
+                              { "label": "Отнять баллы", "value": "remove" }
+                            ],
+                            "orientation": "vertical"
+                          },
+                          "events": [
                             {
-                              "id": "amountInput",
-                              "type": "component",
-                              "componentType": "InputNumber",
-                              "props": {
-                                "value": "@state.editForm.points_amount",
-                                "min": 0,
-                                "useGrouping": false,
-                                "showButtons": true,
-                                "buttonLayout": "horizontal",
-                                "className": "w-full"
-                              },
-                              "events": [
+                              "type": "onChange",
+                              "commands": [
                                 {
-                                  "type": "onValueChanged",
-                                  "commands": [
-                                    {
-                                      "type": "setProperty",
-                                      "params": {
-                                        "source": "event.value",
-                                        "target": "state.editForm.points_amount"
-                                      }
-                                    }
-                                  ]
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editForm.operation"
+                                  }
                                 }
                               ]
                             }
                           ]
+                        },
+                        {
+                          "id": "amountGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "flex flex-column gap-1",
+                          "props": {
+                            "label": "Количество баллов",
+                            "components": [
+                              {
+                                "id": "amountInput",
+                                "type": "component",
+                                "componentType": "InputNumber",
+                                "props": {
+                                  "value": "@state.editForm.points_amount",
+                                  "min": 1,
+                                  "useGrouping": false,
+                                  "showButtons": true,
+                                  "buttonLayout": "horizontal",
+                                  "className": "w-full"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onValueChanged",
+                                    "commands": [
+                                      {
+                                        "type": "setProperty",
+                                        "params": {
+                                          "source": "event.value",
+                                          "target": "state.editForm.points_amount"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
                         }
-                      }
-                    ]
+                      ]
+                    }
                   },
                   {
                     "id": "commentGroup",
