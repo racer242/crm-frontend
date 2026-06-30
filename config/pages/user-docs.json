@@ -110,7 +110,7 @@
     {
       "id": "docsLayout",
       "type": "section",
-      "className": "flex mb-5",
+      "className": "flex",
       "grid": {
         "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
         "padding": "p-2"
