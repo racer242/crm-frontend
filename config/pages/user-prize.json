@@ -167,7 +167,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -417,9 +417,29 @@
                   "type": "onClick",
                   "commands": [
                     {
+                      "type": "log",
+                      "params": {
+                        "message": "Переход к акту {$state.prizeData.act_id}",
+                        "condition": "{$state.prizeData.act_id}"
+                      }
+                    },
+                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/users/{$location.routeParams.user_id}/acts"
+                        "url": "/users/{$location.routeParams.user_id}/acts/{$state.prizeData.act_id}",
+                        "condition": "{$state.prizeData.act_id}"
+                      }
+                    },
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "warn",
+                        "summary": "Акт не создан",
+                        "message": "Для данного приза ещё не создан акт",
+                        "condition": {
+                          "value": "{$state.prizeData.act_id}",
+                          "not": true
+                        }
                       }
                     }
                   ]
