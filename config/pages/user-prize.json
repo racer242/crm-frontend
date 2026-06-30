@@ -20,6 +20,9 @@
       "retail_chain_name": "",
       "status": "",
       "comment": "",
+      "act_id": null,
+      "actStatus": "",
+      "actSeverity": "",
       "winDateFormatted": "",
       "statusLabel": "",
       "statusSeverity": "",
@@ -358,6 +361,29 @@
                     "className": "m-0",
                     "props": {
                       "value": "@state.prizeData.comment"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "actStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Акт",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "actStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.actStatus",
+                      "severity": "@state.prizeData.actSeverity"
                     }
                   }
                 ]

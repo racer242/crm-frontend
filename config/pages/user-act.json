@@ -166,7 +166,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12"],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -419,6 +419,66 @@
                   }
                 ]
               }
+            }
+          ]
+        },
+        {
+          "id": "prizeBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Приз"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "prizeInfoGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeNameText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.prize_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prizeLinkBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-gift",
+                "label": "Перейти к призу",
+                "size": "small",
+                "severity": "info",
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/prizes/{$state.actData.prize_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

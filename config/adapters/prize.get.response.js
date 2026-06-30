@@ -31,11 +31,18 @@ function transform(data) {
   // Форматирование даты выигрыша через _shared.js функцию
   const winDateFormatted = data.win_date ? convertDateValue(data.win_date) : "";
 
+  // Статус акта для отображения
+  const hasAct = Boolean(data.act_id);
+  const actStatus = hasAct ? "Создан" : "Отсутствует";
+  const actSeverity = hasAct ? "success" : "warn";
+
   return {
     ...data,
     winDateFormatted,
     statusLabel,
     statusSeverity,
+    actStatus,
+    actSeverity,
     prize_name: data.prize_name || "",
     prize_types: data.prize_types || [],
     statuses: statuses,
