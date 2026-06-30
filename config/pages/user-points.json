@@ -6,6 +6,7 @@
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
+    "dialogVisible": false,
     "userData": {
       "id": "",
       "fullName": ""
@@ -14,6 +15,11 @@
       "points_current": 0,
       "points_spent": 0,
       "points_total_earned": 0
+    },
+    "editForm": {
+      "operation": "add",
+      "points_amount": 0,
+      "comment": ""
     },
     "pointsHistory": {
       "value": [],
@@ -99,6 +105,78 @@
                   "prop": "filters",
                   "type": "RemoveProps",
                   "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "savePoints": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/users/{$location.routeParams.user_id}/points",
+              "method": "PATCH",
+              "target": "state.saveResult",
+              "data": {
+                "operation": "{$state.editForm.operation}",
+                "points_amount": "{$state.editForm.points_amount}",
+                "comment": "{$state.editForm.comment}"
+              },
+              "onSuccess": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "message": "Баланс баллов обновлен"
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.dialogVisible",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/users/{$location.routeParams.user_id}/points",
+                    "method": "GET",
+                    "target": "state.pointsData"
+                  }
+                },
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/users/{$location.routeParams.user_id}/points/history",
+                    "method": "GET",
+                    "target": "state.pointsHistory",
+                    "data": {
+                      "first": "{$state.pointsHistory.first}",
+                      "rows": "{$state.pointsHistory.rows}",
+                      "sortField": "{$state.pointsHistory.sortField}",
+                      "sortOrder": "{$state.pointsHistory.sortOrder}",
+                      "search": "{$state.pointsHistory.search}",
+                      "filters": "{$state.pointsHistory.filters}"
+                    },
+                    "format": { "$ref": "../system/list-request-format.json" }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось обновить баланс баллов"
+                  }
                 }
               ]
             }
@@ -250,10 +328,253 @@
                   "type": "onClick",
                   "commands": [
                     {
-                      "type": "showToast",
+                      "type": "setProperty",
                       "params": {
-                        "severity": "info",
-                        "message": "Заглушка"
+                        "target": "state.dialogVisible",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "editDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "editDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "editPointsDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "Изменение баланса баллов",
+                "visible": "@state.dialogVisible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": { "width": "450px" },
+                "containerClassName": "flex flex-column gap-3",
+                "components": [
+                  {
+                    "id": "currentBalanceInfo",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "text-lg font-medium",
+                    "props": {
+                      "value": "Текущий баланс: {@state.pointsData.points_current} баллов"
+                    }
+                  },
+                  {
+                    "id": "operationGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex flex-column gap-1",
+                    "props": {
+                      "label": "Операция",
+                      "components": [
+                        {
+                          "id": "operationRadio",
+                          "type": "component",
+                          "componentType": "RadioButton",
+                          "props": {
+                            "inputId": "op_add",
+                            "name": "operation",
+                            "value": "@state.editForm.operation",
+                            "optionValue": "add",
+                            "label": "Добавить"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editForm.operation"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "operationRadioRemove",
+                          "type": "component",
+                          "componentType": "RadioButton",
+                          "props": {
+                            "inputId": "op_remove",
+                            "name": "operation",
+                            "value": "@state.editForm.operation",
+                            "optionValue": "remove",
+                            "label": "Отнять"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editForm.operation"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "amountGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex flex-column gap-1",
+                    "props": {
+                      "label": "Количество баллов",
+                      "components": [
+                        {
+                          "id": "amountInput",
+                          "type": "component",
+                          "componentType": "InputNumber",
+                          "props": {
+                            "value": "@state.editForm.points_amount",
+                            "min": 0,
+                            "useGrouping": false,
+                            "showButtons": true,
+                            "buttonLayout": "horizontal",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onValueChanged",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editForm.points_amount"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "commentGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex flex-column gap-1",
+                    "props": {
+                      "label": "Комментарий",
+                      "components": [
+                        {
+                          "id": "commentInput",
+                          "type": "component",
+                          "componentType": "InputTextarea",
+                          "props": {
+                            "value": "@state.editForm.comment",
+                            "rows": 3,
+                            "autoResize": true,
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editForm.comment"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "dialogButtons",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex justify-content-end gap-2 mt-3",
+                    "props": {
+                      "spacing": "gap-2",
+                      "components": [
+                        {
+                          "id": "btnCancelDialog",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Отмена",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.dialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "btnSavePoints",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Сохранить",
+                            "icon": "pi pi-check",
+                            "severity": "success",
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": ["savePoints"]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.dialogVisible",
+                        "value": false
                       }
                     }
                   ]

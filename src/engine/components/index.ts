@@ -32,6 +32,7 @@ export {
   renderAccordion,
   renderCarousel,
   renderPanel,
+  renderDialog,
 } from "./ContainerComponents";
 export {
   renderSkeleton,

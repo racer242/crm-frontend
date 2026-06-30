@@ -327,7 +327,7 @@
                       {
                         "componentType": "Button",
                         "props": {
-                          "icon": "pi pi-eye",
+                          "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
                           "pt": { "label": { "className": "font-normal" } }

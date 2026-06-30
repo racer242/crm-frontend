@@ -51,6 +51,7 @@ import {
   renderLayoutGroup,
   renderLabelledGroup,
   renderPanel,
+  renderDialog,
   renderImage,
 } from "./components";
 
@@ -163,6 +164,8 @@ export function ComponentRenderer({ component }: { component: Component }) {
       return renderLabelledGroup(renderProps);
     case "Panel":
       return renderPanel(renderProps);
+    case "Dialog":
+      return renderDialog(renderProps);
     case "Image":
       return renderImage(renderProps);
     default:

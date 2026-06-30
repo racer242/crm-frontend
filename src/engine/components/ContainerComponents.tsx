@@ -5,6 +5,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Carousel } from "primereact/carousel";
 import { Panel } from "primereact/panel";
+import { Dialog } from "primereact/dialog";
 import { ComponentRendererProps } from "./types";
 import { ComponentRenderer } from "../ComponentRenderer";
 import { Component } from "@/types";
@@ -164,5 +165,36 @@ export function renderPanel(
     <Panel {...panelProps} className={className} style={style}>
       {renderComponents()}
     </Panel>
+  );
+}
+
+export function renderDialog(
+  renderProps: ComponentRendererProps & Record<string, any>,
+) {
+  const { props, className, style, handleEvent } = renderProps;
+  const { components, containerClassName, ...restProps } = props;
+  const componentList: Component[] = components || [];
+  const containerClassNameValue: string =
+    containerClassName || "flex flex-column gap-3";
+
+  const renderComponents = () => (
+    <div className={containerClassNameValue}>
+      {componentList
+        .filter((c) => c !== null && c !== undefined)
+        .map((component) => (
+          <ComponentRenderer key={component.id} component={component} />
+        ))}
+    </div>
+  );
+
+  return (
+    <Dialog
+      className={className}
+      style={style}
+      {...restProps}
+      onHide={() => handleEvent("onHide", {})}
+    >
+      {renderComponents()}
+    </Dialog>
   );
 }
