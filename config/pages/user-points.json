@@ -287,7 +287,7 @@
                 "valueClassName": "text-4xl font-bold mt-1",
                 "title": "Потратил",
                 "value": "@state.pointsData.points_spent",
-                "icon": "pi pi-arrow-up"
+                "icon": "pi pi-minus-circle"
               },
               "state": {}
             },
@@ -301,7 +301,7 @@
                 "valueClassName": "text-4xl font-bold mt-1",
                 "title": "Всего",
                 "value": "@state.pointsData.points_total_earned",
-                "icon": "pi pi-star"
+                "icon": "pi pi-arrows-h"
               },
               "state": {}
             }
