@@ -79,6 +79,10 @@
     "type": "js",
     "script": "./config/adapters/receipt.get.response.js"
   },
+  "receipt-products.response.js": {
+    "type": "js",
+    "script": "./config/adapters/receipt-products.response.js"
+  },
   "codes.get.request.js": {
     "type": "js",
     "script": "./config/adapters/codes.get.request.js"
