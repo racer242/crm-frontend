@@ -25,6 +25,11 @@
       "comment": "",
       "retail_chains": [],
       "statuses": []
+    },
+    "products": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0
     }
   },
   "meta": { "title": "Модерация чека — CRM Platform" },
@@ -121,6 +126,11 @@
       "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
       "method": "GET",
       "target": "state.receiptData"
+    },
+    {
+      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",
+      "method": "GET",
+      "target": "state.products"
     }
   ],
   "sections": [
@@ -182,6 +192,17 @@
           },
           "className": "flex flex-column gap-3",
           "components": [
+            {
+              "id": "productsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.products.value",
+                "columns": "@state.products.columns",
+                "paginator": false,
+                "size": "small"
+              }
+            },
             {
               "id": "userNameGroup",
               "type": "component",
