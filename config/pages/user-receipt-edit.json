@@ -202,8 +202,8 @@
                     "route": "/users/{@state.userData.id}/receipts"
                   },
                   {
-                    "label": "Чек №{@state.receiptData.id}",
-                    "route": "/users/{@state.userData.id}/receipts/{@state.receiptData.id}"
+                    "label": "Чек от {@state.receiptData.registrationDateFormatted}",
+                    "route": "/users/{@state.userData.id}/receipts/{@state.receipt_id}"
                   },
                   { "label": "Модерация" }
                 ]
@@ -387,7 +387,7 @@
                     "type": "component",
                     "componentType": "Dropdown",
                     "props": {
-                      "options": "@state.receiptData.statuses",
+                      "options": "@state.receiptData.moderation_statuses",
                       "value": "@state.receiptData.moderation_status",
                       "optionLabel": "name",
                       "optionValue": "id",
