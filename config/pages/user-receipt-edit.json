@@ -5,6 +5,10 @@
   "state": {
     "loading": false,
     "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "receipt_id": "{$location.routeParams.receipt_id}",
+    "saveResult": null,
     "userData": {
       "id": "",
       "first_name": "",
@@ -18,101 +22,79 @@
       "purchase_date": "",
       "retail_chain_id": "",
       "moderation_status": "",
-      "comment": ""
-    },
-    "formData": {
-      "retail_chain_id": "",
-      "moderation_status": "",
-      "comment": ""
-    },
-    "products": { "value": [], "columns": [] },
-    "retailChains": [],
-    "moderationStatuses": []
+      "comment": "",
+      "retail_chains": [],
+      "statuses": []
+    }
   },
   "meta": { "title": "Модерация чека — CRM Platform" },
-  "dataFeed": [
-    {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
-      "method": "GET",
-      "target": "state.userData"
-    },
-    {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
-      "method": "GET",
-      "target": "state.receiptData"
-    },
-    {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",
-      "method": "GET",
-      "target": "state.products"
-    }
-  ],
   "shortcuts": {
-    "checkReceipt": {
-      "type": "sendRequest",
-      "params": {
-        "url": "/api/receipts/{$location.routeParams.receipt_id}/check",
-        "method": "POST",
-        "onSuccess": [
-          {
-            "type": "showToast",
-            "params": {
-              "severity": "success",
-              "summary": "Проверка",
-              "message": "Чек успешно проверен"
-            }
-          }
-        ],
-        "onError": [
-          {
-            "type": "showToast",
-            "params": {
-              "severity": "error",
-              "summary": "Ошибка",
-              "message": "Ошибка при проверке чека"
-            }
-          }
-        ]
-      }
-    },
     "saveReceipt": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "setProperty",
-            "params": { "target": "state.saving", "value": true }
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
           },
           {
             "type": "sendRequest",
             "params": {
               "url": "/api/receipts/{$location.routeParams.receipt_id}",
               "method": "PATCH",
-              "data": "{$state.formData}",
+              "target": "state.saveResult",
+              "data": {
+                "retail_chain_id": "{$state.receiptData.retail_chain_id}",
+                "moderation_status": "{$state.receiptData.moderation_status}",
+                "comment": "{$state.receiptData.comment}"
+              },
               "onSuccess": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.saving", "value": false }
-                },
-                {
-                  "type": "showToast",
                   "params": {
-                    "severity": "success",
-                    "summary": "Успешно",
-                    "message": "Чек сохранен"
+                    "target": "state.saving",
+                    "value": false
                   }
                 },
                 {
-                  "type": "navigate",
+                  "type": "setProperty",
                   "params": {
-                    "url": "/users/{$location.routeParams.user_id}/receipts/{$location.routeParams.receipt_id}"
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
                   }
                 }
               ],
               "onError": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.saving", "value": false }
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
                 },
                 {
                   "type": "showToast",
@@ -129,6 +111,18 @@
       }
     }
   },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
+      "method": "GET",
+      "target": "state.receiptData"
+    }
+  ],
   "sections": [
     {
       "id": "breadcrumbSection",
@@ -157,7 +151,7 @@
                     "route": "/users/{@state.userData.id}/receipts"
                   },
                   {
-                    "label": "Чек #@state.receiptData.id",
+                    "label": "Чек №{@state.receiptData.id}",
                     "route": "/users/{@state.userData.id}/receipts/{@state.receiptData.id}"
                   },
                   { "label": "Модерация" }
@@ -169,22 +163,27 @@
       ]
     },
     {
-      "id": "mainLayout",
+      "id": "formMainSection",
       "type": "section",
-      "className": "flex mb-5",
-      "grid": { "cols": ["col-12"], "padding": "p-2" },
+      "className": "",
+      "grid": {
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "padding": "p-2"
+      },
       "blocks": [
         {
           "id": "infoBlock",
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Информация о чеке" }
+            "props": {
+              "header": "Информация о чеке"
+            }
           },
           "className": "flex flex-column gap-3",
           "components": [
             {
-              "id": "userInfoGroup",
+              "id": "userNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
@@ -194,11 +193,13 @@
                 "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "userInfo",
+                    "id": "userName",
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": { "value": "@state.userData.fullName" }
+                    "props": {
+                      "value": "@state.userData.fullName"
+                    }
                   }
                 ]
               }
@@ -218,7 +219,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": { "value": "@state.userData.email" }
+                    "props": {
+                      "value": "@state.userData.email"
+                    }
                   }
                 ]
               }
@@ -238,7 +241,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": { "value": "@state.receiptData.registration_date" }
+                    "props": {
+                      "value": "@state.receiptData.registration_date"
+                    }
                   }
                 ]
               }
@@ -258,7 +263,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": { "value": "@state.receiptData.purchase_date" }
+                    "props": {
+                      "value": "@state.receiptData.purchase_date"
+                    }
                   }
                 ]
               }
@@ -266,52 +273,32 @@
           ]
         },
         {
-          "id": "productsBlock",
+          "id": "editBlock",
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Список продуктов" }
-          },
-          "components": [
-            {
-              "id": "productsTable",
-              "type": "component",
-              "componentType": "DataTable",
-              "props": {
-                "value": "@state.products.value",
-                "columns": "@state.products.columns",
-                "paginator": false,
-                "size": "small"
-              }
+            "props": {
+              "header": "Модерация"
             }
-          ]
-        },
-        {
-          "id": "moderationBlock",
-          "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": { "header": "Модерация" }
           },
-          "className": "flex flex-column gap-3",
+          "className": "flex flex-column",
           "components": [
             {
               "id": "retailChainGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Торговая сеть",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "retailChainDropdown",
                     "type": "component",
                     "componentType": "Dropdown",
                     "props": {
-                      "options": "@state.retailChains",
-                      "value": "@state.formData.retail_chain_id",
+                      "options": "@state.receiptData.retail_chains",
+                      "value": "@state.receiptData.retail_chain_id",
                       "optionLabel": "name",
                       "optionValue": "id",
                       "placeholder": "Выберите торговую сеть",
@@ -325,7 +312,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.retail_chain_id"
+                              "target": "state.receiptData.retail_chain_id"
                             }
                           }
                         ]
@@ -339,19 +326,18 @@
               "id": "moderationStatusGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Статус модерации",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "moderationStatusDropdown",
                     "type": "component",
                     "componentType": "Dropdown",
                     "props": {
-                      "options": "@state.moderationStatuses",
-                      "value": "@state.formData.moderation_status",
+                      "options": "@state.receiptData.statuses",
+                      "value": "@state.receiptData.moderation_status",
                       "optionLabel": "name",
                       "optionValue": "id",
                       "placeholder": "Выберите статус",
@@ -365,7 +351,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.moderation_status"
+                              "target": "state.receiptData.moderation_status"
                             }
                           }
                         ]
@@ -379,18 +365,17 @@
               "id": "commentGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
                 "label": "Комментарий",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
+                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
                     "id": "commentInput",
                     "type": "component",
                     "componentType": "InputTextarea",
                     "props": {
-                      "value": "@state.formData.comment",
+                      "value": "@state.receiptData.comment",
                       "rows": 3,
                       "autoResize": true,
                       "className": "w-full"
@@ -403,7 +388,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.comment"
+                              "target": "state.receiptData.comment"
                             }
                           }
                         ]
@@ -425,22 +410,22 @@
         {
           "id": "buttonsBlock",
           "type": "block",
-          "className": "flex flex-wrap gap-3 justify-content-center",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
-              "id": "btnCheck",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Автоматическая проверка",
-                "icon": "pi pi-search",
-                "severity": "info",
-                "outlined": true
-              },
-              "events": [{ "type": "onClick", "commands": ["checkReceipt"] }]
-            },
-            {
-              "id": "btnSave",
+              "id": "btnSaveAndGo",
               "type": "component",
               "componentType": "Button",
               "props": {
@@ -449,14 +434,57 @@
                 "severity": "success",
                 "disabled": "@state.saving"
               },
-              "events": [{ "type": "onClick", "commands": ["saveReceipt"] }]
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveReceipt",
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/users/{$location.routeParams.user_id}/receipts/{$location.routeParams.receipt_id}",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnApply",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Применить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveReceipt",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Чек сохранен",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "btnCancel",
               "type": "component",
               "componentType": "Button",
               "props": {
-                "label": "Отменить",
+                "label": "Отменить изменения",
                 "icon": "pi pi-times",
                 "severity": "secondary",
                 "outlined": true
