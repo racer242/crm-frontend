@@ -53,41 +53,6 @@
     }
   ],
   "shortcuts": {
-    "openEditCodeDialog": {
-      "type": "sequence",
-      "params": {
-        "commands": [
-          {
-            "type": "setProperty",
-            "params": {
-              "source": "event.params.data.id",
-              "target": "state.editingCode.id"
-            }
-          },
-          {
-            "type": "setProperty",
-            "params": {
-              "source": "event.params.data.code",
-              "target": "state.editingCode.code"
-            }
-          },
-          {
-            "type": "setProperty",
-            "params": {
-              "source": "event.params.data.date",
-              "target": "state.editingCode.date"
-            }
-          },
-          {
-            "type": "setProperty",
-            "params": {
-              "target": "state.isEditDialogVisible",
-              "value": true
-            }
-          }
-        ]
-      }
-    },
     "saveCode": {
       "type": "sequence",
       "params": {
@@ -463,14 +428,31 @@
                             "type": "onClick",
                             "commands": [
                               {
-                                "type": "executeShortcut",
+                                "type": "setProperty",
                                 "params": {
-                                  "shortcut": "openEditCodeDialog",
-                                  "data": {
-                                    "id": "{#row._rowId}",
-                                    "code": "{#row.code}",
-                                    "date": "{#row.date}"
-                                  }
+                                  "target": "state.editingCode.id",
+                                  "value": "{#row._rowId}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.editingCode.code",
+                                  "value": "{#row.code}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.editingCode.date",
+                                  "value": "{#row.registration_date}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.isEditDialogVisible",
+                                  "value": true
                                 }
                               }
                             ]
@@ -521,6 +503,7 @@
                           "props": {
                             "value": "@state.editingCode.date",
                             "dateFormat": "dd.mm.yy",
+                            "showTime": true,
                             "showIcon": true,
                             "className": "w-full"
                           },
