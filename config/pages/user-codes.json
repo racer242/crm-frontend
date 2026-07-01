@@ -67,12 +67,12 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/codes/{@state.editingCode._rowId}",
+              "url": "/api/codes/{$state.editingCode._rowId}",
               "method": "PATCH",
               "target": "state.saveResult",
               "data": {
-                "code": "{@state.editingCode.code}",
-                "registration_date": "{@state.editingCode.registration_date}"
+                "code": "{$state.editingCode.code}",
+                "registration_date": "{$state.editingCode.registration_date}"
               },
               "onSuccess": [
                 {

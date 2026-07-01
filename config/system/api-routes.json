@@ -346,6 +346,9 @@
     "path": "codes/[id]",
     "method": "PATCH",
     "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}",
+    "adapter": {
+      "request": "code.patch.request.js"
+    },
     "note": "Коды участников: Редактировать код"
   },
   {
