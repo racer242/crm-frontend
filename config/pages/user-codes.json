@@ -24,9 +24,9 @@
       "search": ""
     },
     "editingCode": {
-      "id": "",
+      "_rowId": "",
       "code": "",
-      "date": ""
+      "registration_date": ""
     }
   },
   "meta": {
@@ -67,12 +67,12 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/codes/{$state.editingCode.id}",
+              "url": "/api/codes/{@state.editingCode._rowId}",
               "method": "PATCH",
               "target": "state.saveResult",
               "data": {
-                "code": "{$state.editingCode.code}",
-                "date": "{$state.editingCode.date}"
+                "code": "{@state.editingCode.code}",
+                "registration_date": "{@state.editingCode.registration_date}"
               },
               "onSuccess": [
                 {
@@ -430,7 +430,7 @@
                               {
                                 "type": "setProperty",
                                 "params": {
-                                  "target": "state.editingCode.id",
+                                  "target": "state.editingCode._rowId",
                                   "value": "{#row._rowId}"
                                 }
                               },
@@ -444,7 +444,7 @@
                               {
                                 "type": "setProperty",
                                 "params": {
-                                  "target": "state.editingCode.date",
+                                  "target": "state.editingCode.registration_date",
                                   "value": "{#row.registration_date}"
                                 }
                               },
@@ -501,7 +501,7 @@
                           "type": "component",
                           "componentType": "Calendar",
                           "props": {
-                            "value": "@state.editingCode.date",
+                            "value": "@state.editingCode.registration_date",
                             "dateFormat": "dd.mm.yy",
                             "showTime": true,
                             "showIcon": true,
@@ -515,7 +515,7 @@
                                   "type": "setProperty",
                                   "params": {
                                     "source": "event.value",
-                                    "target": "state.editingCode.date"
+                                    "target": "state.editingCode.registration_date"
                                   }
                                 }
                               ]
