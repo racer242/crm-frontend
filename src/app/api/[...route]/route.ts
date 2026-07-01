@@ -255,7 +255,7 @@ async function handleRequest(
 
     if (!routeResult) {
       return NextResponse.json(
-        { error: `Route not found: ${routeName}` },
+        { error: { message: `Route not found: ${routeName}` } },
         { status: 404 },
       );
     }
@@ -431,7 +431,11 @@ async function handleRequest(
           const adapter = config.adapters?.[responseAdapterName];
           if (!adapter) {
             return NextResponse.json(
-              { error: `Response adapter not found: ${responseAdapterName}` },
+              {
+                error: {
+                  message: `Response adapter not found: ${responseAdapterName}`,
+                },
+              },
               { status: 500 },
             );
           }
@@ -440,7 +444,9 @@ async function handleRequest(
       } catch (adapterError) {
         return NextResponse.json(
           {
-            error: `Response adapter error: ${(adapterError as Error).message}`,
+            error: {
+              message: `Response adapter error: ${(adapterError as Error).message}`,
+            },
           },
           { status: 500 },
         );
@@ -464,7 +470,10 @@ async function handleRequest(
     console.error("API Router error:", error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Internal server error",
+        error: {
+          message:
+            error instanceof Error ? error.message : "Internal server error",
+        },
       },
       { status: 500 },
     );

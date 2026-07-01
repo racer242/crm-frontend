@@ -28,7 +28,7 @@ async function handleLogin(request: NextRequest): Promise<NextResponse> {
 
     if (!credentials.login || !credentials.password) {
       return NextResponse.json(
-        { error: "Login and password are required" },
+        { error: { message: "Login and password are required" } },
         { status: 400 },
       );
     }
@@ -46,13 +46,16 @@ async function handleLogin(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ user: response.user });
   } catch (error) {
     if (error instanceof BitrixApiError) {
-      // Return the original error body from Bitrix as-is
-      return NextResponse.json(error.body || { error: error.message }, {
+      // Return the original error body from Bitrix as-is, wrapped in the new format
+      const errorBody = error.body?.error
+        ? { error: { message: error.body.error } }
+        : { error: { message: error.message } };
+      return NextResponse.json(errorBody, {
         status: error.status,
       });
     }
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: { message: "Internal server error" } },
       { status: 500 },
     );
   }
@@ -70,7 +73,7 @@ async function handleRefresh(request: NextRequest): Promise<NextResponse> {
     if (!refreshToken) {
       await clearAuthCookies();
       return NextResponse.json(
-        { error: "Refresh token not found" },
+        { error: { message: "Refresh token not found" } },
         { status: 401 },
       );
     }
@@ -91,13 +94,16 @@ async function handleRefresh(request: NextRequest): Promise<NextResponse> {
     await clearAuthCookies();
 
     if (error instanceof BitrixApiError) {
-      // Return the original error body from Bitrix as-is
-      return NextResponse.json(error.body || { error: error.message }, {
+      // Return the original error body from Bitrix as-is, wrapped in the new format
+      const errorBody = error.body?.error
+        ? { error: { message: error.body.error } }
+        : { error: { message: error.message } };
+      return NextResponse.json(errorBody, {
         status: error.status,
       });
     }
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: { message: "Internal server error" } },
       { status: 500 },
     );
   }
@@ -148,7 +154,7 @@ export async function POST(
       return handleLogout(request);
     default:
       return NextResponse.json(
-        { error: `Unknown auth action: ${action}` },
+        { error: { message: `Unknown auth action: ${action}` } },
         { status: 404 },
       );
   }
