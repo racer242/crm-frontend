@@ -19,16 +19,13 @@
       "id": "",
       "prize_name": "",
       "win_date": "",
-      "retail_chain_id": "",
-      "status": "",
-      "comment": ""
-    },
-    "formData": {
-      "win_date": "",
       "prize_type_id": "",
       "retail_chain_id": "",
       "status": "",
-      "comment": ""
+      "comment": "",
+      "prize_types": [],
+      "statuses": [],
+      "retail_chains": []
     }
   },
   "meta": { "title": "Редактирование приза — CRM Platform" },
@@ -58,11 +55,11 @@
               "method": "PATCH",
               "target": "state.saveResult",
               "data": {
-                "win_date": "{$state.formData.win_date}",
-                "prize_type_id": "{$state.formData.prize_type_id}",
-                "retail_chain_id": "{$state.formData.retail_chain_id}",
-                "status": "{$state.formData.status}",
-                "comment": "{$state.formData.comment}"
+                "win_date": "{$state.prizeData.win_date}",
+                "prize_type_id": "{$state.prizeData.prize_type_id}",
+                "retail_chain_id": "{$state.prizeData.retail_chain_id}",
+                "status": "{$state.prizeData.status}",
+                "comment": "{$state.prizeData.comment}"
               },
               "onSuccess": [
                 {
@@ -282,7 +279,7 @@
                     "componentType": "Dropdown",
                     "props": {
                       "options": "@state.prizeData.prize_types",
-                      "value": "@state.formData.prize_type_id",
+                      "value": "@state.prizeData.prize_type_id",
                       "optionLabel": "name",
                       "optionValue": "id",
                       "placeholder": "Выберите тип приза",
@@ -296,7 +293,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.prize_type_id"
+                              "target": "state.prizeData.prize_type_id"
                             }
                           }
                         ]
@@ -334,7 +331,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.win_date"
+                              "target": "state.prizeData.win_date"
                             }
                           }
                         ]
@@ -359,7 +356,7 @@
                     "componentType": "Dropdown",
                     "props": {
                       "options": "@state.prizeData.statuses",
-                      "value": "@state.formData.status",
+                      "value": "@state.prizeData.status",
                       "optionLabel": "name",
                       "optionValue": "id",
                       "placeholder": "Выберите статус",
@@ -373,7 +370,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.status"
+                              "target": "state.prizeData.status"
                             }
                           }
                         ]
@@ -398,7 +395,7 @@
                     "componentType": "Dropdown",
                     "props": {
                       "options": "@state.prizeData.retail_chains",
-                      "value": "@state.formData.retail_chain_id",
+                      "value": "@state.prizeData.retail_chain_id",
                       "optionLabel": "name",
                       "optionValue": "id",
                       "placeholder": "Выберите торговую сеть",
@@ -412,7 +409,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.retail_chain_id"
+                              "target": "state.prizeData.retail_chain_id"
                             }
                           }
                         ]
@@ -436,7 +433,7 @@
                     "type": "component",
                     "componentType": "InputTextarea",
                     "props": {
-                      "value": "@state.formData.comment",
+                      "value": "@state.prizeData.comment",
                       "rows": 3,
                       "autoResize": true,
                       "className": "w-full"
@@ -449,7 +446,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.formData.comment"
+                              "target": "state.prizeData.comment"
                             }
                           }
                         ]
