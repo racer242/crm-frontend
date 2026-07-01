@@ -6,6 +6,8 @@
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
+    "isEditDialogVisible": false,
+    "saveResult": null,
     "userData": {
       "id": "",
       "fullName": ""
@@ -20,6 +22,11 @@
       "sortOrder": 1,
       "filters": [],
       "search": ""
+    },
+    "editingCode": {
+      "id": "",
+      "code": "",
+      "date": ""
     }
   },
   "meta": {
@@ -46,6 +53,100 @@
     }
   ],
   "shortcuts": {
+    "openEditCodeDialog": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "source": "{#row._rowId}",
+              "target": "state.editingCode.id"
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "source": "{#row.code}",
+              "target": "state.editingCode.code"
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "source": "{#row.date}",
+              "target": "state.editingCode.date"
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.isEditDialogVisible",
+              "value": true
+            }
+          }
+        ]
+      }
+    },
+    "saveCode": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/codes/{$state.editingCode.id}",
+              "method": "PATCH",
+              "target": "state.saveResult",
+              "data": {
+                "code": "{$state.editingCode.code}",
+                "date": "{$state.editingCode.date}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.isEditDialogVisible",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "message": "Код обновлен"
+                  }
+                },
+                {
+                  "type": "executeShortcut",
+                  "params": {
+                    "shortcut": "requestUserCodes"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить код"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "requestUserCodes": {
       "type": "sequence",
       "params": {
@@ -359,14 +460,7 @@
                         "events": [
                           {
                             "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "log",
-                                "params": {
-                                  "message": "{#row.id}"
-                                }
-                              }
-                            ]
+                            "commands": ["openEditCodeDialog"]
                           }
                         ]
                       }
@@ -382,6 +476,173 @@
                 {
                   "type": "onSort",
                   "commands": ["requestUserCodes"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "editCodeDialogSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "editCodeDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "editCodeDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "visible": "@state.isEditDialogVisible",
+                "header": "Редактирование кода",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": { "width": "400px" }
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.isEditDialogVisible",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "children": [
+                {
+                  "id": "dateGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "flex flex-column gap-1 mb-3",
+                  "props": {
+                    "label": "Дата регистрации",
+                    "labelClassName": "font-bold text-sm",
+                    "components": [
+                      {
+                        "id": "dateInput",
+                        "type": "component",
+                        "componentType": "Calendar",
+                        "props": {
+                          "value": "@state.editingCode.date",
+                          "dateFormat": "dd.mm.yy",
+                          "showIcon": true,
+                          "className": "w-full"
+                        },
+                        "events": [
+                          {
+                            "type": "onChange",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "source": "event.value",
+                                  "target": "state.editingCode.date"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "codeGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "flex flex-column gap-1 mb-3",
+                  "props": {
+                    "label": "Код",
+                    "labelClassName": "font-bold text-sm",
+                    "components": [
+                      {
+                        "id": "codeInput",
+                        "type": "component",
+                        "componentType": "InputText",
+                        "props": {
+                          "value": "@state.editingCode.code",
+                          "className": "w-full"
+                        },
+                        "events": [
+                          {
+                            "type": "onChange",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "source": "event.value",
+                                  "target": "state.editingCode.code"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "dialogButtons",
+                  "type": "component",
+                  "componentType": "div",
+                  "className": "flex justify-content-end gap-2 mt-3",
+                  "props": {},
+                  "children": [
+                    {
+                      "id": "btnSaveCode",
+                      "type": "component",
+                      "componentType": "Button",
+                      "props": {
+                        "label": "Сохранить",
+                        "icon": "pi pi-check",
+                        "severity": "success",
+                        "size": "small"
+                      },
+                      "events": [
+                        {
+                          "type": "onClick",
+                          "commands": ["saveCode"]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "btnCancelCode",
+                      "type": "component",
+                      "componentType": "Button",
+                      "props": {
+                        "label": "Отмена",
+                        "icon": "pi pi-times",
+                        "severity": "secondary",
+                        "outlined": true,
+                        "size": "small"
+                      },
+                      "events": [
+                        {
+                          "type": "onClick",
+                          "commands": [
+                            {
+                              "type": "setProperty",
+                              "params": {
+                                "target": "state.isEditDialogVisible",
+                                "value": false
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
