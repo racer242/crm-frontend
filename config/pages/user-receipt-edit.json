@@ -23,6 +23,8 @@
       "retail_chain_id": "",
       "moderation_status": "",
       "comment": "",
+      "registrationDateFormatted": "",
+      "purchaseDateFormatted": "",
       "retail_chains": [],
       "statuses": []
     },
@@ -34,6 +36,45 @@
   },
   "meta": { "title": "Модерация чека — CRM Platform" },
   "shortcuts": {
+    "autoModerate": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.saveResult", "value": null }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/receipts/{$location.routeParams.receipt_id}/check",
+              "method": "POST",
+              "target": "state.saveResult",
+              "onSuccess": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Автомодерация",
+                    "message": "Проверка выполнена"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Ошибка при проверке"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "saveReceipt": {
       "type": "sequence",
       "params": {
@@ -193,17 +234,6 @@
           "className": "flex flex-column gap-3",
           "components": [
             {
-              "id": "productsTable",
-              "type": "component",
-              "componentType": "DataTable",
-              "props": {
-                "value": "@state.products.value",
-                "columns": "@state.products.columns",
-                "paginator": false,
-                "size": "small"
-              }
-            },
-            {
               "id": "userNameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -263,7 +293,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.registration_date"
+                      "value": "@state.receiptData.registrationDateFormatted"
                     }
                   }
                 ]
@@ -285,7 +315,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.purchase_date"
+                      "value": "@state.receiptData.purchaseDateFormatted"
                     }
                   }
                 ]
@@ -424,6 +454,30 @@
       ]
     },
     {
+      "id": "productsSection",
+      "type": "section",
+      "className": "mb-5",
+      "blocks": [
+        {
+          "id": "productsBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "productsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.products.value",
+                "columns": "@state.products.columns",
+                "paginator": false,
+                "size": "small"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "buttonsSection",
       "type": "section",
       "className": "flex justify-content-center",
@@ -445,6 +499,23 @@
           },
           "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
+            {
+              "id": "btnAutoModerate",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Автомодерация",
+                "icon": "pi pi-search",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["autoModerate"]
+                }
+              ]
+            },
             {
               "id": "btnSaveAndGo",
               "type": "component",
