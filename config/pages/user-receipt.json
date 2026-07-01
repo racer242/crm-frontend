@@ -41,9 +41,7 @@
     },
     "saveResult": null
   },
-  "meta": {
-    "title": "Чек участника — CRM Platform"
-  },
+  "meta": { "title": "Чек участника — CRM Platform" },
   "dataFeed": [
     {
       "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
@@ -68,10 +66,7 @@
         "commands": [
           {
             "type": "setProperty",
-            "params": {
-              "target": "state.saveResult",
-              "value": null
-            }
+            "params": { "target": "state.saveResult", "value": null }
           },
           {
             "type": "confirm",
@@ -193,34 +188,10 @@
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": {
-              "header": "Информация о чеке"
-            }
+            "props": { "header": "Информация о чеке" }
           },
           "className": "flex flex-column gap-3",
           "components": [
-            {
-              "id": "receiptIdGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "ID чека",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "receiptId",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.receiptData.id"
-                    }
-                  }
-                ]
-              }
-            },
             {
               "id": "userNameGroup",
               "type": "component",
@@ -236,9 +207,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg cursor-pointer text-primary",
-                    "props": {
-                      "value": "@state.userData.fullName"
-                    },
+                    "props": { "value": "@state.userData.fullName" },
                     "events": [
                       {
                         "type": "onClick",
@@ -271,9 +240,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg cursor-pointer text-primary",
-                    "props": {
-                      "value": "@state.userData.email"
-                    },
+                    "props": { "value": "@state.userData.email" },
                     "events": [
                       {
                         "type": "onClick",
@@ -350,9 +317,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.receiptData.retail_chain_name"
-                    }
+                    "props": { "value": "@state.receiptData.retail_chain_name" }
                   }
                 ]
               }
@@ -394,9 +359,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.receiptData.total_amount"
-                    }
+                    "props": { "value": "@state.receiptData.total_amount" }
                   }
                 ]
               }
@@ -418,29 +381,6 @@
                     "className": "m-0",
                     "props": {
                       "value": "ФН: {@state.receiptData.fiscal_data.fiscal_number}, ФД: {@state.receiptData.fiscal_data.fiscal_document_number}, ФП: {@state.receiptData.fiscal_data.fiscal_sign}"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "receiptStatusGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Статус чека",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "receiptStatusTag",
-                    "type": "component",
-                    "componentType": "Tag",
-                    "className": "text-sm px-2 py-1",
-                    "props": {
-                      "value": "@state.receiptData.receiptStatusLabel",
-                      "severity": "@state.receiptData.receiptStatusSeverity"
                     }
                   }
                 ]
@@ -484,9 +424,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0",
-                    "props": {
-                      "value": "@state.receiptData.comment"
-                    }
+                    "props": { "value": "@state.receiptData.comment" }
                   }
                 ]
               }
@@ -498,21 +436,11 @@
     {
       "id": "productsSection",
       "type": "section",
-      "className": "flex mb-5",
-      "grid": {
-        "cols": ["col-12"],
-        "padding": "p-2"
-      },
+      "className": "mb-5",
       "blocks": [
         {
           "id": "productsBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Список продуктов"
-            }
-          },
           "components": [
             {
               "id": "productsTable",
@@ -531,13 +459,26 @@
       ]
     },
     {
-      "id": "actionsSection",
+      "id": "buttonsSection",
       "type": "section",
+      "className": "flex justify-content-center",
       "blocks": [
         {
-          "id": "actionsBlock",
+          "id": "buttonsBlock",
           "type": "block",
-          "className": "flex justify-content-center gap-3 mt-3",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
               "id": "btnEdit",
