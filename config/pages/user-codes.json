@@ -60,21 +60,21 @@
           {
             "type": "setProperty",
             "params": {
-              "source": "{#row._rowId}",
+              "source": "event.params.data.id",
               "target": "state.editingCode.id"
             }
           },
           {
             "type": "setProperty",
             "params": {
-              "source": "{#row.code}",
+              "source": "event.params.data.code",
               "target": "state.editingCode.code"
             }
           },
           {
             "type": "setProperty",
             "params": {
-              "source": "{#row.date}",
+              "source": "event.params.data.date",
               "target": "state.editingCode.date"
             }
           },
@@ -461,7 +461,19 @@
                         "events": [
                           {
                             "type": "onClick",
-                            "commands": ["openEditCodeDialog"]
+                            "commands": [
+                              {
+                                "type": "executeShortcut",
+                                "params": {
+                                  "shortcut": "openEditCodeDialog",
+                                  "data": {
+                                    "id": "{#row._rowId}",
+                                    "code": "{#row.code}",
+                                    "date": "{#row.date}"
+                                  }
+                                }
+                              }
+                            ]
                           }
                         ]
                       }
