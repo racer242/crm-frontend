@@ -267,6 +267,9 @@
     "path": "receipts/[id]",
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "adapter": {
+      "response": "receipt.get.response.js"
+    },
     "note": "Чеки: Подробно о чеке"
   },
   {
