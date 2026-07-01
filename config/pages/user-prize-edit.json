@@ -59,6 +59,7 @@
               "target": "state.saveResult",
               "data": {
                 "win_date": "{$state.formData.win_date}",
+                "prize_type_id": "{$state.formData.prize_type_id}",
                 "retail_chain_id": "{$state.formData.retail_chain_id}",
                 "status": "{$state.formData.status}",
                 "comment": "{$state.formData.comment}"
@@ -267,6 +268,45 @@
           "className": "flex flex-column",
           "components": [
             {
+              "id": "prizeTypeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Тип приза",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "prizeTypeDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.prizeData.prize_types",
+                      "value": "@state.formData.prize_type_id",
+                      "optionLabel": "name",
+                      "optionValue": "id",
+                      "placeholder": "Выберите тип приза",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.prize_type_id"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
               "id": "winDateGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -280,8 +320,9 @@
                     "type": "component",
                     "componentType": "Calendar",
                     "props": {
-                      "value": "@state.formData.win_date",
+                      "value": "@state.prizeData.win_date",
                       "dateFormat": "dd.mm.yy",
+                      "showTime": true,
                       "showIcon": true,
                       "className": "w-full"
                     },
