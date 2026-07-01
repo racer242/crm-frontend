@@ -422,6 +422,7 @@
     {
       "id": "codesTableSection",
       "type": "section",
+      "className": "mb-0",
       "blocks": [
         {
           "id": "codesTableBlock",
@@ -478,32 +479,146 @@
                   "commands": ["requestUserCodes"]
                 }
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "editCodeDialogSection",
-      "type": "section",
-      "className": "",
-      "blocks": [
-        {
-          "id": "editCodeDialogBlock",
-          "type": "block",
-          "components": [
+            },
             {
               "id": "editCodeDialog",
               "type": "component",
               "componentType": "Dialog",
               "props": {
-                "visible": "@state.isEditDialogVisible",
                 "header": "Редактирование кода",
+                "visible": "@state.isEditDialogVisible",
                 "modal": true,
                 "closable": true,
                 "draggable": false,
                 "resizable": false,
-                "style": { "width": "400px" }
+                "style": { "width": "450px" },
+                "containerClassName": "flex flex-column gap-3 pt-3",
+                "components": [
+                  {
+                    "id": "dateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex flex-column gap-1",
+                    "props": {
+                      "label": "Дата регистрации",
+                      "components": [
+                        {
+                          "id": "dateInput",
+                          "type": "component",
+                          "componentType": "Calendar",
+                          "props": {
+                            "value": "@state.editingCode.date",
+                            "dateFormat": "dd.mm.yy",
+                            "showIcon": true,
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editingCode.date"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "codeGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex flex-column gap-1",
+                    "props": {
+                      "label": "Код",
+                      "components": [
+                        {
+                          "id": "codeInput",
+                          "type": "component",
+                          "componentType": "InputText",
+                          "props": {
+                            "value": "@state.editingCode.code",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.editingCode.code"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "dialogButtons",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex justify-content-end gap-2 mt-3",
+                    "props": {
+                      "spacing": "gap-2",
+                      "components": [
+                        {
+                          "id": "btnCancelCode",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Отмена",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.isEditDialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "btnSaveCode",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Сохранить",
+                            "icon": "pi pi-check",
+                            "severity": "success",
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": ["saveCode"]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
               },
               "events": [
                 {
@@ -515,132 +630,6 @@
                         "target": "state.isEditDialogVisible",
                         "value": false
                       }
-                    }
-                  ]
-                }
-              ],
-              "children": [
-                {
-                  "id": "dateGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex flex-column gap-1 mb-3",
-                  "props": {
-                    "label": "Дата регистрации",
-                    "labelClassName": "font-bold text-sm",
-                    "components": [
-                      {
-                        "id": "dateInput",
-                        "type": "component",
-                        "componentType": "Calendar",
-                        "props": {
-                          "value": "@state.editingCode.date",
-                          "dateFormat": "dd.mm.yy",
-                          "showIcon": true,
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.editingCode.date"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "codeGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex flex-column gap-1 mb-3",
-                  "props": {
-                    "label": "Код",
-                    "labelClassName": "font-bold text-sm",
-                    "components": [
-                      {
-                        "id": "codeInput",
-                        "type": "component",
-                        "componentType": "InputText",
-                        "props": {
-                          "value": "@state.editingCode.code",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.editingCode.code"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "dialogButtons",
-                  "type": "component",
-                  "componentType": "div",
-                  "className": "flex justify-content-end gap-2 mt-3",
-                  "props": {},
-                  "children": [
-                    {
-                      "id": "btnSaveCode",
-                      "type": "component",
-                      "componentType": "Button",
-                      "props": {
-                        "label": "Сохранить",
-                        "icon": "pi pi-check",
-                        "severity": "success",
-                        "size": "small"
-                      },
-                      "events": [
-                        {
-                          "type": "onClick",
-                          "commands": ["saveCode"]
-                        }
-                      ]
-                    },
-                    {
-                      "id": "btnCancelCode",
-                      "type": "component",
-                      "componentType": "Button",
-                      "props": {
-                        "label": "Отмена",
-                        "icon": "pi pi-times",
-                        "severity": "secondary",
-                        "outlined": true,
-                        "size": "small"
-                      },
-                      "events": [
-                        {
-                          "type": "onClick",
-                          "commands": [
-                            {
-                              "type": "setProperty",
-                              "params": {
-                                "target": "state.isEditDialogVisible",
-                                "value": false
-                              }
-                            }
-                          ]
-                        }
-                      ]
                     }
                   ]
                 }
