@@ -53,6 +53,70 @@
     }
   ],
   "shortcuts": {
+    "deleteCode": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Вы уверены, что хотите удалить этот код?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/codes/{$state.editingCode._rowId}",
+                    "method": "DELETE",
+                    "target": "state.saveResult",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Код удален"
+                        }
+                      },
+                      {
+                        "type": "setProperty",
+                        "params": {
+                          "target": "state.isEditDialogVisible",
+                          "value": false
+                        }
+                      },
+                      {
+                        "type": "executeShortcut",
+                        "params": {
+                          "shortcut": "requestUserCodes"
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось удалить код"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
     "saveCode": {
       "type": "sequence",
       "params": {
@@ -567,6 +631,24 @@
                     "props": {
                       "spacing": "gap-2",
                       "components": [
+                        {
+                          "id": "btnDeleteCode",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Удалить",
+                            "icon": "pi pi-trash",
+                            "severity": "danger",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": ["deleteCode"]
+                            }
+                          ]
+                        },
                         {
                           "id": "btnCancelCode",
                           "type": "component",
