@@ -42,24 +42,6 @@
       "params": {
         "commands": [
           {
-            "type": "log",
-            "params": {
-              "message": {
-                "event": "{$event}",
-                "data": "{$state.gtins}",
-                "toSend": {
-                  "event": "{$event}",
-                  "first": "{$state.gtins.first}",
-                  "rows": "{$state.gtins.rows}",
-                  "sortField": "{$state.gtins.sortField}",
-                  "sortOrder": "{$state.gtins.sortOrder}",
-                  "search": "{$state.gtins.search}",
-                  "filters": "{$state.gtins.filters}"
-                }
-              }
-            }
-          },
-          {
             "type": "sendRequest",
             "params": {
               "url": "/api/gtins",
@@ -74,27 +56,7 @@
                 "search": "{$state.gtins.search}",
                 "filters": "{$state.gtins.filters}"
               },
-              "rules": {},
-              "onSuccess": [
-                {
-                  "type": "log",
-                  "params": {
-                    "message": {
-                      "success": "{$event}"
-                    }
-                  }
-                }
-              ],
-              "onError": [
-                {
-                  "type": "log",
-                  "params": {
-                    "message": {
-                      "error": "{$event}"
-                    }
-                  }
-                }
-              ]
+              "format": { "$ref": "../system/list-request-format.json" }
             }
           },
           {
@@ -315,7 +277,69 @@
                 "lazy": true,
                 "size": "normal",
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "email",
+                    "body": [
+                      {
+                        "id": "sendButton",
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-envelope",
+                          "label": "{#field}",
+                          "link": true,
+                          "size": "small",
+                          "pt": {
+                            "label": { "className": "font-normal" },
+                            "root": { "className": "p-1" }
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "mailto:{#field}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "actions",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-chevron-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/gtins/{#row._rowId}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               "events": [
                 {
@@ -330,15 +354,9 @@
                   "type": "onRowClick",
                   "commands": [
                     {
-                      "type": "log",
-                      "params": {
-                        "message": "{$event}"
-                      }
-                    },
-                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/gtins/{$event.data.id}"
+                        "url": "/gtins/{$event.data._rowId}"
                       }
                     }
                   ]
