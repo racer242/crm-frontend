@@ -80,7 +80,8 @@ function LoginForm() {
       toastRef.current?.show({
         severity: "error",
         summary: t("error"),
-        detail: parseApiError(error),
+        detail:
+          parseApiError(error).message || parseApiError(error).rawText || error,
         life: 4000,
       });
     }

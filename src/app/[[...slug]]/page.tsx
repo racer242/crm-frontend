@@ -15,6 +15,7 @@ import {
   resolveElementStateMacros,
 } from "@/core/DataFeedServerService";
 import { getAccessTokenServer } from "@/utils/getAccessToken";
+import { ApiError } from "@/utils/parseApiError";
 
 export default async function Page({
   params,
@@ -95,7 +96,7 @@ export default async function Page({
   resolveElementStateMacros(clonedPageConfig, serverSources);
 
   // Execute server-side data feeds if page has dataFeed config
-  let dataFeedErrors: string[] = [];
+  let dataFeedErrors: ApiError[] = [];
   let successResults: DataFeedResult[] = [];
   let initialPageId: string | null = null;
 
@@ -115,7 +116,7 @@ export default async function Page({
     // Separate errors from successful results
     dataFeedErrors = results
       .filter((r) => !r.success && r.error)
-      .map((r) => r.error as string);
+      .map((r) => r.error as ApiError);
 
     successResults = results.filter((r) => r.success);
   }

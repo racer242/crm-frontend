@@ -25,19 +25,26 @@ Import trace:
     ./src/app/api/[...route]/route.ts
 
 
-✓ Compiled successfully in 6.4s
+✓ Compiled successfully in 8.9s
   Running TypeScript ...
-Failed to type check.
+  Finished TypeScript in 7.2s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/4) ...
+  Generating static pages using 8 workers (1/4) 
+  Generating static pages using 8 workers (2/4) 
+  Generating static pages using 8 workers (3/4) 
+✓ Generating static pages using 8 workers (4/4) in 1408ms
+  Finalizing page optimization ...
 
-./src/app/[[...slug]]/page.tsx:134:7
-Type error: Type 'string[]' is not assignable to type 'ApiError[]'.
-  Type 'string' has no properties in common with type 'ApiError'.
+Route (app)
+┌ ƒ /_not-found
+├ ƒ /[[...slug]]
+├ ƒ /api/[...route]
+├ ƒ /api/auth/[...auth]
+└ ƒ /login
 
-  [90m132 |[0m       config={minimalConfig [36mas[0m unknown [36mas[0m [33mApp[0m}
-  [90m133 |[0m       elementIndex={elementIndex}
-[31m[1m>[0m [90m134 |[0m       dataFeedErrors={dataFeedErrors}
-  [90m    |[0m       [31m[1m^[0m
-  [90m135 |[0m       initialDataFeed={successResults}
-  [90m136 |[0m       initialPageId={initialPageId}
-  [90m137 |[0m       route={route ?? [36mundefined[0m}
-Next.js build worker exited with code: 1 and signal: null
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+

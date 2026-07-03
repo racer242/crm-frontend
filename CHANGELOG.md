@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **PrimeReact updated to v10.9.8** — минорный стабильный апдейт с v10.9.7. Без breaking changes.
+- **TypeScript: исправлены несоответствия типов** — `dataFeedErrors` в `page.tsx` (string[] → ApiError[]), `parseApiError` в `login/page.tsx` (возврат объекта → строки).
 - **passport_moderation_status / inn_moderation_status**: Тип полей изменён со строки (`""`, `"approved"`, `"rejected"`, `"pending"`) на boolean (`false` — Не принят, `true` — Принят). Обновлён адаптер `user-docs.js` (функция `getModerationInfo`) и начальные значения state в `user-docs.json` и `user-docs-edit.json`.
 
 ### Fixed
