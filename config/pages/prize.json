@@ -1,0 +1,503 @@
+{
+  "id": "prize",
+  "type": "page",
+  "route": "/prizes/[prize_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "prizeData": {
+      "id": "",
+      "user_id": "",
+      "win_date": "",
+      "prize_name": "",
+      "retail_chain_name": "",
+      "status": "",
+      "comment": "",
+      "act_id": null,
+      "actStatus": "",
+      "actSeverity": "",
+      "winDateFormatted": "",
+      "statusLabel": "",
+      "statusSeverity": "",
+      "prize_types": [],
+      "statuses": [],
+      "retail_chains": []
+    },
+    "saveResult": null
+  },
+  "meta": {
+    "title": "Приз — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "{$config.baseURL}/api/prizes/{$location.routeParams.prize_id}",
+      "method": "GET",
+      "target": "state.prizeData"
+    }
+  ],
+  "shortcuts": {
+    "deletePrize": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Вы уверены, что хотите удалить этот приз?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/prizes/{$location.routeParams.prize_id}",
+                    "method": "DELETE",
+                    "target": "state.saveResult",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Приз удален"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/prizes"
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось удалить приз"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Призы", "route": "/prizes" },
+                  { "label": "@state.prizeData.prize_name" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "prizeDetailsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о призе"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "userNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Участник",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userNameLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg text-primary",
+                    "props": {
+                      "value": "@state.prizeData.user_name"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{@state.prizeData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userEmailLink",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg text-primary",
+                    "props": {
+                      "value": "@state.prizeData.user_email"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "executeCommand",
+                            "params": {
+                              "command": "window.open('mailto:{@state.prizeData.user_email}', '_blank')"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "winDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата выигрыша",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "winDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.winDateFormatted"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prizeNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Приз",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.prize_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "retailChainGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Торговая сеть",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "retailChain",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.retail_chain_name"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.statusLabel",
+                      "severity": "@state.prizeData.statusSeverity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "commentGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start mb-2",
+              "props": {
+                "label": "Комментарий",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "comment",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "@state.prizeData.comment"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "actStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Акт",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "actStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.actStatus",
+                      "severity": "@state.prizeData.actSeverity"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "docsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Документы"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "actButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-file-pdf",
+                "label": "Акт",
+                "size": "small",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "log",
+                      "params": {
+                        "message": "Переход к акту {$state.prizeData.act_id}",
+                        "condition": "{$state.prizeData.act_id}"
+                      }
+                    },
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/acts/{$state.prizeData.act_id}",
+                        "condition": "{$state.prizeData.act_id}"
+                      }
+                    },
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "warn",
+                        "summary": "Акт не создан",
+                        "message": "Для данного приза ещё не создан акт",
+                        "condition": {
+                          "value": "{$state.prizeData.act_id}",
+                          "not": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnAddAct",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-plus",
+                "label": "Добавить акт",
+                "size": "small",
+                "severity": "success"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/acts/add?prize_id={$location.routeParams.prize_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/prizes/{$location.routeParams.prize_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnDelete",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-trash",
+                "label": "Удалить",
+                "size": "small",
+                "severity": "danger",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["deletePrize"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

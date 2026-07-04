@@ -1,0 +1,313 @@
+{
+  "id": "act-add",
+  "type": "page",
+  "route": "/acts/add",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "formData": {
+      "issue_date": "",
+      "prize_type_id": "",
+      "status": "pending"
+    },
+    "prizeTypes": []
+  },
+  "meta": {
+    "title": "Добавить акт — CRM Platform"
+  },
+  "dataFeed": [],
+  "shortcuts": {
+    "saveAct": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/acts",
+              "method": "POST",
+              "data": "{$state.formData}",
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "message": "Акт добавлен"
+                  }
+                },
+                {
+                  "type": "navigate",
+                  "params": {
+                    "url": "/acts"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось добавить акт"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Акты", "route": "/acts" },
+                  { "label": "Добавить акт" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "formBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Новый акт"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "issueDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата выдачи",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "issueDateInput",
+                    "type": "component",
+                    "componentType": "Calendar",
+                    "props": {
+                      "value": "@state.formData.issue_date",
+                      "dateFormat": "dd.mm.yy",
+                      "showIcon": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.issue_date"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prizeTypeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Приз",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeTypeDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.prizeTypes",
+                      "value": "@state.formData.prize_type_id",
+                      "optionLabel": "name",
+                      "optionValue": "id",
+                      "placeholder": "Выберите приз",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.prize_type_id"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": [
+                        { "id": "pending", "name": "Ожидает" },
+                        { "id": "approved", "name": "Одобрен" },
+                        { "id": "delivered", "name": "Доставлен" },
+                        { "id": "rejected", "name": "Отклонен" }
+                      ],
+                      "value": "@state.formData.status",
+                      "optionLabel": "name",
+                      "optionValue": "id",
+                      "placeholder": "Выберите статус",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.status"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "className": "flex flex-wrap gap-3 justify-content-center",
+          "components": [
+            {
+              "id": "btnSave",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Добавить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["saveAct"]
+                }
+              ]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/acts"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
