@@ -320,7 +320,7 @@
                                 {
                                   "type": "navigate",
                                   "params": {
-                                    "url": "/users/#{state.gtinData.user_id}"
+                                    "url": "/users/{$state.gtinData.user_id}"
                                   }
                                 }
                               ]
@@ -369,7 +369,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{#state.gtinData.user_id}"
+                              "url": "/users/{$state.gtinData.user_id}"
                             }
                           }
                         ]
@@ -473,7 +473,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/gtins/{#location.routeParams.gtin_id}/edit"
+                        "url": "/gtins/{$location.routeParams.gtin_id}/edit"
                       }
                     }
                   ]

@@ -339,7 +339,7 @@
                                 {
                                   "type": "navigate",
                                   "params": {
-                                    "url": "/users/#{state.actData.user_id}"
+                                    "url": "/users/{$state.actData.user_id}"
                                   }
                                 }
                               ]
@@ -388,7 +388,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{#state.actData.user_id}"
+                              "url": "/users/{$state.actData.user_id}"
                             }
                           }
                         ]
@@ -445,7 +445,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/prizes/#{state.actData.prize_id}"
+                              "url": "/prizes/{$state.actData.prize_id}"
                             }
                           }
                         ]
@@ -498,7 +498,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/acts/{#location.routeParams.act_id}/edit"
+                        "url": "/acts/{$location.routeParams.act_id}/edit"
                       }
                     }
                   ]

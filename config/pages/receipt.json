@@ -188,7 +188,7 @@
                 "model": [
                   { "label": "Чеки", "route": "/receipts" },
                   {
-                    "label": "Чек от #{state.receiptData.registrationDateFormatted}"
+                    "label": "Чек от {@state.receiptData.registrationDateFormatted}"
                   }
                 ]
               }
@@ -337,7 +337,7 @@
                     "componentType": "Text",
                     "className": "m-0",
                     "props": {
-                      "value": "ФН: #{state.receiptData.fiscal_data.fiscal_number}, ФД: #{state.receiptData.fiscal_data.fiscal_document_number}, ФП: #{state.receiptData.fiscal_data.fiscal_sign}"
+                      "value": "ФН: {@state.receiptData.fiscal_data.fiscal_number}, ФД: {@state.receiptData.fiscal_data.fiscal_document_number}, ФП: {@state.receiptData.fiscal_data.fiscal_sign}"
                     }
                   }
                 ]
@@ -424,7 +424,7 @@
                                 {
                                   "type": "navigate",
                                   "params": {
-                                    "url": "/users/#{state.receiptData.user_id}"
+                                    "url": "/users/{$state.receiptData.user_id}"
                                   }
                                 }
                               ]
@@ -473,7 +473,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{#state.receiptData.user_id}"
+                              "url": "/users/{$state.receiptData.user_id}"
                             }
                           }
                         ]
@@ -692,7 +692,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{#location.routeParams.receipt_id}/edit"
+                        "url": "/receipts/{$location.routeParams.receipt_id}/edit"
                       }
                     }
                   ]
