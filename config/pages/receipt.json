@@ -649,12 +649,13 @@
                     "body": [
                       {
                         "componentType": "Button",
+                        "className": "pointer-events-none",
                         "props": {
-                          "icon": "{#field.is_promo_icon}",
-                          "severity": "{#field.is_promo_severity}",
+                          "icon": "{#row.is_promo_icon}",
+                          "severity": "{#row.is_promo_severity}",
                           "text": true,
-                          "disabled": true,
-                          "rounded": true
+                          "rounded": true,
+                          "size": "large"
                         }
                       }
                     ]
