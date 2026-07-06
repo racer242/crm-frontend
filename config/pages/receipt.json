@@ -648,10 +648,13 @@
                     "field": "is_promo",
                     "body": [
                       {
-                        "componentType": "Text",
+                        "componentType": "Button",
                         "props": {
-                          "value": "{#field.is_promo_icon}",
-                          "className": "{#field.is_promo_className}"
+                          "icon": "{#field.is_promo_icon}",
+                          "className": "{#field.is_promo_className}",
+                          "text": true,
+                          "disabled": true,
+                          "rounded": true
                         }
                       }
                     ]
