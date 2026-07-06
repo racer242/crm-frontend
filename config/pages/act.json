@@ -339,7 +339,7 @@
                                 {
                                   "type": "navigate",
                                   "params": {
-                                    "url": "/users/{@state.actData.user_id}"
+                                    "url": "/users/#{state.actData.user_id}"
                                   }
                                 }
                               ]
@@ -372,7 +372,7 @@
                                 {
                                   "type": "executeCommand",
                                   "params": {
-                                    "command": "window.open('mailto:{@state.actData.user_email}', '_blank')"
+                                    "command": "window.open('mailto:#{@state.actData.user_email}', '_blank')"
                                   }
                                 }
                               ]
@@ -381,6 +381,32 @@
                         }
                       ]
                     }
+                  },
+                  {
+                    "id": "userLinkBtn",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "icon": "pi pi-user",
+                      "label": "Перейти к участнику",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/#{state.actData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
