@@ -347,6 +347,32 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "id": "userDocsBtn",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "icon": "pi pi-file",
+                      "label": "Личные документы",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{$state.prizeData.user_id}/docs"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
