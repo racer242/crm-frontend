@@ -5,6 +5,7 @@
   "state": {
     "loading": false,
     "initialized": true,
+    "filtersVisible": false,
     "receiptData": {
       "id": "",
       "user_id": "",
@@ -30,7 +31,13 @@
     "products": {
       "value": [],
       "columns": [],
-      "totalRecords": 0
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": [],
+      "search": ""
     },
     "saveResult": null
   },
@@ -43,11 +50,69 @@
     },
     {
       "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      },
       "method": "GET",
       "target": "state.products"
     }
   ],
   "shortcuts": {
+    "requestProducts": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/receipts/{$location.routeParams.receipt_id}/products",
+              "method": "GET",
+              "target": "state.products",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}",
+                "sortField": "{$state.products.sortField}",
+                "sortOrder": "{$state.products.sortOrder}",
+                "search": "{$state.products.search}",
+                "filters": "{$state.products.filters}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}",
+                "sortField": "{$state.products.sortField}",
+                "sortOrder": "{$state.products.sortOrder}",
+                "search": "{$state.products.search}",
+                "filters": "{$state.products.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "deleteReceipt": {
       "type": "sequence",
       "params": {
@@ -387,13 +452,144 @@
       ]
     },
     {
-      "id": "productsSection",
+      "id": "productsFilters",
       "type": "section",
-      "className": "mb-5",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "productsBlock",
+          "id": "productsSearchBlock",
           "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "productsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.products.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.products.search"
+                      }
+                    },
+                    "requestProducts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "productsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": { "target": "state.filtersVisible" }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "productsActiveFilterBlock",
+          "type": "block",
+          "wrapper": { "className": "w-full" },
+          "components": [
+            {
+              "id": "productsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": { "value": "@state.products.filters" },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.products.filters"
+                      }
+                    },
+                    "requestProducts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "productsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.products.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.products.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": { "target": "state.filtersVisible" }
+                    },
+                    "requestProducts"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": { "target": "state.filtersVisible" }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "productsTableBlock",
+          "type": "block",
+          "className": "w-full",
           "components": [
             {
               "id": "productsTable",
@@ -403,9 +599,19 @@
                 "value": "@state.products.value",
                 "columns": "@state.products.columns",
                 "totalRecords": "@state.products.totalRecords",
-                "paginator": false,
-                "size": "small"
-              }
+                "rows": "@state.products.rows",
+                "first": "@state.products.first",
+                "sortField": "@state.products.sortField",
+                "sortOrder": "@state.products.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                { "type": "onPage", "commands": ["requestProducts"] },
+                { "type": "onSort", "commands": ["requestProducts"] }
+              ]
             }
           ]
         }
@@ -468,12 +674,7 @@
                 "severity": "danger",
                 "outlined": true
               },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": ["deleteReceipt"]
-                }
-              ]
+              "events": [{ "type": "onClick", "commands": ["deleteReceipt"] }]
             }
           ]
         }
