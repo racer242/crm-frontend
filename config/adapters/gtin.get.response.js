@@ -45,8 +45,20 @@ function transform(data) {
   const moderationStatusSeverity =
     moderationSeverityMap[data.moderation_status] || "secondary";
 
+  // Составляем user_name из first_name и last_name если пользователь указан
+  const user_name =
+    data.user_name ||
+    (data.first_name && data.last_name
+      ? `${data.first_name} ${data.last_name}`
+      : "");
+
+  // user_email берём из email если нет прямого поля
+  const user_email = data.user_email || data.email || "";
+
   return {
     ...data,
+    user_name,
+    user_email,
     registrationDateFormatted,
     purchaseDateFormatted,
     moderationStatusLabel,
