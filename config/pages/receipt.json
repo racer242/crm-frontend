@@ -648,7 +648,7 @@
                     "field": "is_promo",
                     "body": [
                       {
-                        "componentType": "Icon",
+                        "componentType": "Text",
                         "props": {
                           "value": "{#field.is_promo_icon}",
                           "className": "{#field.is_promo_className}"

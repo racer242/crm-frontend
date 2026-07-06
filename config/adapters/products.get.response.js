@@ -18,13 +18,11 @@ function transform(source) {
     ...convertDateColumns(row.values, source.columns),
     // Опционально: сохраняем ID строки, если он есть и нужен
     ...(row.id && { _rowId: row.id }),
-    // Добавляем кастомные поля для иконки is_promo
-    is_promo_icon: row.values.is_promo
-      ? "pi pi-check-circle"
-      : "pi pi-times-circle",
+    // Добавляем кастомные поля для иконки is_promo (Unicode символы)
+    is_promo_icon: row.values.is_promo ? "\u2713" : "\u2717",
     is_promo_className: row.values.is_promo
-      ? "text-green-500"
-      : "text-gray-400",
+      ? "text-green-500 text-xl font-bold"
+      : "text-gray-400 text-xl font-bold",
   }));
 
   // 3. Преобразуем направление сортировки: asc→1, desc→-1
