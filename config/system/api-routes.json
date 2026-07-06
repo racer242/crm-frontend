@@ -289,6 +289,7 @@
     "method": "GET",
     "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/products",
     "adapter": {
+      "request": "receipt-products.get.request.js",
       "response": "receipt-products.response.js"
     },
     "note": "Чеки: Список продукции в чеке"
