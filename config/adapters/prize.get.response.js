@@ -36,9 +36,15 @@ function transform(data) {
   const actStatus = hasAct ? "Создан" : "Отсутствует";
   const actSeverity = hasAct ? "success" : "warn";
 
-  // Получаем данные пользователя (если есть в ответе API)
-  const user_name = data.user_name || "";
-  const user_email = data.user_email || "";
+  // Составляем user_name из first_name и last_name если пользователь указан
+  const user_name =
+    data.user_name ||
+    (data.first_name && data.last_name
+      ? `${data.first_name} ${data.last_name}`
+      : "");
+
+  // user_email берём из email если нет прямого поля
+  const user_email = data.user_email || data.email || "";
 
   return {
     ...data,
