@@ -15,8 +15,14 @@ function transform(data) {
     ...col.props,
   }));
 
+  // Преобразуем строки: из { id, values: {...} } в плоские объекты
+  const value = (data.rows || []).map((row) => ({
+    ...row.values,
+    ...(row.id && { _rowId: row.id }),
+  }));
+
   return {
-    value: data.rows || [],
+    value,
     columns: transformedColumns,
     totalRecords: data.meta?.total_count || 0,
     first: data.meta?.first || 0,
