@@ -35,8 +35,14 @@ function transform(data) {
   };
   const moderationStatusSeverity = severityMap[currentStatusId] || "secondary";
 
+  // Получаем данные пользователя (если есть в ответе API)
+  const user_name = data.user_name || "";
+  const user_email = data.user_email || "";
+
   return {
     ...data,
+    user_name,
+    user_email,
     registrationDateFormatted,
     purchaseDateFormatted,
     retail_chain_name: retailChainName,

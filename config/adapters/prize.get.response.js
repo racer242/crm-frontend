@@ -36,8 +36,14 @@ function transform(data) {
   const actStatus = hasAct ? "Создан" : "Отсутствует";
   const actSeverity = hasAct ? "success" : "warn";
 
+  // Получаем данные пользователя (если есть в ответе API)
+  const user_name = data.user_name || "";
+  const user_email = data.user_email || "";
+
   return {
     ...data,
+    user_name,
+    user_email,
     winDateFormatted,
     statusLabel,
     statusSeverity,

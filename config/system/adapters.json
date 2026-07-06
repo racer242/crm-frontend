@@ -63,10 +63,6 @@
     "type": "js",
     "script": "./config/adapters/prizes.get.response.js"
   },
-  "prize.get.request.js": {
-    "type": "js",
-    "script": "./config/adapters/prize.get.request.js"
-  },
   "prize.get.response.js": {
     "type": "js",
     "script": "./config/adapters/prize.get.response.js"
@@ -78,10 +74,6 @@
   "receipts.get.response.js": {
     "type": "js",
     "script": "./config/adapters/receipts.get.response.js"
-  },
-  "receipt.get.request.js": {
-    "type": "js",
-    "script": "./config/adapters/receipt.get.request.js"
   },
   "receipt.get.response.js": {
     "type": "js",
