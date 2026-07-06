@@ -415,6 +415,76 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "actInfoPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "header": "Акт",
+                "components": [
+                  {
+                    "id": "actStatusGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Статус",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "actStatusText",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": { "value": "@state.prizeData.actStatus" }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "actLinkBtn",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "icon": "pi pi-file-pdf",
+                      "label": "Перейти к акту",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/acts/{$state.prizeData.act_id}",
+                              "condition": "{$state.prizeData.act_id}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "severity": "warn",
+                              "summary": "Акт не создан",
+                              "message": "Для данного приза ещё не создан акт",
+                              "condition": {
+                                "value": "{$state.prizeData.act_id}",
+                                "not": true
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ]
         }
