@@ -57,10 +57,20 @@
     { "$ref": "./pages/user-prize.json" },
     { "$ref": "./pages/user-prize-add.json" },
     { "$ref": "./pages/user-prize-edit.json" },
+    { "$ref": "./pages/receipt.json" },
+    { "$ref": "./pages/receipt-edit.json" },
     { "$ref": "./pages/user-receipt.json" },
     { "$ref": "./pages/user-receipt-edit.json" },
+    { "$ref": "./pages/gtin.json" },
+    { "$ref": "./pages/gtin-edit.json" },
     { "$ref": "./pages/user-gtin.json" },
-    { "$ref": "./pages/user-gtin-edit.json" }
+    { "$ref": "./pages/user-gtin-edit.json" },
+    { "$ref": "./pages/act.json" },
+    { "$ref": "./pages/act-edit.json" },
+    { "$ref": "./pages/act-add.json" },
+    { "$ref": "./pages/prize.json" },
+    { "$ref": "./pages/prize-edit.json" },
+    { "$ref": "./pages/prize-add.json" }
   ],
   "adapters": { "$ref": "./system/adapters.json" },
   "config": {
