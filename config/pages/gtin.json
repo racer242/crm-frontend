@@ -369,7 +369,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{$state.gtinData.user_id}"
+                              "url": "/users/{#state.gtinData.user_id}"
                             }
                           }
                         ]

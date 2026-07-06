@@ -388,7 +388,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{$state.actData.user_id}"
+                              "url": "/users/{#state.actData.user_id}"
                             }
                           }
                         ]

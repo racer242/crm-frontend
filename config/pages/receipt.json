@@ -397,7 +397,7 @@
               "id": "userInfoPanel",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3",
+              "className": "flex flex-column",
               "props": {
                 "header": "Участник",
                 "components": [
@@ -473,7 +473,7 @@
                           {
                             "type": "navigate",
                             "params": {
-                              "url": "/users/{$state.receiptData.user_id}"
+                              "url": "/users/{#state.receiptData.user_id}"
                             }
                           }
                         ]
