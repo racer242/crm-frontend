@@ -293,7 +293,7 @@
               "id": "userInfoPanel",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3",
+              "className": "flex flex-column",
               "props": {
                 "header": "Участник",
                 "components": [
@@ -383,7 +383,7 @@
               "id": "productInfoPanel",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3",
+              "className": "flex flex-column",
               "props": {
                 "header": "Продукт",
                 "components": [

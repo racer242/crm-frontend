@@ -312,7 +312,7 @@
               "id": "userInfoPanel",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3",
+              "className": "flex flex-column",
               "props": {
                 "header": "Участник",
                 "components": [
@@ -402,7 +402,7 @@
               "id": "prizeInfoPanel",
               "type": "component",
               "componentType": "Panel",
-              "className": "flex flex-column gap-3",
+              "className": "flex flex-column",
               "props": {
                 "header": "Приз",
                 "components": [
