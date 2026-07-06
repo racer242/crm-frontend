@@ -490,7 +490,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/acts/add?prize_id={$location.routeParams.prize_id}"
+                        "url": "/prizes/{$location.routeParams.prize_id}/acts/add"
                       }
                     }
                   ]
