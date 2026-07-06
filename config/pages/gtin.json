@@ -8,6 +8,8 @@
     "gtinData": {
       "id": "",
       "user_id": "",
+      "user_name": "",
+      "user_email": "",
       "registration_date": "",
       "purchase_date": "",
       "retail_chain_name": "",
@@ -120,7 +122,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12"],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -129,69 +131,10 @@
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": {
-              "header": "Информация о коде"
-            }
+            "props": { "header": "Информация о коде" }
           },
           "className": "flex flex-column gap-3",
           "components": [
-            {
-              "id": "userNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Участник",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userNameLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": {
-                      "value": "@state.gtinData.user_name"
-                    },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
-                          {
-                            "type": "navigate",
-                            "params": {
-                              "url": "/users/{@state.gtinData.user_id}"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "userEmailGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userEmailLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": {
-                      "value": "@state.gtinData.user_email"
-                    }
-                  }
-                ]
-              }
-            },
             {
               "id": "registrationDateGroup",
               "type": "component",
@@ -251,9 +194,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.gtinData.retail_chain_name"
-                    }
+                    "props": { "value": "@state.gtinData.retail_chain_name" }
                   }
                 ]
               }
@@ -273,31 +214,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg font-monospace",
-                    "props": {
-                      "value": "@state.gtinData.gtin"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "productGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Продукт",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "product",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.gtinData.product_name"
-                    }
+                    "props": { "value": "@state.gtinData.gtin" }
                   }
                 ]
               }
@@ -317,9 +234,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.gtinData.amount"
-                    }
+                    "props": { "value": "@state.gtinData.amount" }
                   }
                 ]
               }
@@ -362,8 +277,154 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0",
+                    "props": { "value": "@state.gtinData.comment" }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "extraDetailsBlock",
+          "type": "block",
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "userInfoPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "header": "Участник",
+                "components": [
+                  {
+                    "id": "userNameGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
                     "props": {
-                      "value": "@state.gtinData.comment"
+                      "label": "Имя",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userNameLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.gtinData.user_name" },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/users/#{state.gtinData.user_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userEmailGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Email",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userEmailLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.gtinData.user_email" }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userLinkBtn",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "icon": "pi pi-user",
+                      "label": "Перейти к участнику",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{$state.gtinData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "productInfoPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "header": "Продукт",
+                "components": [
+                  {
+                    "id": "productNameGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Название",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "productNameText",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg",
+                          "props": { "value": "@state.gtinData.product_name" }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "gtinTextGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Код",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "gtinText",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg font-monospace",
+                          "props": { "value": "@state.gtinData.gtin" }
+                        }
+                      ]
                     }
                   }
                 ]
@@ -376,11 +437,24 @@
     {
       "id": "actionsSection",
       "type": "section",
+      "className": "flex justify-content-center",
       "blocks": [
         {
           "id": "actionsBlock",
           "type": "block",
-          "className": "flex justify-content-center gap-3 mt-3",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
             {
               "id": "btnEdit",
@@ -399,7 +473,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/gtins/{$location.routeParams.gtin_id}/edit"
+                        "url": "/gtins/{#location.routeParams.gtin_id}/edit"
                       }
                     }
                   ]
@@ -417,12 +491,7 @@
                 "severity": "danger",
                 "outlined": true
               },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": ["deleteGtin"]
-                }
-              ]
+              "events": [{ "type": "onClick", "commands": ["deleteGtin"] }]
             }
           ]
         }

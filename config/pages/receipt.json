@@ -9,6 +9,8 @@
     "receiptData": {
       "id": "",
       "user_id": "",
+      "user_name": "",
+      "user_email": "",
       "registration_date": "",
       "purchase_date": "",
       "retail_chain_id": "",
@@ -186,7 +188,7 @@
                 "model": [
                   { "label": "Чеки", "route": "/receipts" },
                   {
-                    "label": "Чек от {@state.receiptData.registrationDateFormatted}"
+                    "label": "Чек от #{@state.receiptData.registrationDateFormatted}"
                   }
                 ]
               }
@@ -199,7 +201,7 @@
       "id": "mainLayout",
       "type": "section",
       "className": "flex mb-5",
-      "grid": { "cols": ["col-12"], "padding": "p-2" },
+      "grid": { "cols": ["col-12 lg:col-8", "col-12 lg:col-4"], "padding": "p-2" },
       "blocks": [
         {
           "id": "receiptDetailsBlock",
@@ -210,59 +212,6 @@
           },
           "className": "flex flex-column gap-3",
           "components": [
-            {
-              "id": "userNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Участник",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userNameLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": { "value": "@state.receiptData.user_name" },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
-                          {
-                            "type": "navigate",
-                            "params": {
-                              "url": "/users/{@state.receiptData.user_id}"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "userEmailGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userEmailLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": { "value": "@state.receiptData.user_email" }
-                  }
-                ]
-              }
-            },
             {
               "id": "registrationDateGroup",
               "type": "component",
@@ -385,7 +334,7 @@
                     "componentType": "Text",
                     "className": "m-0",
                     "props": {
-                      "value": "ФН: {@state.receiptData.fiscal_data.fiscal_number}, ФД: {@state.receiptData.fiscal_data.fiscal_document_number}, ФП: {@state.receiptData.fiscal_data.fiscal_sign}"
+                      "value": "ФН: #{@state.receiptData.fiscal_data.fiscal_number}, ФД: #{@state.receiptData.fiscal_data.fiscal_document_number}, ФП: #{@state.receiptData.fiscal_data.fiscal_sign}"
                     }
                   }
                 ]
@@ -435,18 +384,71 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "productsFilters",
-      "type": "section",
-      "className": "flex flex-column gap-3 mb-3",
-      "blocks": [
+        },
         {
-          "id": "productsSearchBlock",
+          "id": "extraDetailsBlock",
           "type": "block",
-          "className": "w-full flex gap-3",
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "userInfoPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "header": "Участник",
+                "components": [
+                  {
+                    "id": "userNameGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Имя",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userNameLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.receiptData.user_name" },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                { "type": "navigate", "params": { "url": "/users/#{state.receiptData.user_id}" } }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userEmailGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Email",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userEmailLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.receiptData.user_email" }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userLinkBtn",
+                    "type": "component",
           "components": [
             {
               "id": "productsSearchInput",

@@ -8,6 +8,8 @@
     "prizeData": {
       "id": "",
       "user_id": "",
+      "user_name": "",
+      "user_email": "",
       "win_date": "",
       "prize_name": "",
       "retail_chain_name": "",
@@ -135,69 +137,10 @@
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": {
-              "header": "Информация о призе"
-            }
+            "props": { "header": "Информация о призе" }
           },
           "className": "flex flex-column gap-3",
           "components": [
-            {
-              "id": "userNameGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Участник",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userNameLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": {
-                      "value": "@state.prizeData.user_name"
-                    },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
-                          {
-                            "type": "navigate",
-                            "params": {
-                              "url": "/users/{@state.prizeData.user_id}"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "userEmailGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userEmailLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": {
-                      "value": "@state.prizeData.user_email"
-                    }
-                  }
-                ]
-              }
-            },
             {
               "id": "winDateGroup",
               "type": "component",
@@ -213,9 +156,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.winDateFormatted"
-                    }
+                    "props": { "value": "@state.prizeData.winDateFormatted" }
                   }
                 ]
               }
@@ -235,9 +176,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.prize_name"
-                    }
+                    "props": { "value": "@state.prizeData.prize_name" }
                   }
                 ]
               }
@@ -257,9 +196,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.retail_chain_name"
-                    }
+                    "props": { "value": "@state.prizeData.retail_chain_name" }
                   }
                 ]
               }
@@ -302,9 +239,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0",
-                    "props": {
-                      "value": "@state.prizeData.comment"
-                    }
+                    "props": { "value": "@state.prizeData.comment" }
                   }
                 ]
               }
@@ -337,12 +272,6 @@
         {
           "id": "docsBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Документы"
-            }
-          },
           "className": "flex flex-column gap-3",
           "components": [
             {
@@ -389,6 +318,103 @@
                   ]
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "extraDetailsBlock",
+          "type": "block",
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "userInfoPanel",
+              "type": "component",
+              "componentType": "Panel",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "header": "Участник",
+                "components": [
+                  {
+                    "id": "userNameGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Имя",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userNameLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.prizeData.user_name" },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/users/#{state.prizeData.user_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userEmailGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "w-full grid align-items-center mb-2",
+                    "props": {
+                      "label": "Email",
+                      "labelClassName": "text-sm col-4 text-right",
+                      "containerClassName": "col-8",
+                      "components": [
+                        {
+                          "id": "userEmailLink",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 font-bold text-lg text-primary",
+                          "props": { "value": "@state.prizeData.user_email" }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "userLinkBtn",
+                    "type": "component",
+                    "componentType": "Button",
+                    "props": {
+                      "icon": "pi pi-user",
+                      "label": "Перейти к участнику",
+                      "size": "small",
+                      "severity": "info",
+                      "outlined": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/users/{$state.prizeData.user_id}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ]
         }
@@ -457,7 +483,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/prizes/{$location.routeParams.prize_id}/edit"
+                        "url": "/prizes/{#location.routeParams.prize_id}/edit"
                       }
                     }
                   ]
@@ -475,12 +501,7 @@
                 "severity": "danger",
                 "outlined": true
               },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": ["deletePrize"]
-                }
-              ]
+              "events": [{ "type": "onClick", "commands": ["deletePrize"] }]
             }
           ]
         }
