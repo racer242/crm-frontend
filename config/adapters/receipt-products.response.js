@@ -19,13 +19,11 @@ function transform(data) {
   const value = (data.rows || []).map((row) => ({
     ...row.values,
     ...(row.id && { _rowId: row.id }),
-    // Добавляем кастомные поля для иконки is_promo (Prime Icons)
+    // Добавляем кастомные поля для иконки is_promo (Prime Icons + severity)
     is_promo_icon: row.values.is_promo
       ? "pi pi-check-circle"
       : "pi pi-times-circle",
-    is_promo_className: row.values.is_promo
-      ? "text-green-500"
-      : "text-gray-400",
+    is_promo_severity: row.values.is_promo ? "success" : "secondary",
   }));
 
   return {

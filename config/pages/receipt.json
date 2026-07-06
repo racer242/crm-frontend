@@ -651,7 +651,7 @@
                         "componentType": "Button",
                         "props": {
                           "icon": "{#field.is_promo_icon}",
-                          "className": "{#field.is_promo_className}",
+                          "severity": "{#field.is_promo_severity}",
                           "text": true,
                           "disabled": true,
                           "rounded": true
