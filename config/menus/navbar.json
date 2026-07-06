@@ -40,16 +40,6 @@
       "label": "Коды ЧЗ",
       "icon": "pi pi-qrcode",
       "route": "/gtins"
-    },
-    {
-      "label": "Components",
-      "icon": "pi pi-th-large",
-      "route": "/components"
-    },
-    {
-      "label": "Testing",
-      "icon": "pi pi-th-large",
-      "route": "/stats/testing"
     }
   ]
 }
