@@ -34,7 +34,26 @@ export function renderAvatar({
   className,
   style,
 }: ComponentRendererProps) {
-  return <Avatar {...props} className={className || ""} style={style} />;
+  const { initials, ...restProps } = props;
+
+  // Если задано initials, преобразуем в инициалы заглавными буквами
+  let label = restProps.label;
+  if (initials && typeof initials === "string") {
+    label = initials
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word[0].toUpperCase())
+      .join("");
+  }
+
+  return (
+    <Avatar
+      {...restProps}
+      label={label}
+      className={className || ""}
+      style={style}
+    />
+  );
 }
 
 export function renderBadge({

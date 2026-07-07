@@ -9,8 +9,8 @@
       "id": "",
       "login": "",
       "email": "",
-      "name": "",
-      "avatar": "",
+      "name": "Имя Фамилия",
+      "avatar": "{$cookie.user_data.name}",
       "role": "",
       "groups": []
     }
@@ -71,7 +71,7 @@
                     "type": "component",
                     "componentType": "Avatar",
                     "props": {
-                      "label": "@state.user.name",
+                      "initials": "@state.user.name",
                       "shape": "circle",
                       "size": "xlarge"
                     }
