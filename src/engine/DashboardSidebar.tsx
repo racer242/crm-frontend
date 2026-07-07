@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { useAuth } from "@/auth/AuthContext";
 import { Menu } from "primereact/menu";
+import { useRef } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -93,7 +94,8 @@ const UserMenuSection = React.memo(function UserMenuSection({
   wrapperProps,
   collapsible,
 }: UserMenuSectionProps) {
-  const [expanded, setExpanded] = useState(!collapsible);
+  const [expanded, setExpanded] = useState(false);
+  const menuRef = useRef<Menu>(null);
   const userMenuModel = useMemo(
     () => buildUserMenuItems(userMenu, onNavigate, onLogout),
     [userMenu, onNavigate, onLogout],
@@ -107,7 +109,7 @@ const UserMenuSection = React.memo(function UserMenuSection({
     <div {...wrapperProps}>
       <div
         className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
-        onClick={collapsible ? handleToggle : undefined}
+        onClick={handleToggle}
       >
         <Avatar
           icon="pi pi-user"
@@ -122,14 +124,12 @@ const UserMenuSection = React.memo(function UserMenuSection({
             <span className="text-sm">{user?.role ?? userMenu?.userRole}</span>
           </div>
         )}
-        {collapsible && !collapsed && (
-          <i
-            className={classNames(
-              "pi pointer-events-none ml-auto",
-              expanded ? "pi-angle-up" : "pi-angle-down",
-            )}
-          />
-        )}
+        <i
+          className={classNames(
+            "pi pointer-events-none ml-auto",
+            expanded ? "pi-angle-up" : "pi-angle-down",
+          )}
+        />
       </div>
       {expanded && (
         <Menu
@@ -161,7 +161,8 @@ const CampMenuSection = React.memo(function CampMenuSection({
   wrapperProps,
   collapsible,
 }: CampMenuSectionProps) {
-  const [expanded, setExpanded] = useState(!collapsible);
+  const [expanded, setExpanded] = useState(false);
+  const menuRef = useRef<Menu>(null);
 
   const handleToggle = useCallback(() => {
     setExpanded((prev) => !prev);
@@ -185,7 +186,7 @@ const CampMenuSection = React.memo(function CampMenuSection({
     <div {...wrapperProps}>
       <div
         className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
-        onClick={collapsible ? handleToggle : undefined}
+        onClick={handleToggle}
       >
         {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
         <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
@@ -198,7 +199,7 @@ const CampMenuSection = React.memo(function CampMenuSection({
           </div>
         )}
         {/* Expand/collapse arrow - positioned at the right like UserMenuSection */}
-        {collapsible && !collapsed && otherCamps.length > 0 && (
+        {!collapsed && otherCamps.length > 0 && (
           <i
             className={classNames(
               "pi pointer-events-none ml-auto",
@@ -207,7 +208,7 @@ const CampMenuSection = React.memo(function CampMenuSection({
           />
         )}
       </div>
-      {expanded && !collapsed && otherCamps.length > 0 && (
+      {expanded && otherCamps.length > 0 && (
         <Menu
           model={campMenuModel}
           className="w-full border-none flex-shrink-0"
