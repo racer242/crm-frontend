@@ -69,6 +69,23 @@ function parseCookies(): Record<string, string> {
 }
 
 /**
+ * Преобразовать cookie объект: распарсить JSON значения
+ */
+function parseCookiesObject(
+  cookies: Record<string, string>,
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(cookies)) {
+    try {
+      result[key] = JSON.parse(value);
+    } catch {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
+/**
  * UUID v4
  */
 function generateUUID(): string {
@@ -217,13 +234,15 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
     case "cookie": {
       // Сначала проверяем серверные cookies из sources
       if (sources.cookies) {
-        if (!fullPath) return sources.cookies;
-        return sources.cookies[fullPath];
+        const parsed = parseCookiesObject(sources.cookies);
+        if (!fullPath) return parsed;
+        return getNestedValue(parsed, fullPath);
       }
       // Fallback на клиентские cookies
       if (!isClient()) return undefined;
-      if (!fullPath) return parseCookies();
-      return getCookie(fullPath);
+      const clientCookies = parseCookies();
+      if (!fullPath) return clientCookies;
+      return getNestedValue(parseCookiesObject(clientCookies), fullPath);
     }
 
     // === Window ===
