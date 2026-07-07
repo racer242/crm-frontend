@@ -215,6 +215,12 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
 
     // === Cookie ===
     case "cookie": {
+      // Сначала проверяем серверные cookies из sources
+      if (sources.cookies) {
+        if (!fullPath) return sources.cookies;
+        return sources.cookies[fullPath];
+      }
+      // Fallback на клиентские cookies
       if (!isClient()) return undefined;
       if (!fullPath) return parseCookies();
       return getCookie(fullPath);

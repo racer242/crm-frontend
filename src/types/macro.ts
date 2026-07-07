@@ -54,4 +54,6 @@ export interface MacroSources {
   env?: Record<string, string>;
   /** Current page ID */
   pageId?: string;
+  /** Server-side cookies (available on server, fallback to document.cookie on client) */
+  cookies?: Record<string, string>;
 }

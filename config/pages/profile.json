@@ -9,8 +9,8 @@
       "id": "",
       "login": "",
       "email": "",
-      "name": "Имя Фамилия",
-      "avatar": "{$cookie.user_data.name}",
+      "name": "{$cookie.user_data.name}",
+      "avatar": "",
       "role": "",
       "groups": []
     }

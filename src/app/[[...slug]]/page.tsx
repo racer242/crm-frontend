@@ -86,11 +86,19 @@ export default async function Page({
     routeParams,
   );
 
+  // Read all cookies on server for macro resolution
+  const cookieStore = await cookies();
+  const cookieMap: Record<string, string> = {};
+  cookieStore.getAll().forEach((c) => {
+    cookieMap[c.name] = c.value;
+  });
+
   // Create shared server sources for macros
   const serverSources: MacroSources = {
     config: config.config,
     env: await getServerEnv(),
     location,
+    cookies: cookieMap,
   };
 
   // Resolve macros in all element states (page, sections, blocks, components)
@@ -103,8 +111,7 @@ export default async function Page({
 
   // Determine current campaign
   const allCamps: CampItem[] = (config as any)?.camps || [];
-  const cookieStore = await cookies();
-  const campIdCookie = cookieStore.get("camp_id")?.value;
+  const campIdCookie = cookieMap["camp_id"];
   const currentCampId = campIdCookie
     ? Number(campIdCookie)
     : allCamps[0]?.id || 0;
