@@ -16,6 +16,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Multi-campaign support** — возможность переключения между разными кампаниями через UI.
+  - `config/system/camps.json` — список кампаний с id, name, api_url.
+  - `config/crm-config.json` — подключение camps через `$ref`.
+  - `src/engine/DashboardSidebar.tsx` — `CampMenuSection` компонент для выбора кампании (под меню навигации, над блоком пользователя).
+  - `src/engine/DashboardHeader.tsx` — отображение названия текущей кампании рядом с title.
+  - `src/app/[[...slug]]/page.tsx` — чтение `camp_id` из cookie, фильтрация camps для клиента (без api_url).
+  - `src/app/api/[...route]/route.ts` — API Router читает camp_id из cookie и препендит `camp.api_url` к URL.
+  - `src/core/DataFeedServerService.ts` — поддержка campApiUrl для SSR dataFeed запросов.
+  - `config/system/api-routes.json` — удалён макрос `{$env.API_CAMP_URL_0}` из всех URL (теперь только относительные пути).
+  - `.env.*` — удалены `API_CAMP_URL_*` переменные.
+
 - **DataTable customColumns support** — ability to add columns with arbitrary components in cells (buttons, icons, inputs, etc.) via `customColumns` prop.
   - `src/engine/components/DataTableComponent.tsx` — added `mergeCustomColumns()` for merging/replacing columns by field match, `renderCustomColumnBody()` for rendering component arrays per row cell
   - `src/engine/utils/resolveRowBindings.ts` — new utility for resolving `@field` and `@row.*` macros at render time using current row data

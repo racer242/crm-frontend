@@ -43,7 +43,9 @@ App (приложение)
 ├── config/
 │   ├── crm-config.json          # Главная конфигурация CRM (Blueprint)
 │   ├── pages/                   # Конфигурации страниц
-│   └── api/                     # Конфигурации API-маршрутов
+│   ├── menus/                   # Конфигурации меню (navbar)
+│   ├── adapters/                # JS-адаптеры данных
+│   └── system/                  # Системные конфиги (api-routes, camps, adapters)
 ├── src/
 │   ├── types/                   # Система типов (+ auth.ts)
 │   ├── auth/                    # Сервисы авторизации (JWT, cookies, Bitrix API)
@@ -449,6 +451,7 @@ docker compose restart
 | `config.timeout`     | Таймаут запросов в мс                             |
 | `config.features`    | Флаги функциональности                            |
 | `config.apiRoutes`   | Маршруты API (path → url) с поддержкой макросов   |
+| `config.camps`       | Список кампаний (id, name) для мульти-кампаний    |
 
 → Полное описание: [docs/config-reference.md](docs/config-reference.md)
 

@@ -64,6 +64,7 @@
 | `timeout`     | `number`                  | Таймаут запросов в мс                |
 | `features`    | `Record<string, boolean>` | Флаги функциональности               |
 | `apiRoutes`   | `ApiRouteConfig[]`        | Маршруты API (path → url)            |
+| `camps`       | `CampItem[]`              | Список кампаний для мульти-кампаний  |
 | `locale`      | `LocaleConfig`            | Настройки локали (default, fallback) |
 
 > **Важно:** Поля `baseURL` и `timeout` находятся на уровне `config`, а не внутри вложенного `api` (структура плоская, см. пример ниже).

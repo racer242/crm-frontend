@@ -11,6 +11,7 @@ import {
   MacroSources,
   ApiRouteConfig,
   DataFeedAdapter,
+  CampItem,
 } from "@/types";
 import { MacroEngine } from "./MacroEngine";
 import { buildUrlWithParams } from "@/utils/http";
@@ -35,6 +36,7 @@ export async function executeServerDataFeeds(
   pageConfig: any,
   serverSources: MacroSources,
   authToken?: string,
+  campApiUrl?: string,
 ): Promise<DataFeedResult[]> {
   const dataFeeds: DataFeedConfig[] | undefined = pageConfig?.dataFeed;
 
@@ -70,6 +72,17 @@ export async function executeServerDataFeeds(
           // Apply macros to the route URL
           url = macroEngine.apply(routeConfig.url) as string;
         }
+      }
+
+      // Prepend campaign base URL if url is a relative path
+      if (
+        campApiUrl &&
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+      ) {
+        const baseUrl = campApiUrl.replace(/\/+$/, "");
+        const path = url.startsWith("/") ? url : "/" + url;
+        url = baseUrl + path;
       }
 
       // Build headers

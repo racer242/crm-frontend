@@ -2,32 +2,32 @@
   {
     "path": "stats/weeks",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/weeks",
+    "url": "stats/weeks",
     "note": "Статистика: Список недель"
   },
   {
     "path": "stats/analytics",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/analytics",
+    "url": "stats/analytics",
     "note": "Статистика: Аналитика"
   },
   {
     "path": "stats/analytics/download",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/analytics/download",
+    "url": "stats/analytics/download",
     "note": "Статистика: Скачать документ аналитики"
   },
   {
     "path": "stats/review",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/stats/review",
+    "url": "stats/review",
     "note": "Статистика: Быстрая статистика"
   },
 
   {
     "path": "users",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users",
+    "url": "users",
     "adapter": {
       "request": "users.get.request.js",
       "response": "users.get.response.js"
@@ -37,13 +37,13 @@
   {
     "path": "users/import",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/users/import",
+    "url": "users/import",
     "note": "Участники: Импорт пользователей"
   },
   {
     "path": "users/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "url": "users/{$location.routeParams.id}",
     "adapter": {
       "request": "user.get.request.js",
       "response": "user.get.response.js"
@@ -53,7 +53,7 @@
   {
     "path": "users/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}",
+    "url": "users/{$location.routeParams.id}",
     "adapter": {
       "request": "user-edit.patch.request.js"
     },
@@ -62,7 +62,7 @@
   {
     "path": "users/[id]/docs",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "url": "users/{$location.routeParams.id}/docs",
     "adapter": {
       "request": "user-docs.get.request.js",
       "response": "user-docs.get.response.js"
@@ -72,7 +72,7 @@
   {
     "path": "users/[id]/docs",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/docs",
+    "url": "users/{$location.routeParams.id}/docs",
     "adapter": {
       "request": "user-docs-edit.patch.request.js"
     },
@@ -81,13 +81,13 @@
   {
     "path": "users/[id]/groups",
     "method": "PUT",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/groups",
+    "url": "users/{$location.routeParams.id}/groups",
     "note": "Участники: Изменить группы участника"
   },
   {
     "path": "users/[id]/acts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/acts",
+    "url": "users/{$location.routeParams.id}/acts",
     "adapter": {
       "request": "acts.get.request.js",
       "response": "acts.get.response.js"
@@ -97,7 +97,7 @@
   {
     "path": "users/[id]/prizes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/prizes",
+    "url": "users/{$location.routeParams.id}/prizes",
     "adapter": {
       "request": "prizes.get.request.js",
       "response": "prizes.get.response.js"
@@ -107,19 +107,19 @@
   {
     "path": "users/[id]/points",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points",
+    "url": "users/{$location.routeParams.id}/points",
     "note": "Участники: Баллы участника"
   },
   {
     "path": "users/[id]/points",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points",
+    "url": "users/{$location.routeParams.id}/points",
     "note": "Участники: Обновить баллы участника"
   },
   {
     "path": "users/[id]/points/history",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/points/history",
+    "url": "users/{$location.routeParams.id}/points/history",
     "adapter": {
       "request": "points-history.get.request.js",
       "response": "points-history.get.response.js"
@@ -129,7 +129,7 @@
   {
     "path": "users/[id]/receipts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/receipts",
+    "url": "users/{$location.routeParams.id}/receipts",
     "adapter": {
       "request": "receipts.get.request.js",
       "response": "receipts.get.response.js"
@@ -139,7 +139,7 @@
   {
     "path": "users/[id]/codes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
+    "url": "users/{$location.routeParams.id}/codes",
     "adapter": {
       "request": "codes.get.request.js",
       "response": "codes.get.response.js"
@@ -149,13 +149,13 @@
   {
     "path": "users/[id]/codes",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/codes",
+    "url": "users/{$location.routeParams.id}/codes",
     "note": "Участники: Добавить код участнику"
   },
   {
     "path": "users/[id]/gtins",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/gtins",
+    "url": "users/{$location.routeParams.id}/gtins",
     "adapter": {
       "request": "gtins.get.request.js",
       "response": "gtins.get.response.js"
@@ -165,7 +165,7 @@
   {
     "path": "users/[id]/products",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products",
+    "url": "users/{$location.routeParams.id}/products",
     "adapter": {
       "request": "products.get.request.js",
       "response": "products.get.response.js"
@@ -175,19 +175,19 @@
   {
     "path": "users/[id]/products/[product_id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}",
+    "url": "users/{$location.routeParams.id}/products/{$location.routeParams.product_id}",
     "note": "Участники: Подробно об акционном продукте"
   },
   {
     "path": "users/[id]/products/[product_id]/purchases",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/products/{$location.routeParams.product_id}/purchases",
+    "url": "users/{$location.routeParams.id}/products/{$location.routeParams.product_id}/purchases",
     "note": "Участники: Покупки акционного продукта"
   },
   {
     "path": "users/[id]/log/events",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/events",
+    "url": "users/{$location.routeParams.id}/log/events",
     "adapter": {
       "request": "events.get.request.js",
       "response": "events.get.response.js"
@@ -197,7 +197,7 @@
   {
     "path": "users/[id]/log/transactions",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/log/transactions",
+    "url": "users/{$location.routeParams.id}/log/transactions",
     "adapter": {
       "request": "transactions.get.request.js",
       "response": "transactions.get.response.js"
@@ -207,7 +207,7 @@
   {
     "path": "users/[id]/messages",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/users/{$location.routeParams.id}/messages",
+    "url": "users/{$location.routeParams.id}/messages",
     "adapter": {
       "request": "messages.get.request.js",
       "response": "messages.get.response.js"
@@ -218,7 +218,7 @@
   {
     "path": "prizes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/prizes",
+    "url": "prizes",
     "adapter": {
       "request": "prizes.get.request.js",
       "response": "prizes.get.response.js"
@@ -228,13 +228,13 @@
   {
     "path": "prizes",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/prizes",
+    "url": "prizes",
     "note": "Призы: Добавить приз"
   },
   {
     "path": "prizes/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "url": "prizes/{$location.routeParams.id}",
     "adapter": {
       "response": "prize.get.response.js"
     },
@@ -243,20 +243,20 @@
   {
     "path": "prizes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "url": "prizes/{$location.routeParams.id}",
     "note": "Призы: Редактировать приз"
   },
   {
     "path": "prizes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/prizes/{$location.routeParams.id}",
+    "url": "prizes/{$location.routeParams.id}",
     "note": "Призы: Удалить приз"
   },
 
   {
     "path": "receipts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts",
+    "url": "receipts",
     "adapter": {
       "request": "receipts.get.request.js",
       "response": "receipts.get.response.js"
@@ -266,7 +266,7 @@
   {
     "path": "receipts/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "url": "receipts/{$location.routeParams.id}",
     "adapter": {
       "response": "receipt.get.response.js"
     },
@@ -275,19 +275,19 @@
   {
     "path": "receipts/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "url": "receipts/{$location.routeParams.id}",
     "note": "Чеки: Редактировать чек"
   },
   {
     "path": "receipts/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}",
+    "url": "receipts/{$location.routeParams.id}",
     "note": "Чеки: Удалить чек"
   },
   {
     "path": "receipts/[id]/products",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/products",
+    "url": "receipts/{$location.routeParams.id}/products",
     "adapter": {
       "request": "receipt-products.get.request.js",
       "response": "receipt-products.response.js"
@@ -297,14 +297,14 @@
   {
     "path": "receipts/[id]/check",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/check",
+    "url": "receipts/{$location.routeParams.id}/check",
     "note": "Чеки: Автомодерация чека"
   },
 
   {
     "path": "acts",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/acts",
+    "url": "acts",
     "adapter": {
       "request": "acts.get.request.js",
       "response": "acts.get.response.js"
@@ -314,13 +314,13 @@
   {
     "path": "acts",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/acts",
+    "url": "acts",
     "note": "Акты: Добавить акт"
   },
   {
     "path": "acts/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "url": "acts/{$location.routeParams.id}",
     "adapter": {
       "response": "act.get.response.js"
     },
@@ -329,20 +329,20 @@
   {
     "path": "acts/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "url": "acts/{$location.routeParams.id}",
     "note": "Акты: Редактировать акт"
   },
   {
     "path": "acts/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/acts/{$location.routeParams.id}",
+    "url": "acts/{$location.routeParams.id}",
     "note": "Акты: Удалить акт"
   },
 
   {
     "path": "codes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/codes",
+    "url": "codes",
     "adapter": {
       "request": "codes.get.request.js",
       "response": "codes.get.response.js"
@@ -352,7 +352,7 @@
   {
     "path": "codes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}",
+    "url": "codes/{$location.routeParams.id}",
     "adapter": {
       "request": "code.patch.request.js"
     },
@@ -361,45 +361,45 @@
   {
     "path": "codes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/codes/{$location.routeParams.id}",
+    "url": "codes/{$location.routeParams.id}",
     "note": "Коды участников: Удалить код"
   },
 
   {
     "path": "dictionary/codes",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes",
+    "url": "dictionary/codes",
     "note": "Справочник кодов: Список кодов"
   },
   {
     "path": "dictionary/codes",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes",
+    "url": "dictionary/codes",
     "note": "Справочник кодов: Добавить код"
   },
   {
     "path": "dictionary/codes/import",
     "method": "POST",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/import",
+    "url": "dictionary/codes/import",
     "note": "Справочник кодов: Импорт кодов"
   },
   {
     "path": "dictionary/codes/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}",
+    "url": "dictionary/codes/{$location.routeParams.id}",
     "note": "Справочник кодов: Редактировать код"
   },
   {
     "path": "dictionary/codes/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/dictionary/codes/{$location.routeParams.id}",
+    "url": "dictionary/codes/{$location.routeParams.id}",
     "note": "Справочник кодов: Удалить код"
   },
 
   {
     "path": "gtins",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/gtins",
+    "url": "gtins",
     "adapter": {
       "request": "gtins.get.request.js",
       "response": "gtins.get.response.js"
@@ -409,26 +409,26 @@
   {
     "path": "gtins/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "url": "gtins/{$location.routeParams.id}",
     "note": "Коды Честный Знак: Подробно о коде ЧЗ"
   },
   {
     "path": "gtins/[id]",
     "method": "PATCH",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "url": "gtins/{$location.routeParams.id}",
     "note": "Коды Честный Знак: Редактировать код ЧЗ"
   },
   {
     "path": "gtins/[id]",
     "method": "DELETE",
-    "url": "{$env.API_CAMP_URL_0}/gtins/{$location.routeParams.id}",
+    "url": "gtins/{$location.routeParams.id}",
     "note": "Коды Честный Знак: Удалить код ЧЗ"
   },
 
   {
     "path": "log/events/[id]",
     "method": "GET",
-    "url": "{$env.API_CAMP_URL_0}/log/events/{$location.routeParams.id}",
+    "url": "log/events/{$location.routeParams.id}",
     "note": "Журнал: Подробно о событии"
   }
 ]

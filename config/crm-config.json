@@ -86,5 +86,6 @@
       "twoFactorAuth": false
     }
   },
+  "camps": { "$ref": "./system/camps.json" },
   "apiRoutes": { "$ref": "./system/api-routes.json" }
 }

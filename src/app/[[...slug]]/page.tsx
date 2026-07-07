@@ -1,4 +1,4 @@
-import { App, DataFeedResult, MacroSources } from "@/types";
+import { App, CampItem, DataFeedResult, MacroSources } from "@/types";
 import { AppEngine } from "@/engine";
 import {
   initApp,
@@ -9,6 +9,7 @@ import {
 } from "@/core/config";
 import { getServerLocation } from "@/utils/location";
 import { getServerEnv } from "@/utils/env";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import {
   executeServerDataFeeds,
@@ -100,6 +101,16 @@ export default async function Page({
   let successResults: DataFeedResult[] = [];
   let initialPageId: string | null = null;
 
+  // Determine current campaign
+  const allCamps: CampItem[] = (config as any)?.camps || [];
+  const cookieStore = await cookies();
+  const campIdCookie = cookieStore.get("camp_id")?.value;
+  const currentCampId = campIdCookie
+    ? Number(campIdCookie)
+    : allCamps[0]?.id || 0;
+  const currentCamp =
+    allCamps.find((c: CampItem) => c.id === currentCampId) || allCamps[0];
+
   // Get user's access_token for authenticated API requests
   const accessToken = await getAccessTokenServer();
 
@@ -111,6 +122,7 @@ export default async function Page({
       clonedPageConfig,
       serverSources,
       accessToken,
+      currentCamp?.api_url,
     );
 
     // Separate errors from successful results
@@ -121,11 +133,22 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
-  // Create minimal config with only current page (strip server-only apiRoutes)
+  // Filter camps for client: strip api_url, pass only id + name
+  const clientCamps: { id: number; name: string; current: boolean }[] =
+    allCamps.map((c: CampItem) => ({
+      id: c.id,
+      name: c.name,
+      current: c.id === currentCampId,
+    }));
+
+  // Create minimal config with only current page (strip server-only apiRoutes, camps api_url)
   const { apiRoutes: _, ...configForClient } = config;
   const minimalConfig = {
     ...configForClient,
     pages: clonedPageConfig ? [clonedPageConfig] : [],
+    camps: clientCamps,
+    currentCampName: currentCamp?.name || "",
+    currentCampId: currentCamp?.id || 0,
   };
 
   return (

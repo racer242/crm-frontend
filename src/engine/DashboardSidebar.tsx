@@ -131,6 +131,82 @@ const UserMenuSection = React.memo(function UserMenuSection({
   );
 });
 
+/**
+ * CampMenuSection - displays current campaign and allows switching
+ */
+interface CampMenuSectionProps {
+  camps: { id: number; name: string; current: boolean }[];
+  currentCampId: number;
+  currentCampName: string;
+  collapsed: boolean;
+}
+
+const CampMenuSection = React.memo(function CampMenuSection({
+  camps,
+  currentCampId,
+  currentCampName,
+  collapsed,
+}: CampMenuSectionProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleToggle = useCallback(() => {
+    setExpanded((prev) => !prev);
+  }, []);
+
+  const handleCampChange = useCallback((campId: number) => {
+    // Set cookie and reload
+    document.cookie = `camp_id=${campId}; path=/; max-age=31536000; SameSite=Lax`;
+    window.location.reload();
+  }, []);
+
+  if (!camps || camps.length === 0) return null;
+
+  const otherCamps = camps.filter((c) => !c.current);
+
+  return (
+    <div
+      className="flex-shrink-0 p-1"
+      style={{ borderTop: "1px solid var(--surface-border)" }}
+    >
+      <div
+        className="w-full p-link flex gap-3 align-items-center h-3rem text-color cursor-pointer px-3"
+        onClick={handleToggle}
+      >
+        <i className="pi pi-flag flex-none pointer-events-none" />
+        {!collapsed && (
+          <div className="flex flex-column align-items-start pointer-events-none flex-1 min-w-0">
+            <span className="text-sm font-medium overflow-hidden text-ellipsis white-space-nowrap">
+              {currentCampName}
+            </span>
+          </div>
+        )}
+        {!collapsed && otherCamps.length > 0 && (
+          <i
+            className={classNames(
+              "pi pointer-events-none",
+              expanded ? "pi-angle-up" : "pi-angle-down",
+            )}
+          />
+        )}
+      </div>
+      {expanded && !collapsed && otherCamps.length > 0 && (
+        <div className="flex flex-column">
+          {otherCamps.map((camp) => (
+            <div
+              key={camp.id}
+              className="p-link flex align-items-center gap-3 px-3 py-2 text-color cursor-pointer hover:surface-hover border-round"
+              onClick={() => handleCampChange(camp.id)}
+            >
+              <i className="pi pi-flag flex-none" style={{ opacity: 0.5 }} />
+              <span className="text-sm">{camp.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
+
 interface DashboardSidebarProps {
   items: NavItem[];
   title: string;
@@ -139,6 +215,9 @@ interface DashboardSidebarProps {
   collapsed: boolean;
   onMobileOpenChange: (open: boolean) => void;
   onCollapseChange: () => void;
+  camps?: { id: number; name: string; current: boolean }[];
+  currentCampId?: number;
+  currentCampName?: string;
 }
 
 export const DashboardSidebar = React.memo(function DashboardSidebar({
@@ -149,6 +228,9 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
   collapsed,
   onMobileOpenChange,
   onCollapseChange,
+  camps,
+  currentCampId,
+  currentCampName,
 }: DashboardSidebarProps) {
   const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
@@ -186,6 +268,14 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
             className="border-none w-full flex-shrink-0"
           />
           <div className="flex-1"></div>
+          {camps && camps.length > 0 && (
+            <CampMenuSection
+              camps={camps}
+              currentCampId={currentCampId || 0}
+              currentCampName={currentCampName || ""}
+              collapsed={false}
+            />
+          )}
           {userMenu && (
             <UserMenuSection
               userMenu={userMenu}
@@ -226,6 +316,15 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
           />
         </div>
         <div className="flex-1"></div>
+        {/* Campaign Section */}
+        {camps && camps.length > 0 && (
+          <CampMenuSection
+            camps={camps}
+            currentCampId={currentCampId || 0}
+            currentCampName={currentCampName || ""}
+            collapsed={collapsed}
+          />
+        )}
         {/* User Section */}
         <div className="flex-shrink-0 p-1">
           {isAuthenticated && userMenu ? (

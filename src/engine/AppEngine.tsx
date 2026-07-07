@@ -261,6 +261,11 @@ export function AppEngine({
   const navItems: NavItem[] = config.navbar?.items || [];
   const title = config.title || t("defaultTitle");
 
+  // Campaign data from config (passed via SSR)
+  const camps = (config as any)?.camps || [];
+  const currentCampName = (config as any)?.currentCampName || "";
+  const currentCampId = (config as any)?.currentCampId || 0;
+
   return (
     <div className="flex flex-column md:flex-row min-h-screen surface-900">
       <Toast ref={toastRef} />
@@ -269,6 +274,7 @@ export function AppEngine({
         title={title}
         userMenu={config.userMenu}
         onMenuClick={() => setMobileMenuOpen(true)}
+        currentCampName={currentCampName}
       />
       {navItems.length > 0 && (
         <DashboardSidebar
@@ -279,6 +285,9 @@ export function AppEngine({
           collapsed={collapsed}
           onMobileOpenChange={setMobileMenuOpen}
           onCollapseChange={onCollapseChange}
+          camps={camps}
+          currentCampId={currentCampId}
+          currentCampName={currentCampName}
         />
       )}
       <main className="flex-1 overflow-auto pt-4rem md:pt-0">

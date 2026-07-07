@@ -106,6 +106,14 @@ export interface EndpointConfig {
 /** HTTP метод */
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
+/** Элемент кампании */
+export interface CampItem {
+  id: number;
+  name: string;
+  /** Полный URL API кампании (серверный, не передаётся клиенту) */
+  api_url?: string;
+}
+
 /** Флаги функциональности */
 export interface FeatureFlags {
   [key: string]: boolean;

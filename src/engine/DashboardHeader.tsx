@@ -12,12 +12,14 @@ interface DashboardHeaderProps {
   title: string;
   userMenu?: UserMenuConfig;
   onMenuClick: () => void;
+  currentCampName?: string;
 }
 
 export function DashboardHeader({
   title,
   userMenu,
   onMenuClick,
+  currentCampName,
 }: DashboardHeaderProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -35,7 +37,14 @@ export function DashboardHeader({
         onClick={onMenuClick}
         aria-label={t("menu")}
       />
-      <span className="font-semibold text-lg">{title}</span>
+      <div className="flex align-items-center gap-2">
+        <span className="font-semibold text-lg">{title}</span>
+        {currentCampName && (
+          <span className="text-sm text-500 hidden sm:inline">
+            | {currentCampName}
+          </span>
+        )}
+      </div>
       <Button
         icon={
           isAuthenticated ? (

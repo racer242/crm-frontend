@@ -19,13 +19,14 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { initApp } from "@/core/config";
+import { initApp, getConfig } from "@/core/config";
 import {
   ApiRouteConfig,
   DataFeedMethod,
   MacroSources,
   DataFeedAdapter,
   LoginResponse,
+  CampItem,
 } from "@/types";
 import { MacroEngine } from "@/core";
 import { getServerEnv } from "@/utils/env";
@@ -278,6 +279,38 @@ async function handleRequest(
     };
     const macroEngine = new MacroEngine(serverSources);
     let resolvedUrl = macroEngine.apply(routeConfig.url) as string;
+
+    // --- Resolve campaign base URL ---
+    const campIdCookie = request.cookies.get("camp_id")?.value;
+    const allCamps: CampItem[] = (config as any)?.camps || [];
+    const currentCampId = campIdCookie
+      ? Number(campIdCookie)
+      : allCamps[0]?.id || 0;
+    const currentCamp =
+      allCamps.find((c: CampItem) => c.id === currentCampId) || allCamps[0];
+
+    if (currentCamp?.api_url) {
+      // Prepend camp api_url to the relative path from api-routes
+      // Ensure single slash between base URL and path
+      const baseUrl = currentCamp.api_url.replace(/\/+$/, "");
+      const path = resolvedUrl.startsWith("/")
+        ? resolvedUrl
+        : "/" + resolvedUrl;
+      resolvedUrl = baseUrl + path;
+    } else if (
+      !resolvedUrl.startsWith("http://") &&
+      !resolvedUrl.startsWith("https://")
+    ) {
+      return NextResponse.json(
+        {
+          error: {
+            message: `Campaign not found or no API URL configured. Set camp_id cookie or check camps configuration.`,
+          },
+        },
+        { status: 400 },
+      );
+    }
+    // --- End campaign URL resolution ---
 
     // Apply request adapter if specified in route config
     let adaptedBody = requestBody;
