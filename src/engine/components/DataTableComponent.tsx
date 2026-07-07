@@ -183,19 +183,19 @@ export function renderDataTable({
           customCol.body.length > 0;
 
         if (hasCustomBody) {
+          // Extract additional Column props from the merged column config
+          const { field, header, sortable, body, ...additionalProps } =
+            customCol;
           return (
             <Column
               key={`${customCol.field}-${index}`}
-              field={customCol.field}
-              header={customCol.header}
-              sortable={customCol.sortable}
+              field={field}
+              header={header}
+              sortable={sortable}
               body={(rowData: any) =>
-                renderCustomColumnBody(
-                  customCol.body!,
-                  rowData,
-                  customCol.field,
-                )
+                renderCustomColumnBody(body!, rowData, field)
               }
+              {...additionalProps}
             />
           );
         }

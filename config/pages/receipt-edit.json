@@ -489,7 +489,7 @@
                 "sortOrder": "@state.products.sortOrder",
                 "paginator": true,
                 "lazy": true,
-                "size": "normal",
+                "size": "small",
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
                   {
@@ -497,7 +497,7 @@
                     "body": [
                       {
                         "componentType": "Button",
-                        "className": "pointer-events-none",
+                        "className": "pointer-events-none -m-2",
                         "props": {
                           "icon": "{#row.is_promo_icon}",
                           "severity": "{#row.is_promo_severity}",
