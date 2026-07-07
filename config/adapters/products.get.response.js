@@ -19,9 +19,7 @@ function transform(source) {
     // Опционально: сохраняем ID строки, если он есть и нужен
     ...(row.id && { _rowId: row.id }),
     // Добавляем кастомные поля для иконки is_promo (Prime Icons + severity)
-    is_promo_icon: row.values.is_promo
-      ? "pi pi-check-circle"
-      : "pi pi-times-circle",
+    is_promo_icon: row.values.is_promo ? "pi pi-check-circle" : "",
     is_promo_severity: row.values.is_promo ? "success" : "secondary",
   }));
 

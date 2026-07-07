@@ -24,11 +24,67 @@
     "products": {
       "value": [],
       "columns": [],
-      "totalRecords": 0
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0,
+      "sortField": "",
+      "sortOrder": 1,
+      "filters": [],
+      "search": ""
     }
   },
   "meta": { "title": "Модерация чека — CRM Platform" },
   "shortcuts": {
+    "requestProducts": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/receipts/{$location.routeParams.receipt_id}/products",
+              "method": "GET",
+              "target": "state.products",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}",
+                "sortField": "{$state.products.sortField}",
+                "sortOrder": "{$state.products.sortOrder}",
+                "search": "{$state.products.search}",
+                "filters": "{$state.products.filters}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}",
+                "sortField": "{$state.products.sortField}",
+                "sortOrder": "{$state.products.sortOrder}",
+                "search": "{$state.products.search}",
+                "filters": "{$state.products.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": { "props": ["value"] }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": { "props": ["name", "type", "opts"] }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "autoModerate": {
       "type": "sequence",
       "params": {
@@ -426,9 +482,38 @@
               "props": {
                 "value": "@state.products.value",
                 "columns": "@state.products.columns",
-                "paginator": false,
-                "size": "small"
-              }
+                "totalRecords": "@state.products.totalRecords",
+                "rows": "@state.products.rows",
+                "first": "@state.products.first",
+                "sortField": "@state.products.sortField",
+                "sortOrder": "@state.products.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "is_promo",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "className": "pointer-events-none",
+                        "props": {
+                          "icon": "{#row.is_promo_icon}",
+                          "severity": "{#row.is_promo_severity}",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                { "type": "onPage", "commands": ["requestProducts"] },
+                { "type": "onSort", "commands": ["requestProducts"] }
+              ]
             }
           ]
         }
