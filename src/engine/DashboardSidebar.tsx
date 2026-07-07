@@ -61,6 +61,16 @@ function buildUserMenuItems(
   });
 }
 
+function buildCampMenuItems(
+  camps: { id: number; name: string }[],
+  onCampChange: (campId: number) => void,
+) {
+  return camps.map((camp) => ({
+    label: camp.name,
+    command: () => onCampChange(camp.id),
+  }));
+}
+
 /**
  * UserMenuSection - shared between mobile and desktop sidebars
  */
@@ -139,6 +149,8 @@ interface CampMenuSectionProps {
   currentCampId: number;
   currentCampName: string;
   collapsed: boolean;
+  wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
+  collapsible?: boolean;
 }
 
 const CampMenuSection = React.memo(function CampMenuSection({
@@ -146,8 +158,10 @@ const CampMenuSection = React.memo(function CampMenuSection({
   currentCampId,
   currentCampName,
   collapsed,
+  wrapperProps,
+  collapsible,
 }: CampMenuSectionProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(!collapsible);
 
   const handleToggle = useCallback(() => {
     setExpanded((prev) => !prev);
@@ -162,46 +176,42 @@ const CampMenuSection = React.memo(function CampMenuSection({
   if (!camps || camps.length === 0) return null;
 
   const otherCamps = camps.filter((c) => !c.current);
+  const campMenuModel = useMemo(
+    () => buildCampMenuItems(otherCamps, handleCampChange),
+    [otherCamps, handleCampChange],
+  );
 
   return (
-    <div
-      className="flex-shrink-0 p-1"
-      style={{ borderTop: "1px solid var(--surface-border)" }}
-    >
+    <div {...wrapperProps}>
       <div
-        className="w-full p-link flex gap-3 align-items-center h-3rem text-color cursor-pointer px-3"
-        onClick={handleToggle}
+        className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+        onClick={collapsible ? handleToggle : undefined}
       >
-        <i className="pi pi-flag flex-none pointer-events-none" />
+        {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
+        <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
+          <i className="pi pi-flag" />
+        </div>
+        {/* Campaign name - same style as UserMenuSection user block */}
         {!collapsed && (
-          <div className="flex flex-column align-items-start pointer-events-none flex-1 min-w-0">
-            <span className="text-sm font-medium overflow-hidden text-ellipsis white-space-nowrap">
-              {currentCampName}
-            </span>
+          <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
+            <span className="font-bold">{currentCampName}</span>
           </div>
         )}
-        {!collapsed && otherCamps.length > 0 && (
+        {/* Expand/collapse arrow - positioned at the right like UserMenuSection */}
+        {collapsible && !collapsed && otherCamps.length > 0 && (
           <i
             className={classNames(
-              "pi pointer-events-none",
+              "pi pointer-events-none ml-auto",
               expanded ? "pi-angle-up" : "pi-angle-down",
             )}
           />
         )}
       </div>
       {expanded && !collapsed && otherCamps.length > 0 && (
-        <div className="flex flex-column">
-          {otherCamps.map((camp) => (
-            <div
-              key={camp.id}
-              className="p-link flex align-items-center gap-3 px-3 py-2 text-color cursor-pointer hover:surface-hover border-round"
-              onClick={() => handleCampChange(camp.id)}
-            >
-              <i className="pi pi-flag flex-none" style={{ opacity: 0.5 }} />
-              <span className="text-sm">{camp.name}</span>
-            </div>
-          ))}
-        </div>
+        <Menu
+          model={campMenuModel}
+          className="w-full border-none flex-shrink-0"
+        />
       )}
     </div>
   );
@@ -262,20 +272,14 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
         className="w-16rem"
         blockScroll
       >
+        {/* Divider between User and Camp sections */}
         <div className="flex flex-column h-full">
           <Menu
             model={buildMenuItems(items, pathname, handleNav, false)}
             className="border-none w-full flex-shrink-0"
           />
           <div className="flex-1"></div>
-          {camps && camps.length > 0 && (
-            <CampMenuSection
-              camps={camps}
-              currentCampId={currentCampId || 0}
-              currentCampName={currentCampName || ""}
-              collapsed={false}
-            />
-          )}
+          {/* User Section */}
           {userMenu && (
             <UserMenuSection
               userMenu={userMenu}
@@ -283,6 +287,23 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               onNavigate={handleNav}
               onLogout={handleLogout}
               user={user}
+            />
+          )}
+          {/* Divider between User and Camp sections */}
+          {camps && camps.length > 0 && userMenu && (
+            <div
+              className="flex-shrink-0 px-3 my-3"
+              style={{ borderTop: "1px solid var(--surface-border)" }}
+            />
+          )}
+          {/* Campaign Section */}
+          {camps && camps.length > 0 && (
+            <CampMenuSection
+              camps={camps}
+              currentCampId={currentCampId || 0}
+              currentCampName={currentCampName || ""}
+              collapsed={false}
+              collapsible={false}
             />
           )}
         </div>
@@ -316,15 +337,6 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
           />
         </div>
         <div className="flex-1"></div>
-        {/* Campaign Section */}
-        {camps && camps.length > 0 && (
-          <CampMenuSection
-            camps={camps}
-            currentCampId={currentCampId || 0}
-            currentCampName={currentCampName || ""}
-            collapsed={collapsed}
-          />
-        )}
         {/* User Section */}
         <div className="flex-shrink-0 p-1">
           {isAuthenticated && userMenu ? (
@@ -348,6 +360,26 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
             />
           ) : null}
         </div>
+        {/* Divider between User and Camp sections */}
+        {camps && camps.length > 0 && isAuthenticated && (
+          <div
+            className="flex-shrink-0 px-3"
+            style={{ borderTop: "1px solid var(--surface-border)" }}
+          />
+        )}
+        {/* Campaign Section */}
+        {camps && camps.length > 0 && (
+          <div className={`flex-shrink-0 p-1`}>
+            <CampMenuSection
+              camps={camps}
+              currentCampId={currentCampId || 0}
+              currentCampName={currentCampName || ""}
+              collapsed={collapsed}
+              wrapperProps={{ className: "p-3" }}
+              collapsible
+            />
+          </div>
+        )}
         <div className="h-3rem"></div>
 
         {/* Collapse Button */}
