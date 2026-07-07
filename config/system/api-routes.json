@@ -294,6 +294,12 @@
     },
     "note": "Чеки: Список продукции в чеке"
   },
+  {
+    "path": "receipts/[id]/check",
+    "method": "POST",
+    "url": "{$env.API_CAMP_URL_0}/receipts/{$location.routeParams.id}/check",
+    "note": "Чеки: Автомодерация чека"
+  },
 
   {
     "path": "acts",

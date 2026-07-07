@@ -314,6 +314,7 @@
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
+                "stripedRows": true,
                 "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [

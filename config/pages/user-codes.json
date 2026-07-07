@@ -478,7 +478,7 @@
                   {
                     "field": "actions",
                     "order": -1,
-                    "className": "w-min",
+                    "className": "w-1",
                     "body": [
                       {
                         "componentType": "Button",
