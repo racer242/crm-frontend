@@ -57,7 +57,7 @@
               "header": "Профиль"
             }
           },
-          "className": "w-full flex flex-column gap-3",
+          "className": "flex flex-column align-items-center gap-1",
           "components": [
             {
               "id": "userAvatarNameGroup",
