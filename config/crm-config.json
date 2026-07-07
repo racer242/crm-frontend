@@ -24,6 +24,7 @@
   },
   "pages": [
     { "$ref": "./pages/dashboard.json" },
+    { "$ref": "./pages/profile.json" },
     { "$ref": "./pages/statistics.json" },
     { "$ref": "./pages/users.json" },
     { "$ref": "./pages/orders.json" },
