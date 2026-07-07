@@ -99,6 +99,7 @@
               "url": "/api/receipts/{$location.routeParams.receipt_id}/check",
               "method": "POST",
               "target": "state.saveResult",
+              "data": {},
               "onSuccess": [
                 {
                   "type": "showToast",
