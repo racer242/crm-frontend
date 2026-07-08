@@ -260,23 +260,50 @@ const CampMenuSection = React.memo(function CampMenuSection({
     return buildCampMenuItems(otherCamps, handleCampChange);
   }, [camps, handleCampChange]);
 
-  // Build tiered menu model with transparent trigger item
+  // Build tiered menu model with trigger template
   const tieredMenuModel = useMemo(
     () => [
       {
         label: "",
         items: campMenuModel,
+        template: (
+          <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer px-3">
+            {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
+            <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
+              <i className="pi pi-flag" />
+            </div>
+            {/* Campaign name - same style as UserMenuSection user block */}
+            {!collapsed && (
+              <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
+                <span className="font-bold">{currentCampName}</span>
+              </div>
+            )}
+            {!collapsed && collapsible && campMenuModel.length > 0 && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  "pi-angle-right",
+                )}
+              />
+            )}
+            {!collapsible && campMenuModel.length > 0 && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  expanded ? "pi-angle-up" : "pi-angle-down",
+                )}
+              />
+            )}
+          </div>
+        ),
       },
     ],
-    [campMenuModel],
+    [campMenuModel, collapsed, collapsible, currentCampName, expanded],
   );
 
   const handleToggle = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (collapsible) {
-        // Desktop: use TieredMenu popup
-        // menuRef.current?.toggle(e);
-      } else {
+      if (!collapsible) {
         // Mobile: inline expand/collapse
         setExpanded((prev) => !prev);
       }
@@ -289,48 +316,61 @@ const CampMenuSection = React.memo(function CampMenuSection({
   const otherCamps = camps.filter((c) => !c.current);
 
   return (
-    <div {...wrapperProps}>
-      <div
-        className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
-        onClick={handleToggle}
-      >
-        {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
-        <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
-          <i className="pi pi-flag" />
-        </div>
-        {/* Campaign name - same style as UserMenuSection user block */}
-        {!collapsed && (
-          <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
-            <span className="font-bold">{currentCampName}</span>
-          </div>
-        )}
-        {!collapsed && collapsible && otherCamps.length > 0 && (
-          <i
-            className={classNames(
-              "pi pointer-events-none ml-auto",
-              "pi-angle-right",
-            )}
-          />
-        )}
-        {!collapsible && otherCamps.length > 0 && (
-          <i
-            className={classNames(
-              "pi pointer-events-none ml-auto",
-              expanded ? "pi-angle-up" : "pi-angle-down",
-            )}
-          />
-        )}
-      </div>
+    <div
+      {...wrapperProps}
+      style={{
+        position: "relative",
+      }}
+    >
       {/* Mobile inline menu */}
-      {!collapsible && expanded && otherCamps.length > 0 && (
-        <Menu
-          model={campMenuModel}
-          className="w-full border-none flex-shrink-0"
-        />
+      {!collapsible && (
+        <>
+          <div
+            className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+            onClick={handleToggle}
+          >
+            {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
+            <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
+              <i className="pi pi-flag" />
+            </div>
+            {/* Campaign name - same style as UserMenuSection user block */}
+            {!collapsed && (
+              <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
+                <span className="font-bold">{currentCampName}</span>
+              </div>
+            )}
+            {!collapsed && collapsible && otherCamps.length > 0 && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  "pi-angle-right",
+                )}
+              />
+            )}
+            {!collapsible && otherCamps.length > 0 && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  expanded ? "pi-angle-up" : "pi-angle-down",
+                )}
+              />
+            )}
+          </div>
+          {expanded && otherCamps.length > 0 && (
+            <Menu
+              model={campMenuModel}
+              className="w-full border-none flex-shrink-0"
+            />
+          )}
+        </>
       )}
-      {/* Desktop TieredMenu popup */}
+      {/* Desktop TieredMenu */}
       {collapsible && otherCamps.length > 0 && (
-        <TieredMenu ref={menuRef} model={tieredMenuModel} />
+        <TieredMenu
+          ref={menuRef}
+          model={tieredMenuModel}
+          className="w-full border-none"
+        />
       )}
     </div>
   );
