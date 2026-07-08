@@ -5,11 +5,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { useAuth } from "@/auth/AuthContext";
 import { Menu } from "primereact/menu";
+import { TieredMenu } from "primereact/tieredmenu";
 import { useRef } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { classNames } from "primereact/utils";
+import { body } from "@primeuix/themes/aura/card";
 
 function buildMenuItems(
   items: NavItem[],
@@ -94,47 +96,129 @@ const UserMenuSection = React.memo(function UserMenuSection({
   wrapperProps,
   collapsible,
 }: UserMenuSectionProps) {
+  const menuRef = useRef<TieredMenu>(null);
   const [expanded, setExpanded] = useState(false);
-  const menuRef = useRef<Menu>(null);
   const userMenuModel = useMemo(
     () => buildUserMenuItems(userMenu, onNavigate, onLogout),
     [userMenu, onNavigate, onLogout],
   );
 
-  const handleToggle = useCallback(() => {
-    setExpanded((prev) => !prev);
-  }, []);
+  // Build tiered menu model with transparent trigger item
+  const tieredMenuModel = useMemo(
+    () => [
+      {
+        label: "",
+        items: userMenuModel,
+        template: (
+          <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer px-3">
+            <Avatar
+              icon="pi pi-user"
+              shape="circle"
+              className="flex-none pointer-events-none"
+            />
+            {!collapsed && (
+              <div className="flex flex-column align-items-start pointer-events-none">
+                <span className="font-bold">
+                  {user?.name ?? userMenu?.userName}
+                </span>
+                <span className="text-sm">
+                  {user?.role ?? userMenu?.userRole}
+                </span>
+              </div>
+            )}
+            {!collapsed && collapsible && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  "pi-angle-right",
+                )}
+              />
+            )}
+            {!collapsible && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  expanded ? "pi-angle-up" : "pi-angle-down",
+                )}
+              />
+            )}
+          </div>
+        ),
+      },
+    ],
+    [userMenuModel, collapsed, collapsible],
+  );
+
+  const handleToggle = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!collapsible) {
+        // Mobile: inline expand/collapse
+        setExpanded((prev) => !prev);
+      }
+    },
+    [collapsible],
+  );
 
   return (
-    <div {...wrapperProps}>
-      <div
-        className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
-        onClick={handleToggle}
-      >
-        <Avatar
-          icon="pi pi-user"
-          shape="circle"
-          className="flex-none pointer-events-none"
-        />
-        {!collapsed && (
-          <div className="flex flex-column align-items-start pointer-events-none">
-            <span className="font-bold">
-              {user?.name ?? userMenu?.userName}
-            </span>
-            <span className="text-sm">{user?.role ?? userMenu?.userRole}</span>
+    <div
+      {...wrapperProps}
+      style={{
+        position: "relative",
+      }}
+    >
+      {/* Mobile inline menu */}
+      {!collapsible && (
+        <>
+          <div
+            className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+            onClick={handleToggle}
+          >
+            <Avatar
+              icon="pi pi-user"
+              shape="circle"
+              className="flex-none pointer-events-none"
+            />
+            {!collapsed && (
+              <div className="flex flex-column align-items-start pointer-events-none">
+                <span className="font-bold">
+                  {user?.name ?? userMenu?.userName}
+                </span>
+                <span className="text-sm">
+                  {user?.role ?? userMenu?.userRole}
+                </span>
+              </div>
+            )}
+            {!collapsed && collapsible && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  "pi-angle-right",
+                )}
+              />
+            )}
+            {!collapsible && (
+              <i
+                className={classNames(
+                  "pi pointer-events-none ml-auto",
+                  expanded ? "pi-angle-up" : "pi-angle-down",
+                )}
+              />
+            )}
           </div>
-        )}
-        <i
-          className={classNames(
-            "pi pointer-events-none ml-auto",
-            expanded ? "pi-angle-up" : "pi-angle-down",
+          {expanded && (
+            <Menu
+              model={userMenuModel}
+              className="w-full border-none flex-shrink-0"
+            />
           )}
-        />
-      </div>
-      {expanded && (
-        <Menu
-          model={userMenuModel}
-          className="w-full border-none flex-shrink-0"
+        </>
+      )}
+      {/* Desktop TieredMenu popup */}
+      {collapsible && (
+        <TieredMenu
+          ref={menuRef}
+          model={tieredMenuModel}
+          className="w-full border-none"
         />
       )}
     </div>
@@ -161,12 +245,8 @@ const CampMenuSection = React.memo(function CampMenuSection({
   wrapperProps,
   collapsible,
 }: CampMenuSectionProps) {
+  const menuRef = useRef<TieredMenu>(null);
   const [expanded, setExpanded] = useState(false);
-  const menuRef = useRef<Menu>(null);
-
-  const handleToggle = useCallback(() => {
-    setExpanded((prev) => !prev);
-  }, []);
 
   const handleCampChange = useCallback((campId: number) => {
     // Set cookie and reload
@@ -174,13 +254,39 @@ const CampMenuSection = React.memo(function CampMenuSection({
     window.location.reload();
   }, []);
 
+  const campMenuModel = useMemo(() => {
+    if (!camps || camps.length === 0) return [];
+    const otherCamps = camps.filter((c) => !c.current);
+    return buildCampMenuItems(otherCamps, handleCampChange);
+  }, [camps, handleCampChange]);
+
+  // Build tiered menu model with transparent trigger item
+  const tieredMenuModel = useMemo(
+    () => [
+      {
+        label: "",
+        items: campMenuModel,
+      },
+    ],
+    [campMenuModel],
+  );
+
+  const handleToggle = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (collapsible) {
+        // Desktop: use TieredMenu popup
+        // menuRef.current?.toggle(e);
+      } else {
+        // Mobile: inline expand/collapse
+        setExpanded((prev) => !prev);
+      }
+    },
+    [collapsible],
+  );
+
   if (!camps || camps.length === 0) return null;
 
   const otherCamps = camps.filter((c) => !c.current);
-  const campMenuModel = useMemo(
-    () => buildCampMenuItems(otherCamps, handleCampChange),
-    [otherCamps, handleCampChange],
-  );
 
   return (
     <div {...wrapperProps}>
@@ -198,8 +304,15 @@ const CampMenuSection = React.memo(function CampMenuSection({
             <span className="font-bold">{currentCampName}</span>
           </div>
         )}
-        {/* Expand/collapse arrow - positioned at the right like UserMenuSection */}
-        {!collapsed && otherCamps.length > 0 && (
+        {!collapsed && collapsible && otherCamps.length > 0 && (
+          <i
+            className={classNames(
+              "pi pointer-events-none ml-auto",
+              "pi-angle-right",
+            )}
+          />
+        )}
+        {!collapsible && otherCamps.length > 0 && (
           <i
             className={classNames(
               "pi pointer-events-none ml-auto",
@@ -208,11 +321,16 @@ const CampMenuSection = React.memo(function CampMenuSection({
           />
         )}
       </div>
-      {expanded && otherCamps.length > 0 && (
+      {/* Mobile inline menu */}
+      {!collapsible && expanded && otherCamps.length > 0 && (
         <Menu
           model={campMenuModel}
           className="w-full border-none flex-shrink-0"
         />
+      )}
+      {/* Desktop TieredMenu popup */}
+      {collapsible && otherCamps.length > 0 && (
+        <TieredMenu ref={menuRef} model={tieredMenuModel} />
       )}
     </div>
   );
@@ -347,7 +465,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               onNavigate={handleNav}
               onLogout={handleLogout}
               user={user}
-              wrapperProps={{ className: "p-3" }}
+              // wrapperProps={{ className: "p-3" }}
               collapsible
             />
           ) : !isAuthenticated ? (
@@ -376,7 +494,7 @@ export const DashboardSidebar = React.memo(function DashboardSidebar({
               currentCampId={currentCampId || 0}
               currentCampName={currentCampName || ""}
               collapsed={collapsed}
-              wrapperProps={{ className: "p-3" }}
+              // wrapperProps={{ className: "p-3" }}
               collapsible
             />
           </div>
