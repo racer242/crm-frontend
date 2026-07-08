@@ -53,6 +53,7 @@ function buildUserMenuItems(
     return {
       label: item.label,
       icon: item.icon,
+      className: "min-w-max",
       command: () => {
         if (item.action === "logout") {
           onLogout();
@@ -71,6 +72,7 @@ function buildCampMenuItems(
   return camps.map((camp) => ({
     label: camp.name,
     command: () => onCampChange(camp.id),
+    className: "min-w-max",
   }));
 }
 
@@ -110,7 +112,10 @@ const UserMenuSection = React.memo(function UserMenuSection({
         label: "",
         items: userMenuModel,
         template: (
-          <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer px-3">
+          <div
+            className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+            style={{ paddingLeft: ".75rem", paddingRight: ".75rem" }}
+          >
             <Avatar
               icon="pi pi-user"
               shape="circle"
@@ -267,12 +272,13 @@ const CampMenuSection = React.memo(function CampMenuSection({
         label: "",
         items: campMenuModel,
         template: (
-          <div className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer px-3">
-            {/* Icon area - same width as Avatar in UserMenuSection (~2.5rem) */}
+          <div
+            className="w-full p-link flex gap-3 align-items-center h-4rem text-color cursor-pointer"
+            style={{ paddingLeft: ".75rem", paddingRight: ".75rem" }}
+          >
             <div className="flex justify-content-center flex-none pointer-events-none w-2rem">
               <i className="pi pi-flag" />
             </div>
-            {/* Campaign name - same style as UserMenuSection user block */}
             {!collapsed && (
               <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
                 <span className="font-bold">{currentCampName}</span>
