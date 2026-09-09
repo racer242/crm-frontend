@@ -4,7 +4,7 @@
     "method": "GET",
     "url": "/v1/crm/users",
     "channel": "instance",
-    "adapter": "extractPaginationItems",
+    "adapter": "ops.pagination.response",
     "note": "Операционные данные: Список участников"
   },
   {

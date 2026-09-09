@@ -319,7 +319,9 @@ async function handleRequest(
 
     if (baseUrl) {
       const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
-      const path = resolvedUrl.startsWith("/") ? resolvedUrl : "/" + resolvedUrl;
+      const path = resolvedUrl.startsWith("/")
+        ? resolvedUrl
+        : "/" + resolvedUrl;
       resolvedUrl = cleanBaseUrl + path;
     } else if (
       !resolvedUrl.startsWith("http://") &&
@@ -396,7 +398,7 @@ async function handleRequest(
     if (channel === "instance" && signingSecret) {
       const timestamp = Math.floor(Date.now() / 1000);
       const nonce = crypto.randomBytes(16).toString("hex");
-      
+
       // Extract path from resolvedUrl for signing (excluding protocol and host)
       let urlPath;
       try {
@@ -406,17 +408,29 @@ async function handleRequest(
         urlPath = resolvedUrl;
       }
 
-      const signature = generateSignature(signingSecret, request.method, urlPath, timestamp, nonce);
+      const signature = generateSignature(
+        signingSecret,
+        request.method,
+        urlPath,
+        timestamp,
+        nonce,
+      );
 
       if (fetchOptions.headers) {
-        (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] = keyId || "";
-        (fetchOptions.headers as Record<string, string>)["X-Signature"] = signature;
-        (fetchOptions.headers as Record<string, string>)["X-Timestamp"] = timestamp.toString();
+        (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] =
+          keyId || "";
+        (fetchOptions.headers as Record<string, string>)["X-Signature"] =
+          signature;
+        (fetchOptions.headers as Record<string, string>)["X-Timestamp"] =
+          timestamp.toString();
         (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
-        (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] = "1.0";
-        
+        (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
+          "1.0";
+
         // Remove Authorization header if present, as instance auth is via signature
-        delete (fetchOptions.headers as Record<string, string>)["Authorization"];
+        delete (fetchOptions.headers as Record<string, string>)[
+          "Authorization"
+        ];
       }
     }
 
