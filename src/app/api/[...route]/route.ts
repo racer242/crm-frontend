@@ -431,11 +431,11 @@ async function handleRequest(
         if (fetchOptions.headers) {
           (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] =
             keyId || "";
-          (fetchOptions.headers as Record<string, string>)["X-Signature"] =
+          (fetchOptions.headers as Record<string, string>)["X-Crm-Signature"] =
             signature;
-          (fetchOptions.headers as Record<string, string>)["X-Timestamp"] =
+          (fetchOptions.headers as Record<string, string>)["X-Crm-Timestamp"] =
             timestamp.toString();
-          (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
+          (fetchOptions.headers as Record<string, string>)["X-Crm-Nonce"] = nonce;
           (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
             macroEngine.apply("{$config.apiExchangeVersion}") as string;
 
