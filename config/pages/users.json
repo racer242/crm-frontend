@@ -33,8 +33,7 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.users",
-      "adapter": "extractPaginationItems"
+      "target": "state.users"
     }
   ],
   "shortcuts": {
@@ -76,7 +75,6 @@
                 "filters": "{$state.users.filters}"
               },
               "format": { "$ref": "../system/list-request-format.json" },
-              "adapter": "extractPaginationItems",
               "onSuccess": [
                 {
                   "type": "log",
