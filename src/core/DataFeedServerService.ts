@@ -65,27 +65,22 @@ export async function executeServerDataFeeds(
       data = await applyRequestAdapter(feed.adapter, data);
 
       // Resolve the URL (check if it's a router URL)
+      let finalUrl = url;
       if (url.startsWith("/api/")) {
         const routeName = url.substring(5);
         const routeConfig = apiRoutes?.find((r) => r.path === routeName);
         if (routeConfig) {
           // Apply macros to the route URL
-          url = macroEngine.apply(routeConfig.url) as string;
+          finalUrl = macroEngine.apply(routeConfig.url) as string;
         }
       }
 
-      // Prepend campaign base URL if url is a relative path
-      if (
-        campApiUrl &&
-        !url.startsWith("http://") &&
-        !url.startsWith("https://")
-      ) {
-        const baseUrl = campApiUrl.replace(/\/+$/, "");
-        const path = url.startsWith("/") ? url : "/" + url;
-        url = baseUrl + path;
-      }
-
-      // Build headers
+      // IMPORTANT: To use the unified API Router logic (channels, HMAC signing),
+      // we forward requests to our own internal API endpoint.
+      const host = serverSources.env?.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+      const internalPath = url.startsWith("/api/") ? url : `/api/${routeName || "proxy"}`;
+      
+      // Build headers for the INTERNAL request
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -95,7 +90,7 @@ export async function executeServerDataFeeds(
         headers["Authorization"] = `Bearer ${authToken}`;
       }
 
-      // Execute the request
+      // Execute the request to our own API Router
       const options: RequestInit = {
         method: feed.method,
         headers,
@@ -105,11 +100,17 @@ export async function executeServerDataFeeds(
         if (["POST", "PUT", "PATCH"].includes(feed.method)) {
           options.body = JSON.stringify(data);
         } else {
-          url = buildUrlWithParams(url, data);
+          finalUrl = buildUrlWithParams(finalUrl, data);
         }
       }
 
-      const response = await fetch(url, options);
+      // Construct full internal URL
+      const baseUrl = host.replace(/\/+$/, "");
+      const path = finalUrl.startsWith("/") ? finalUrl : "/" + finalUrl;
+      const requestUrl = baseUrl + path;
+
+      console.log(`[DataFeed SSR] 🚀 Fetching: ${requestUrl}`);
+      const response = await fetch(requestUrl, options);
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
