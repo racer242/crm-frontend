@@ -1,59 +1,91 @@
 {
   "id": "opsUsersPage",
   "type": "page",
-  "title": "Участники",
   "route": "/ops/users",
   "state": {
-    "items": [],
-    "pagination": {
-      "page": 1,
-      "limit": 20,
-      "total_items": 0
+    "loading": false,
+    "initialized": true,
+    "items": {
+      "value": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "shortcuts": {
+    "requestUsers": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users",
+              "method": "GET",
+              "target": "state.items.value",
+              "data": {
+                "offset": "{$state.opsUsersPage.state.items.first}",
+                "limit": "{$state.opsUsersPage.state.items.rows}"
+              },
+              "adapter": "extractPaginationItems"
+            }
+          }
+        ]
+      }
     }
   },
   "sections": [
     {
-      "id": "headerSection",
+      "id": "mainSection",
       "blocks": [
         {
-          "id": "headerBlock",
+          "id": "usersTableBlock",
           "components": [
             {
-              "type": "Title",
-              "text": "Управление участниками",
-              "level": 2
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "tableSection",
-      "dataFeed": [
-        {
-          "method": "GET",
-          "url": "/api/ops/users?page={$state.opsUsersPage.state.pagination.page}&limit={$state.opsUsersPage.state.pagination.limit}",
-          "target": "state.items",
-          "adapter": "extractPaginationItems"
-        }
-      ],
-      "blocks": [
-        {
-          "id": "tableBlock",
-          "components": [
-            {
-              "type": "DataTable",
-              "value": "@opsUsersPage.state.items",
-              "columns": [
-                { "field": "id", "header": "ID", "width": "10rem" },
-                { "field": "name", "header": "Имя", "width": "15rem" },
-                { "field": "phone", "header": "Телефон" },
-                { "field": "status", "header": "Статус", "width": "8rem" }
-              ],
-              "paginator": true,
-              "rows": "{$state.opsUsersPage.state.pagination.limit}",
-              "totalRecords": "{$state.opsUsersPage.state.pagination.total_items}",
-              "lazy": true,
+              "id": "usersTable",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@opsUsersPage.state.items.value",
+                "paginator": true,
+                "lazy": true,
+                "rows": "@opsUsersPage.state.items.rows",
+                "totalRecords": "@opsUsersPage.state.items.totalRecords",
+                "first": "@opsUsersPage.state.items.first",
+                "columns": [
+                  { "field": "id", "header": "ID", "width": "5rem" },
+                  { "field": "fio", "header": "ФИО" },
+                  { "field": "phone", "header": "Телефон" }
+                ],
+                "customColumns": [
+                  {
+                    "field": "details",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-eye",
+                          "link": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
               "events": [
                 {
                   "type": "onPage",
@@ -61,12 +93,23 @@
                     {
                       "type": "setStateField",
                       "params": {
-                        "target": "opsUsersPage.state.pagination.page",
-                        "value": "{$event.page + 1}"
+                        "target": "opsUsersPage.state.items.first",
+                        "value": "{$event.first}"
                       }
                     },
-                    { "type": "refresh" }
+                    {
+                      "type": "setStateField",
+                      "params": {
+                        "target": "opsUsersPage.state.items.rows",
+                        "value": "{$event.rows}"
+                      }
+                    },
+                    "requestUsers"
                   ]
+                },
+                {
+                  "type": "onLoad",
+                  "commands": ["requestUsers"]
                 }
               ]
             }
