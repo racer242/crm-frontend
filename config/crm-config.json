@@ -38,6 +38,7 @@
     "indexPageId": "profile",
     "baseURL": "{$env.NEXT_PUBLIC_BASE_URL}",
     "timeout": 10000,
+    "apiExchangeVersion": "0.0.0",
     "features": {
       "darkMode": true,
       "apiAccess": true,

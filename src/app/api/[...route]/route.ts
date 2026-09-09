@@ -434,7 +434,7 @@ async function handleRequest(
             timestamp.toString();
           (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
           (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
-            "0.0.0";
+            macroEngine.apply("{$config.apiExchangeVersion}") as string;
 
           delete (fetchOptions.headers as Record<string, string>)["Authorization"];
         }
