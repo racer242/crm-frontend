@@ -227,7 +227,9 @@ function generateSignature(
   timestamp: number,
   nonce: string,
 ): string {
+  // Согласно документации: метод, путь, timestamp, nonce через \n
   const stringToSign = `${method.toUpperCase()}\n${path}\n${timestamp}\n${nonce}`;
+  console.log(`[API Router] 🧩 String to sign: ${stringToSign}`);
   return crypto.createHmac("sha256", secret).update(stringToSign).digest("hex");
 }
 
@@ -395,42 +397,49 @@ async function handleRequest(
     const fetchOptions = buildFetchOptions(request, refreshedAccessToken);
 
     // Add HMAC signature headers for instance channel
-    if (channel === "instance" && signingSecret) {
-      const timestamp = Math.floor(Date.now() / 1000);
-      const nonce = crypto.randomBytes(16).toString("hex");
+    if (channel === "instance") {
+      console.log(`[API Router] 🔑 Instance channel detected. Secret: ${!!signingSecret}, KeyId: ${keyId}`);
+      
+      if (signingSecret) {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const nonce = crypto.randomBytes(16).toString("hex");
 
-      // Extract path from resolvedUrl for signing (excluding protocol and host)
-      let urlPath;
-      try {
-        const urlObj = new URL(resolvedUrl);
-        urlPath = urlObj.pathname + urlObj.search;
-      } catch {
-        urlPath = resolvedUrl;
-      }
+        let urlPath;
+        try {
+          const urlObj = new URL(resolvedUrl);
+          // Включаем query string в подпись, если он есть
+          urlPath = urlObj.pathname + urlObj.search;
+        } catch {
+          urlPath = resolvedUrl;
+        }
 
-      const signature = generateSignature(
-        signingSecret,
-        request.method,
-        urlPath,
-        timestamp,
-        nonce,
-      );
+        console.log(`[API Router] 📝 Signing path: ${urlPath}`);
 
-      if (fetchOptions.headers) {
-        (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] =
-          keyId || "";
-        (fetchOptions.headers as Record<string, string>)["X-Signature"] =
-          signature;
-        (fetchOptions.headers as Record<string, string>)["X-Timestamp"] =
-          timestamp.toString();
-        (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
-        (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
-          "1.0";
+        const signature = generateSignature(
+          signingSecret,
+          request.method,
+          urlPath,
+          timestamp,
+          nonce,
+        );
 
-        // Remove Authorization header if present, as instance auth is via signature
-        delete (fetchOptions.headers as Record<string, string>)[
-          "Authorization"
-        ];
+        console.log(`[API Router] ✅ Signature: ${signature.substring(0, 15)}...`);
+
+        if (fetchOptions.headers) {
+          (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] =
+            keyId || "";
+          (fetchOptions.headers as Record<string, string>)["X-Signature"] =
+            signature;
+          (fetchOptions.headers as Record<string, string>)["X-Timestamp"] =
+            timestamp.toString();
+          (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
+          (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
+            "0.0.0";
+
+          delete (fetchOptions.headers as Record<string, string>)["Authorization"];
+        }
+      } else {
+        console.error(`[API Router] ❌ CRITICAL: Instance channel selected but signing secret is MISSING! Check camps.json`);
       }
     }
 
@@ -443,6 +452,7 @@ async function handleRequest(
     }
 
     console.log("------ Request --", resolvedUrl);
+    console.log("------ Headers --", JSON.stringify(fetchOptions.headers, null, 2));
     console.dir(adaptedBody, { depth: null, colors: true });
 
     // Forward the request to the external API
