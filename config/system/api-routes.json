@@ -1,5 +1,4 @@
 [
-  // --- Instance Channel Routes (Operational Data) ---
   {
     "path": "ops/users",
     "method": "GET",
