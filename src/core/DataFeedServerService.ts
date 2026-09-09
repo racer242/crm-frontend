@@ -64,21 +64,19 @@ export async function executeServerDataFeeds(
       // Apply request adapter if specified
       data = await applyRequestAdapter(feed.adapter, data);
 
-      // Resolve the URL (check if it's a router URL)
-      let finalUrl = url;
+      // Resolve the URL macros from api-routes config, but keep the internal /api/ path
+      let internalPath = url; // например, /api/ops/users
       if (url.startsWith("/api/")) {
         const routeName = url.substring(5);
         const routeConfig = apiRoutes?.find((r) => r.path === routeName);
         if (routeConfig) {
-          // Apply macros to the route URL
-          finalUrl = macroEngine.apply(routeConfig.url) as string;
+          // Мы не меняем internalPath, он нужен для попадания в app/api/[...route]
+          // Но мы могли бы использовать routeConfig.url для чего-то еще, если понадобится.
         }
       }
 
-      // IMPORTANT: To use the unified API Router logic (channels, HMAC signing),
-      // we forward requests to our own internal API endpoint.
+      // IMPORTANT: Forward requests to our own internal API endpoint to use unified logic
       const host = serverSources.env?.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      const internalPath = url.startsWith("/api/") ? url : `/api/${routeName || "proxy"}`;
       
       // Build headers for the INTERNAL request
       const headers: Record<string, string> = {
@@ -90,24 +88,25 @@ export async function executeServerDataFeeds(
         headers["Authorization"] = `Bearer ${authToken}`;
       }
 
-      // Execute the request to our own API Router
+      // Prepare options
       const options: RequestInit = {
         method: feed.method,
         headers,
       };
 
+      // We need to pass original data/macros to the internal router so IT can resolve them
+      // against the external API. For now, we just forward the request to /api/ops/users
+      let requestUrl = `${host.replace(/\/+$/, "")}${internalPath}`;
+
       if (data) {
         if (["POST", "PUT", "PATCH"].includes(feed.method)) {
           options.body = JSON.stringify(data);
         } else {
-          finalUrl = buildUrlWithParams(finalUrl, data);
+          // For GET, we append data as query params to the INTERNAL url
+          // The API Router will then pick these up or use its own logic
+          requestUrl = buildUrlWithParams(requestUrl, data);
         }
       }
-
-      // Construct full internal URL
-      const baseUrl = host.replace(/\/+$/, "");
-      const path = finalUrl.startsWith("/") ? finalUrl : "/" + finalUrl;
-      const requestUrl = baseUrl + path;
 
       console.log(`[DataFeed SSR] 🚀 Fetching: ${requestUrl}`);
       const response = await fetch(requestUrl, options);
