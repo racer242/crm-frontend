@@ -34,7 +34,7 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": { "icon": "pi pi-home", "url": "/profile" },
                 "model": [{ "label": "Профиль {@state.user.name}" }]
               }
             }
