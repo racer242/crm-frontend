@@ -219,17 +219,18 @@ function buildFetchOptions(
 
 /**
  * Generates HMAC-SHA256 signature for instance requests
+ * Canonical string: METHOD\nPATH\nBODY_HASH\nTIMESTAMP\nNONCE
  */
 function generateSignature(
   secret: string,
   method: string,
   path: string,
+  bodyHash: string, // SHA256 hash of the request body (or empty string hash)
   timestamp: number,
   nonce: string,
 ): string {
-  // Согласно документации: метод, путь, timestamp, nonce через \n
-  const stringToSign = `${method.toUpperCase()}\n${path}\n${timestamp}\n${nonce}`;
-  console.log(`[API Router] 🧩 String to sign: ${stringToSign}`);
+  const stringToSign = `${method.toUpperCase()}\n${path}\n${bodyHash}\n${timestamp}\n${nonce}`;
+  console.log(`[API Router] 🧩 String to sign:\n"${stringToSign.replace(/\n/g, "\\n")}"`);
   return crypto.createHmac("sha256", secret).update(stringToSign).digest("hex");
 }
 
@@ -404,10 +405,16 @@ async function handleRequest(
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = crypto.randomBytes(16).toString("hex");
 
+        // Calculate body hash. For GET/DELETE it's hash of empty string.
+        let bodyToHash = "";
+        if (adaptedBody && ["POST", "PUT", "PATCH"].includes(request.method)) {
+          bodyToHash = JSON.stringify(adaptedBody);
+        }
+        const bodyHash = crypto.createHash("sha256").update(bodyToHash).digest("hex");
+
         let urlPath;
         try {
           const urlObj = new URL(resolvedUrl);
-          // Убираем '?' если search пустой, чтобы не ломать подпись
           urlPath = urlObj.pathname + (urlObj.search ? urlObj.search : "");
         } catch {
           urlPath = resolvedUrl;
@@ -419,11 +426,11 @@ async function handleRequest(
           signingSecret,
           request.method,
           urlPath,
+          bodyHash,
           timestamp,
           nonce,
         );
 
-        console.log(`[API Router] 🧩 String to sign:\n"${request.method}\n${urlPath}\n${timestamp}\n${nonce}"`);
         console.log(`[API Router] ✅ Signature: ${signature}`);
 
         console.log(`[API Router] ✅ Signature: ${signature.substring(0, 15)}...`);
