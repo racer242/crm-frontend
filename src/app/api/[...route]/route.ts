@@ -407,8 +407,8 @@ async function handleRequest(
         let urlPath;
         try {
           const urlObj = new URL(resolvedUrl);
-          // Включаем query string в подпись, если он есть
-          urlPath = urlObj.pathname + urlObj.search;
+          // Убираем '?' если search пустой, чтобы не ломать подпись
+          urlPath = urlObj.pathname + (urlObj.search ? urlObj.search : "");
         } catch {
           urlPath = resolvedUrl;
         }
@@ -422,6 +422,9 @@ async function handleRequest(
           timestamp,
           nonce,
         );
+
+        console.log(`[API Router] 🧩 String to sign:\n"${request.method}\n${urlPath}\n${timestamp}\n${nonce}"`);
+        console.log(`[API Router] ✅ Signature: ${signature}`);
 
         console.log(`[API Router] ✅ Signature: ${signature.substring(0, 15)}...`);
 
