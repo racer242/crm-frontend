@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Platform Architecture Update: Multi-backend support** — поддержка взаимодействия с управляющим бэкендом и промо-инстансами.
+  - `config/system/camps.json` — обновлена структура записи кампании: `base_api_url` (управление), `crm_api_url`, `crm_key_id`, `crm_signature` (операционные данные).
+  - `src/app/api/[...route]/route.ts` — реализована поддержка каналов (`management` / `instance`). Для канала `instance` автоматически генерируется HMAC-SHA256 подпись запроса.
+  - `src/types/datafeed.ts` — добавлено поле `channel` в `ApiRouteConfig`.
+  - **Security**: Чувствительные данные (`crm_signature`) не передаются на клиент.
+
+### Added
+
+- **Operational Data Pages** — базовые страницы для работы с данными инстанса через защищенный канал: Участники, Чеки, Призы, Акты, Задачи, Сообщения.
+- **Universal Adapters** — добавлены `extractEnvelopeData` и `extractPaginationItems` для обработки стандартизированных ответов API.
+
+### Changed
+
 - **PrimeReact updated to v10.9.8** — минорный стабильный апдейт с v10.9.7. Без breaking changes.
 - **TypeScript: исправлены несоответствия типов** — `dataFeedErrors` в `page.tsx` (string[] → ApiError[]), `parseApiError` в `login/page.tsx` (возврат объекта → строки).
 - **passport_moderation_status / inn_moderation_status**: Тип полей изменён со строки (`""`, `"approved"`, `"rejected"`, `"pending"`) на boolean (`false` — Не принят, `true` — Принят). Обновлён адаптер `user-docs.js` (функция `getModerationInfo`) и начальные значения state в `user-docs.json` и `user-docs-edit.json`.

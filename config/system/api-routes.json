@@ -430,5 +430,77 @@
     "method": "GET",
     "url": "log/events/{$location.routeParams.id}",
     "note": "Журнал: Подробно о событии"
+  },
+
+  // --- Instance Channel Routes (Operational Data) ---
+  {
+    "path": "ops/users",
+    "method": "GET",
+    "url": "/v1/crm/users",
+    "channel": "instance",
+    "adapter": "extractPaginationItems",
+    "note": "Операционные данные: Список участников"
+  },
+  {
+    "path": "ops/users/[id]",
+    "method": "GET",
+    "url": "/v1/crm/users/{$location.routeParams.id}",
+    "channel": "instance",
+    "adapter": "extractEnvelopeData",
+    "note": "Операционные данные: Детали участника"
+  },
+  {
+    "path": "ops/receipts",
+    "method": "GET",
+    "url": "/v1/crm/receipts",
+    "channel": "instance",
+    "adapter": "extractPaginationItems",
+    "note": "Операционные данные: Список чеков"
+  },
+  {
+    "path": "ops/receipts/[id]/approve",
+    "method": "POST",
+    "url": "/v1/crm/receipts/{$location.routeParams.id}/approve",
+    "channel": "instance",
+    "note": "Операционные данные: Одобрить чек"
+  },
+  {
+    "path": "ops/receipts/[id]/reject",
+    "method": "POST",
+    "url": "/v1/crm/receipts/{$location.routeParams.id}/reject",
+    "channel": "instance",
+    "note": "Операционные данные: Отклонить чек"
+  },
+  {
+    "path": "ops/prizes",
+    "method": "GET",
+    "url": "/v1/crm/prizes",
+    "channel": "instance",
+    "adapter": "extractPaginationItems",
+    "note": "Операционные данные: Список призов"
+  },
+  {
+    "path": "ops/acts",
+    "method": "GET",
+    "url": "/v1/crm/acts",
+    "channel": "instance",
+    "adapter": "extractPaginationItems",
+    "note": "Операционные данные: Список актов"
+  },
+  {
+    "path": "ops/tasks",
+    "method": "GET",
+    "url": "/v1/crm/tasks",
+    "channel": "instance",
+    "adapter": "extractEnvelopeData",
+    "note": "Операционные данные: Очередь задач"
+  },
+  {
+    "path": "ops/messages",
+    "method": "GET",
+    "url": "/v1/crm/messages",
+    "channel": "instance",
+    "adapter": "extractPaginationItems",
+    "note": "Операционные данные: Обратная связь"
   }
 ]

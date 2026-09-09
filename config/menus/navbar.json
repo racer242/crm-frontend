@@ -2,44 +2,34 @@
   "id": "mainNavbar",
   "items": [
     {
-      "label": "Dashboard",
-      "icon": "pi pi-home",
-      "route": "/"
-    },
-    {
-      "label": "Статистика",
-      "icon": "pi pi-chart-bar",
-      "route": "/statistics"
-    },
-    {
       "label": "Участники",
       "icon": "pi pi-users",
-      "route": "/users"
-    },
-    {
-      "label": "Акты",
-      "icon": "pi pi-verified",
-      "route": "/acts"
-    },
-    {
-      "label": "Призы",
-      "icon": "pi pi-gift",
-      "route": "/prizes"
+      "route": "/ops/users"
     },
     {
       "label": "Чеки",
       "icon": "pi pi-receipt",
-      "route": "/receipts"
+      "route": "/ops/receipts"
     },
     {
-      "label": "Коды",
-      "icon": "pi pi-star",
-      "route": "/codes"
+      "label": "Призы",
+      "icon": "pi pi-gift",
+      "route": "/ops/prizes"
     },
     {
-      "label": "Коды ЧЗ",
-      "icon": "pi pi-qrcode",
-      "route": "/gtins"
+      "label": "Акты",
+      "icon": "pi pi-file-signature",
+      "route": "/ops/acts"
+    },
+    {
+      "label": "Задачи",
+      "icon": "pi pi-list",
+      "route": "/ops/tasks"
+    },
+    {
+      "label": "Сообщения",
+      "icon": "pi pi-comment",
+      "route": "/ops/messages"
     }
   ]
 }

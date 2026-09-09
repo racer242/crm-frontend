@@ -1,19 +1,15 @@
 {
-  "id": "user-transactions",
+  "id": "prizes",
   "type": "page",
-  "route": "/users/[user_id]/transactions",
+  "route": "/prizes",
   "state": {
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
-    "userData": {
-      "id": "",
-      "fullName": ""
-    },
-    "transactions": {
+    "prizes": {
       "value": [],
       "columns": [],
-      "totalRecords": 0,
+      "totalRecords": 10,
       "rows": 10,
       "first": 0,
       "sortField": "",
@@ -23,16 +19,11 @@
     }
   },
   "meta": {
-    "title": "Транзакции участника — CRM Platform"
+    "title": "Призы — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
-      "method": "GET",
-      "target": "state.userData"
-    },
-    {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/log/transactions",
+      "url": "{$config.baseURL}/api/prizes",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -42,28 +33,28 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.transactions"
+      "target": "state.prizes"
     }
   ],
   "shortcuts": {
-    "requestUserTransactions": {
+    "requestPrizes": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/log/transactions",
+              "url": "/api/prizes",
               "method": "GET",
-              "target": "state.transactions",
+              "target": "state.prizes",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.transactions.first}",
-                "rows": "{$state.transactions.rows}",
-                "sortField": "{$state.transactions.sortField}",
-                "sortOrder": "{$state.transactions.sortOrder}",
-                "search": "{$state.transactions.search}",
-                "filters": "{$state.transactions.filters}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "sortField": "{$state.prizes.sortField}",
+                "sortOrder": "{$state.prizes.sortOrder}",
+                "search": "{$state.prizes.search}",
+                "filters": "{$state.prizes.filters}"
               },
               "format": { "$ref": "../system/list-request-format.json" }
             }
@@ -72,12 +63,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.transactions.first}",
-                "rows": "{$state.transactions.rows}",
-                "sortField": "{$state.transactions.sortField}",
-                "sortOrder": "{$state.transactions.sortOrder}",
-                "search": "{$state.transactions.search}",
-                "filters": "{$state.transactions.filters}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "sortField": "{$state.prizes.sortField}",
+                "sortOrder": "{$state.prizes.sortOrder}",
+                "search": "{$state.prizes.search}",
+                "filters": "{$state.prizes.filters}"
               },
               "format": [
                 {
@@ -99,29 +90,21 @@
   },
   "sections": [
     {
-      "id": "breadcrumbSection",
+      "id": "prizesHeader",
       "type": "section",
-      "className": "",
+      "className": "flex",
       "blocks": [
         {
-          "id": "breadcrumbBlock",
+          "id": "prizesTitle",
           "type": "block",
           "components": [
             {
-              "id": "breadcrumb",
+              "id": "prizesPageTitle",
               "type": "component",
-              "componentType": "Breadcrumb",
-              "className": "border-none p-0",
+              "componentType": "Text",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
-                "model": [
-                  { "label": "Участники", "route": "/users" },
-                  {
-                    "label": "@state.userData.fullName",
-                    "route": "/users/{@state.userData.id}"
-                  },
-                  { "label": "Транзакции" }
-                ]
+                "value": "Призы",
+                "level": 1
               }
             }
           ]
@@ -129,48 +112,24 @@
       ]
     },
     {
-      "id": "menuSection",
+      "id": "prizesFilters",
       "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "menuBlock",
+          "id": "prizesSearchBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "w-full flex gap-3",
           "components": [
             {
-              "id": "menubar",
+              "id": "prizesSearchInput",
               "type": "component",
-              "componentType": "Menubar",
-              "props": {
-                "activeItemId": "activity",
-                "activeSubitemId": "transactions",
-                "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "transactionsFilters",
-      "type": "section",
-      "className": "flex gap-3",
-      "blocks": [
-        {
-          "id": "transactionsSearchBlock",
-          "type": "block",
-          "className": "w-full",
-          "components": [
-            {
-              "id": "transactionsSearchInput",
-              "type": "component",
-              "className": "w-full p-inputtext-sm",
+              "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.transactions.search"
+                "value": "@state.prizes.search"
               },
               "events": [
                 {
@@ -180,26 +139,16 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.transactions.search"
+                        "target": "state.prizes.search"
                       }
                     },
-                    "requestUserTransactions"
+                    "requestPrizes"
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "transactionsFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "flex-initial"
-          },
-          "className": "flex flex-row gap-3 p-inputtext-sm justify-content-end",
-          "components": [
+            },
             {
-              "id": "transactionsToggleFilters",
+              "id": "prizesToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -227,18 +176,18 @@
           ]
         },
         {
-          "id": "transactionsActiveFilterBlock",
+          "id": "prizesActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "transactionsActiveFilterChips",
+              "id": "prizesActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.transactions.filters"
+                "value": "@state.prizes.filters"
               },
               "events": [
                 {
@@ -248,20 +197,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.transactions.filters"
+                        "target": "state.prizes.filters"
                       }
                     },
-                    "requestUserTransactions"
+                    "requestPrizes"
                   ]
                 }
               ]
             },
             {
-              "id": "transactionsFilterDrawer",
+              "id": "prizesFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.transactions.filters",
+                "value": "@state.prizes.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -274,7 +223,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.transactions.filters"
+                        "target": "state.prizes.filters"
                       }
                     },
                     {
@@ -283,7 +232,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserTransactions"
+                    "requestPrizes"
                   ]
                 },
                 {
@@ -304,38 +253,114 @@
       ]
     },
     {
-      "id": "transactionsTableSection",
+      "id": "prizesTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "transactionsTableBlock",
+          "id": "prizesTableBlock",
           "type": "block",
+          "className": "w-full",
           "components": [
             {
-              "id": "transactionsTable",
+              "id": "prizesTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.transactions.value",
-                "columns": "@state.transactions.columns",
-                "totalRecords": "@state.transactions.totalRecords",
-                "rows": "@state.transactions.rows",
-                "first": "@state.transactions.first",
-                "sortField": "@state.transactions.sortField",
-                "sortOrder": "@state.transactions.sortOrder",
+                "value": "@state.prizes.value",
+                "columns": "@state.prizes.columns",
+                "totalRecords": "@state.prizes.totalRecords",
+                "rows": "@state.prizes.rows",
+                "first": "@state.prizes.first",
+                "sortField": "@state.prizes.sortField",
+                "sortOrder": "@state.prizes.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "email",
+                    "body": [
+                      {
+                        "id": "sendButton",
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-envelope",
+                          "label": "{#field}",
+                          "link": true,
+                          "size": "small",
+                          "pt": {
+                            "label": { "className": "font-normal" },
+                            "root": { "className": "p-1" }
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "mailto:{#field}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/prizes/{#row._rowId}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserTransactions"]
+                  "commands": ["requestPrizes"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserTransactions"]
+                  "commands": ["requestPrizes"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/prizes/{$event.data._rowId}"
+                      }
+                    }
+                  ]
                 }
               ]
             }

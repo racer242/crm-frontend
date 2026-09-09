@@ -19,6 +19,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { initApp, getConfig } from "@/core/config";
 import {
   ApiRouteConfig,
@@ -217,6 +218,20 @@ function buildFetchOptions(
 }
 
 /**
+ * Generates HMAC-SHA256 signature for instance requests
+ */
+function generateSignature(
+  secret: string,
+  method: string,
+  path: string,
+  timestamp: number,
+  nonce: string,
+): string {
+  const stringToSign = `${method.toUpperCase()}\n${path}\n${timestamp}\n${nonce}`;
+  return crypto.createHmac("sha256", secret).update(stringToSign).digest("hex");
+}
+
+/**
  * Handles all HTTP methods for API routes
  */
 async function handleRequest(
@@ -280,7 +295,7 @@ async function handleRequest(
     const macroEngine = new MacroEngine(serverSources);
     let resolvedUrl = macroEngine.apply(routeConfig.url) as string;
 
-    // --- Resolve campaign base URL ---
+    // --- Resolve campaign URL based on channel ---
     const campIdCookie = request.cookies.get("camp_id")?.value;
     const allCamps: CampItem[] = (config as any)?.camps || [];
     const currentCampId = campIdCookie
@@ -289,14 +304,23 @@ async function handleRequest(
     const currentCamp =
       allCamps.find((c: CampItem) => c.id === currentCampId) || allCamps[0];
 
-    if (currentCamp?.api_url) {
-      // Prepend camp api_url to the relative path from api-routes
-      // Ensure single slash between base URL and path
-      const baseUrl = currentCamp.api_url.replace(/\/+$/, "");
-      const path = resolvedUrl.startsWith("/")
-        ? resolvedUrl
-        : "/" + resolvedUrl;
-      resolvedUrl = baseUrl + path;
+    const channel = routeConfig.channel || "management";
+    let baseUrl: string | undefined;
+    let signingSecret: string | undefined;
+    let keyId: string | undefined;
+
+    if (channel === "instance") {
+      baseUrl = currentCamp?.crm_api_url;
+      signingSecret = currentCamp?.crm_signature;
+      keyId = currentCamp?.crm_key_id;
+    } else {
+      baseUrl = currentCamp?.base_api_url;
+    }
+
+    if (baseUrl) {
+      const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
+      const path = resolvedUrl.startsWith("/") ? resolvedUrl : "/" + resolvedUrl;
+      resolvedUrl = cleanBaseUrl + path;
     } else if (
       !resolvedUrl.startsWith("http://") &&
       !resolvedUrl.startsWith("https://")
@@ -304,7 +328,7 @@ async function handleRequest(
       return NextResponse.json(
         {
           error: {
-            message: `Campaign not found or no API URL configured. Set camp_id cookie or check camps configuration.`,
+            message: `Campaign not found or no API URL configured for channel '${channel}'. Set camp_id cookie or check camps configuration.`,
           },
         },
         { status: 400 },
@@ -367,6 +391,34 @@ async function handleRequest(
 
     // Build the fetch options with refreshed token if available
     const fetchOptions = buildFetchOptions(request, refreshedAccessToken);
+
+    // Add HMAC signature headers for instance channel
+    if (channel === "instance" && signingSecret) {
+      const timestamp = Math.floor(Date.now() / 1000);
+      const nonce = crypto.randomBytes(16).toString("hex");
+      
+      // Extract path from resolvedUrl for signing (excluding protocol and host)
+      let urlPath;
+      try {
+        const urlObj = new URL(resolvedUrl);
+        urlPath = urlObj.pathname + urlObj.search;
+      } catch {
+        urlPath = resolvedUrl;
+      }
+
+      const signature = generateSignature(signingSecret, request.method, urlPath, timestamp, nonce);
+
+      if (fetchOptions.headers) {
+        (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] = keyId || "";
+        (fetchOptions.headers as Record<string, string>)["X-Signature"] = signature;
+        (fetchOptions.headers as Record<string, string>)["X-Timestamp"] = timestamp.toString();
+        (fetchOptions.headers as Record<string, string>)["X-Nonce"] = nonce;
+        (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] = "1.0";
+        
+        // Remove Authorization header if present, as instance auth is via signature
+        delete (fetchOptions.headers as Record<string, string>)["Authorization"];
+      }
+    }
 
     if (adaptedBody) {
       if (["POST", "PUT", "PATCH"].includes(request.method)) {

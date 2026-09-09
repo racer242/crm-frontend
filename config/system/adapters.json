@@ -146,5 +146,13 @@
   "messages.get.response.js": {
     "type": "js",
     "script": "./config/adapters/messages.get.response.js"
+  },
+  "extractEnvelopeData": {
+    "type": "js",
+    "code": "return data && data.status === 'ok' ? data.data : data;"
+  },
+  "extractPaginationItems": {
+    "type": "js",
+    "code": "if (!data || data.status !== 'ok') return []; const d = data.data; return Array.isArray(d) ? d : (d && d.items ? d.items : []);"
   }
 }

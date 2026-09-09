@@ -1,25 +1,25 @@
 {
-  "id": "opsReceiptsPage",
+  "id": "opsMessagesPage",
   "type": "page",
-  "title": "Чеки",
-  "route": "/ops/receipts",
+  "title": "Обратная связь",
+  "route": "/ops/messages",
   "state": { "items": [] },
   "sections": [
     {
       "id": "content",
-      "dataFeed": [{ "method": "GET", "url": "/api/ops/receipts", "target": "state.items", "adapter": "extractPaginationItems" }],
+      "dataFeed": [{ "method": "GET", "url": "/api/ops/messages", "target": "state.items", "adapter": "extractPaginationItems" }],
       "blocks": [
         {
           "id": "b1",
           "components": [
             {
               "type": "DataTable",
-              "value": "@opsReceiptsPage.state.items",
+              "value": "@opsMessagesPage.state.items",
               "columns": [
                 { "field": "id", "header": "ID" },
                 { "field": "user_id", "header": "Участник" },
-                { "field": "amount", "header": "Сумма" },
-                { "field": "status", "header": "Статус" }
+                { "field": "message", "header": "Сообщение" },
+                { "field": "created_at", "header": "Дата" }
               ]
             }
           ]

@@ -1,12 +1,12 @@
 {
-  "id": "codes",
+  "id": "acts",
   "type": "page",
-  "route": "/codes",
+  "route": "/acts",
   "state": {
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
-    "codes": {
+    "acts": {
       "value": [],
       "columns": [],
       "totalRecords": 10,
@@ -19,11 +19,11 @@
     }
   },
   "meta": {
-    "title": "Коды — CRM Platform"
+    "title": "Акты — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/codes",
+      "url": "{$config.baseURL}/api/acts",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -33,28 +33,28 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.codes"
+      "target": "state.acts"
     }
   ],
   "shortcuts": {
-    "requestCodes": {
+    "requestActs": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/codes",
+              "url": "/api/acts",
               "method": "GET",
-              "target": "state.codes",
+              "target": "state.acts",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.codes.first}",
-                "rows": "{$state.codes.rows}",
-                "sortField": "{$state.codes.sortField}",
-                "sortOrder": "{$state.codes.sortOrder}",
-                "search": "{$state.codes.search}",
-                "filters": "{$state.codes.filters}"
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.acts.sortField}",
+                "sortOrder": "{$state.acts.sortOrder}",
+                "search": "{$state.acts.search}",
+                "filters": "{$state.acts.filters}"
               },
               "format": { "$ref": "../system/list-request-format.json" }
             }
@@ -63,12 +63,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.codes.first}",
-                "rows": "{$state.codes.rows}",
-                "sortField": "{$state.codes.sortField}",
-                "sortOrder": "{$state.codes.sortOrder}",
-                "search": "{$state.codes.search}",
-                "filters": "{$state.codes.filters}"
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.acts.sortField}",
+                "sortOrder": "{$state.acts.sortOrder}",
+                "search": "{$state.acts.search}",
+                "filters": "{$state.acts.filters}"
               },
               "format": [
                 {
@@ -90,20 +90,20 @@
   },
   "sections": [
     {
-      "id": "codesHeader",
+      "id": "actsHeader",
       "type": "section",
       "className": "flex",
       "blocks": [
         {
-          "id": "codesTitle",
+          "id": "actsTitle",
           "type": "block",
           "components": [
             {
-              "id": "codesPageTitle",
+              "id": "actsPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Коды",
+                "value": "Акты",
                 "level": 1
               }
             }
@@ -112,24 +112,24 @@
       ]
     },
     {
-      "id": "codesFilters",
+      "id": "actsFilters",
       "type": "section",
       "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "codesSearchBlock",
+          "id": "actsSearchBlock",
           "type": "block",
           "className": "w-full flex gap-3",
           "components": [
             {
-              "id": "codesSearchInput",
+              "id": "actsSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.codes.search"
+                "value": "@state.acts.search"
               },
               "events": [
                 {
@@ -139,16 +139,16 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.codes.search"
+                        "target": "state.acts.search"
                       }
                     },
-                    "requestCodes"
+                    "requestActs"
                   ]
                 }
               ]
             },
             {
-              "id": "codesToggleFilters",
+              "id": "actsToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -176,18 +176,18 @@
           ]
         },
         {
-          "id": "codesActiveFilterBlock",
+          "id": "actsActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "codesActiveFilterChips",
+              "id": "actsActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.codes.filters"
+                "value": "@state.acts.filters"
               },
               "events": [
                 {
@@ -197,20 +197,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.codes.filters"
+                        "target": "state.acts.filters"
                       }
                     },
-                    "requestCodes"
+                    "requestActs"
                   ]
                 }
               ]
             },
             {
-              "id": "codesFilterDrawer",
+              "id": "actsFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.codes.filters",
+                "value": "@state.acts.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -223,7 +223,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.codes.filters"
+                        "target": "state.acts.filters"
                       }
                     },
                     {
@@ -232,7 +232,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestCodes"
+                    "requestActs"
                   ]
                 },
                 {
@@ -253,26 +253,26 @@
       ]
     },
     {
-      "id": "codesTableSection",
+      "id": "actsTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "codesTableBlock",
+          "id": "actsTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "codesTable",
+              "id": "actsTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.codes.value",
-                "columns": "@state.codes.columns",
-                "totalRecords": "@state.codes.totalRecords",
-                "rows": "@state.codes.rows",
-                "first": "@state.codes.first",
-                "sortField": "@state.codes.sortField",
-                "sortOrder": "@state.codes.sortOrder",
+                "value": "@state.acts.value",
+                "columns": "@state.acts.columns",
+                "totalRecords": "@state.acts.totalRecords",
+                "rows": "@state.acts.rows",
+                "first": "@state.acts.first",
+                "sortField": "@state.acts.sortField",
+                "sortOrder": "@state.acts.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -311,17 +311,56 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/acts/{#row._rowId}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestCodes"]
+                  "commands": ["requestActs"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestCodes"]
+                  "commands": ["requestActs"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/acts/{$event.data._rowId}"
+                      }
+                    }
+                  ]
                 }
               ]
             }

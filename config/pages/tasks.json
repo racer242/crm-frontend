@@ -1,24 +1,23 @@
 {
-  "id": "opsReceiptsPage",
+  "id": "opsTasksPage",
   "type": "page",
-  "title": "Чеки",
-  "route": "/ops/receipts",
+  "title": "Очередь задач",
+  "route": "/ops/tasks",
   "state": { "items": [] },
   "sections": [
     {
       "id": "content",
-      "dataFeed": [{ "method": "GET", "url": "/api/ops/receipts", "target": "state.items", "adapter": "extractPaginationItems" }],
+      "dataFeed": [{ "method": "GET", "url": "/api/ops/tasks", "target": "state.items", "adapter": "extractEnvelopeData" }],
       "blocks": [
         {
           "id": "b1",
           "components": [
             {
               "type": "DataTable",
-              "value": "@opsReceiptsPage.state.items",
+              "value": "@opsTasksPage.state.items",
               "columns": [
                 { "field": "id", "header": "ID" },
-                { "field": "user_id", "header": "Участник" },
-                { "field": "amount", "header": "Сумма" },
+                { "field": "type", "header": "Тип" },
                 { "field": "status", "header": "Статус" }
               ]
             }

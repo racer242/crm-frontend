@@ -1,12 +1,12 @@
 {
-  "id": "gtins",
+  "id": "users",
   "type": "page",
-  "route": "/gtins",
+  "route": "/users",
   "state": {
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
-    "gtins": {
+    "users": {
       "value": [],
       "columns": [],
       "totalRecords": 10,
@@ -19,11 +19,11 @@
     }
   },
   "meta": {
-    "title": "Коды Честный Знак — CRM Platform"
+    "title": "Участники — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/gtins",
+      "url": "{$config.baseURL}/api/users",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -33,42 +33,80 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.gtins"
+      "target": "state.users"
     }
   ],
   "shortcuts": {
-    "requestGtins": {
+    "requestUsers": {
       "type": "sequence",
       "params": {
         "commands": [
           {
+            "type": "log",
+            "params": {
+              "message": {
+                "event": "{$event}",
+                "data": "{$state.users}",
+                "toSend": {
+                  "event": "{$event}",
+                  "first": "{$state.users.first}",
+                  "rows": "{$state.users.rows}",
+                  "sortField": "{$state.users.sortField}",
+                  "sortOrder": "{$state.users.sortOrder}",
+                  "search": "{$state.users.search}",
+                  "filters": "{$state.users.filters}"
+                }
+              }
+            }
+          },
+          {
             "type": "sendRequest",
             "params": {
-              "url": "/api/gtins",
+              "url": "/api/users",
               "method": "GET",
-              "target": "state.gtins",
+              "target": "state.users",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.gtins.first}",
-                "rows": "{$state.gtins.rows}",
-                "sortField": "{$state.gtins.sortField}",
-                "sortOrder": "{$state.gtins.sortOrder}",
-                "search": "{$state.gtins.search}",
-                "filters": "{$state.gtins.filters}"
+                "first": "{$state.users.first}",
+                "rows": "{$state.users.rows}",
+                "sortField": "{$state.users.sortField}",
+                "sortOrder": "{$state.users.sortOrder}",
+                "search": "{$state.users.search}",
+                "filters": "{$state.users.filters}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../system/list-request-format.json" },
+              "onSuccess": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "success": "{$event}"
+                    }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "log",
+                  "params": {
+                    "message": {
+                      "error": "{$event}"
+                    }
+                  }
+                }
+              ]
             }
           },
           {
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.gtins.first}",
-                "rows": "{$state.gtins.rows}",
-                "sortField": "{$state.gtins.sortField}",
-                "sortOrder": "{$state.gtins.sortOrder}",
-                "search": "{$state.gtins.search}",
-                "filters": "{$state.gtins.filters}"
+                "first": "{$state.users.first}",
+                "rows": "{$state.users.rows}",
+                "sortField": "{$state.users.sortField}",
+                "sortOrder": "{$state.users.sortOrder}",
+                "search": "{$state.users.search}",
+                "filters": "{$state.users.filters}"
               },
               "format": [
                 {
@@ -90,20 +128,20 @@
   },
   "sections": [
     {
-      "id": "gtinsHeader",
+      "id": "usersHeader",
       "type": "section",
       "className": "flex",
       "blocks": [
         {
-          "id": "gtinsTitle",
+          "id": "usersTitle",
           "type": "block",
           "components": [
             {
-              "id": "gtinsPageTitle",
+              "id": "usersPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Коды Честный Знак",
+                "value": "Участники",
                 "level": 1
               }
             }
@@ -112,24 +150,24 @@
       ]
     },
     {
-      "id": "gtinsFilters",
+      "id": "usersFilters",
       "type": "section",
       "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "gtinsSearchBlock",
+          "id": "searchBlock",
           "type": "block",
           "className": "w-full flex gap-3",
           "components": [
             {
-              "id": "gtinsSearchInput",
+              "id": "searchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.gtins.search"
+                "value": "@state.users.search"
               },
               "events": [
                 {
@@ -139,16 +177,16 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.search"
+                        "target": "state.users.search"
                       }
                     },
-                    "requestGtins"
+                    "requestUsers"
                   ]
                 }
               ]
             },
             {
-              "id": "gtinsToggleFilters",
+              "id": "toggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -176,18 +214,18 @@
           ]
         },
         {
-          "id": "gtinsActiveFilterBlock",
+          "id": "activeFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "gtinsActiveFilterChips",
+              "id": "activeFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.gtins.filters"
+                "value": "@state.users.filters"
               },
               "events": [
                 {
@@ -197,20 +235,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.filters"
+                        "target": "state.users.filters"
                       }
                     },
-                    "requestGtins"
+                    "requestUsers"
                   ]
                 }
               ]
             },
             {
-              "id": "gtinsFilterDrawer",
+              "id": "filterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.gtins.filters",
+                "value": "@state.users.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -223,7 +261,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.filters"
+                        "target": "state.users.filters"
                       }
                     },
                     {
@@ -232,7 +270,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestGtins"
+                    "requestUsers"
                   ]
                 },
                 {
@@ -253,26 +291,26 @@
       ]
     },
     {
-      "id": "gtinsTableSection",
+      "id": "usersTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "gtinsTableBlock",
+          "id": "usersTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "gtinsTable",
+              "id": "usersTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.gtins.value",
-                "columns": "@state.gtins.columns",
-                "totalRecords": "@state.gtins.totalRecords",
-                "rows": "@state.gtins.rows",
-                "first": "@state.gtins.first",
-                "sortField": "@state.gtins.sortField",
-                "sortOrder": "@state.gtins.sortOrder",
+                "value": "@state.users.value",
+                "columns": "@state.users.columns",
+                "totalRecords": "@state.users.totalRecords",
+                "rows": "@state.users.rows",
+                "first": "@state.users.first",
+                "sortField": "@state.users.sortField",
+                "sortOrder": "@state.users.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -313,13 +351,13 @@
                     ]
                   },
                   {
-                    "field": "actions",
+                    "field": "button",
                     "order": -1,
                     "body": [
                       {
                         "componentType": "Button",
                         "props": {
-                          "icon": "pi pi-chevron-right",
+                          "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
                           "pt": { "label": { "className": "font-normal" } }
@@ -331,7 +369,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/gtins/{#row._rowId}"
+                                  "url": "/users/{#row.id}"
                                 }
                               }
                             ]
@@ -345,19 +383,25 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestGtins"]
+                  "commands": ["requestUsers"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestGtins"]
+                  "commands": ["requestUsers"]
                 },
                 {
                   "type": "onRowClick",
                   "commands": [
                     {
+                      "type": "log",
+                      "params": {
+                        "message": "{$event}"
+                      }
+                    },
+                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/gtins/{$event.data._rowId}"
+                        "url": "/users/{$event.data.id}"
                       }
                     }
                   ]

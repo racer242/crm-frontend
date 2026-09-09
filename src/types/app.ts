@@ -110,8 +110,14 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 export interface CampItem {
   id: number;
   name: string;
-  /** Полный URL API кампании (серверный, не передаётся клиенту) */
-  api_url?: string;
+  /** Базовый URL управляющего бэкенда (серверный) */
+  base_api_url?: string;
+  /** URL API промо-инстанса (серверный, не передаётся клиенту) */
+  crm_api_url?: string;
+  /** Идентификатор ключа для заголовка X-Crm-Key-Id (серверный) */
+  crm_key_id?: string;
+  /** Секрет HMAC-подписи (серверный, строго конфиденциально) */
+  crm_signature?: string;
 }
 
 /** Флаги функциональности */

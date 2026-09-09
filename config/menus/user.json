@@ -31,12 +31,6 @@
       "icon": "pi pi-crown",
       "items": [
         {
-          "id": "points",
-          "label": "Баллы",
-          "icon": "pi pi-trophy",
-          "route": "/users/{@state.userData.id}/points"
-        },
-        {
           "id": "prizes",
           "label": "Призы",
           "icon": "pi pi-gift",
@@ -56,41 +50,10 @@
           "route": "/users/{@state.userData.id}/receipts"
         },
         {
-          "id": "codes",
-          "label": "Коды",
-          "icon": "pi pi-star",
-          "route": "/users/{@state.userData.id}/codes"
-        },
-        {
-          "id": "gtins",
-          "label": "Честный знак",
-          "icon": "pi pi-qrcode",
-          "route": "/users/{@state.userData.id}/gtins"
-        },
-        {
           "id": "products",
           "label": "Покупки",
           "icon": "pi pi-shopping-bag",
           "route": "/users/{@state.userData.id}/products"
-        }
-      ]
-    },
-    {
-      "id": "activity",
-      "label": "Активность",
-      "icon": "pi pi-play-circle",
-      "items": [
-        {
-          "id": "events",
-          "label": "Действия",
-          "icon": "pi pi-calendar",
-          "route": "/users/{@state.userData.id}/events"
-        },
-        {
-          "id": "transactions",
-          "label": "Транзакции",
-          "icon": "pi pi-list-check",
-          "route": "/users/{@state.userData.id}/transactions"
         }
       ]
     },

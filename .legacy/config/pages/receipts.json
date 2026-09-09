@@ -1,19 +1,15 @@
 {
-  "id": "user-gtins",
+  "id": "receipts",
   "type": "page",
-  "route": "/users/[user_id]/gtins",
+  "route": "/receipts",
   "state": {
     "loading": false,
     "initialized": true,
     "filtersVisible": false,
-    "userData": {
-      "id": "",
-      "fullName": ""
-    },
-    "gtins": {
+    "receipts": {
       "value": [],
       "columns": [],
-      "totalRecords": 0,
+      "totalRecords": 10,
       "rows": 10,
       "first": 0,
       "sortField": "",
@@ -23,16 +19,11 @@
     }
   },
   "meta": {
-    "title": "Коды ЧЗ участника — CRM Platform"
+    "title": "Чеки — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}",
-      "method": "GET",
-      "target": "state.userData"
-    },
-    {
-      "url": "{$config.baseURL}/api/users/{$location.routeParams.user_id}/gtins",
+      "url": "{$config.baseURL}/api/receipts",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -42,28 +33,28 @@
         "filters": "{$location.params.filters}"
       },
       "method": "GET",
-      "target": "state.gtins"
+      "target": "state.receipts"
     }
   ],
   "shortcuts": {
-    "requestUserGtins": {
+    "requestReceipts": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users/{$location.routeParams.user_id}/gtins",
+              "url": "/api/receipts",
               "method": "GET",
-              "target": "state.gtins",
+              "target": "state.receipts",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.gtins.first}",
-                "rows": "{$state.gtins.rows}",
-                "sortField": "{$state.gtins.sortField}",
-                "sortOrder": "{$state.gtins.sortOrder}",
-                "search": "{$state.gtins.search}",
-                "filters": "{$state.gtins.filters}"
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "sortField": "{$state.receipts.sortField}",
+                "sortOrder": "{$state.receipts.sortOrder}",
+                "search": "{$state.receipts.search}",
+                "filters": "{$state.receipts.filters}"
               },
               "format": { "$ref": "../system/list-request-format.json" }
             }
@@ -72,12 +63,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.gtins.first}",
-                "rows": "{$state.gtins.rows}",
-                "sortField": "{$state.gtins.sortField}",
-                "sortOrder": "{$state.gtins.sortOrder}",
-                "search": "{$state.gtins.search}",
-                "filters": "{$state.gtins.filters}"
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "sortField": "{$state.receipts.sortField}",
+                "sortOrder": "{$state.receipts.sortOrder}",
+                "search": "{$state.receipts.search}",
+                "filters": "{$state.receipts.filters}"
               },
               "format": [
                 {
@@ -99,29 +90,21 @@
   },
   "sections": [
     {
-      "id": "breadcrumbSection",
+      "id": "receiptsHeader",
       "type": "section",
-      "className": "",
+      "className": "flex",
       "blocks": [
         {
-          "id": "breadcrumbBlock",
+          "id": "receiptsTitle",
           "type": "block",
           "components": [
             {
-              "id": "breadcrumb",
+              "id": "receiptsPageTitle",
               "type": "component",
-              "componentType": "Breadcrumb",
-              "className": "border-none p-0",
+              "componentType": "Text",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
-                "model": [
-                  { "label": "Участники", "route": "/users" },
-                  {
-                    "label": "@state.userData.fullName",
-                    "route": "/users/{@state.userData.id}"
-                  },
-                  { "label": "Коды Честный Знак" }
-                ]
+                "value": "Чеки",
+                "level": 1
               }
             }
           ]
@@ -129,48 +112,24 @@
       ]
     },
     {
-      "id": "menuSection",
-      "type": "section",
-      "blocks": [
-        {
-          "id": "menuBlock",
-          "type": "block",
-          "className": "w-full",
-          "components": [
-            {
-              "id": "menubar",
-              "type": "component",
-              "componentType": "Menubar",
-              "props": {
-                "activeItemId": "production",
-                "activeSubitemId": "gtins",
-                "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "gtinsFilters",
+      "id": "receiptsFilters",
       "type": "section",
       "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "gtinsSearchBlock",
+          "id": "receiptsSearchBlock",
           "type": "block",
           "className": "w-full flex gap-3",
           "components": [
             {
-              "id": "gtinsSearchInput",
+              "id": "receiptsSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.gtins.search"
+                "value": "@state.receipts.search"
               },
               "events": [
                 {
@@ -180,16 +139,16 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.search"
+                        "target": "state.receipts.search"
                       }
                     },
-                    "requestUserGtins"
+                    "requestReceipts"
                   ]
                 }
               ]
             },
             {
-              "id": "gtinsToggleFilters",
+              "id": "receiptsToggleFilters",
               "type": "component",
               "componentType": "Button",
               "className": "min-w-max flex-grow-0 px-3",
@@ -217,18 +176,18 @@
           ]
         },
         {
-          "id": "gtinsActiveFilterBlock",
+          "id": "receiptsActiveFilterBlock",
           "type": "block",
           "wrapper": {
             "className": "w-full"
           },
           "components": [
             {
-              "id": "gtinsActiveFilterChips",
+              "id": "receiptsActiveFilterChips",
               "type": "component",
               "componentType": "ActiveFiltersBar",
               "props": {
-                "value": "@state.gtins.filters"
+                "value": "@state.receipts.filters"
               },
               "events": [
                 {
@@ -238,20 +197,20 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.filters"
+                        "target": "state.receipts.filters"
                       }
                     },
-                    "requestUserGtins"
+                    "requestReceipts"
                   ]
                 }
               ]
             },
             {
-              "id": "gtinsFilterDrawer",
+              "id": "receiptsFilterDrawer",
               "type": "component",
               "componentType": "FiltersPanel",
               "props": {
-                "value": "@state.gtins.filters",
+                "value": "@state.receipts.filters",
                 "visible": "@state.filtersVisible",
                 "position": "right",
                 "header": "Фильтры"
@@ -264,7 +223,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.gtins.filters"
+                        "target": "state.receipts.filters"
                       }
                     },
                     {
@@ -273,7 +232,7 @@
                         "target": "state.filtersVisible"
                       }
                     },
-                    "requestUserGtins"
+                    "requestReceipts"
                   ]
                 },
                 {
@@ -294,40 +253,73 @@
       ]
     },
     {
-      "id": "gtinsTableSection",
+      "id": "receiptsTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "gtinsTableBlock",
+          "id": "receiptsTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "gtinsTable",
+              "id": "receiptsTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.gtins.value",
-                "columns": "@state.gtins.columns",
-                "totalRecords": "@state.gtins.totalRecords",
-                "rows": "@state.gtins.rows",
-                "first": "@state.gtins.first",
-                "sortField": "@state.gtins.sortField",
-                "sortOrder": "@state.gtins.sortOrder",
+                "value": "@state.receipts.value",
+                "columns": "@state.receipts.columns",
+                "totalRecords": "@state.receipts.totalRecords",
+                "rows": "@state.receipts.rows",
+                "first": "@state.receipts.first",
+                "sortField": "@state.receipts.sortField",
+                "sortOrder": "@state.receipts.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
+                "stripedRows": true,
                 "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
                   {
-                    "field": "actions",
+                    "field": "email",
+                    "body": [
+                      {
+                        "id": "sendButton",
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-envelope",
+                          "label": "{#field}",
+                          "link": true,
+                          "size": "small",
+                          "pt": {
+                            "label": { "className": "font-normal" },
+                            "root": { "className": "p-1" }
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "mailto:{#field}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "button",
                     "order": -1,
                     "body": [
                       {
                         "componentType": "Button",
                         "props": {
-                          "icon": "pi pi-chevron-right",
+                          "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
                           "pt": { "label": { "className": "font-normal" } }
@@ -339,7 +331,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/users/{$location.routeParams.user_id}/gtins/{#row._rowId}"
+                                  "url": "/receipts/{#row._rowId}"
                                 }
                               }
                             ]
@@ -353,25 +345,19 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserGtins"]
+                  "commands": ["requestReceipts"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserGtins"]
+                  "commands": ["requestReceipts"]
                 },
                 {
                   "type": "onRowClick",
                   "commands": [
                     {
-                      "type": "log",
-                      "params": {
-                        "message": "{$event.data}"
-                      }
-                    },
-                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/users/{$location.routeParams.user_id}/gtins/{$event.data._rowId}"
+                        "url": "/receipts/{$event.data._rowId}"
                       }
                     }
                   ]

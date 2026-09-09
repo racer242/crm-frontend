@@ -129,7 +129,7 @@ export default async function Page({
       clonedPageConfig,
       serverSources,
       accessToken,
-      currentCamp?.api_url,
+      currentCamp?.base_api_url,
     );
 
     // Separate errors from successful results
@@ -140,7 +140,7 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
-  // Filter camps for client: strip api_url, pass only id + name
+  // Filter camps for client: strip server-only fields (base_api_url, crm_*), pass only id + name
   const clientCamps: { id: number; name: string; current: boolean }[] =
     allCamps.map((c: CampItem) => ({
       id: c.id,

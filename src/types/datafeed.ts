@@ -51,6 +51,12 @@ export interface ApiRouteConfig {
   /** Full URL of the external API endpoint */
   url: string;
   /**
+   * Channel type. 
+   * - 'management': Uses base_api_url and JWT auth (default).
+   * - 'instance': Uses crm_api_url and HMAC signature.
+   */
+  channel?: "management" | "instance";
+  /**
    * Route type. If "file", the response is treated as binary
    * and proxied as-is for download (no JSON parsing, no adapters).
    */
