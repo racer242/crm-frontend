@@ -41,7 +41,7 @@ export function renderDropdown({
   return (
     <Dropdown
       {...dropdownProps}
-      className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
+      className={`${props?.inline ? "" : "field w-full"} ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}
     />

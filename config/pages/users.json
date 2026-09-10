@@ -78,7 +78,8 @@
                 "event": "{$event}",
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "search": "{$state.search}"
+                "search": "{$state.search}",
+                "status": "{$state.status}"
               },
               "format": { "$ref": "../system/list-request-format.json" },
               "onSuccess": [
@@ -181,14 +182,15 @@
               "id": "statusFilter",
               "type": "component",
               "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 px-3",
+              "className": "min-w-max flex-grow-0 mb-0",
               "props": {
                 "options": "@state.statuses",
                 "value": "@state.status",
                 "optionLabel": "label",
                 "optionValue": "value",
                 "placeholder": "Статус...",
-                "showClear": true
+                "showClear": true,
+                "inline": "yes"
               },
               "events": [
                 {
