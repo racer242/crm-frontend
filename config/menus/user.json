@@ -4,7 +4,7 @@
       "id": "profile",
       "label": "Профиль",
       "icon": "pi pi-user",
-      "route": "/users/{@state.userData.id}"
+      "route": "/ops/users/{@state.userData.id}"
     },
     {
       "id": "docs",
@@ -15,13 +15,13 @@
           "id": "personal-docs",
           "label": "Личные",
           "icon": "pi pi-id-card",
-          "route": "/users/{@state.userData.id}/docs"
+          "route": "/ops/users/{@state.userData.id}/docs"
         },
         {
           "id": "acts",
           "label": "Акты",
           "icon": "pi pi-verified",
-          "route": "/users/{@state.userData.id}/acts"
+          "route": "/ops/users/{@state.userData.id}/acts"
         }
       ]
     },
@@ -34,7 +34,7 @@
           "id": "prizes",
           "label": "Призы",
           "icon": "pi pi-gift",
-          "route": "/users/{@state.userData.id}/prizes"
+          "route": "/ops/users/{@state.userData.id}/prizes"
         }
       ]
     },
@@ -47,13 +47,13 @@
           "id": "receipts",
           "label": "Чеки",
           "icon": "pi pi-receipt",
-          "route": "/users/{@state.userData.id}/receipts"
+          "route": "/ops/users/{@state.userData.id}/receipts"
         },
         {
           "id": "products",
           "label": "Покупки",
           "icon": "pi pi-shopping-bag",
-          "route": "/users/{@state.userData.id}/products"
+          "route": "/ops/users/{@state.userData.id}/products"
         }
       ]
     },
@@ -61,7 +61,7 @@
       "id": "communication",
       "label": "Общение",
       "icon": "pi pi-envelope",
-      "route": "/users/{@state.userData.id}/messages"
+      "route": "/ops/users/{@state.userData.id}/messages"
     }
   ]
 }

@@ -15,15 +15,10 @@
     "method": "GET",
     "url": "/api/v1/crm/users/{$location.routeParams.user_id}",
     "channel": "instance",
-    "adapter": "users.get.response",
-    "note": "Операционные данные: Детали участника"
-  },
-  {
-    "path": "ops/users/[id]",
-    "method": "GET",
-    "url": "/api/v1/crm/users/{$location.routeParams.id}",
-    "channel": "instance",
-    "adapter": "ops.pagination.response",
+    "adapter": {
+      "request": null,
+      "response": "user.get.response"
+    },
     "note": "Операционные данные: Детали участника"
   },
   {

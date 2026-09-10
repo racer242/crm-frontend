@@ -1,24 +1,19 @@
 /**
- * Преобразует ответ API /users/[id] в формат для отображения на странице участника
- * @param {Object} data - Исходный ответ сервера (данные участника)
- * @returns {Object} Преобразованные данные для State (только данные, camelCase)
+ * Преобразует ответ API /api/v1/crm/users/{id} в формат для отображения на странице участника
+ * @param {Object} response - Полный ответ сервера { status, data }
+ * @returns {Object} Преобразованные данные для State
  */
-function transform(data) {
-  if (!data || typeof data !== "object") return data;
+function transform(response) {
+  const data = response.data || response; // Поддержка как обертки, так и чистых данных
+  if (!data || typeof data !== "object") return {};
 
-  // Полное имя
+  // Полное имя и инициалы
   const firstName = data.first_name || "";
   const lastName = data.last_name || "";
   const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
+  const initials = [firstName.charAt(0), lastName.charAt(0)].filter(Boolean).join("").toUpperCase() || "";
 
-  // Инициалы для аватара
-  const initials =
-    [firstName.charAt(0), lastName.charAt(0)]
-      .filter(Boolean)
-      .join("")
-      .toUpperCase() || "";
-
-  // Форматирование дат: ISO → DD.MM.YYYY
+  // Форматирование даты регистрации
   const formatDate = (iso) => {
     if (!iso) return "";
     try {
@@ -33,51 +28,26 @@ function transform(data) {
     }
   };
 
-  const regDateFormatted = formatDate(data.reg_date);
-  const authDateFormatted = formatDate(data.auth_date);
-
-  // Группы — список названий (объекты для DataTable) и текст с переносами
-  const groupList = [];
-  let groupOptions = [];
-  let selectedGroups = [];
-  if (Array.isArray(data.groups) && data.groups.length > 0) {
-    groupOptions = data.groups.map((g) => ({
-      label: g.title,
-      value: g.type,
-    }));
-    data.groups.forEach((g) => {
-      if (g.is_member) {
-        groupList.push({ name: g.title });
-        selectedGroups.push(g.type);
-      }
-    });
-  }
-  const groupsText =
-    groupList.length > 0 ? groupList.map((g) => g.name).join("\n") : "";
-
-  // Поля для доставки (новые, могут отсутствовать)
-  const delivery_address = data.delivery_address || "";
-  const delivery_comment = data.delivery_comment || "";
-
-  // Статус блокировки
-  const isBlocked = data.is_blocked === true;
-  const statusLabel = isBlocked ? "Заблокирован" : "Активен";
-  const statusSeverity = isBlocked ? "danger" : "success";
+  const regDateFormatted = formatDate(data.created_at || data.reg_date);
 
   return {
-    ...data,
+    id: data.id,
+    email: data.email,
+    phone: data.phone,
+    status: data.status,
+    created_at: data.created_at,
+    first_name: firstName,
+    last_name: lastName,
+    third_name: data.third_name || "",
     fullName,
     initials,
     regDateFormatted,
-    authDateFormatted,
-    groupList,
-    groupsText,
-    isBlocked,
-    statusLabel,
-    statusSeverity,
-    delivery_address,
-    delivery_comment,
-    groupOptions,
-    selectedGroups,
+    isBlocked: data.is_blocked === true,
+    
+    // Временные заглушки для статистики (пока подключен только профиль)
+    receipts_count: 0,
+    products_count: 0,
+    prizes_count: 0
   };
 }
+

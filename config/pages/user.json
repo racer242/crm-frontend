@@ -1,136 +1,184 @@
 {
-  "id": "opsUserPage",
+  "id": "opsUserProfile",
   "type": "page",
   "route": "/ops/users/[user_id]",
+  "menu": { "$ref": "../menus/user.json" },
   "state": {
     "loading": false,
     "initialized": true,
-    "user": {}
+    "userData": {}
   },
   "meta": {
-    "title": "Карточка участника — CRM Platform"
+    "title": "Участник — CRM Platform"
   },
   "dataFeed": [
     {
       "url": "/api/ops/users/{$location.routeParams.user_id}",
       "method": "GET",
-      "target": "state.user",
-      "adapter": "users.get.response"
+      "target": "state.userData",
+      "adapter": "user.get.response"
     }
   ],
   "sections": [
     {
-      "id": "mainSection",
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
       "blocks": [
         {
-          "id": "infoBlock",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Информация об участнике"
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  { "label": "@state.userData.fullName" }
+                ]
+              }
             }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "profile",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statsRowSection",
+      "type": "section",
+      "type": "section",
+      "className": "mb-4",
+      "blocks": [
+        {
+          "id": "statCardsBlock",
+          "type": "block",
+          "grid": {
+            "cols": ["col-6 lg:col-3", "col-6 lg:col-3", "col-6 lg:col-3", "col-6 lg:col-3"],
+            "padding": "p-2"
           },
           "components": [
             {
-              "id": "userIdGroup",
+              "id": "statReceipts",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
               "props": {
-                "label": "ID",
-                "labelClassName": "text-sm col-3 text-right",
-                "containerClassName": "col-9",
-                "components": [
-                  {
-                    "id": "userId",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "@state.user.id"
-                    }
-                  }
-                ]
+                "titleClassName": "text-sm",
+                "valueClassName": "text-2xl font-bold mt-1",
+                "iconClassName": "text-xl text-primary",
+                "title": "Чеки",
+                "value": "@state.userData.receipts_count",
+                "icon": "pi pi-receipt"
               }
             },
             {
-              "id": "userNameGroup",
+              "id": "statProducts",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
               "props": {
-                "label": "Имя",
-                "labelClassName": "text-sm col-3 text-right",
-                "containerClassName": "col-9",
-                "components": [
-                  {
-                    "id": "userName",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "{@state.user.fullName}"
-                    }
-                  }
-                ]
+                "titleClassName": "text-sm",
+                "valueClassName": "text-2xl font-bold mt-1",
+                "iconClassName": "text-xl text-primary",
+                "title": "Продукты",
+                "value": "@state.userData.products_count",
+                "icon": "pi pi-shopping-bag"
               }
             },
             {
-              "id": "userEmailGroup",
+              "id": "statPrizes",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
               "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-3 text-right",
-                "containerClassName": "col-9",
-                "components": [
-                  {
-                    "id": "userEmail",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "@state.user.email"
-                    }
-                  }
-                ]
+                "titleClassName": "text-sm",
+                "valueClassName": "text-2xl font-bold mt-1",
+                "iconClassName": "text-xl text-primary",
+                "title": "Призы",
+                "value": "@state.userData.prizes_count",
+                "icon": "pi pi-gift"
               }
             },
             {
-              "id": "userStatusGroup",
+              "id": "statPoints",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "style": {
+                "backgroundColor": "var(--primary-color)",
+                "color": "var(--primary-color-text)"
+              },
               "props": {
-                "label": "Статус",
-                "labelClassName": "text-sm col-3 text-right",
-                "containerClassName": "col-9",
-                "components": [
-                  {
-                    "id": "userStatus",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "@state.user.status"
-                    }
-                  }
-                ]
+                "titleClassName": "text-sm",
+                "valueClassName": "text-2xl font-bold mt-1",
+                "iconClassName": "text-xl text-white",
+                "title": "Баллы",
+                "value": "0", 
+                "icon": "pi pi-trophy"
               }
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infoSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "infoBlock",
+          "type": "block",
+          "components": [
             {
-              "id": "userCreatedGroup",
+              "id": "userProfileCard",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "Panel",
+              "className": "mb-4",
               "props": {
-                "label": "Создан",
-                "labelClassName": "text-sm col-3 text-right",
-                "containerClassName": "col-9",
+                "header": "Профиль участника",
+                "containerClassName": "",
                 "components": [
                   {
-                    "id": "userCreated",
+                    "id": "userDetailsGrid",
                     "type": "component",
-                    "componentType": "Text",
+                    "componentType": "FieldGroup",
+                    "className": "p-2",
                     "props": {
-                      "value": "@state.user.created_at"
+                      "layout": "Horizontal",
+                      "fields": [
+                        { "id": "fullName", "label": "ФИО", "value": "@state.userData.fullName" },
+                        { "id": "email", "label": "Email", "value": "@state.userData.email" },
+                        { "id": "phone", "label": "Телефон", "value": "@state.userData.phone" },
+                        { "id": "status", "label": "Статус", "value": "@state.userData.statusLabel" },
+                        { "id": "regDate", "label": "Дата регистрации", "value": "@state.userData.regDateFormatted" },
+                        { "id": "userId", "label": "ID", "value": "@state.userData.id" }
+                      ]
                     }
                   }
                 ]
@@ -142,3 +190,4 @@
     }
   ]
 }
+
