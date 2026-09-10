@@ -7,7 +7,11 @@
     "initialized": true,
     "search": "",
     "status": "",
-    "statuses": [],
+    "statuses": [
+      { "label": "Активен", "value": "active" },
+      { "label": "Заблокирован", "value": "blocked" },
+      { "label": "Удален", "value": "deleted" }
+    ],
     "users": {
       "value": [],
       "columns": [],
@@ -166,6 +170,35 @@
                       "params": {
                         "source": "event.value",
                         "target": "state.search"
+                      }
+                    },
+                    "requestUsers"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "statusFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "options": "@state.statuses",
+                "value": "@state.status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус...",
+                "showClear": true
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.status"
                       }
                     },
                     "requestUsers"
