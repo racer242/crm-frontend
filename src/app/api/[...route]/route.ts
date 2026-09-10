@@ -230,7 +230,9 @@ function generateSignature(
   nonce: string,
 ): string {
   const stringToSign = `${method.toUpperCase()}\n${path}\n${bodyHash}\n${timestamp}\n${nonce}`;
-  console.log(`[API Router] 🧩 String to sign:\n"${stringToSign.replace(/\n/g, "\\n")}"`);
+  console.log(
+    `[API Router] 🧩 String to sign:\n"${stringToSign.replace(/\n/g, "\\n")}"`,
+  );
   return crypto.createHmac("sha256", secret).update(stringToSign).digest("hex");
 }
 
@@ -399,8 +401,10 @@ async function handleRequest(
 
     // Add HMAC signature headers for instance channel
     if (channel === "instance") {
-      console.log(`[API Router] 🔑 Instance channel detected. Secret: ${!!signingSecret}, KeyId: ${keyId}`);
-      
+      console.log(
+        `[API Router] 🔑 Instance channel detected. Secret: ${!!signingSecret}, KeyId: ${keyId}`,
+      );
+
       if (signingSecret) {
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = crypto.randomBytes(16).toString("hex");
@@ -410,12 +414,18 @@ async function handleRequest(
         if (adaptedBody && ["POST", "PUT", "PATCH"].includes(request.method)) {
           bodyToHash = JSON.stringify(adaptedBody);
         }
-        const bodyHash = crypto.createHash("sha256").update(bodyToHash).digest("hex");
+        const bodyHash = crypto
+          .createHash("sha256")
+          .update(bodyToHash)
+          .digest("hex");
 
         let urlPath;
         try {
-          const urlObj = new URL(resolvedUrl);
-          urlPath = urlObj.pathname + (urlObj.search ? urlObj.search : "");
+          const resolvedUrlObj = new URL(resolvedUrl);
+          const nextUrlObj = new URL(request.nextUrl);
+          urlPath =
+            resolvedUrlObj.pathname +
+            (nextUrlObj.search ? nextUrlObj.search : "");
         } catch {
           urlPath = resolvedUrl;
         }
@@ -433,7 +443,9 @@ async function handleRequest(
 
         console.log(`[API Router] ✅ Signature: ${signature}`);
 
-        console.log(`[API Router] ✅ Signature: ${signature.substring(0, 15)}...`);
+        console.log(
+          `[API Router] ✅ Signature: ${signature.substring(0, 15)}...`,
+        );
 
         if (fetchOptions.headers) {
           (fetchOptions.headers as Record<string, string>)["X-Crm-Key-Id"] =
@@ -442,14 +454,20 @@ async function handleRequest(
             signature;
           (fetchOptions.headers as Record<string, string>)["X-Crm-Timestamp"] =
             timestamp.toString();
-          (fetchOptions.headers as Record<string, string>)["X-Crm-Nonce"] = nonce;
-          (fetchOptions.headers as Record<string, string>)["X-Exchange-Version"] =
-            macroEngine.apply("{$config.apiExchangeVersion}") as string;
+          (fetchOptions.headers as Record<string, string>)["X-Crm-Nonce"] =
+            nonce;
+          (fetchOptions.headers as Record<string, string>)[
+            "X-Exchange-Version"
+          ] = macroEngine.apply("{$config.apiExchangeVersion}") as string;
 
-          delete (fetchOptions.headers as Record<string, string>)["Authorization"];
+          delete (fetchOptions.headers as Record<string, string>)[
+            "Authorization"
+          ];
         }
       } else {
-        console.error(`[API Router] ❌ CRITICAL: Instance channel selected but signing secret is MISSING! Check camps.json`);
+        console.error(
+          `[API Router] ❌ CRITICAL: Instance channel selected but signing secret is MISSING! Check camps.json`,
+        );
       }
     }
 
@@ -462,7 +480,10 @@ async function handleRequest(
     }
 
     console.log("------ Request --", resolvedUrl);
-    console.log("------ Headers --", JSON.stringify(fetchOptions.headers, null, 2));
+    console.log(
+      "------ Headers --",
+      JSON.stringify(fetchOptions.headers, null, 2),
+    );
     console.dir(adaptedBody, { depth: null, colors: true });
 
     // Forward the request to the external API
@@ -545,7 +566,6 @@ async function handleRequest(
           typeof routeAdapter === "string"
             ? routeAdapter
             : (routeAdapter as DataFeedAdapter)?.response;
-
         if (responseAdapterName) {
           const adapter = config.adapters?.[responseAdapterName];
           if (!adapter) {
