@@ -98,6 +98,13 @@ export interface DataFeedResult {
   target: string;
 }
 
+/** Конфигурация для серверной инициализации state */
+export interface DataInitConfig {
+  source?: string; // Строка с макросами (например, "{$location.params.search}")
+  value?: any;     // Статическое значение
+  target: string;  // Куда записать (например, "state.search")
+}
+
 /**
  * Adapter configuration for request/response transformation
  */

@@ -1,7 +1,7 @@
 import { BaseElement, ElementPath, LayoutConfig } from "./base";
 import { Command } from "./commands";
 import { Section } from "./section";
-import { DataFeedConfig } from "./datafeed";
+import { DataFeedConfig, DataInitConfig } from "./datafeed";
 
 /** Событие страницы */
 export interface PageEvent {
@@ -22,6 +22,8 @@ export interface Page extends BaseElement {
   shortcuts?: Record<string, Command>;
   /** Data feed configurations for loading external API data on page load */
   dataFeed?: DataFeedConfig[];
+  /** Server-side state initialization configurations using macros */
+  dataInit?: DataInitConfig[];
   /** @deprecated Use events array instead */
   onLoad?: Command[];
   /** @deprecated Use events array instead */

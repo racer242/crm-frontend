@@ -15,6 +15,7 @@ import {
   executeServerDataFeeds,
   resolveElementStateMacros,
 } from "@/core/DataFeedServerService";
+import { executeDataInit } from "@/core/DataInitServerService";
 import { getAccessTokenServer } from "@/utils/getAccessToken";
 import { ApiError } from "@/utils/parseApiError";
 
@@ -121,6 +122,23 @@ export default async function Page({
   // Get user's access_token for authenticated API requests
   const accessToken = await getAccessTokenServer();
 
+  // Execute server-side data init
+  let initResults: DataFeedResult[] = [];
+  if (clonedPageConfig && clonedPageConfig.dataInit) {
+    const rawInitResults = executeDataInit(
+      clonedPageConfig.dataInit,
+      null as any,
+      serverSources,
+    );
+    // Map DataInitResult to DataFeedResult format for compatibility
+    initResults = rawInitResults.map(r => ({
+      success: r.success,
+      target: r.target,
+      data: r.data,
+      error: r.error
+    }));
+  }
+
   if (clonedPageConfig && clonedPageConfig.dataFeed) {
     const pageId = clonedPageConfig.id || "";
     initialPageId = pageId;
@@ -139,6 +157,10 @@ export default async function Page({
 
     successResults = results.filter((r) => r.success);
   }
+
+  // Combine data init results and data feed results
+  // dataFeed results will overwrite dataInit results if they have the same target
+  const initialDataFeed = [...initResults, ...successResults];
 
   // Filter camps for client: strip server-only fields (base_api_url, crm_*), pass only id + name
   const clientCamps: { id: number; name: string; current: boolean }[] =
@@ -163,7 +185,7 @@ export default async function Page({
       config={minimalConfig as unknown as App}
       elementIndex={elementIndex}
       dataFeedErrors={dataFeedErrors}
-      initialDataFeed={successResults}
+      initialDataFeed={initialDataFeed}
       initialPageId={initialPageId}
       route={route ?? undefined}
     />

@@ -23,10 +23,33 @@
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
-        "search": "{$state.search}"
+        "search": "{$location.params.search}"
       },
       "method": "GET",
       "target": "state.users"
+    }
+  ],
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "log",
+          "params": {
+            "message": {
+              "event": "{$event}",
+              "data": "{$location.params.search}"
+            }
+          }
+        },
+        {
+          "type": "setProperty",
+          "params": {
+            "source": "{$location.params.search}",
+            "target": "state.search"
+          }
+        }
+      ]
     }
   ],
   "shortcuts": {
@@ -44,10 +67,7 @@
                   "event": "{$event}",
                   "first": "{$state.users.first}",
                   "rows": "{$state.users.rows}",
-                  "sortField": "{$state.users.sortField}",
-                  "sortOrder": "{$state.users.sortOrder}",
-                  "search": "{$state.users.search}",
-                  "filters": "{$state.users.filters}"
+                  "search": "{$state.search}"
                 }
               }
             }
@@ -94,19 +114,7 @@
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
                 "search": "{$state.search}"
-              },
-              "format": [
-                {
-                  "prop": "filters",
-                  "type": "PopIfHasNullProps",
-                  "params": { "props": ["value"] }
-                },
-                {
-                  "prop": "filters",
-                  "type": "RemoveProps",
-                  "params": { "props": ["name", "type", "opts"] }
-                }
-              ]
+              }
             }
           }
         ]
@@ -154,7 +162,7 @@
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.users.search"
+                "value": "@state.search"
               },
               "events": [
                 {
@@ -164,111 +172,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.users.search"
+                        "target": "state.search"
                       }
                     },
                     "requestUsers"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "toggleFilters",
-              "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
-              "props": {
-                "icon": "pi pi-filter",
-                "severity": "primary",
-                "outlined": true,
-                "size": "small",
-                "label": "Фильтры"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "activeFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "w-full"
-          },
-          "components": [
-            {
-              "id": "activeFilterChips",
-              "type": "component",
-              "componentType": "ActiveFiltersBar",
-              "props": {
-                "value": "@state.users.filters"
-              },
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.users.filters"
-                      }
-                    },
-                    "requestUsers"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "filterDrawer",
-              "type": "component",
-              "componentType": "FiltersPanel",
-              "props": {
-                "value": "@state.users.filters",
-                "visible": "@state.filtersVisible",
-                "position": "right",
-                "header": "Фильтры"
-              },
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.users.filters"
-                      }
-                    },
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    },
-                    "requestUsers"
-                  ]
-                },
-                {
-                  "type": "onHide",
-                  "commands": [
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
                   ]
                 }
               ]
