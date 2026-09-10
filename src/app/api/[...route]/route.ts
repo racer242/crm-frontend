@@ -399,6 +399,14 @@ async function handleRequest(
     // Build the fetch options with refreshed token if available
     const fetchOptions = buildFetchOptions(request, refreshedAccessToken);
 
+    if (adaptedBody) {
+      if (["POST", "PUT", "PATCH"].includes(request.method)) {
+        fetchOptions.body = JSON.stringify(adaptedBody);
+      } else {
+        resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
+      }
+    }
+
     // Add HMAC signature headers for instance channel
     if (channel === "instance") {
       console.log(
@@ -422,10 +430,10 @@ async function handleRequest(
         let urlPath;
         try {
           const resolvedUrlObj = new URL(resolvedUrl);
-          const nextUrlObj = new URL(request.nextUrl);
+
           urlPath =
             resolvedUrlObj.pathname +
-            (nextUrlObj.search ? nextUrlObj.search : "");
+            (resolvedUrlObj.search ? resolvedUrlObj.search : "");
         } catch {
           urlPath = resolvedUrl;
         }
@@ -468,14 +476,6 @@ async function handleRequest(
         console.error(
           `[API Router] ❌ CRITICAL: Instance channel selected but signing secret is MISSING! Check camps.json`,
         );
-      }
-    }
-
-    if (adaptedBody) {
-      if (["POST", "PUT", "PATCH"].includes(request.method)) {
-        fetchOptions.body = JSON.stringify(adaptedBody);
-      } else {
-        resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
       }
     }
 

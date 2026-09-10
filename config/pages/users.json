@@ -105,7 +105,8 @@
               "values": {
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "search": "{$state.search}"
+                "search": "{$state.search}",
+                "status": "{$state.status}"
               }
             }
           }
