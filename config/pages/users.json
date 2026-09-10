@@ -19,7 +19,7 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/users",
+      "url": "/api/ops/users",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -55,7 +55,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/users",
+              "url": "/api/ops/users",
               "method": "GET",
               "target": "state.users",
               "data": {
