@@ -289,7 +289,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/users/{#row.id}"
+                                  "url": "/ops/users/{#row.id}"
                                 }
                               }
                             ]
@@ -321,7 +321,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/users/{$event.data.id}"
+                        "url": "/ops/users/{$event.data.id}"
                       }
                     }
                   ]
