@@ -18,7 +18,7 @@
     },
     {
       "label": "Акты",
-      "icon": "pi pi-file-signature",
+      "icon": "pi pi-verified",
       "route": "/ops/acts"
     },
     {

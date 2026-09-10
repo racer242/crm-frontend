@@ -25,6 +25,7 @@
   "pages": [
     { "$ref": "./pages/profile.json" },
     { "$ref": "./pages/users.json" },
+    { "$ref": "./pages/user.json" },
     { "$ref": "./pages/receipts.json" },
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/acts.json" },

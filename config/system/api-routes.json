@@ -4,8 +4,16 @@
     "method": "GET",
     "url": "/api/v1/crm/users",
     "channel": "instance",
-    "adapter": "ops.pagination.response",
+    "adapter": "users.get.response",
     "note": "Операционные данные: Список участников"
+  },
+  {
+    "path": "ops/users/[user_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}",
+    "channel": "instance",
+    "adapter": "users.get.response",
+    "note": "Операционные данные: Детали участника"
   },
   {
     "path": "ops/users/[id]",

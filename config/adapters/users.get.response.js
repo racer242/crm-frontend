@@ -1,38 +1,42 @@
 /**
- * Преобразует формат API (columns/rows/meta) в формат таблицы (value/flat columns)
- * @param {Object} source - Исходный ответ сервера
- * @returns {Object} Преобразованные данные
+ * Адаптер для списка участников (ops/users)
  */
 function transform(source) {
-  // 1. Преобразуем колонки: id→field, title→header, оставляем sortable
-  const columns = (source.columns || []).map((col) => ({
-    field: col.id,
-    header: col.title || col.id,
-    sortable: !!col.sortable,
-    ...col.props,
-  }));
+  const payload = source.status === 'ok' ? source.data : source;
+  
+  const value = (payload.items || []).map(user => {
+    const parts = [user.first_name, user.third_name, user.last_name].filter(Boolean);
+    
+    let created_at = '—';
+    if (user.created_at) {
+      const d = new Date(user.created_at);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      created_at = `${day}.${month}.${d.getFullYear()} ${hours}:${minutes}`;
+    }
 
-  // 2. Преобразуем строки: из { values: {...} } в плоские объекты
-  //    Поля c type: 'datetime' в колонках автоматически преобразуются в DD.MM.YYYY HH:mm
-  const value = (source.rows || []).map((row) => ({
-    ...convertDateColumns(row.values, source.columns),
-    // Опционально: сохраняем ID строки, если он есть и нужен
-    ...(row.id && { _rowId: row.id }),
-  }));
+    return {
+      ...user,
+      fullName: parts.length > 0 ? parts.join(' ') : '—',
+      created_at
+    };
+  });
 
-  // 4. Преобразуем направление сортировки: asc→1, desc→-1
-  const sortOrder = source.meta?.direction === "desc" ? -1 : 1;
+  const columns = [
+    { field: "id", header: "ID", width: "8rem" },
+    { field: "fullName", header: "Имя" },
+    { field: "email", header: "E-mail" },
+    { field: "status", header: "Статус", width: "6rem" },
+    { field: "created_at", header: "Создан", width: "10rem" }
+  ];
 
-  // 5. Формируем итоговый объект
   return {
     value,
     columns,
-    filters: source.filters,
-    totalRecords: source.meta?.total_count ?? value.length,
-    rows: source.meta?.limit ?? value.length,
-    first: source.meta?.first ?? 0,
-    sortField: source.meta?.sort || null,
-    sortOrder,
-    search: source.search || null,
+    totalRecords: payload.pagination?.total_items || 0,
+    first: ((payload.pagination?.page || 1) - 1) * (payload.pagination?.limit || 20),
+    rows: payload.pagination?.limit || 20,
   };
 }

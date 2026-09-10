@@ -158,5 +158,9 @@
   "ops.pagination.response": {
     "type": "js",
     "script": "./config/adapters/ops.pagination.response.js"
+  },
+  "users.get.response": {
+    "type": "js",
+    "script": "./config/adapters/users.get.response.js"
   }
 }

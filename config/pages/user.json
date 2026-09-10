@@ -1,0 +1,144 @@
+{
+  "id": "opsUserPage",
+  "type": "page",
+  "route": "/ops/users/[user_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "user": {}
+  },
+  "meta": {
+    "title": "Карточка участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.user",
+      "adapter": "users.get.response"
+    }
+  ],
+  "sections": [
+    {
+      "id": "mainSection",
+      "blocks": [
+        {
+          "id": "infoBlock",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация об участнике"
+            }
+          },
+          "components": [
+            {
+              "id": "userIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID",
+                "labelClassName": "text-sm col-3 text-right",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "userId",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.user.id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Имя",
+                "labelClassName": "text-sm col-3 text-right",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "userName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "{@state.user.fullName}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-3 text-right",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "userEmail",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.user.email"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-3 text-right",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "userStatus",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.user.status"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userCreatedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Создан",
+                "labelClassName": "text-sm col-3 text-right",
+                "containerClassName": "col-9",
+                "components": [
+                  {
+                    "id": "userCreated",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.user.created_at"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
