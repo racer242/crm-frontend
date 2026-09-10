@@ -1,5 +1,5 @@
 {
-  "id": "opsUserProfile",
+  "id": "user",
   "type": "page",
   "route": "/ops/users/[user_id]",
   "menu": { "$ref": "../menus/user.json" },
@@ -72,114 +72,389 @@
     {
       "id": "statsRowSection",
       "type": "section",
-      "type": "section",
-      "className": "mb-4",
+      "className": "flex flex-column",
       "blocks": [
         {
           "id": "statCardsBlock",
           "type": "block",
+          "className": "mb-5",
           "grid": {
-            "cols": ["col-6 lg:col-3", "col-6 lg:col-3", "col-6 lg:col-3", "col-6 lg:col-3"],
+            "cols": [
+              "col-6 lg:col-3",
+              "col-6 lg:col-3",
+              "col-6 lg:col-3",
+              "col-6 lg:col-3"
+            ],
             "padding": "p-2"
           },
           "components": [
             {
-              "id": "statReceipts",
+              "id": "activityReceipts",
               "type": "component",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
-                "titleClassName": "text-sm",
-                "valueClassName": "text-2xl font-bold mt-1",
-                "iconClassName": "text-xl text-primary",
                 "title": "Чеки",
-                "value": "@state.userData.receipts_count",
+                "subTitle": "проверены",
+                "value": "@state.userData.receipts",
                 "icon": "pi pi-receipt"
               }
             },
             {
-              "id": "statProducts",
+              "id": "activityCodes",
               "type": "component",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
-                "titleClassName": "text-sm",
-                "valueClassName": "text-2xl font-bold mt-1",
-                "iconClassName": "text-xl text-primary",
-                "title": "Продукты",
-                "value": "@state.userData.products_count",
-                "icon": "pi pi-shopping-bag"
-              }
-            },
-            {
-              "id": "statPrizes",
-              "type": "component",
-              "componentType": "StatCard",
-              "className": "h-full p-1",
-              "props": {
-                "titleClassName": "text-sm",
-                "valueClassName": "text-2xl font-bold mt-1",
-                "iconClassName": "text-xl text-primary",
-                "title": "Призы",
-                "value": "@state.userData.prizes_count",
-                "icon": "pi pi-gift"
-              }
-            },
-            {
-              "id": "statPoints",
-              "type": "component",
-              "componentType": "StatCard",
-              "className": "h-full p-1",
-              "style": {
-                "backgroundColor": "var(--primary-color)",
-                "color": "var(--primary-color-text)"
+                "title": "Коды",
+                "value": "@state.userData.codes",
+                "icon": "pi pi-star"
               },
+              "state": {}
+            },
+            {
+              "id": "activityGtins",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
               "props": {
-                "titleClassName": "text-sm",
-                "valueClassName": "text-2xl font-bold mt-1",
-                "iconClassName": "text-xl text-white",
-                "title": "Баллы",
-                "value": "0", 
-                "icon": "pi pi-trophy"
-              }
+                "title": "Коды ЧЗ",
+                "value": "@state.userData.gtins",
+                "icon": "pi pi-qrcode"
+              },
+              "state": {}
+            },
+            {
+              "id": "activityProducts",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "props": {
+                "title": "Продукты",
+                "value": "@state.userData.products",
+                "icon": "pi pi-shopping-cart"
+              },
+              "state": {}
             }
           ]
         }
       ]
     },
     {
-      "id": "infoSection",
+      "id": "mainLayout",
       "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "padding": "p-2"
+      },
       "blocks": [
         {
-          "id": "infoBlock",
+          "id": "leftColumnBlock",
           "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Профиль"
+            }
+          },
+          "className": "flex flex-column align-items-center gap-1",
           "components": [
             {
-              "id": "userProfileCard",
+              "id": "userAvatarNameGroup",
               "type": "component",
-              "componentType": "Panel",
-              "className": "mb-4",
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column md:flex-row gap-3 justify-content-center align-items-center my-3 lg:my-6",
               "props": {
-                "header": "Профиль участника",
-                "containerClassName": "",
                 "components": [
                   {
-                    "id": "userDetailsGrid",
+                    "id": "userAvatar",
                     "type": "component",
-                    "componentType": "FieldGroup",
-                    "className": "p-2",
+                    "componentType": "Avatar",
                     "props": {
-                      "layout": "Horizontal",
-                      "fields": [
-                        { "id": "fullName", "label": "ФИО", "value": "@state.userData.fullName" },
-                        { "id": "email", "label": "Email", "value": "@state.userData.email" },
-                        { "id": "phone", "label": "Телефон", "value": "@state.userData.phone" },
-                        { "id": "status", "label": "Статус", "value": "@state.userData.statusLabel" },
-                        { "id": "regDate", "label": "Дата регистрации", "value": "@state.userData.regDateFormatted" },
-                        { "id": "userId", "label": "ID", "value": "@state.userData.id" }
-                      ]
+                      "label": "@state.userData.initials",
+                      "shape": "circle",
+                      "size": "xlarge"
+                    },
+                    "state": {}
+                  },
+                  {
+                    "id": "userFullName",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.fullName",
+                      "level": 1
+                    },
+                    "className": "text-center md:text-left",
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDivider1",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "userEmailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Email",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userEmail",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": { "wordBreak": "break-all" },
+                    "props": {
+                      "value": "@state.userData.email"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userPhoneGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Телефон",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userPhone",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.userData.phone"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userCityGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center",
+              "props": {
+                "label": "Город",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userCity",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.userData.city"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDivider2",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "userDeliveryAddressGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start",
+              "props": {
+                "label": "Адрес доставки",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userDeliveryAddress",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.userData.delivery_address"
                     }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDeliveryCommentGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-start",
+              "props": {
+                "label": "Комментарий доставки",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "userDeliveryAddress",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.userData.delivery_comment"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDivider3",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "userStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "blockStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.userData.statusLabel",
+                      "severity": "@state.userData.statusSeverity"
+                    },
+                    "state": {}
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userStatusReasonGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center",
+              "props": {
+                "label": "Причина блокировки",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "blockReasonField",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "@state.userData.block_reason"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "userDivider4",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "btnEditUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "{$config.baseURL}/users/{$location.routeParams.user_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "state": {}
+            }
+          ]
+        },
+        {
+          "id": "rightColumnBlock",
+          "type": "block",
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "userAvatarNameGroup",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "mb-3",
+              "props": {
+                "grid": {
+                  "cols": ["col-6", "col-6"],
+                  "padding": "p-2"
+                },
+                "components": [
+                  {
+                    "id": "activityPoints",
+                    "type": "component",
+                    "componentType": "StatCard",
+                    "className": "h-full",
+                    "style": {
+                      "backgroundColor": "var(--primary-color)",
+                      "color": "var(--primary-color-text)"
+                    },
+                    "props": {
+                      "titleClassName": "text-base",
+                      "valueClassName": "text-4xl font-bold mt-1",
+                      "iconClassName": "text-2xl text-primary",
+                      "title": "Баллы",
+                      "value": "@state.userData.points",
+                      "icon": "pi pi-trophy"
+                    },
+                    "state": {}
+                  },
+                  {
+                    "id": "activityPrizes",
+                    "type": "component",
+                    "componentType": "StatCard",
+                    "className": "h-full",
+                    "style": {
+                      "backgroundColor": "var(--primary-color)",
+                      "color": "var(--primary-color-text)"
+                    },
+                    "props": {
+                      "titleClassName": "text-base",
+                      "valueClassName": "text-4xl font-bold mt-1",
+                      "iconClassName": "text-2xl text-primary",
+                      "title": "Призы",
+                      "value": "@state.userData.prizes",
+                      "icon": "pi pi-gift"
+                    },
+                    "state": {}
                   }
                 ]
               }
@@ -190,4 +465,3 @@
     }
   ]
 }
-
