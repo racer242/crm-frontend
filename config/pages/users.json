@@ -5,17 +5,13 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "filtersVisible": false,
+    "search": "",
     "users": {
       "value": [],
       "columns": [],
       "totalRecords": 10,
       "rows": 10,
-      "first": 0,
-      "sortField": "",
-      "sortOrder": 1,
-      "filters": [],
-      "search": ""
+      "first": 0
     }
   },
   "meta": {
@@ -23,14 +19,11 @@
   },
   "dataFeed": [
     {
-      "url": "/api/ops/users",
+      "url": "{$config.baseURL}/api/users",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
-        "sortField": "{$location.params.sortField}",
-        "sortOrder": "{$location.params.sortOrder}",
-        "search": "{$location.params.search}",
-        "filters": "{$location.params.filters}"
+        "search": "{$state.search}"
       },
       "method": "GET",
       "target": "state.users"
@@ -62,17 +55,14 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users",
+              "url": "/api/users",
               "method": "GET",
               "target": "state.users",
               "data": {
                 "event": "{$event}",
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "sortField": "{$state.users.sortField}",
-                "sortOrder": "{$state.users.sortOrder}",
-                "search": "{$state.users.search}",
-                "filters": "{$state.users.filters}"
+                "search": "{$state.search}"
               },
               "format": { "$ref": "../system/list-request-format.json" },
               "onSuccess": [
@@ -103,10 +93,7 @@
               "values": {
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "sortField": "{$state.users.sortField}",
-                "sortOrder": "{$state.users.sortOrder}",
-                "search": "{$state.users.search}",
-                "filters": "{$state.users.filters}"
+                "search": "{$state.search}"
               },
               "format": [
                 {
@@ -309,8 +296,6 @@
                 "totalRecords": "@state.users.totalRecords",
                 "rows": "@state.users.rows",
                 "first": "@state.users.first",
-                "sortField": "@state.users.sortField",
-                "sortOrder": "@state.users.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -369,7 +354,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/users/{#row.id}"
+                                  "url": "/users/{#row.id}"
                                 }
                               }
                             ]
@@ -401,7 +386,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/users/{$event.data.id}"
+                        "url": "/users/{$event.data.id}"
                       }
                     }
                   ]
