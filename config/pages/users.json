@@ -6,6 +6,8 @@
     "loading": false,
     "initialized": true,
     "search": "",
+    "status": "",
+    "statuses": [],
     "users": {
       "value": [],
       "columns": [],
@@ -29,29 +31,18 @@
       "target": "state.users"
     }
   ],
-  "events": [
+
+  "dataInit": [
     {
-      "type": "onLoad",
-      "commands": [
-        {
-          "type": "log",
-          "params": {
-            "message": {
-              "event": "{$event}",
-              "data": "{$location.params.search}"
-            }
-          }
-        },
-        {
-          "type": "setProperty",
-          "params": {
-            "source": "{$location.params.search}",
-            "target": "state.search"
-          }
-        }
-      ]
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.status}",
+      "target": "state.status"
     }
   ],
+
   "shortcuts": {
     "requestUsers": {
       "type": "sequence",
@@ -67,7 +58,8 @@
                   "event": "{$event}",
                   "first": "{$state.users.first}",
                   "rows": "{$state.users.rows}",
-                  "search": "{$state.search}"
+                  "search": "{$state.search}",
+                  "status": "{$state.status}"
                 }
               }
             }

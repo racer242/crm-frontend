@@ -1,21 +1,9 @@
 {
-  "stats.analytics.js": {
-    "type": "js",
-    "script": "./config/adapters/analytics2menu.js"
-  },
-  "stats.review.js": {
-    "type": "js",
-    "script": "./config/adapters/stats-review-2-tabview.js"
-  },
-  "stats.week.js": {
-    "type": "js",
-    "script": "./config/adapters/weeks-2-select-list.js"
-  },
-  "users.get.request.js": {
+  "users.get.request": {
     "type": "js",
     "script": "./config/adapters/users.get.request.js"
   },
-  "users.get.response.js": {
+  "users.get.response": {
     "type": "js",
     "script": "./config/adapters/users.get.response.js"
   },
