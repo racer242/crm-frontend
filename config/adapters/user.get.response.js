@@ -20,8 +20,19 @@ function transform(response) {
   let created_at = data.created_at ? convertDateValue(data.created_at) : "";
   let city = (data.city_id || "") + (data.city ? "(" + data.city + ")" : "");
 
-  let status_label = "";
-  let status_severity = "";
+  const statusLabels = {
+    active: "Активен",
+    blocked: "Заблокирован",
+    deleted: "Удален",
+  };
+  const statusSeverities = {
+    active: "success",
+    blocked: "warning",
+    deleted: "danger",
+  };
+
+  let status_label = statusLabels[data.status] || data.status || "";
+  let status_severity = statusSeverities[data.status] || "";
 
   return {
     id: data.id,
@@ -29,7 +40,7 @@ function transform(response) {
     phone: data.phone,
     status: data.status,
     created_at,
-    first_name: data.firstName,
+    first_name: firstName,
     last_name: lastName,
     third_name: data.third_name || "",
     full_name,
