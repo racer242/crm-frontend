@@ -10,44 +10,34 @@ function transform(response) {
   // Полное имя и инициалы
   const firstName = data.first_name || "";
   const lastName = data.last_name || "";
-  const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
-  const initials = [firstName.charAt(0), lastName.charAt(0)].filter(Boolean).join("").toUpperCase() || "";
+  const full_name = [firstName, lastName].filter(Boolean).join(" ") || "";
+  const initials =
+    [firstName.charAt(0), lastName.charAt(0)]
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "";
 
-  // Форматирование даты регистрации
-  const formatDate = (iso) => {
-    if (!iso) return "";
-    try {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return "";
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return "";
-    }
-  };
+  let created_at = data.created_at ? convertDateValue(data.created_at) : "";
+  let city = (data.city_id || "") + (data.city ? "(" + data.city + ")" : "");
 
-  const regDateFormatted = formatDate(data.created_at || data.reg_date);
+  let status_label = "";
+  let status_severity = "";
 
   return {
     id: data.id,
     email: data.email,
     phone: data.phone,
     status: data.status,
-    created_at: data.created_at,
-    first_name: firstName,
+    created_at,
+    first_name: data.firstName,
     last_name: lastName,
     third_name: data.third_name || "",
-    fullName,
+    full_name,
     initials,
-    regDateFormatted,
-    isBlocked: data.is_blocked === true,
-    
-    // Временные заглушки для статистики (пока подключен только профиль)
-    receipts_count: 0,
-    products_count: 0,
-    prizes_count: 0
+    points: data.points,
+    mailing: Boolean(Number(data.mailing || "0")) ? "Есть" : "Нет",
+    city: city != "" ? city : "Не указан",
+    status_label,
+    status_severity,
   };
 }
-
