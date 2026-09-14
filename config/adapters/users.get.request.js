@@ -12,7 +12,9 @@ function transform(params = {}) {
   };
 
   const first = Number(merged.first) || 0;
-  const rows = Number(merged.rows) || 20;
+  // 25 — совпадает с опцией rowsPerPageOptions [5,10,25,50] страниц списков:
+  // иначе ответ (rows=20 вне опций) не отображается в селекторе пагинации PrimeReact 10
+  const rows = Number(merged.rows) || 25;
 
   // Вычисляем номер страницы (API использует 1-based index)
   const page = Math.floor(first / rows) + 1;

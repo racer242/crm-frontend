@@ -26,7 +26,7 @@ function transform(source) {
     columns,
     totalRecords: payload.pagination?.total_items || 0,
     first:
-      ((payload.pagination?.page || 1) - 1) * (payload.pagination?.limit || 20),
-    rows: payload.pagination?.limit || 20,
+      ((payload.pagination?.page || 1) - 1) * (payload.pagination?.limit || 25),
+    rows: payload.pagination?.limit || 25,
   };
 }

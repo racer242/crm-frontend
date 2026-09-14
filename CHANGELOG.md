@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **В пагинации lazy-таблиц не отображалось количество записей на странице** — при открытии списка по чистому URL (без `?rows=`) dataFeed отправлял запрос без пагинации, request-адаптер подставлял дефолт `limit=20`, ответ писал `rows=20` в state; значение 20 отсутствует в `rowsPerPageOptions` `[5,10,25,50]` страниц, а `RowsPerPageDropdown` в PrimeReact 10 не добавляет текущее значение к опциям — селектор размера страницы показывал placeholder вместо числа. Число появлялось только после появления `?rows=N` в location (после выбора размера или перехода по странице). Дефолты согласованы с опциями: `users.get.request` при отсутствии `rows` запрашивает `limit=25`, фолбэки `rows`/`first` в response-адаптерах списков тоже 25 (25 присутствует в `rowsPerPageOptions`, большее из «круглых» значений). (`config/adapters/users.get.request.js`, `users.get.response.js`, `user-acts.response.js`, `user-prizes.response.js`, `user-receipts.response.js`, `user-products.response.js`, `user-messages.response.js`, `ops.pagination.response.js`)
+
 ### Added
 
 - **Страницы чеков, покупок и сообщений участника (операционный канал)** — порт legacy-страниц `user-receipts`/`user-receipt`/`user-receipt-edit`/`user-products`/`user-messages` на CRM API (`GET /api/v1/crm/users/[id]/receipts|products|messages`, `GET /api/v1/crm/receipts/[id]` + `[id]/products`, `PATCH/DELETE /api/v1/crm/receipts/[id]`). В выводе используются все поля ответов API.
