@@ -42,6 +42,56 @@
     "note": "Операционные данные: Редактировать документы (расширенные данные) участника"
   },
   {
+    "path": "ops/users/[user_id]/acts",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/acts",
+    "channel": "instance",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-acts.response"
+    },
+    "note": "Операционные данные: Акты участника"
+  },
+  {
+    "path": "ops/users/[user_id]/prizes",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/prizes",
+    "channel": "instance",
+    "adapter": "ops.pagination.response",
+    "note": "Операционные данные: Призы участника (выбор приза в форме акта)"
+  },
+  {
+    "path": "ops/acts/[act_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/acts/{$location.routeParams.act_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "act.get.response"
+    },
+    "note": "Операционные данные: Детали акта"
+  },
+  {
+    "path": "ops/acts",
+    "method": "POST",
+    "url": "/api/v1/crm/acts",
+    "channel": "instance",
+    "note": "Операционные данные: Добавить акт"
+  },
+  {
+    "path": "ops/acts/[act_id]",
+    "method": "PATCH",
+    "url": "/api/v1/crm/acts/{$location.routeParams.act_id}",
+    "channel": "instance",
+    "note": "Операционные данные: Обновить акт (статус)"
+  },
+  {
+    "path": "ops/acts/[act_id]",
+    "method": "DELETE",
+    "url": "/api/v1/crm/acts/{$location.routeParams.act_id}",
+    "channel": "instance",
+    "note": "Операционные данные: Удалить акт"
+  },
+  {
     "path": "ops/receipts",
     "method": "GET",
     "url": "/api/v1/crm/receipts",

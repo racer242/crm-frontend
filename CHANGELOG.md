@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Страницы актов участника (операционный канал)** — полный цикл работы с актами на карточке участника по референсу legacy-страниц:
+  - `config/pages/user-acts.json` — список актов `/ops/users/[user_id]/acts`: lazy `DataTable` с пагинацией, кнопка «Добавить акт», клик по строке/стрелке → карточка акта. Поиск/фильтры не перенесены (новый API поддерживает только `page`/`limit`).
+  - `config/pages/user-act.json` — карточка акта `/ops/users/[user_id]/acts/[act_id]`: участник (кликабельный), email, статус (`Tag`), даты создания/обновления, кнопка скачивания бланка (заглушка: log + тост «Бланк отсутствует», прокси файлов будет добавлен отдельно), панель «Приз» с переходом к призу, кнопки «Редактировать»/«Удалить» (с `confirm`).
+  - `config/pages/user-act-add.json` — добавление акта `/ops/users/[user_id]/acts/add`: readonly-участник/email, `Dropdown` призов участника (`GET /api/v1/crm/users/[id]/prizes`), `Dropdown` статуса, шорткат `saveAct` (POST) с тостами и навигацией.
+  - `config/pages/user-act-edit.json` — редактирование акта `/ops/users/[user_id]/acts/[act_id]/edit`: readonly-информация об акте, редактирование только статуса (API PATCH принимает только `status`), кнопки Сохранить/Применить/Отменить.
+  - `config/adapters/user-acts.response.js` — новый адаптер списка актов: `items[]` → `{value, columns, totalRecords, first, rows}`, русские лейблы статусов (Ожидает/Одобрен/Доставлен/Отклонен) и severity для `Tag`, форматирование дат через `_shared.js`.
+  - `config/adapters/act.get.response.js` — переписан под новый API `GET /api/v1/crm/acts/[id]`: `act_id` → `id`, статус → лейбл/severity, `created_at`/`updated_at`, `file_url`.
+  - `config/system/api-routes.json` — маршруты: `GET ops/users/[user_id]/acts` (request-адаптер `users.get.request` → `page`/`limit`), `GET ops/users/[user_id]/prizes` (`ops.pagination.response`, для выбора приза), `GET/PATCH/DELETE ops/acts/[act_id]`, `POST ops/acts`.
+  - `config/system/adapters.json` — зарегистрирован `user-acts.response`.
+  - `config/crm-config.json` — зарегистрированы 4 новые страницы; пункт меню «Документы → Акты» работает без правок.
+
 ### Changed
 
 - **Platform Architecture Update: Multi-backend support** — поддержка взаимодействия с управляющим бэкендом и промо-инстансами.

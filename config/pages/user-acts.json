@@ -1,0 +1,262 @@
+{
+  "id": "user-acts",
+  "type": "page",
+  "route": "/ops/users/[user_id]/acts",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "acts": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Акты участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/acts",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.acts"
+    }
+  ],
+  "shortcuts": {
+    "requestUserActs": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}/acts",
+              "method": "GET",
+              "target": "state.acts",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  { "label": "Акты" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "docs",
+                "activeSubitemId": "acts",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "actsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "actsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Акты",
+                "level": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "actsAddBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "actsAddButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Добавить акт",
+                "icon": "pi pi-plus",
+                "size": "small",
+                "severity": "success"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/acts/add"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "actsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "actsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.acts.value",
+                "columns": "@state.acts.columns",
+                "totalRecords": "@state.acts.totalRecords",
+                "rows": "@state.acts.rows",
+                "first": "@state.acts.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{$location.routeParams.user_id}/acts/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestUserActs"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestUserActs"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

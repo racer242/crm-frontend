@@ -43,6 +43,10 @@
     "type": "js",
     "script": "./config/adapters/acts.get.response.js"
   },
+  "user-acts.response": {
+    "type": "js",
+    "script": "./config/adapters/user-acts.response.js"
+  },
   "act.get.response": {
     "type": "js",
     "script": "./config/adapters/act.get.response.js"

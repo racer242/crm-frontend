@@ -1,53 +1,39 @@
 /**
- * Преобразует ответ API /api/acts/[id] в формат для отображения на странице просмотра акта
- * @param {Object} data - Исходный ответ сервера (данные акта)
+ * Преобразует ответ API /api/v1/crm/acts/{id} в формат для отображения
+ * на страницах просмотра/редактирования акта (user-act / user-act-edit)
+ * В page dataFeed адаптер не указывается — его применяет API-роутер,
+ * поэтому на вход может прийти как обёртка { status, data }, так и данные.
+ * @param {Object} response - Ответ сервера (обёртка { status, data } или чистые данные)
  * @returns {Object} Преобразованные данные для State
  */
-function transform(data) {
-  if (!data || typeof data !== "object") return data;
+function transform(response) {
+  const data = (response && response.data) || response || {};
+  if (!data || typeof data !== "object") return {};
 
-  // Статус акта для отображения — извлекаем label из словаря statuses по id
-  const statuses = data.statuses || [];
-  const currentStatusId = data.status;
-  const currentStatusObj = statuses.find((s) => s.id === currentStatusId);
-  const statusLabel = currentStatusObj
-    ? currentStatusObj.name
-    : currentStatusId || "";
-
-  // Severity для Tag компонента
-  const severityMap = {
-    pending: "warn",
+  // Словарь статусов акта
+  const statusLabels = {
+    pending: "Ожидает",
+    approved: "Одобрен",
+    delivered: "Доставлен",
+    rejected: "Отклонен",
+  };
+  const statusSeverities = {
+    pending: "warning",
     approved: "success",
     delivered: "info",
     rejected: "danger",
   };
-  const statusSeverity = severityMap[currentStatusId] || "secondary";
-
-  // Форматирование даты выдачи акта через _shared.js функцию
-  const issueDateFormatted = data.act_issue_date
-    ? convertDateValue(data.act_issue_date)
-    : "";
-
-  // Составляем user_name из first_name и last_name если пользователь указан
-  const user_name =
-    data.user_name ||
-    (data.first_name && data.last_name
-      ? `${data.first_name} ${data.last_name}`
-      : "");
-
-  // user_email берём из email если нет прямого поля
-  const user_email = data.user_email || data.email || "";
 
   return {
-    ...data,
-    user_name,
-    user_email,
-    issue_date: data.act_issue_date || "",
-    issueDateFormatted,
-    statusLabel,
-    statusSeverity,
-    prize_name: data.prize || "",
-    prize_variants: data.prize_variants || [],
-    statuses: statuses,
+    id: data.act_id || "",
+    user_id: data.user_id || "",
+    prize_id: data.prize_id || "",
+    status: data.status || "",
+    status_label: statusLabels[data.status] || data.status || "",
+    status_severity: statusSeverities[data.status] || "secondary",
+    // Путь к файлу акта (без префикса версии; прокси файлов будет добавлен отдельно)
+    file_url: data.file_url || "",
+    created_at: data.created_at ? convertDateValue(data.created_at) : "",
+    updated_at: data.updated_at ? convertDateValue(data.updated_at) : "",
   };
 }
