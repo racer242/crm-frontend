@@ -48,7 +48,12 @@ function transform(response) {
     // ИНН
     inn: extended.inn || "",
 
-    // Для breadcrumb
-    fullName: [firstName, lastName].filter(Boolean).join(" ") || "",
+    // Для breadcrumb.
+    // Если не указаны ни имя, ни фамилия — «Без имени (participant_code)»
+    fullName:
+      [firstName, lastName].filter(Boolean).join(" ") ||
+      (data.participant_code
+        ? `Без имени (${data.participant_code})`
+        : "Без имени"),
   };
 }

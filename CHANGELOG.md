@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **ID участника в меню на страницах документов** — меню участника биндится на `@state.userData.id`, но на `user-docs` / `user-docs-edit` данные участника кладутся в `state.docsData`, а `state.userData` отсутствовал — все ссылки меню (Профиль, Акты, Призы, Чеки, …) строились без ID (`/ops/users/…` с пустым сегментом). Добавлен `dataInit` (серверная инициализация state до рендера, макросы): `state.userData.id ← {$location.routeParams.user_id}` — работает уже при SSR и не требует дополнительного HTTP-запроса. (`config/pages/user-docs.json`, `config/pages/user-docs-edit.json`)
+- **Fallback имени участника в адаптерах** — если не указаны ни имя, ни фамилия, отображается «Без имени (participant_code)» (при отсутствии кода — «Без имени»): `config/adapters/user.get.response.js` (`full_name` на карточке участника), `config/adapters/users.get.response.js` (`fullName` в списке участников, вместо «—»; кейс «только отчество» тоже даёт «Без имени»), `config/adapters/user-docs.response.js` (`fullName` для хлебных крошек страниц документов).
+
 - **Route specificity in `findPageByRoute()`** — страница подбиралась по первому совпавшему шаблону, из-за чего статичный и динамичный маршруты одинаковой глубины конфликтовали: URL `/ops/users/[user_id]/acts/add` (страница добавления акта) совпадал с шаблоном карточки `/ops/users/[user_id]/acts/[act_id]` (`act_id="add"`), страница добавления никогда не открывалась, а её dataFeed запрашивал несуществующий `GET /api/ops/acts/add`. Теперь среди всех подходящих шаблонов выбирается наиболее специфичный — с наибольшим числом совпавших статичных сегментов; порядок регистрации страниц используется только как стабильный тай-брейкер. (`src/core/config.ts`)
 
 ### Added

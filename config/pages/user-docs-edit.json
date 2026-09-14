@@ -8,6 +8,10 @@
     "saved": false,
     "sentSuccessfully": false,
     "saveResult": null,
+    "userData": {
+      "id": "",
+      "full_name": ""
+    },
     "docsData": {}
   },
   "meta": {
@@ -19,6 +23,12 @@
       "method": "GET",
       "target": "state.docsData",
       "adapter": "user-docs.response"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.routeParams.user_id}",
+      "target": "state.userData.id"
     }
   ],
   "shortcuts": {

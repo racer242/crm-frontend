@@ -5,16 +5,22 @@ function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
 
   const value = (payload.items || []).map((user) => {
-    const parts = [user.first_name, user.third_name, user.last_name].filter(
-      Boolean,
-    );
+    // Если не указаны ни имя, ни фамилия — «Без имени (participant_code)»
+    const hasName = Boolean(user.first_name || user.last_name);
+    const fullName = hasName
+      ? [user.first_name, user.third_name, user.last_name]
+          .filter(Boolean)
+          .join(" ")
+      : user.participant_code
+        ? `Без имени (${user.participant_code})`
+        : "Без имени";
 
     // Форматирование даты выигрыша через _shared.js функцию
     let created_at = user.created_at ? convertDateValue(user.created_at) : "";
 
     return {
       ...user,
-      fullName: parts.length > 0 ? parts.join(" ") : "—",
+      fullName,
       created_at,
     };
   });

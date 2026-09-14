@@ -7,11 +7,16 @@ function transform(response) {
   const data = response.data || response; // Поддержка как обертки, так и чистых данных
   if (!data || typeof data !== "object") return {};
 
-  // Полное имя и инициалы
+  // Полное имя и инициалы.
+  // Если не указаны ни имя, ни фамилия — «Без имени (participant_code)»
   const firstName = data.first_name || "";
   const lastName = data.last_name || "";
   const thirdName = data.third_name || "";
-  const full_name = [firstName, lastName].filter(Boolean).join(" ") || "";
+  const full_name =
+    [firstName, lastName].filter(Boolean).join(" ") ||
+    (data.participant_code
+      ? `Без имени (${data.participant_code})`
+      : "Без имени");
   const complete_name =
     [firstName, thirdName, lastName].filter(Boolean).join(" ") || "";
   const initials =
