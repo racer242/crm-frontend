@@ -12,14 +12,11 @@
       "third_name": "",
       "full_name": "",
       "initials": "",
+      "points": 0,
       "email": "",
       "phone": "",
       "created_at": "",
       "city": "",
-      "points": 0,
-      "prizes": 0,
-      "receipts": 0,
-      "products": 0,
       "messages": 0,
       "status": "",
       "mailing": "",
@@ -29,6 +26,9 @@
     "productData": {
       "receipts": 0,
       "products": 0
+    },
+    "achevementsData": {
+      "prizes": 0
     },
     "feedbackData": {
       "messages": 0
@@ -370,7 +370,7 @@
                       "valueClassName": "text-4xl font-bold mt-1",
                       "iconClassName": "text-2xl text-primary",
                       "title": "Призы",
-                      "value": "@state.userData.prizes",
+                      "value": "@state.achevementsData.prizes",
                       "icon": "pi pi-gift"
                     },
                     "state": {}
