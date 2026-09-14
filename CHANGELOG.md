@@ -6,6 +6,22 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Страницы чеков, покупок и сообщений участника (операционный канал)** — порт legacy-страниц `user-receipts`/`user-receipt`/`user-receipt-edit`/`user-products`/`user-messages` на CRM API (`GET /api/v1/crm/users/[id]/receipts|products|messages`, `GET /api/v1/crm/receipts/[id]` + `[id]/products`, `PATCH/DELETE /api/v1/crm/receipts/[id]`). В выводе используются все поля ответов API.
+  - `config/pages/user-receipts.json` — список чеков `/ops/users/[user_id]/receipts`: lazy `DataTable` (ID, Статус, Продуктов, Зарегистрирован), клик по строке/стрелке → карточка чека, меню «Продукция → Чеки».
+  - `config/pages/user-receipt.json` — карточка чека `/ops/users/[user_id]/receipts/[receipt_id]`: панель «Информация о чеке» (ID, статус `Tag`, сумма из копеек в рубли, дата покупки, регистрация, фискальные данные ФН/ФД/ФП), панель «Фото чека» (`DataTable` + `Image` с превью из `photos[].url`), панель «Продукция в чеке» (название, кол-во, сумма, статус продукта), панель «Участник», кнопки «Модерировать» и «Удалить» (с `confirm`, DELETE + тост + возврат к списку).
+  - `config/pages/user-receipt-edit.json` — модерация чека `.../[receipt_id]/edit`: readonly-информация о чеке, `Dropdown` статуса (`CHECKING`/`ACCEPTED`/`REFUSED`/`SUSPENDED`/`NEED_PHOTO`), `InputTextarea` причины отклонения, шорткат `saveReceipt` (PATCH `status` + `decline_reason`), кнопки Сохранить/Применить/Отменить.
+  - `config/pages/user-products.json` — покупки-продукты `/ops/users/[user_id]/products`: lazy `DataTable` (ID, Название, Количество, Сумма), меню «Продукция → Покупки».
+  - `config/pages/user-messages.json` — сообщения `/ops/users/[user_id]/messages`: lazy `DataTable` (ID, Тема, Сообщение, Дата), меню «Общение».
+  - `config/adapters/user-receipts.response.js` — новый адаптер списка чеков: `items[]` → `{value, columns, totalRecords, first, rows}`, словарь статусов чека без привязки к регистру (CHECKING → «На проверке», ACCEPTED → «Принят», REFUSED → «Отклонён», SUSPENDED → «Приостановлен», NEED_PHOTO → «Требуется фото») и severity для `Tag`, форматирование дат через `_shared.js`.
+  - `config/adapters/user-products.response.js`, `config/adapters/user-messages.response.js` — новые адаптеры списков покупок и сообщений (та же схема lazy-таблицы).
+  - `config/adapters/receipt.get.response.js` — переписан под новый API `GET /api/v1/crm/receipts/[id]`: `receipt_id` → `id`, статус → лейбл/severity, `fn`/`fp`/`fd`, `sum` (копейки) → `sum_label` («1 234,56 ₽», NBSP нормализован), `date`/`registered_at` → форматированные значения, `photos[]` → массив с порядковыми номерами + `photos_count`/`photos_label`.
+  - `config/adapters/receipt-products.response.js` — переписан под `GET /api/v1/crm/receipts/[id]/products` (непагинированный `data.items[]`): нумерация, лейбл `product_status` (известные значения → русский лейбл, неизвестные → как в API).
+  - `config/system/api-routes.json` — маршруты: `GET ops/users/[user_id]/receipts|products|messages` (request-адаптер `users.get.request` → `page`/`limit`), `GET ops/receipts/[receipt_id]`, `GET ops/receipts/[receipt_id]/products`, `PATCH ops/receipts/[receipt_id]` (модерация), `DELETE ops/receipts/[receipt_id]`.
+  - `config/system/adapters.json` — зарегистрированы `user-receipts.response`, `user-products.response`, `user-messages.response`.
+  - `config/crm-config.json` — зарегистрированы 5 новых страниц; пункты меню «Продукция → Чеки/Покупки» и «Общение» заработали без правок (`config/menus/user.json`).
+
+### Added
+
 - **Страницы призов участника (операционный канал, view-only)** — просмотр призов на карточке участника по референсам legacy-страниц `user-prizes.json`/`user-prize.json`. Страницы добавления/редактирования приза не портируются: призы — пул каталога, управление ими из админки не предусмотрено (в API инстанса нет PATCH; назначение/отзыв выполняются импортом на бэкенде).
   - `config/pages/user-prizes.json` — список призов `/ops/users/[user_id]/prizes`: lazy `DataTable` (ID, Название, Стоимость, Статус), клик по строке/стрелке → карточка приза, меню «Достижения → Призы». Без кнопок добавления (view-only).
   - `config/pages/user-prize.json` — карточка приза `/ops/users/[user_id]/prizes/[prize_id]`: панель «Информация о призе» (название, стоимость, статус `Tag`, «Требуется акт», «Активен», «Недостающие данные») и панель «Участник» (кликабельное имя, email).

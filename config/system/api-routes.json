@@ -113,6 +113,73 @@
     "note": "Операционные данные: Список чеков"
   },
   {
+    "path": "ops/users/[user_id]/receipts",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/receipts",
+    "channel": "instance",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-receipts.response"
+    },
+    "note": "Операционные данные: Чеки участника"
+  },
+  {
+    "path": "ops/users/[user_id]/products",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/products",
+    "channel": "instance",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-products.response"
+    },
+    "note": "Операционные данные: Покупки-продукты участника"
+  },
+  {
+    "path": "ops/users/[user_id]/messages",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/messages",
+    "channel": "instance",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-messages.response"
+    },
+    "note": "Операционные данные: Сообщения участника"
+  },
+  {
+    "path": "ops/receipts/[receipt_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/receipts/{$location.routeParams.receipt_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "receipt.get.response"
+    },
+    "note": "Операционные данные: Детали чека"
+  },
+  {
+    "path": "ops/receipts/[receipt_id]/products",
+    "method": "GET",
+    "url": "/api/v1/crm/receipts/{$location.routeParams.receipt_id}/products",
+    "channel": "instance",
+    "adapter": {
+      "response": "receipt-products.response"
+    },
+    "note": "Операционные данные: Продукция в чеке"
+  },
+  {
+    "path": "ops/receipts/[receipt_id]",
+    "method": "PATCH",
+    "url": "/api/v1/crm/receipts/{$location.routeParams.receipt_id}",
+    "channel": "instance",
+    "note": "Операционные данные: Модерация чека (статус, причина отклонения)"
+  },
+  {
+    "path": "ops/receipts/[receipt_id]",
+    "method": "DELETE",
+    "url": "/api/v1/crm/receipts/{$location.routeParams.receipt_id}",
+    "channel": "instance",
+    "note": "Операционные данные: Удалить чек"
+  },
+  {
     "path": "ops/receipts/[id]/approve",
     "method": "POST",
     "url": "/api/v1/crm/receipts/{$location.routeParams.id}/approve",

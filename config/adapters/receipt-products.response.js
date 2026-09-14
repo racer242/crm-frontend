@@ -1,38 +1,51 @@
 /**
- * Преобразует ответ API /api/receipts/[id]/products в формат для DataTable
- * @param {Object} data - Исходный ответ сервера (columns, rows, filters, meta)
- * @returns {Object} Преобразованные данные для State (value, columns, totalRecords)
+ * Адаптер для продукции в чеке (ops/receipts/[receipt_id]/products
+ * → GET /api/v1/crm/receipts/{id}/products).
+ * Эндпоинт не пагинированный — отдаёт data.items[] целиком.
+ * В page dataFeed адаптер не указывается — его применяет API-роутер,
+ * поэтому на вход может прийти как обёртка { status, data }, так и данные.
+ * @param {Object} source - Ответ сервера (обёртка { status, data } или чистые данные)
+ * @returns {Object} Данные для DataTable (value, columns, totalRecords)
  */
-function transform(data) {
-  if (!data || typeof data !== "object") return data;
+function transform(source) {
+  const payload = source.status === "ok" ? source.data : source;
+  const items = Array.isArray(payload && payload.items)
+    ? payload.items
+    : Array.isArray(payload)
+      ? payload
+      : [];
 
-  // Трансформация колонок из формата API в формат DataTable
-  // API: { id, title, type, sortable, props } → DataTable: { field, header, ...props }
-  const transformedColumns = (data.columns || []).map((col) => ({
-    field: col.id,
-    header: col.title,
-    sortable: col.sortable,
-    ...col.props,
-  }));
+  // Статус продукта — справочника в API-доках нет: известные значения
+  // переводим в русские лейблы, неизвестные показываем как есть.
+  const productStatusLabels = {
+    checking: "На проверке",
+    accepted: "Принят",
+    pending: "Ожидает",
+    declined: "Отклонён",
+    refused: "Отклонён",
+  };
 
-  // Преобразуем строки: из { id, values: {...} } в плоские объекты
-  const value = (data.rows || []).map((row) => ({
-    ...row.values,
-    ...(row.id && { _rowId: row.id }),
-    // Добавляем кастомные поля для иконки is_promo (Prime Icons + severity)
-    is_promo_icon: row.values.is_promo ? "pi pi-check-circle" : "",
-    is_promo_severity: row.values.is_promo ? "success" : "secondary",
-  }));
+  const value = items.map((product, index) => {
+    const statusKey = String(product.product_status || "").toLowerCase();
+    return {
+      ...product,
+      _num: index + 1,
+      product_status_label:
+        productStatusLabels[statusKey] || product.product_status || "—",
+    };
+  });
+
+  const columns = [
+    { field: "_num", header: "№", width: "4rem" },
+    { field: "product_name", header: "Название" },
+    { field: "quantity", header: "Кол-во", width: "8rem" },
+    { field: "amount", header: "Сумма", width: "10rem" },
+    { field: "product_status_label", header: "Статус", width: "12rem" },
+  ];
 
   return {
     value,
-    columns: transformedColumns,
-    totalRecords: data.meta?.total_count || 0,
-    first: data.meta?.first || 0,
-    rows: data.meta?.limit || 50,
-    sortField: data.meta?.sort || "",
-    sortOrder: data.meta?.direction === "desc" ? -1 : 1,
-    filters: data.filters || [],
-    search: data.search || "",
+    columns,
+    totalRecords: value.length,
   };
 }

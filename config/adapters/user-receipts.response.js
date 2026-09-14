@@ -1,0 +1,63 @@
+/**
+ * Адаптер для списка чеков участника (ops/users/[user_id]/receipts)
+ * Преобразует ответ API инстанса ({status:"ok", data:{items, pagination}})
+ * в формат lazy-таблицы {value, columns, totalRecords, first, rows}
+ */
+function transform(source) {
+  const payload = source.status === "ok" ? source.data : source;
+
+  // Словарь статусов чека (русские лейблы + severity для Tag).
+  // В API статусы приходят в верхнем регистре (CHECKING, ACCEPTED, ...) —
+  // ключи словаря в нижнем регистре, нормализация ниже.
+  const statusLabels = {
+    checking: "На проверке",
+    accepted: "Принят",
+    refused: "Отклонён",
+    suspended: "Приостановлен",
+    need_photo: "Требуется фото",
+  };
+  const statusSeverities = {
+    checking: "info",
+    accepted: "success",
+    refused: "danger",
+    suspended: "warning",
+    need_photo: "warning",
+  };
+
+  const value = (payload.items || []).map((receipt) => {
+    const statusKey = String(receipt.status || "").toLowerCase();
+    return {
+      ...receipt,
+      id: receipt.receipt_id || "",
+      status_label: statusLabels[statusKey] || receipt.status || "",
+      status_severity: statusSeverities[statusKey] || "secondary",
+      total_products_label:
+        receipt.total_products !== undefined && receipt.total_products !== null
+          ? String(receipt.total_products)
+          : "—",
+      registered_at_formatted: receipt.registered_at
+        ? convertDateValue(receipt.registered_at)
+        : "",
+    };
+  });
+
+  const columns = [
+    { field: "id", header: "ID", width: "12rem" },
+    { field: "status_label", header: "Статус", width: "10rem" },
+    { field: "total_products_label", header: "Продуктов", width: "8rem" },
+    {
+      field: "registered_at_formatted",
+      header: "Зарегистрирован",
+      width: "12rem",
+    },
+  ];
+
+  return {
+    value,
+    columns,
+    totalRecords: payload.pagination?.total_items || 0,
+    first:
+      ((payload.pagination?.page || 1) - 1) * (payload.pagination?.limit || 20),
+    rows: payload.pagination?.limit || 20,
+  };
+}

@@ -1,0 +1,189 @@
+{
+  "id": "user-messages",
+  "type": "page",
+  "route": "/ops/users/[user_id]/messages",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "messages": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Сообщения участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/messages",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.messages"
+    }
+  ],
+  "shortcuts": {
+    "requestUserMessages": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}/messages",
+              "method": "GET",
+              "target": "state.messages",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.messages.first}",
+                "rows": "{$state.messages.rows}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.messages.first}",
+                "rows": "{$state.messages.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  { "label": "Сообщения" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "communication",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "messagesHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "messagesTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "messagesPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Сообщения",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "messagesTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "messagesTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "messagesTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.messages.value",
+                "columns": "@state.messages.columns",
+                "totalRecords": "@state.messages.totalRecords",
+                "rows": "@state.messages.rows",
+                "first": "@state.messages.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestUserMessages"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestUserMessages"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

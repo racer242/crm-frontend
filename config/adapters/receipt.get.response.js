@@ -1,59 +1,84 @@
 /**
- * Преобразует ответ API /api/receipts/[id] в формат для отображения на странице просмотра чека
- * @param {Object} data - Исходный ответ сервера (данные чека)
+ * Адаптер для деталей чека (ops/receipts/[receipt_id] → GET /api/v1/crm/receipts/{id})
+ * Преобразует ответ API в формат для отображения на страницах просмотра (user-receipt)
+ * и модерации (user-receipt-edit).
+ * В page dataFeed адаптер не указывается — его применяет API-роутер,
+ * поэтому на вход может прийти как обёртка { status, data }, так и данные.
+ * @param {Object} response - Ответ сервера (обёртка { status, data } или чистые данные)
  * @returns {Object} Преобразованные данные для State
  */
-function transform(data) {
-  if (!data || typeof data !== "object") return data;
+function transform(response) {
+  const data = (response && response.data) || response || {};
+  if (!data || typeof data !== "object") return {};
 
-  // Форматирование дат через _shared.js
-  const registrationDateFormatted = data.registration_date
-    ? convertDateValue(data.registration_date)
-    : "";
-  const purchaseDateFormatted = data.purchase_date
-    ? convertDateValue(data.purchase_date)
-    : "";
-
-  // Розничная сеть из списка
-  const retailChains = data.retail_chains || [];
-  const retailChainName =
-    retailChains.find((c) => c.id === data.retail_chain_id)?.name || "";
-
-  // Статус модерации — используем label из массива statuses по id
-  const statuses = data.moderation_statuses || data.statuses || [];
-  const currentStatusId = data.moderation_status || data.status || "";
-  const currentStatusObj = statuses.find((s) => s.id === currentStatusId);
-  const moderationStatusLabel = currentStatusObj
-    ? currentStatusObj.name
-    : currentStatusId || "";
-
-  // Severity для статуса модерации
-  const severityMap = {
-    CHECKING: "warn",
-    REFUSED: "danger",
-    ACCEPTED: "success",
+  // Словарь статусов чека (русские лейблы + severity для Tag).
+  // В API статусы приходят в верхнем регистре (CHECKING, ACCEPTED, ...) —
+  // ключи словаря в нижнем регистре, нормализация ниже.
+  const statusLabels = {
+    checking: "На проверке",
+    accepted: "Принят",
+    refused: "Отклонён",
+    suspended: "Приостановлен",
+    need_photo: "Требуется фото",
   };
-  const moderationStatusSeverity = severityMap[currentStatusId] || "secondary";
+  const statusSeverities = {
+    checking: "info",
+    accepted: "success",
+    refused: "danger",
+    suspended: "warning",
+    need_photo: "warning",
+  };
+  const statusKey = String(data.status || "").toLowerCase();
 
-  // Составляем user_name из first_name и last_name если пользователь указан
-  const user_name =
-    data.user_name ||
-    (data.first_name && data.last_name
-      ? `${data.first_name} ${data.last_name}`
-      : "");
-
-  // user_email берём из email если нет прямого поля
-  const user_email = data.user_email || data.email || "";
+  // Фото чека: массив { file_id, url } + порядковый номер для таблицы
+  const photos = (Array.isArray(data.photos) ? data.photos : []).map(
+    (photo, index) => ({
+      ...photo,
+      n: index + 1,
+    }),
+  );
 
   return {
-    ...data,
-    user_name,
-    user_email,
-    registrationDateFormatted,
-    purchaseDateFormatted,
-    retail_chain_name: retailChainName,
-    moderationStatusLabel,
-    moderationStatusSeverity,
-    retail_chains: retailChains,
+    id: data.receipt_id || "",
+    receipt_id: data.receipt_id || "",
+    user_id: data.user_id || "",
+    status: data.status || "",
+    status_label: statusLabels[statusKey] || data.status || "",
+    status_severity: statusSeverities[statusKey] || "secondary",
+    // Фискальные данные
+    fn: data.fn || "",
+    fp: data.fp || "",
+    fd: data.fd || "",
+    // Сумма приходит в копейках — форматирование в рубли (sum_label)
+    sum: data.sum !== undefined && data.sum !== null ? data.sum : "",
+    sum_label: formatSum(data.sum),
+    date: data.date || "",
+    date_formatted: data.date ? convertDateValue(data.date) : "",
+    registered_at: data.registered_at || "",
+    registered_at_formatted: data.registered_at
+      ? convertDateValue(data.registered_at)
+      : "",
+    photos,
+    photos_count: photos.length,
+    photos_label: photos.length ? `Фото чека (${photos.length})` : "—",
   };
+}
+
+/**
+ * Форматирует сумму из копеек в рубли («1 234,56 ₽»)
+ */
+function formatSum(sum) {
+  if (sum === undefined || sum === null || sum === "") return "—";
+  const value = Number(sum);
+  if (isNaN(value)) return String(sum);
+  return (
+    (value / 100)
+      .toLocaleString("ru-RU", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+      // toLocaleString('ru-RU') использует неразрывный пробел (U+00A0) —
+      // нормализуем к обычному пробелу для одинакового вывода в Node и браузере
+      .replace(/\u00A0/g, " ") + " ₽"
+  );
 }

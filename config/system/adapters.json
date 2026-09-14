@@ -55,6 +55,18 @@
     "type": "js",
     "script": "./config/adapters/user-prizes.response.js"
   },
+  "user-receipts.response": {
+    "type": "js",
+    "script": "./config/adapters/user-receipts.response.js"
+  },
+  "user-products.response": {
+    "type": "js",
+    "script": "./config/adapters/user-products.response.js"
+  },
+  "user-messages.response": {
+    "type": "js",
+    "script": "./config/adapters/user-messages.response.js"
+  },
   "prizes.get.request": {
     "type": "js",
     "script": "./config/adapters/prizes.get.request.js"
