@@ -25,10 +25,10 @@
       "updated_at": ""
     },
     "actStatuses": [
-      { "label": "Ожидает", "value": "pending" },
-      { "label": "Одобрен", "value": "approved" },
-      { "label": "Доставлен", "value": "delivered" },
-      { "label": "Отклонен", "value": "rejected" }
+      { "label": "Ожидает", "value": "PENDING" },
+      { "label": "Одобрен", "value": "APPROVED" },
+      { "label": "Доставлен", "value": "DELIVERED" },
+      { "label": "Отклонен", "value": "REJECTED" }
     ]
   },
   "meta": {
@@ -301,6 +301,28 @@
                     "className": "m-0 font-bold text-lg",
                     "props": {
                       "value": "@state.actData.created_at"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "updatedAtGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата обновления",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "updatedAtText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.actData.updated_at"
                     }
                   }
                 ]

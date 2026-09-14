@@ -12,13 +12,13 @@
     },
     "formData": {
       "prize_id": "",
-      "status": "pending"
+      "status": "PENDING"
     },
     "actStatuses": [
-      { "label": "Ожидает", "value": "pending" },
-      { "label": "Одобрен", "value": "approved" },
-      { "label": "Доставлен", "value": "delivered" },
-      { "label": "Отклонен", "value": "rejected" }
+      { "label": "Ожидает", "value": "PENDING" },
+      { "label": "Одобрен", "value": "APPROVED" },
+      { "label": "Доставлен", "value": "DELIVERED" },
+      { "label": "Отклонен", "value": "REJECTED" }
     ],
     "prizes": {
       "value": []

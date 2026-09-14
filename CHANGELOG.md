@@ -23,6 +23,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Статусы актов приведены к формату API (верхний регистр), данные акта дополнены `updated_at`:**
+  - `config/adapters/user-acts.response.js` — лейбл/severity статуса определяется без привязки к регистру (`PENDING` → «Ожидает»); в список актов добавлена колонка «Обновлён» (форматированный `updated_at`).
+  - `config/adapters/act.get.response.js` — лейбл/severity статуса без привязки к регистру; поле `status` остаётся как в API (например, `PENDING`), `updated_at` форматируется.
+  - `config/pages/user-act-add.json` — значения `actStatuses` и дефолт `formData.status` в верхнем регистре (`PENDING`/`APPROVED`/`DELIVERED`/`REJECTED`), POST отправляет статус в формате API.
+  - `config/pages/user-act-edit.json` — значения `actStatuses` в верхнем регистре (совпадают со `status` из API); в инфо-панель добавлена строка «Дата обновления» (`@state.actData.updated_at`).
+
+### Changed
+
 - **Platform Architecture Update: Multi-backend support** — поддержка взаимодействия с управляющим бэкендом и промо-инстансами.
   - `config/system/camps.json` — обновлена структура записи кампании: `base_api_url` (управление), `crm_api_url`, `crm_key_id`, `crm_signature` (операционные данные).
   - `src/app/api/[...route]/route.ts` — реализована поддержка каналов (`management` / `instance`). Для канала `instance` автоматически генерируется HMAC-SHA256 подпись запроса.

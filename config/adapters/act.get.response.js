@@ -24,13 +24,17 @@ function transform(response) {
     rejected: "danger",
   };
 
+  // Статусы приходят в верхнем регистре (PENDING, APPROVED, ...) —
+  // ключи словаря в нижнем регистре, нормализация ниже.
+  const statusKey = String(data.status || "").toLowerCase();
+
   return {
     id: data.act_id || "",
     user_id: data.user_id || "",
     prize_id: data.prize_id || "",
     status: data.status || "",
-    status_label: statusLabels[data.status] || data.status || "",
-    status_severity: statusSeverities[data.status] || "secondary",
+    status_label: statusLabels[statusKey] || data.status || "",
+    status_severity: statusSeverities[statusKey] || "secondary",
     // Путь к файлу акта (без префикса версии; прокси файлов будет добавлен отдельно)
     file_url: data.file_url || "",
     created_at: data.created_at ? convertDateValue(data.created_at) : "",

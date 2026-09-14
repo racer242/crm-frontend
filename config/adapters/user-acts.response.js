@@ -6,7 +6,9 @@
 function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
 
-  // Словарь статусов акта (русские лейблы + severity для Tag)
+  // Словарь статусов акта (русские лейблы + severity для Tag).
+  // В API статусы приходят в верхнем регистре (PENDING, APPROVED, ...) —
+  // ключи словаря в нижнем регистре, нормализация ниже.
   const statusLabels = {
     pending: "Ожидает",
     approved: "Одобрен",
@@ -20,19 +22,24 @@ function transform(source) {
     rejected: "danger",
   };
 
-  const value = (payload.items || []).map((act) => ({
-    ...act,
-    id: act.act_id || "",
-    status_label: statusLabels[act.status] || act.status || "",
-    status_severity: statusSeverities[act.status] || "secondary",
-    created_at: act.created_at ? convertDateValue(act.created_at) : "",
-  }));
+  const value = (payload.items || []).map((act) => {
+    const statusKey = String(act.status || "").toLowerCase();
+    return {
+      ...act,
+      id: act.act_id || "",
+      status_label: statusLabels[statusKey] || act.status || "",
+      status_severity: statusSeverities[statusKey] || "secondary",
+      created_at: act.created_at ? convertDateValue(act.created_at) : "",
+      updated_at: act.updated_at ? convertDateValue(act.updated_at) : "",
+    };
+  });
 
   const columns = [
     { field: "id", header: "ID", width: "12rem" },
     { field: "prize_id", header: "Приз" },
     { field: "status_label", header: "Статус", width: "10rem" },
     { field: "created_at", header: "Создан", width: "12rem" },
+    { field: "updated_at", header: "Обновлён", width: "12rem" },
   ];
 
   return {
