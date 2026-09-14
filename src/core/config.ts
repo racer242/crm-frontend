@@ -245,17 +245,54 @@ export function findPageByRoute(route: string | null): PageRouteMatch | null {
     return { pageConfig: exactMatch, route: normalizedRoute, routeParams: {} };
   }
 
-  // 2. Try pattern matching across all pages
+  // 2. Try pattern matching across all pages.
+  // Several patterns can match the same URL (e.g. "/users/1/acts/add" matches
+  // both "/users/[user_id]/acts/[act_id]" and "/users/[user_id]/acts/add").
+  // Prefer the most specific pattern: the one with the most static segments
+  // matching the actual route (i.e. the fewest dynamic placeholders winning).
+  // Registration order is only used as a stable tie-breaker.
+  let bestMatch: {
+    page: any;
+    route: string;
+    routeParams: Record<string, string>;
+    staticSegments: number;
+  } | null = null;
+
   for (const page of cachedConfig.pages || []) {
     if (!page.route) continue;
     const result = matchRoute(normalizedRoute, page.route);
-    if (result.matched) {
-      return {
-        pageConfig: page,
+    if (!result.matched) continue;
+
+    const patternSegments = (page.route as string)
+      .split("/")
+      .filter(Boolean);
+    const actualSegments = normalizedRoute.split("/").filter(Boolean);
+    let staticSegments = 0;
+    for (let i = 0; i < patternSegments.length; i++) {
+      if (
+        !/^\[(.+)\]$/.test(patternSegments[i]) &&
+        patternSegments[i] === actualSegments[i]
+      ) {
+        staticSegments++;
+      }
+    }
+
+    if (!bestMatch || staticSegments > bestMatch.staticSegments) {
+      bestMatch = {
+        page,
         route: page.route,
         routeParams: result.params,
+        staticSegments,
       };
     }
+  }
+
+  if (bestMatch) {
+    return {
+      pageConfig: bestMatch.page,
+      route: bestMatch.route,
+      routeParams: bestMatch.routeParams,
+    };
   }
 
   return null;

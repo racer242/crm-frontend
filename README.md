@@ -476,7 +476,7 @@ App, Page, Section, Block, Component, Command, LayoutConfig, ElementMeta.
 
 → [docs/macros-reference.md](docs/macros-reference.md)
 
-14 типов макросов: state, config, location (включая routeParams для динамических маршрутов вида `[id]`), now, session/localStorage, cookie, window, math, device/browser, env.
+14 типов макросов: state, config, location (включая routeParams для динамических маршрутов вида `[id]`; при конфликте шаблонов выбирается наиболее специфичный — см. [docs/config-reference.md](docs/config-reference.md)), now, session/localStorage, cookie, window, math, device/browser, env.
 
 ## Линковка
 

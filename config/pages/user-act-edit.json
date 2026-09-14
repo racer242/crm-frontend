@@ -158,11 +158,11 @@
                   },
                   {
                     "label": "Акты",
-                    "route": "/ops/users/{$location.routeParams.user_id}/acts"
+                    "route": "/ops/users/{@state.userData.id}/acts"
                   },
                   {
                     "label": "Акт",
-                    "route": "/ops/users/{$location.routeParams.user_id}/acts/{$location.routeParams.act_id}"
+                    "route": "/ops/users/{@state.userData.id}/acts/{@state.actData.id}"
                   },
                   { "label": "Редактирование" }
                 ]

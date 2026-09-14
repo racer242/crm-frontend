@@ -122,7 +122,7 @@
                   },
                   {
                     "label": "Акты",
-                    "route": "/ops/users/{$location.routeParams.user_id}/acts"
+                    "route": "/ops/users/{@state.userData.id}/acts"
                   },
                   { "label": "Акт" }
                 ]
