@@ -1,25 +1,213 @@
 {
-  "id": "opsReceiptsPage",
+  "id": "receipts",
   "type": "page",
-  "title": "Чеки",
   "route": "/ops/receipts",
-  "state": { "items": [] },
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "receipts": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Чеки — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/receipts",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.receipts"
+    }
+  ],
+  "shortcuts": {
+    "requestReceipts": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/receipts",
+              "method": "GET",
+              "target": "state.receipts",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
   "sections": [
     {
-      "id": "content",
-      "dataFeed": [{ "method": "GET", "url": "/api/ops/receipts", "target": "state.items", "adapter": "extractPaginationItems" }],
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
       "blocks": [
         {
-          "id": "b1",
+          "id": "breadcrumbBlock",
+          "type": "block",
           "components": [
             {
-              "type": "DataTable",
-              "value": "@opsReceiptsPage.state.items",
-              "columns": [
-                { "field": "id", "header": "ID" },
-                { "field": "user_id", "header": "Участник" },
-                { "field": "amount", "header": "Сумма" },
-                { "field": "status", "header": "Статус" }
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [{ "label": "Чеки" }]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "receiptsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "receiptsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Чеки",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "receiptsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "receiptsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.receipts.value",
+                "columns": "@state.receipts.columns",
+                "totalRecords": "@state.receipts.totalRecords",
+                "rows": "@state.receipts.rows",
+                "first": "@state.receipts.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "user",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-user",
+                          "link": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.user_id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/receipts/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestReceipts"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestReceipts"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/receipts/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
               ]
             }
           ]

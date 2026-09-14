@@ -109,7 +109,10 @@
     "method": "GET",
     "url": "/api/v1/crm/receipts",
     "channel": "instance",
-    "adapter": "ops.pagination.response",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "receipts.response"
+    },
     "note": "Операционные данные: Список чеков"
   },
   {

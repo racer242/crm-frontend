@@ -41,6 +41,8 @@
     { "$ref": "./pages/user-products.json" },
     { "$ref": "./pages/user-messages.json" },
     { "$ref": "./pages/receipts.json" },
+    { "$ref": "./pages/receipt.json" },
+    { "$ref": "./pages/receipt-edit.json" },
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/acts.json" },
     { "$ref": "./pages/tasks.json" },
