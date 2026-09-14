@@ -21,7 +21,8 @@ function transform(response) {
       .toUpperCase() || "";
 
   let created_at = data.created_at ? convertDateValue(data.created_at) : "";
-  let city = (data.city_id || "") + (data.city ? "(" + data.city + ")" : "");
+  let city =
+    (data.city || "") + (data.city_id ? " (" + data.city_id + ")" : "");
 
   const statusLabels = {
     active: "Активен",
@@ -51,7 +52,6 @@ function transform(response) {
     complete_name,
     initials,
     points: data.points,
-    mailing_enabled: Boolean(Number(data.mailing || "0")),
     mailing: Boolean(Number(data.mailing || "0")) ? "Есть" : "Нет",
     city: city != "" ? city : "Не указан",
     status_label,

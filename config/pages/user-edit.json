@@ -398,47 +398,6 @@
                   }
                 ]
               }
-            },
-            {
-              "id": "mailingGroup",
-              "type": "component",
-              "componentType": "LayoutGroup",
-              "className": "flex align-items-center gap-3 mt-3",
-              "props": {
-                "components": [
-                  {
-                    "id": "mailingSwitch",
-                    "type": "component",
-                    "componentType": "InputSwitch",
-                    "className": "mb-0",
-                    "props": {
-                      "value": "@state.userData.mailing_enabled"
-                    },
-                    "events": [
-                      {
-                        "type": "onChange",
-                        "commands": [
-                          {
-                            "type": "setProperty",
-                            "params": {
-                              "source": "event.value",
-                              "target": "state.userData.mailing_enabled"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "id": "mailingLabel",
-                    "type": "component",
-                    "componentType": "Text",
-                    "props": {
-                      "value": "Согласие на рассылку"
-                    }
-                  }
-                ]
-              }
             }
           ]
         }
