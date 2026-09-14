@@ -10,7 +10,10 @@ function transform(response) {
   // Полное имя и инициалы
   const firstName = data.first_name || "";
   const lastName = data.last_name || "";
+  const thirdName = data.third_name || "";
   const full_name = [firstName, lastName].filter(Boolean).join(" ") || "";
+  const complete_name =
+    [firstName, thirdName, lastName].filter(Boolean).join(" ") || "";
   const initials =
     [firstName.charAt(0), lastName.charAt(0)]
       .filter(Boolean)
@@ -36,6 +39,7 @@ function transform(response) {
 
   return {
     id: data.id,
+    participant_code: data.participant_code,
     email: data.email,
     phone: data.phone,
     status: data.status,
@@ -44,6 +48,7 @@ function transform(response) {
     last_name: lastName,
     third_name: data.third_name || "",
     full_name,
+    complete_name,
     initials,
     points: data.points,
     mailing: Boolean(Number(data.mailing || "0")) ? "Есть" : "Нет",

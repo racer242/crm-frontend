@@ -63,7 +63,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Участники", "route": "/ops/users" },
-                  { "label": "@state.userData.fullName" }
+                  { "label": "@state.userData.full_name" }
                 ]
               }
             }
@@ -104,12 +104,7 @@
           "type": "block",
           "className": "mb-5",
           "grid": {
-            "cols": [
-              "col-6 lg:col-3",
-              "col-6 lg:col-3",
-              "col-6 lg:col-3",
-              "col-6 lg:col-3"
-            ],
+            "cols": ["col-6 lg:col-4", "col-6 lg:col-4", "col-12 lg:col-4"],
             "padding": "p-2"
           },
           "components": [
@@ -194,15 +189,25 @@
                     "state": {}
                   },
                   {
-                    "id": "userFullName",
+                    "id": "userNameGroup",
                     "type": "component",
-                    "componentType": "Text",
+                    "componentType": "LayoutGroup",
+                    "className": "flex flex-column align-items-center gap-1",
                     "props": {
-                      "value": "@state.userData.full_name",
-                      "level": 1
-                    },
-                    "className": "text-center md:text-left",
-                    "state": {}
+                      "components": [
+                        {
+                          "id": "userFullName",
+                          "type": "component",
+                          "componentType": "Text",
+                          "props": {
+                            "value": "@state.userData.full_name",
+                            "level": 1
+                          },
+                          "className": "text-center md:text-left",
+                          "state": {}
+                        }
+                      ]
+                    }
                   }
                 ]
               }
@@ -372,6 +377,32 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "detailsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "className": "no-bottom-border mb-4",
+              "props": {
+                "showHeaders": false,
+                "value": [
+                  { "label": "ID", "value": "@state.userData.id" },
+                  {
+                    "label": "Код",
+                    "value": "@state.userData.participant_code"
+                  },
+                  {
+                    "label": "Полное имя",
+                    "value": "@state.userData.complete_name"
+                  },
+                  {
+                    "label": "Дата регистрации",
+                    "value": "@state.userData.created_at"
+                  }
+                ],
+                "columns": [{ "field": "label" }, { "field": "value" }]
+              },
+              "state": {}
             }
           ]
         }
