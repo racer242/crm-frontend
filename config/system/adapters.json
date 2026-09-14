@@ -51,6 +51,10 @@
     "type": "js",
     "script": "./config/adapters/act.get.response.js"
   },
+  "user-prizes.response": {
+    "type": "js",
+    "script": "./config/adapters/user-prizes.response.js"
+  },
   "prizes.get.request": {
     "type": "js",
     "script": "./config/adapters/prizes.get.request.js"

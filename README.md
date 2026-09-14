@@ -353,6 +353,8 @@ Avatar, Badge, Tag, Chip, Skeleton, ProgressBar, ProgressSpinner, Message, Divid
 | **Components** | `/components`           | Демонстрация всех типов компонентов PrimeReact                                                                    |
 | **Testing**    | `/stats/testing`        | Тестирование DataFeed, макросов, адаптеров и линковки                                                             |
 
+Рабочие страницы CRM-конфигурации описываются в `config/crm-config.json` (`config/pages/`): участники, документы, акты и призы участника (`/ops/users/[user_id]/...`). Маршруты страниц и правила матчинга — [docs/config-reference.md](docs/config-reference.md), реестр API-роутов — `config/system/api-routes.json`.
+
 ---
 
 # Запуск

@@ -33,6 +33,8 @@
     { "$ref": "./pages/user-act.json" },
     { "$ref": "./pages/user-act-add.json" },
     { "$ref": "./pages/user-act-edit.json" },
+    { "$ref": "./pages/user-prizes.json" },
+    { "$ref": "./pages/user-prize.json" },
     { "$ref": "./pages/receipts.json" },
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/acts.json" },

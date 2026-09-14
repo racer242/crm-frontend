@@ -1,63 +1,48 @@
 /**
- * Преобразует ответ API /api/prizes/[id] в формат для отображения на странице просмотра приза
- * @param {Object} data - Исходный ответ сервера (данные приза)
+ * Преобразует ответ API /api/v1/crm/prizes/{id} в формат для отображения
+ * на странице просмотра приза (user-prize).
+ * В page dataFeed адаптер не указывается — его применяет API-роутер,
+ * поэтому на вход может прийти как обёртка { status, data }, так и данные.
+ * @param {Object} response - Ответ сервера (обёртка { status, data } или чистые данные)
  * @returns {Object} Преобразованные данные для State
  */
-function transform(data) {
-  if (!data || typeof data !== "object") return data;
+function transform(response) {
+  const data = (response && response.data) || response || {};
+  if (!data || typeof data !== "object") return {};
 
-  // Статус приза для отображения — извлекаем label из словаря statuses по id
-  const statuses = data.statuses || [];
-  const currentStatusId = data.status;
-  const currentStatusObj = statuses.find((s) => s.id === currentStatusId);
-  const statusLabel = currentStatusObj
-    ? currentStatusObj.name
-    : currentStatusId || "";
-
-  // Severity для Tag компонента
-  const severityMap = {
-    SENDING: "info",
-    SENT: "success",
-    ERROR: "danger",
-    RECEIVED: "success",
-    DOWNLOAD: "info",
-    DATA_NEEDED: "warn",
-    PROCESSING: "warn",
-    NEED_CODE: "warn",
-    DELETED: "secondary",
+  // Словарь статусов приза (русские лейблы + severity для Tag).
+  // В API статусы приходят в верхнем регистре (PENDING, APPROVED, ...) —
+  // ключи словаря в нижнем регистре, нормализация ниже.
+  const statusLabels = {
+    pending: "Ожидает",
+    approved: "Одобрен",
+    delivered: "Доставлен",
+    rejected: "Отклонен",
   };
-  const statusSeverity = severityMap[currentStatusId] || "secondary";
+  const statusSeverities = {
+    pending: "warning",
+    approved: "success",
+    delivered: "info",
+    rejected: "danger",
+  };
+  const statusKey = String(data.status || "").toLowerCase();
 
-  // Форматирование даты выигрыша через _shared.js функцию
-  const winDateFormatted = data.win_date ? convertDateValue(data.win_date) : "";
-
-  // Статус акта для отображения
-  const hasAct = Boolean(data.act_id);
-  const actStatus = hasAct ? "Создан" : "Отсутствует";
-  const actSeverity = hasAct ? "success" : "warn";
-
-  // Составляем user_name из first_name и last_name если пользователь указан
-  const user_name =
-    data.user_name ||
-    (data.first_name && data.last_name
-      ? `${data.first_name} ${data.last_name}`
-      : "");
-
-  // user_email берём из email если нет прямого поля
-  const user_email = data.user_email || data.email || "";
+  const missingData = Array.isArray(data.missing_data) ? data.missing_data : [];
 
   return {
-    ...data,
-    user_name,
-    user_email,
-    winDateFormatted,
-    statusLabel,
-    statusSeverity,
-    actStatus,
-    actSeverity,
-    prize_name: data.prize_name || "",
-    prize_types: data.prize_types || [],
-    statuses: statuses,
-    retail_chains: data.retail_chains || [],
+    id: data.prize_id || "",
+    prize_id: data.prize_id || "",
+    user_id: data.user_id || "",
+    title: data.title || "",
+    price: data.price !== undefined && data.price !== null ? data.price : "",
+    status: data.status || "",
+    status_label: statusLabels[statusKey] || data.status || "",
+    status_severity: statusSeverities[statusKey] || "secondary",
+    is_active: Boolean(data.is_active),
+    is_active_label: data.is_active ? "Да" : "Нет",
+    act_required: Boolean(data.act_required),
+    act_required_label: data.act_required ? "Да" : "Нет",
+    missing_data: missingData,
+    missing_data_label: missingData.length ? missingData.join(", ") : "—",
   };
 }

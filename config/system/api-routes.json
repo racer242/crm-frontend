@@ -57,8 +57,21 @@
     "method": "GET",
     "url": "/api/v1/crm/users/{$location.routeParams.user_id}/prizes",
     "channel": "instance",
-    "adapter": "ops.pagination.response",
-    "note": "Операционные данные: Призы участника (выбор приза в форме акта)"
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-prizes.response"
+    },
+    "note": "Операционные данные: Призы участника (список, выбор приза в форме акта)"
+  },
+  {
+    "path": "ops/prizes/[prize_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/prizes/{$location.routeParams.prize_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "prize.get.response"
+    },
+    "note": "Операционные данные: Детали приза"
   },
   {
     "path": "ops/acts/[act_id]",

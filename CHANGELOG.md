@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Страницы призов участника (операционный канал, view-only)** — просмотр призов на карточке участника по референсам legacy-страниц `user-prizes.json`/`user-prize.json`. Страницы добавления/редактирования приза не портируются: призы — пул каталога, управление ими из админки не предусмотрено (в API инстанса нет PATCH; назначение/отзыв выполняются импортом на бэкенде).
+  - `config/pages/user-prizes.json` — список призов `/ops/users/[user_id]/prizes`: lazy `DataTable` (ID, Название, Стоимость, Статус), клик по строке/стрелке → карточка приза, меню «Достижения → Призы». Без кнопок добавления (view-only).
+  - `config/pages/user-prize.json` — карточка приза `/ops/users/[user_id]/prizes/[prize_id]`: панель «Информация о призе» (название, стоимость, статус `Tag`, «Требуется акт», «Активен», «Недостающие данные») и панель «Участник» (кликабельное имя, email).
+  - `config/adapters/user-prizes.response.js` — адаптер списка: `items[]` → `{value, columns, totalRecords, first, rows}`, русские лейблы статусов без привязки к регистру (PENDING → «Ожидает»), в строках сохраняются `title`/`prize_id` (совместимость с `Dropdown` выбора приза на странице добавления акта).
+  - `config/adapters/prize.get.response.js` — переписан под новый API `GET /api/v1/crm/prizes/[id]`: `prize_id` → `id`, `title`/`price`, статус → лейбл/severity, булевы `is_active`/`act_required` → «Да»/«Нет», `missing_data[]` → строка.
+  - `config/system/api-routes.json` — `GET ops/users/[user_id]/prizes` переведён с `ops.pagination.response` на `user-prizes.response` (плюс request-адаптер `users.get.request` → `page`/`limit`); добавлен `GET ops/prizes/[prize_id]` (адаптер `prize.get.response`).
+  - `config/system/adapters.json` — зарегистрирован `user-prizes.response`.
+  - `config/crm-config.json` — зарегистрированы обе страницы; пункт меню «Достижения → Призы» работает без правок.
+
 ### Fixed
 
 - **Route specificity in `findPageByRoute()`** — страница подбиралась по первому совпавшему шаблону, из-за чего статичный и динамичный маршруты одинаковой глубины конфликтовали: URL `/ops/users/[user_id]/acts/add` (страница добавления акта) совпадал с шаблоном карточки `/ops/users/[user_id]/acts/[act_id]` (`act_id="add"`), страница добавления никогда не открывалась, а её dataFeed запрашивал несуществующий `GET /api/ops/acts/add`. Теперь среди всех подходящих шаблонов выбирается наиболее специфичный — с наибольшим числом совпавших статичных сегментов; порядок регистрации страниц используется только как стабильный тай-брейкер. (`src/core/config.ts`)
