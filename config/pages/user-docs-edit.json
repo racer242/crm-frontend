@@ -1,0 +1,601 @@
+{
+  "id": "user-docs-edit",
+  "type": "page",
+  "route": "/ops/users/[user_id]/docs/edit",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "saveResult": null,
+    "docsData": {}
+  },
+  "meta": {
+    "title": "Редактирование документов участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.docsData",
+      "adapter": "user-docs.response"
+    }
+  ],
+  "shortcuts": {
+    "saveUserDocs": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}/extra",
+              "method": "PATCH",
+              "data": "{$state.docsData}",
+              "target": "state.saveResult",
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить документы участника"
+                  }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.saveResult}"
+                  }
+                }
+              ],
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "@state.docsData.fullName",
+                    "route": "/ops/users/{@state.docsData.id}"
+                  },
+                  {
+                    "label": "Документы",
+                    "route": "/ops/users/{@state.docsData.id}/docs"
+                  },
+                  { "label": "Редактирование" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "docs",
+                "activeSubitemId": "personal-docs",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formMainSection",
+      "type": "section",
+      "className": "",
+      "grid": {
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "passportBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Паспорт"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "passportLastNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Фамилия",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportLastNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_last_name",
+                      "placeholder": "Введите фамилию",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_last_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportFirstNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Имя",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportFirstNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_first_name",
+                      "placeholder": "Введите имя",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_first_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportMiddleNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Отчество",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportMiddleNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_middle_name",
+                      "placeholder": "Введите отчество",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_middle_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportSeriesNumberGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Серия и номер паспорта",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportSeriesNumberInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_series_number",
+                      "placeholder": "Введите серию и номер",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_series_number"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportIssuedByGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Кем выдан",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportIssuedByInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_issued_by",
+                      "placeholder": "Кем выдан паспорт",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_issued_by"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportIssueDateGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Дата выдачи паспорта",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportIssueDateInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.passport_issue_date",
+                      "placeholder": "Дата выдачи паспорта",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_issue_date"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "passportRegistrationAddressGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Адрес регистрации",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "passportRegistrationAddressInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.docsData.passport_registration_address",
+                      "placeholder": "Адрес регистрации",
+                      "rows": 3,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.passport_registration_address"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "innBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "ИНН"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "innGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Номер ИНН",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "innInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.docsData.inn",
+                      "placeholder": "Введите номер ИНН",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.docsData.inn"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnSaveAndGo",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Сохранить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveUserDocs",
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/docs",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnApply",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Применить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveUserDocs",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Документы участника сохранены",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить изменения",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/docs"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

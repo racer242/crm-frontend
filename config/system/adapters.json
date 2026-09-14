@@ -23,6 +23,10 @@
     "type": "js",
     "script": "./config/adapters/user-docs.get.request.js"
   },
+  "user-docs.response": {
+    "type": "js",
+    "script": "./config/adapters/user-docs.response.js"
+  },
   "user-docs.get.response": {
     "type": "js",
     "script": "./config/adapters/user-docs.get.response.js"

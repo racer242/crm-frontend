@@ -32,6 +32,16 @@
     "note": "Операционные данные: Редактировать участника"
   },
   {
+    "path": "ops/users/[user_id]/extra",
+    "method": "PATCH",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/extra",
+    "channel": "instance",
+    "adapter": {
+      "request": "user-docs-edit.patch.request"
+    },
+    "note": "Операционные данные: Редактировать документы (расширенные данные) участника"
+  },
+  {
     "path": "ops/receipts",
     "method": "GET",
     "url": "/api/v1/crm/receipts",

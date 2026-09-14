@@ -27,6 +27,8 @@
     { "$ref": "./pages/users.json" },
     { "$ref": "./pages/user.json" },
     { "$ref": "./pages/user-edit.json" },
+    { "$ref": "./pages/user-docs.json" },
+    { "$ref": "./pages/user-docs-edit.json" },
     { "$ref": "./pages/receipts.json" },
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/acts.json" },
