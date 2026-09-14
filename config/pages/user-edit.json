@@ -239,6 +239,42 @@
               }
             },
             {
+              "id": "thirdNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Отчество",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "thirdNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.third_name",
+                      "placeholder": "Введите отчество",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.third_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
               "id": "emailGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -359,6 +395,47 @@
                         ]
                       }
                     ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "mailingGroup",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "flex align-items-center gap-3 mt-3",
+              "props": {
+                "components": [
+                  {
+                    "id": "mailingSwitch",
+                    "type": "component",
+                    "componentType": "InputSwitch",
+                    "className": "mb-0",
+                    "props": {
+                      "value": "@state.userData.mailing_enabled"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.mailing_enabled"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "mailingLabel",
+                    "type": "component",
+                    "componentType": "Text",
+                    "props": {
+                      "value": "Согласие на рассылку"
+                    }
                   }
                 ]
               }

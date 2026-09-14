@@ -14,5 +14,6 @@ function transform(data) {
     phone: data.phone || "",
     email: data.email || "",
     status: data.status || "active",
+    mailing: data.mailing_enabled === true,
   };
 }

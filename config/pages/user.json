@@ -17,7 +17,6 @@
       "phone": "",
       "created_at": "",
       "city": "",
-      "messages": 0,
       "status": "",
       "mailing": "",
       "status_label": "",
@@ -429,6 +428,10 @@
                   {
                     "label": "Дата регистрации",
                     "value": "@state.userData.created_at"
+                  },
+                  {
+                    "label": "Согласие на рассылку",
+                    "value": "@state.userData.mailing"
                   }
                 ],
                 "columns": [{ "field": "label" }, { "field": "value" }]

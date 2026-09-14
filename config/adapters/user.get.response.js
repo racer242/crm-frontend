@@ -51,6 +51,7 @@ function transform(response) {
     complete_name,
     initials,
     points: data.points,
+    mailing_enabled: Boolean(Number(data.mailing || "0")),
     mailing: Boolean(Number(data.mailing || "0")) ? "Есть" : "Нет",
     city: city != "" ? city : "Не указан",
     status_label,
