@@ -318,6 +318,37 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "userDivider4",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "btnEditUser",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "state": {}
             }
           ]
         },

@@ -1,0 +1,476 @@
+{
+  "id": "user-edit",
+  "type": "page",
+  "route": "/ops/users/[user_id]/edit",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "saveResult": null,
+    "statuses": [
+      { "label": "Активен", "value": "active" },
+      { "label": "Заблокирован", "value": "blocked" },
+      { "label": "Удален", "value": "deleted" }
+    ],
+    "userData": {}
+  },
+  "meta": {
+    "title": "Редактирование участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    }
+  ],
+  "shortcuts": {
+    "saveUser": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}",
+              "method": "PATCH",
+              "data": "{$state.userData}",
+              "target": "state.saveResult",
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить данные участника"
+                  }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.saveResult}"
+                  }
+                }
+              ],
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  { "label": "Редактирование" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formMainSection",
+      "type": "section",
+      "className": "",
+      "grid": {
+        "cols": [
+          "col-12 lg:col-6",
+          "col-12 lg:col-6",
+          "col-12 lg:col-6",
+          "col-12 lg:col-6"
+        ],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "personalBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Личные данные"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "firstNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Имя",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "firstNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "className": "w-full",
+                    "props": {
+                      "value": "@state.userData.first_name",
+                      "placeholder": "Введите имя"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.first_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "lastNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Фамилия",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "lastNameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.last_name",
+                      "placeholder": "Введите фамилию",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.last_name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "emailGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "E-mail",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "emailInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.userData.email",
+                      "placeholder": "Введите e-mail",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.email"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "phoneGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Телефон",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "phoneInput",
+                    "type": "component",
+                    "componentType": "InputMask",
+                    "props": {
+                      "value": "@state.userData.phone",
+                      "placeholder": "Введите телефон",
+                      "mask": "+9 (999) 999-99-99",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.phone"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "statusBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Статус"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1",
+              "props": {
+                "label": "Статус участника",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "statusDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.statuses",
+                      "value": "@state.userData.status",
+                      "optionLabel": "label",
+                      "optionValue": "value",
+                      "placeholder": "Выберите статус",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.userData.status"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnSaveAndGo",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Сохранить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveUser",
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnApply",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Применить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveUser",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Данные участника сохранены",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить изменения",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

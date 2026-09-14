@@ -1,5 +1,6 @@
 /**
- * Преобразует state.userData в payload для PATCH /api/users/[id]
+ * Преобразует state.userData в payload для PATCH /api/ops/users/[user_id]
+ * Формат по новому API: PATCH /api/v1/crm/users/[id] — разд. 1.4
  * @param {Object} data - state.userData (из формы редактирования)
  * @returns {Object} Поля для отправки на сервер
  */
@@ -9,11 +10,9 @@ function transform(data) {
   return {
     first_name: data.first_name || "",
     last_name: data.last_name || "",
-    email: data.email || "",
+    third_name: data.third_name || "",
     phone: data.phone || "",
-    delivery_address: data.delivery_address || "",
-    delivery_comment: data.delivery_comment || "",
-    is_blocked: data.is_blocked === true,
-    block_reason: data.block_reason || "",
+    email: data.email || "",
+    status: data.status || "active",
   };
 }
