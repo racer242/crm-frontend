@@ -220,7 +220,7 @@
               "type": "component",
               "componentType": "Dialog",
               "props": {
-                "header": "@state.messagesDialog.subject_label",
+                "header": "@state.messagesDialog.message_id",
                 "visible": "@state.messagesDialogVisible",
                 "modal": true,
                 "closable": true,
@@ -279,6 +279,34 @@
                               }
                             ]
                           }
+                        },
+                        {
+                          "id": "messageDialogDateStatus",
+                          "type": "component",
+                          "componentType": "LayoutGroup",
+                          "className": "flex flex-column align-items-end gap-1 ml-auto",
+                          "props": {
+                            "components": [
+                              {
+                                "id": "messageDialogDate",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 text-sm text-500",
+                                "props": {
+                                  "value": "@state.messagesDialog.created_at_formatted"
+                                }
+                              },
+                              {
+                                "id": "messageDialogStatusTag",
+                                "type": "component",
+                                "componentType": "Tag",
+                                "props": {
+                                  "value": "@state.messagesDialog.status_label",
+                                  "severity": "@state.messagesDialog.status_severity"
+                                }
+                              }
+                            ]
+                          }
                         }
                       ]
                     }
@@ -291,82 +319,24 @@
                     "props": { "type": "solid" }
                   },
                   {
-                    "id": "messageDialogMetaRow",
-                    "type": "component",
-                    "componentType": "LayoutGroup",
-                    "props": {
-                      "grid": { "cols": ["col-6", "col-6"] },
-                      "components": [
-                        {
-                          "id": "messageDialogStatusLabel",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "props": {
-                            "label": "Статус",
-                            "labelClassName": "text-sm text-500",
-                            "components": [
-                              {
-                                "id": "messageDialogStatusTag",
-                                "type": "component",
-                                "componentType": "Tag",
-                                "props": {
-                                  "value": "@state.messagesDialog.status_label",
-                                  "severity": "@state.messagesDialog.status_severity"
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "id": "messageDialogDateLabel",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "props": {
-                            "label": "Дата",
-                            "labelClassName": "text-sm text-500",
-                            "components": [
-                              {
-                                "id": "messageDialogDate",
-                                "type": "component",
-                                "componentType": "Text",
-                                "className": "m-0",
-                                "props": {
-                                  "value": "@state.messagesDialog.created_at_formatted"
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "id": "messageDialogCodeLabel",
+                    "id": "messageDialogSubjectLabel",
                     "type": "component",
                     "componentType": "LabelledGroup",
                     "props": {
-                      "label": "Код обращения",
+                      "label": "Тема обращения",
                       "labelClassName": "text-sm text-500",
                       "components": [
                         {
-                          "id": "messageDialogCode",
+                          "id": "messageDialogSubject",
                           "type": "component",
                           "componentType": "Text",
-                          "className": "m-0 text-sm",
-                          "style": { "wordBreak": "break-all" },
+                          "className": "m-0",
                           "props": {
-                            "value": "{@state.messagesDialog.message_id}"
+                            "value": "@state.messagesDialog.subject_label"
                           }
                         }
                       ]
                     }
-                  },
-                  {
-                    "id": "messageDialogDivider2",
-                    "type": "component",
-                    "componentType": "Divider",
-                    "className": "my-1",
-                    "props": { "type": "solid" }
                   },
                   {
                     "id": "messageDialogMessageLabel",
