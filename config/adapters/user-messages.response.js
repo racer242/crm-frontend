@@ -23,6 +23,13 @@ function transform(source) {
       statusLabels[String(message.status || "").toLowerCase()] ||
       message.status ||
       "—",
+    // Кнопка «Написать письмо» в попапе: готовый mailto-линк (тема в subject)
+    mailto_link: message.sender_email
+      ? `mailto:${message.sender_email}?subject=${encodeURIComponent(
+          message.subject || "Без темы",
+        )}`
+      : "",
+    mailto_disabled: !message.sender_email,
     created_at_formatted: message.created_at
       ? convertDateValue(message.created_at)
       : "",

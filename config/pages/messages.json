@@ -130,6 +130,7 @@
                 "lazy": true,
                 "size": "normal",
                 "stripedRows": true,
+                "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
@@ -186,14 +187,51 @@
                 "draggable": false,
                 "resizable": false,
                 "style": { "width": "560px" },
+                "containerClassName": "flex flex-column gap-1",
                 "components": [
                   {
-                    "id": "messageDialogMeta",
+                    "id": "messageDialogCode",
                     "type": "component",
                     "componentType": "Text",
-                    "className": "m-0 white-space-pre-wrap",
+                    "className": "m-0",
                     "props": {
-                      "value": "Код обращения: @state.messagesDialog.message_id\nОтправитель: @state.messagesDialog.sender_name_label\nE-mail: @state.messagesDialog.sender_email_label\nСтатус: @state.messagesDialog.status_label\nДата: @state.messagesDialog.created_at_formatted"
+                      "value": "Код обращения: @state.messagesDialog.message_id"
+                    }
+                  },
+                  {
+                    "id": "messageDialogSender",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "Отправитель: @state.messagesDialog.sender_name_label"
+                    }
+                  },
+                  {
+                    "id": "messageDialogEmail",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "E-mail: @state.messagesDialog.sender_email_label"
+                    }
+                  },
+                  {
+                    "id": "messageDialogStatus",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "Статус: @state.messagesDialog.status_label"
+                    }
+                  },
+                  {
+                    "id": "messageDialogDate",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0",
+                    "props": {
+                      "value": "Дата: @state.messagesDialog.created_at_formatted"
                     }
                   },
                   {
@@ -212,6 +250,67 @@
                     "className": "m-0 white-space-pre-wrap",
                     "props": {
                       "value": "@state.messagesDialog.message"
+                    }
+                  },
+                  {
+                    "id": "messageDialogActions",
+                    "type": "component",
+                    "componentType": "Container",
+                    "className": "mt-3",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "messageDialogWriteButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Написать письмо",
+                            "icon": "pi pi-envelope",
+                            "severity": "success",
+                            "size": "small",
+                            "disabled": "@state.messagesDialog.mailto_disabled"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "{$state.messagesDialog.mailto_link}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "messageDialogCloseButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Закрыть",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.messagesDialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   }
                 ]

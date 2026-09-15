@@ -618,6 +618,14 @@ export class CommandExecutor {
     const rawUrl = params.url || "";
     let url = this.macroEngine.apply(rawUrl, 0, extraSources) as string;
 
+    // mailto:/tel: не могут открываться через роутер — только браузерная навигация
+    if (/^(mailto:|tel:)/i.test(url)) {
+      if (typeof window !== "undefined") {
+        window.location.href = url;
+      }
+      return;
+    }
+
     if (this.context.navigate) {
       this.context.navigate(url);
     } else {

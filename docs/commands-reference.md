@@ -504,6 +504,17 @@ HTTP-запрос к API с записью результата в state и по
 }
 ```
 
+Ссылки `mailto:` и `tel:` роутером Next.js не обрабатываются — они открываются напрямую через `window.location.href` (удобно для кнопок «написать письмо» из попапов):
+
+```json
+{
+  "type": "navigate",
+  "params": {
+    "url": "{$state.messagesDialog.mailto_link}"
+  }
+}
+```
+
 ---
 
 ### 9. confirm
