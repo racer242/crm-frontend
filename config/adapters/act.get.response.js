@@ -31,6 +31,7 @@ function transform(response) {
   return {
     id: data.act_id || "",
     user_id: data.user_id || "",
+    user_id_label: data.user_id || "—",
     prize_id: data.prize_id || "",
     status: data.status || "",
     status_label: statusLabels[statusKey] || data.status || "",

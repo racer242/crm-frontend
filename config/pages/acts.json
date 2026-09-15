@@ -1,25 +1,213 @@
 {
-  "id": "opsActsPage",
+  "id": "acts",
   "type": "page",
-  "title": "Акты",
   "route": "/ops/acts",
-  "state": { "items": [] },
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "acts": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Акты — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/acts",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.acts"
+    }
+  ],
+  "shortcuts": {
+    "requestActs": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/acts",
+              "method": "GET",
+              "target": "state.acts",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
   "sections": [
     {
-      "id": "content",
-      "dataFeed": [{ "method": "GET", "url": "/api/ops/acts", "target": "state.items", "adapter": "extractPaginationItems" }],
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
       "blocks": [
         {
-          "id": "b1",
+          "id": "breadcrumbBlock",
+          "type": "block",
           "components": [
             {
-              "type": "DataTable",
-              "value": "@opsActsPage.state.items",
-              "columns": [
-                { "field": "id", "header": "ID" },
-                { "field": "user_id", "header": "Участник" },
-                { "field": "prize_id", "header": "Приз" },
-                { "field": "status", "header": "Статус" }
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [{ "label": "Акты" }]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "actsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "actsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Акты",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "actsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "actsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.acts.value",
+                "columns": "@state.acts.columns",
+                "totalRecords": "@state.acts.totalRecords",
+                "rows": "@state.acts.rows",
+                "first": "@state.acts.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "user",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-user",
+                          "link": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.user_id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/acts/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestActs"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestActs"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/acts/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
               ]
             }
           ]

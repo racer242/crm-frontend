@@ -46,6 +46,9 @@
     { "$ref": "./pages/prizes.json" },
     { "$ref": "./pages/prize.json" },
     { "$ref": "./pages/acts.json" },
+    { "$ref": "./pages/act.json" },
+    { "$ref": "./pages/act-add.json" },
+    { "$ref": "./pages/act-edit.json" },
     { "$ref": "./pages/tasks.json" },
     { "$ref": "./pages/messages.json" }
   ],

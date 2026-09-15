@@ -1,0 +1,402 @@
+{
+  "id": "act-add",
+  "type": "page",
+  "route": "/ops/acts/add",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "saveResult": null,
+    "formData": {
+      "user_id": "",
+      "prize_id": "",
+      "status": "PENDING"
+    },
+    "actStatuses": [
+      { "label": "Ожидает", "value": "PENDING" },
+      { "label": "Одобрен", "value": "APPROVED" },
+      { "label": "Доставлен", "value": "DELIVERED" },
+      { "label": "Отклонен", "value": "REJECTED" }
+    ],
+    "users": {
+      "value": []
+    },
+    "prizes": {
+      "value": []
+    }
+  },
+  "meta": {
+    "title": "Добавление акта — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users",
+      "method": "GET",
+      "target": "state.users"
+    }
+  ],
+  "shortcuts": {
+    "saveAct": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/acts",
+              "method": "POST",
+              "target": "state.saveResult",
+              "data": {
+                "user_id": "{$state.formData.user_id}",
+                "prize_id": "{$state.formData.prize_id}",
+                "status": "{$state.formData.status}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "message": "Акт добавлен"
+                  }
+                },
+                {
+                  "type": "navigate",
+                  "params": {
+                    "url": "/ops/acts"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось добавить акт"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Акты", "route": "/ops/acts" },
+                  { "label": "Добавление акта" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formMainSection",
+      "type": "section",
+      "className": "",
+      "grid": {
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "userBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Участник"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "userGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Участник",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "userDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.users.value",
+                      "value": "@state.formData.user_id",
+                      "optionLabel": "fullName",
+                      "optionValue": "id",
+                      "filter": true,
+                      "filterBy": "fullName",
+                      "placeholder": "Выберите участника",
+                      "emptyMessage": "Участники не найдены",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.user_id"
+                            }
+                          },
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "target": "state.formData.prize_id",
+                              "value": ""
+                            }
+                          },
+                          {
+                            "type": "sendRequest",
+                            "params": {
+                              "url": "/api/ops/users/{$state.formData.user_id}/prizes",
+                              "method": "GET",
+                              "target": "state.prizes",
+                              "onError": [
+                                {
+                                  "type": "showToast",
+                                  "params": {
+                                    "severity": "error",
+                                    "summary": "Ошибка",
+                                    "message": "Не удалось загрузить призы участника"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "formBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Добавление"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "prizeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Приз",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "prizeDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.prizes.value",
+                      "value": "@state.formData.prize_id",
+                      "optionLabel": "title",
+                      "optionValue": "prize_id",
+                      "placeholder": "Сначала выберите участника",
+                      "emptyMessage": "Призы участника не найдены",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.prize_id"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "statusDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.actStatuses",
+                      "value": "@state.formData.status",
+                      "optionLabel": "label",
+                      "optionValue": "value",
+                      "placeholder": "Выберите статус",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.formData.status"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "className": "flex flex-wrap gap-3 justify-content-center",
+          "components": [
+            {
+              "id": "btnSave",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Добавить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["saveAct"]
+                }
+              ]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить добавление",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/acts"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
