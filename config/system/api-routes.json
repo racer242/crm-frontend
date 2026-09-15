@@ -42,6 +42,16 @@
     "note": "Операционные данные: Редактировать документы (расширенные данные) участника"
   },
   {
+    "path": "ops/users/[user_id]/docs",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "user-docs.get.response"
+    },
+    "note": "Операционные данные: Профиль участника для страницы документов (extra, включая documents)"
+  },
+  {
     "path": "ops/users/[user_id]/acts",
     "method": "GET",
     "url": "/api/v1/crm/users/{$location.routeParams.user_id}/acts",
@@ -236,5 +246,13 @@
       "response": "messages.response"
     },
     "note": "Операционные данные: Обратная связь"
+  },
+  {
+    "path": "ops/files/**",
+    "method": "GET",
+    "type": "file",
+    "url": "/api/v1/crm/{$location.routeParams.path}",
+    "channel": "instance",
+    "note": "Файловый прокси: /api/ops/files/<путь из ответа API> → {crm_api_url}/api/v1/crm/<путь> (документы участника, фото чеков, сканы актов)"
   }
 ]

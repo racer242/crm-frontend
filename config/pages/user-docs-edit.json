@@ -12,17 +12,33 @@
       "id": "",
       "full_name": ""
     },
-    "docsData": {}
+    "docsData": {
+      "id": "",
+      "participant_code": "",
+      "fullName": "",
+      "passport_first_name": "",
+      "passport_last_name": "",
+      "passport_middle_name": "",
+      "passport_series_number": "",
+      "passport_issued_by": "",
+      "passport_issue_date": "",
+      "passport_issue_date_formatted": "",
+      "passport_registration_address": "",
+      "inn": "",
+      "snils": "",
+      "agreement": false,
+      "documents": [],
+      "documents_count": 0
+    }
   },
   "meta": {
     "title": "Редактирование документов участника — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "url": "/api/ops/users/{$location.routeParams.user_id}/docs",
       "method": "GET",
-      "target": "state.docsData",
-      "adapter": "user-docs.response"
+      "target": "state.docsData"
     }
   ],
   "dataInit": [

@@ -42,6 +42,9 @@ import { COOKIE_KEYS, AUTH_REFRESH_URL } from "@/auth/constants";
 /**
  * Converts a route path pattern like "users/[id]/docs" into a regex
  * and extracts named parameter positions.
+ * Supports a trailing wildcard segment "**": it matches one or more
+ * remaining request segments, joined back into a single "path" param
+ * (used by the universal file proxy route "ops/files/**").
  * Returns null if no match.
  */
 function matchRoutePattern(
@@ -50,6 +53,30 @@ function matchRoutePattern(
 ): Record<string, string> | null {
   const patternSegments = apiRoute.path.split("/").filter(Boolean);
   const requestSegments = routeName.split("/").filter(Boolean);
+
+  // Trailing wildcard: pattern "ops/files/**" matches "ops/files/<any/tail/path>"
+  // and captures the tail as routeParams.path
+  const wildcardIndex = patternSegments.indexOf("**");
+  if (wildcardIndex !== -1) {
+    // At least one segment must follow the wildcard prefix
+    if (requestSegments.length <= wildcardIndex) {
+      return null;
+    }
+    const routeParams: Record<string, string> = {};
+    for (let i = 0; i < wildcardIndex; i++) {
+      const patternPart = patternSegments[i];
+      const requestPart = requestSegments[i];
+      const dynamicMatch = patternPart.match(/^\[(.+)\]$/);
+      if (dynamicMatch) {
+        routeParams[dynamicMatch[1]] = requestPart;
+      } else if (patternPart !== requestPart) {
+        // Static segment mismatch
+        return null;
+      }
+    }
+    routeParams["path"] = requestSegments.slice(wildcardIndex).join("/");
+    return routeParams;
+  }
 
   if (patternSegments.length !== requestSegments.length) {
     return null;
