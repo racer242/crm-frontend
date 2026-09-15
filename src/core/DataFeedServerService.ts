@@ -88,6 +88,22 @@ export async function executeServerDataFeeds(
         headers["Authorization"] = `Bearer ${authToken}`;
       }
 
+      // Forward the user's cookies (camp_id, access_token, ...) to the internal
+      // API router: without them the router cannot resolve the current campaign
+      // (falls back to the first entry in camps.json) or read the auth token.
+      const requestCookies = serverSources.cookies as
+        | Record<string, string>
+        | undefined;
+      const cookieHeader =
+        requestCookies && Object.keys(requestCookies).length > 0
+          ? Object.entries(requestCookies)
+              .map(([name, value]) => `${name}=${value}`)
+              .join("; ")
+          : undefined;
+      if (cookieHeader) {
+        headers["Cookie"] = cookieHeader;
+      }
+
       // Prepare options
       const options: RequestInit = {
         method: feed.method,
