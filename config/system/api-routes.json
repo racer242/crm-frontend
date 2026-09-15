@@ -201,8 +201,11 @@
     "method": "GET",
     "url": "/api/v1/crm/prizes",
     "channel": "instance",
-    "adapter": "ops.pagination.response",
-    "note": "Операционные данные: Список призов"
+    "adapter": {
+      "request": "users.get.request",
+      "response": "prizes.response"
+    },
+    "note": "Операционные данные: Список призов (пул)"
   },
   {
     "path": "ops/acts",

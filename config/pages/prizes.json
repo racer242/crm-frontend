@@ -1,24 +1,186 @@
 {
-  "id": "opsPrizesPage",
+  "id": "prizes",
   "type": "page",
-  "title": "Призы",
   "route": "/ops/prizes",
-  "state": { "items": [] },
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "prizes": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Призы — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/prizes",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.prizes"
+    }
+  ],
+  "shortcuts": {
+    "requestPrizes": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/prizes",
+              "method": "GET",
+              "target": "state.prizes",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}"
+              },
+              "format": { "$ref": "../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
   "sections": [
     {
-      "id": "content",
-      "dataFeed": [{ "method": "GET", "url": "/api/ops/prizes", "target": "state.items", "adapter": "extractPaginationItems" }],
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
       "blocks": [
         {
-          "id": "b1",
+          "id": "breadcrumbBlock",
+          "type": "block",
           "components": [
             {
-              "type": "DataTable",
-              "value": "@opsPrizesPage.state.items",
-              "columns": [
-                { "field": "id", "header": "ID" },
-                { "field": "name", "header": "Название" },
-                { "field": "user_id", "header": "Участник" }
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [{ "label": "Призы" }]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "prizesTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "prizesPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Призы",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "prizesTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "prizesTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.prizes.value",
+                "columns": "@state.prizes.columns",
+                "totalRecords": "@state.prizes.totalRecords",
+                "rows": "@state.prizes.rows",
+                "first": "@state.prizes.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/prizes/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestPrizes"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestPrizes"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/prizes/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
               ]
             }
           ]

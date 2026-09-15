@@ -33,6 +33,7 @@ function transform(response) {
     id: data.prize_id || "",
     prize_id: data.prize_id || "",
     user_id: data.user_id || "",
+    user_id_label: data.user_id || "—",
     title: data.title || "",
     price: data.price !== undefined && data.price !== null ? data.price : "",
     status: data.status || "",

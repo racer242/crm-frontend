@@ -75,6 +75,10 @@
     "type": "js",
     "script": "./config/adapters/prizes.get.response.js"
   },
+  "prizes.response": {
+    "type": "js",
+    "script": "./config/adapters/prizes.response.js"
+  },
   "prize.get.response": {
     "type": "js",
     "script": "./config/adapters/prize.get.response.js"

@@ -1,0 +1,257 @@
+{
+  "id": "prize",
+  "type": "page",
+  "route": "/ops/prizes/[prize_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "prizeData": {
+      "id": "",
+      "prize_id": "",
+      "user_id": "",
+      "user_id_label": "",
+      "title": "",
+      "price": "",
+      "status": "",
+      "status_label": "",
+      "status_severity": "secondary",
+      "is_active": false,
+      "is_active_label": "",
+      "act_required": false,
+      "act_required_label": "",
+      "missing_data": [],
+      "missing_data_label": ""
+    }
+  },
+  "meta": {
+    "title": "Приз — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/prizes/{$location.routeParams.prize_id}",
+      "method": "GET",
+      "target": "state.prizeData"
+    }
+  ],
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Призы", "route": "/ops/prizes" },
+                  { "label": "Приз" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "prizeDetailsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о призе"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "titleGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "titleText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.title"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "priceGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Стоимость",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "priceText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.price"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.status_label",
+                      "severity": "@state.prizeData.status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "actRequiredGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Требуется акт",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "actRequiredText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.act_required_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "isActiveGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Активен",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "isActiveText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.is_active_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "missingDataGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Недостающие данные",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "missingDataText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.missing_data_label"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "participantBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Владелец"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "participantGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID участника",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "participantText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": { "wordBreak": "break-all" },
+                    "props": {
+                      "value": "@state.prizeData.user_id_label"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
