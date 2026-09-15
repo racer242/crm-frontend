@@ -71,6 +71,10 @@
     "type": "js",
     "script": "./config/adapters/user-messages.response.js"
   },
+  "messages.response": {
+    "type": "js",
+    "script": "./config/adapters/messages.response.js"
+  },
   "prizes.get.request": {
     "type": "js",
     "script": "./config/adapters/prizes.get.request.js"

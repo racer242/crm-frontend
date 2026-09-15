@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Общая страница сообщений обратной связи (операционный канал, только просмотр)** — порт списка всех сообщений участников на CRM API (3.1 `GET /api/v1/crm/messages`) по образцу списка сообщений участника: без пользовательского меню, с хлебными крошками.
+  - `config/pages/messages.json` — список сообщений `/ops/messages` переписан со старого формата на lazy `DataTable` (колонки: ID, Участник, Тема, Сообщение, Дата; `rowsPerPageOptions` [5,10,25,50]); без навигации по строкам (карточки сообщения нет), шорткат `requestMessages` (`page`/`limit` + `mergeUrlParams`).
+  - `config/adapters/messages.response.js` (новый) — `{items, pagination}` → `{value, columns, totalRecords, first, rows}`: `message_id` → `id`, `user_id` → `user_id_label` с фолбэком «—» (отправитель может быть не авторизован), форматирование даты через `_shared.js`, фолбэк размера страницы 25.
+  - `config/system/api-routes.json` — GET `ops/messages` переключён с `ops.pagination.response` на связку `users.get.request` + `messages.response` (пагинация `page`/`limit`, дефолт 25); фильтр по `user_id` API поддерживает, но не подключён.
+  - `config/system/adapters.json` — регистрация адаптера `messages.response`.
+
 - **Общие страницы актов (операционный канал)** — порт legacy-страниц `acts`/`act`/`act-add`/`act-edit` на CRM API (список — 1.7 `GET /api/v1/crm/acts`, детали — 1.8 `GET /api/v1/crm/acts/[id]`, создание — 1.9 `POST /api/v1/crm/acts`, обновление — 1.10 `PATCH /api/v1/crm/acts/[id]`, удаление — 1.11 `DELETE /api/v1/crm/acts/[id]`) по образцу общих страниц чеков и страниц актов участника: без пользовательского меню, с хлебными крошками.
   - `config/pages/acts.json` — список актов `/ops/acts` переписан со старого формата на lazy `DataTable` (колонки: ID, Участник, Приз, Статус, Дата создания; `rowsPerPageOptions` [5,10,25,50]); клик по строке/стрелке → карточка акта, кнопка-иконка «пользователь» → карточка участника; шорткат `requestActs` (`page`/`limit` + `mergeUrlParams`).
   - `config/adapters/acts.response.js` (новый) — `{items, pagination}` → `{value, columns, totalRecords, first, rows}`: статусы через словарь без привязки к регистру (PENDING → «Ожидает», APPROVED → «Одобрен», DELIVERED → «Доставлен», REJECTED → «Отклонен») и severity для `Tag`, форматирование даты создания через `_shared.js`, фолбэк размера страницы 25.

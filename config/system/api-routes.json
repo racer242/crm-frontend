@@ -231,7 +231,10 @@
     "method": "GET",
     "url": "/api/v1/crm/messages",
     "channel": "instance",
-    "adapter": "ops.pagination.response",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "messages.response"
+    },
     "note": "Операционные данные: Обратная связь"
   }
 ]
