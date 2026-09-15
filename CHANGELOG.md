@@ -18,6 +18,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Доработки карточек-детейлов и списков сообщений**:
+  - Хлебные крошки карточек вместо статичных подписей показывают id акта (`act.json`, `user-act.json`), название приза (`prize.json`, `user-prize.json`) и id чека (`receipt.json`, `user-receipt.json`).
+  - В панель «Информация о призе» (`prize.json`, `user-prize.json`) добавлено поле «ID приза».
+  - Списки сообщений (`messages.json`, `user-messages.json`): убран столбец ID, «Дата» перенесена в начало, текст сообщения сокращается до 25 символов («...» при обрезке); клик по строке открывает модальное окно (`Dialog`) — заголовок = тема, текст = полное сообщение.
+  - Общий список сообщений: вместо ID участника — колонки «Имя» и «E-mail» из полей `sender_name`/`sender_email` (фолбэк «—» — отправитель может быть не авторизован).
+  - `config/adapters/messages.response.js`, `user-messages.response.js` — новые колонки и поле `message_short`; `docs/platform updates/Подробное описание эндпоинтов CRM API.md` — в 3.1 добавлены `sender_name`/`sender_email`.
+
 - **Общая страница сообщений обратной связи (операционный канал, только просмотр)** — порт списка всех сообщений участников на CRM API (3.1 `GET /api/v1/crm/messages`) по образцу списка сообщений участника: без пользовательского меню, с хлебными крошками.
   - `config/pages/messages.json` — список сообщений `/ops/messages` переписан со старого формата на lazy `DataTable` (колонки: ID, Участник, Тема, Сообщение, Дата; `rowsPerPageOptions` [5,10,25,50]); без навигации по строкам (карточки сообщения нет), шорткат `requestMessages` (`page`/`limit` + `mergeUrlParams`).
   - `config/adapters/messages.response.js` (новый) — `{items, pagination}` → `{value, columns, totalRecords, first, rows}`: `message_id` → `id`, `user_id` → `user_id_label` с фолбэком «—» (отправитель может быть не авторизован), форматирование даты через `_shared.js`, фолбэк размера страницы 25.

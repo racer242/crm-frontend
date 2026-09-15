@@ -107,7 +107,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Акты", "route": "/ops/acts" },
-                  { "label": "Акт" }
+                  { "label": "@state.actData.id" }
                 ]
               }
             }

@@ -11,6 +11,11 @@
       "totalRecords": 0,
       "rows": 10,
       "first": 0
+    },
+    "messagesDialog": {
+      "visible": false,
+      "subject": "",
+      "text": ""
     }
   },
   "meta": {
@@ -138,6 +143,83 @@
                 {
                   "type": "onSort",
                   "commands": ["requestMessages"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.messagesDialog.subject",
+                        "value": "{$event.data.subject}"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.messagesDialog.text",
+                        "value": "{$event.data.message}"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.messagesDialog.visible",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "messageDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "messageDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "messageDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "@state.messagesDialog.subject",
+                "visible": "@state.messagesDialog.visible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": { "width": "560px" },
+                "components": [
+                  {
+                    "id": "messageDialogText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 white-space-pre-wrap",
+                    "props": {
+                      "value": "@state.messagesDialog.text"
+                    }
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.messagesDialog.visible",
+                        "value": false
+                      }
+                    }
+                  ]
                 }
               ]
             }

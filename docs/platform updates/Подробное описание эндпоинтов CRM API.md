@@ -767,6 +767,8 @@ NONCE                 (значение заголовка X-Crm-Nonce)
 | -------------------- | ---------- | ------------------------------ |
 | `message_id`         | UUID       | Идентификатор сообщения        |
 | `user_id`            | UUID\|null | Отправитель (если авторизован) |
+| `sender_name`        | string\|null | Имя отправителя (если авторизован) |
+| `sender_email`       | string\|null | E-mail отправителя (если авторизован) |
 | `subject`, `message` | string     | Тема и текст                   |
 | `created_at`         | datetime   | Дата                           |
 

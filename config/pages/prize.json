@@ -52,7 +52,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Призы", "route": "/ops/prizes" },
-                  { "label": "Приз" }
+                  { "label": "@state.prizeData.title" }
                 ]
               }
             }
@@ -80,6 +80,29 @@
           },
           "className": "flex flex-column gap-3",
           "components": [
+            {
+              "id": "prizeIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID приза",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeIdText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": { "wordBreak": "break-all" },
+                    "props": {
+                      "value": "@state.prizeData.id"
+                    }
+                  }
+                ]
+              }
+            },
             {
               "id": "titleGroup",
               "type": "component",

@@ -124,7 +124,7 @@
                     "label": "Акты",
                     "route": "/ops/users/{@state.userData.id}/acts"
                   },
-                  { "label": "Акт" }
+                  { "label": "@state.actData.id" }
                 ]
               }
             }

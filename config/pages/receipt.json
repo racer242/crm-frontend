@@ -122,7 +122,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Чеки", "route": "/ops/receipts" },
-                  { "label": "Чек" }
+                  { "label": "@state.receiptData.id" }
                 ]
               }
             }
