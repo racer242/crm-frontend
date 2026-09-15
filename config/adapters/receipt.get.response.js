@@ -30,10 +30,14 @@ function transform(response) {
   };
   const statusKey = String(data.status || "").toLowerCase();
 
-  // Фото чека: массив { file_id, url } + порядковый номер для таблицы
+  // Фото чека: массив { file_id, url } + порядковый номер для таблицы.
+  // url переписывается на файловый прокси (роутер добавит Bearer+HMAC),
+  // сырой путь из API сохраняется в url_raw.
   const photos = (Array.isArray(data.photos) ? data.photos : []).map(
     (photo, index) => ({
       ...photo,
+      url_raw: photo.url || "",
+      url: proxyFileUrl(photo.url),
       n: index + 1,
     }),
   );
@@ -62,6 +66,18 @@ function transform(response) {
     photos_count: photos.length,
     photos_label: photos.length ? `Фото чека (${photos.length})` : "—",
   };
+}
+
+/**
+ * Переписывает путь файла из ответа API на универсальный файловый прокси
+ * (/api/ops/files/<путь> → {crm_api_url}/api/v1/crm/<путь>).
+ * Абсолютные URL (уже содержащие схему) не трогает.
+ */
+function proxyFileUrl(url) {
+  if (!url || typeof url !== "string" || /^[a-z][a-z0-9+.-]*:\/\//i.test(url)) {
+    return url || "";
+  }
+  return "/api/ops/files" + url;
 }
 
 /**

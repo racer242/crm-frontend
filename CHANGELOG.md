@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Фото чеков и бланк акта не работали с файлов** — все файловые ссылки теперь идут через универсальный прокси `ops/files/**`.
+  - `config/adapters/receipt.get.response.js` — фото чека переписываются на прокси: `url → /api/ops/files<path>` (сырой путь из API сохраняется в `url_raw`; абсолютные URL со схемой не трогаются) — задействовано на карточках чека `receipt.json` и `user-receipt.json` (`Image` + превью-зум без правок страниц).
+  - `config/adapters/act.get.response.js` — `file_url` переписывается на прокси (`file_url`), сырой путь сохранён в `file_url_raw`.
+  - `config/pages/act.json`, `config/pages/user-act.json` — кнопка «Скачать» бланка акта переведена с log-заглушки на реальную команду `downloadFile` (через прокси, `onError` → тост «Не удалось скачать бланк документа»); warn-тост при отсутствии бланка сохранён.
+
 - **Пустые данные на страницах документов участника** — dataFeed страниц `user-docs`/`user-docs-edit` запрашивал `ops/users/[user_id]`, чей response-адаптер `user.get.response` (карточка участника) применялся API-роутером раньше feed-адаптера и отбрасывал `extra`: все поля (паспорт, ИНН) приходили пустыми, а документы из `data.extra.documents` терялись. Добавлен выделенный маршрут GET `ops/users/[user_id]/docs` (тот же внешний эндпоинт 3.2.2 `GET /api/v1/crm/users/{id}`) со своим response-адаптером.
   - `config/adapters/user-docs.get.response.js` — переписан: распаковка обёртки `{status, data}`, поля из `extra.personal`/`extra.extended` (паспорт, ИНН, СНИЛС), `passport_issue_date_formatted` (ДД.ММ.ГГГГ, сырое значение остаётся для PATCH), `fullName`/`id` для хлебных крошек, `extra.documents` → строки `{type, label, file_id, url}` (подписи типов из документации API, битые записи отфильтровываются), `documents_count`.
   - `config/pages/user-docs.json` — dataFeed переключён на `/api/ops/users/{user_id}/docs` (feed-адаптер снят), добавлены дефолты `state.docsData`; новая панель «СНИЛС» (по образцу «ИНН») и секция «Документы» — `DataTable` (Тип документа, ID файла) с кнопкой «Скачать» (команда `downloadFile` через файловый прокси `ops/files`, `onError` → тост об ошибке).

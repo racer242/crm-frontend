@@ -327,10 +327,19 @@
                         "type": "onClick",
                         "commands": [
                           {
-                            "type": "log",
+                            "type": "downloadFile",
                             "params": {
-                              "message": "Download {$state.actData.file_url}",
-                              "condition": "{$state.actData.file_url}"
+                              "url": "{$state.actData.file_url}",
+                              "onError": [
+                                {
+                                  "type": "showToast",
+                                  "params": {
+                                    "severity": "error",
+                                    "summary": "Ошибка",
+                                    "message": "Не удалось скачать бланк документа"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {

@@ -36,9 +36,22 @@ function transform(response) {
     status: data.status || "",
     status_label: statusLabels[statusKey] || data.status || "",
     status_severity: statusSeverities[statusKey] || "secondary",
-    // Путь к файлу акта (без префикса версии; прокси файлов будет добавлен отдельно)
-    file_url: data.file_url || "",
+    // Путь к файлу акта: сырой путь из API + переписанный на файловый прокси
+    file_url_raw: data.file_url || "",
+    file_url: proxyFileUrl(data.file_url),
     created_at: data.created_at ? convertDateValue(data.created_at) : "",
     updated_at: data.updated_at ? convertDateValue(data.updated_at) : "",
   };
+}
+
+/**
+ * Переписывает путь файла из ответа API на универсальный файловый прокси
+ * (/api/ops/files/<путь> → {crm_api_url}/api/v1/crm/<путь>).
+ * Абсолютные URL (уже содержащие схему) не трогает.
+ */
+function proxyFileUrl(url) {
+  if (!url || typeof url !== "string" || /^[a-z][a-z0-9+.-]*:\/\//i.test(url)) {
+    return url || "";
+  }
+  return "/api/ops/files" + url;
 }
