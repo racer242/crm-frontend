@@ -251,8 +251,8 @@
     "path": "ops/files/**",
     "method": "GET",
     "type": "file",
-    "url": "/api/v1/{$location.routeParams.path}",
+    "url": "/api/v1/crm/{$location.routeParams.path}",
     "channel": "instance",
-    "note": "Файловый прокси: /api/ops/files/<путь из ответа API> → {crm_api_url}/api/v1/<путь> (документы участника, фото чеков, сканы актов; файлы отдаются без сегмента /crm)"
+    "note": "Файловый прокси: /api/ops/files/<путь из ответа API> → {crm_api_url}/api/v1/crm/<путь> (документы участника, фото чеков, сканы актов)"
   }
 ]
