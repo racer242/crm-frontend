@@ -470,17 +470,41 @@
                 "columns": [{ "field": "n", "header": "№", "width": "4rem" }],
                 "customColumns": [
                   {
-                    "field": "photo",
+                    "field": "download",
                     "order": -1,
                     "body": [
                       {
-                        "componentType": "Image",
+                        "componentType": "Button",
                         "props": {
-                          "src": "{#row.url}",
-                          "alt": "Фото чека",
-                          "preview": true,
-                          "width": "140"
-                        }
+                          "icon": "pi pi-download",
+                          "label": "Скачать",
+                          "size": "small",
+                          "severity": "secondary",
+                          "outlined": true
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "downloadFile",
+                                "params": {
+                                  "url": "{#row.url}",
+                                  "onError": [
+                                    {
+                                      "type": "showToast",
+                                      "params": {
+                                        "severity": "error",
+                                        "summary": "Ошибка",
+                                        "message": "Не удалось скачать фото чека"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   }

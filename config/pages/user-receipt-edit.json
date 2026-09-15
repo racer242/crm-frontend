@@ -37,7 +37,12 @@
       { "label": "Отклонён", "value": "REFUSED" },
       { "label": "Приостановлен", "value": "SUSPENDED" },
       { "label": "Требуется фото", "value": "NEED_PHOTO" }
-    ]
+    ],
+    "products": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0
+    }
   },
   "meta": {
     "title": "Модерация чека — CRM Platform"
@@ -52,6 +57,11 @@
       "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
       "method": "GET",
       "target": "state.receiptData"
+    },
+    {
+      "url": "/api/ops/receipts/{$location.routeParams.receipt_id}/products",
+      "method": "GET",
+      "target": "state.products"
     }
   ],
   "shortcuts": {
@@ -493,6 +503,38 @@
                     ]
                   }
                 ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productsSection",
+      "type": "section",
+      "className": "mb-5",
+      "blocks": [
+        {
+          "id": "productsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Продукция в чеке"
+            }
+          },
+          "components": [
+            {
+              "id": "productsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.products.value",
+                "columns": "@state.products.columns",
+                "totalRecords": "@state.products.totalRecords",
+                "paginator": false,
+                "size": "small",
+                "emptyMessage": "Нет продукции в чеке"
               }
             }
           ]

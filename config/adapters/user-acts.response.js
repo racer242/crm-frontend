@@ -39,7 +39,6 @@ function transform(source) {
     { field: "prize_id", header: "Приз" },
     { field: "status_label", header: "Статус", width: "10rem" },
     { field: "created_at", header: "Создан", width: "12rem" },
-    { field: "updated_at", header: "Обновлён", width: "12rem" },
   ];
 
   return {

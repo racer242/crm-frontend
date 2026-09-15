@@ -35,6 +35,11 @@ function transform(source) {
         receipt.total_products !== undefined && receipt.total_products !== null
           ? String(receipt.total_products)
           : "—",
+      promo_products_label:
+        receipt.promo_products !== undefined && receipt.promo_products !== null
+          ? String(receipt.promo_products)
+          : "—",
+      fns_status_label: receipt.fns_status || "—",
       registered_at_formatted: receipt.registered_at
         ? convertDateValue(receipt.registered_at)
         : "",
@@ -44,7 +49,9 @@ function transform(source) {
   const columns = [
     { field: "id", header: "ID", width: "12rem" },
     { field: "status_label", header: "Статус", width: "10rem" },
+    { field: "fns_status_label", header: "Статус ФНС", width: "10rem" },
     { field: "total_products_label", header: "Продуктов", width: "8rem" },
+    { field: "promo_products_label", header: "Акционных", width: "8rem" },
     {
       field: "registered_at_formatted",
       header: "Зарегистрирован",

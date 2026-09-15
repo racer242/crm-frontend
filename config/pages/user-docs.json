@@ -389,8 +389,7 @@
               "props": {
                 "value": "@state.docsData.documents",
                 "columns": [
-                  { "field": "label", "header": "Тип документа" },
-                  { "field": "file_id", "header": "ID файла" }
+                  { "field": "label", "header": "Тип документа" }
                 ],
                 "customColumns": [
                   {
