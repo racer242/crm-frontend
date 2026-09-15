@@ -13,7 +13,8 @@ API Router — Next.js API Route (`/api/[...route]`), проксирующий �
 - Безопасность: внешние URL скрыты от клиента
 - Разрешение макросов на сервере
 - Применение адаптеров к ответам
-- Проброс заголовков (Authorization, Cookie)
+- Проброс заголовков (`Authorization`; входной `Cookie` не пересылается)
+- Выбор кампании по cookie `camp_id` (SSR-запросы пересылают cookies во внутренний роутер)
 - Маппинг path → url через config.apiRoutes
 
 ---
@@ -100,7 +101,7 @@ Authorization: Bearer token123
 Из оригинального запроса:
 
 - `Authorization` → проксируется
-- `Cookie` → проксируется
+- `Cookie` → **не** проксируется: внешний API авторизуется через `Authorization` (management-канал) или HMAC-подпись (instance-канал); пересылка уносила бы сессионные cookies панели (`access_token`, `refresh_token`, `user_data`) на хост кампании и могла ломать запрос при не-ASCII значениях (ByteString-ошибка `fetch`)
 - `Content-Type: application/json` → добавляется
 - `Accept: application/json` → добавляется
 
@@ -109,7 +110,6 @@ Authorization: Bearer token123
 ```
 POST https://api.example.com/users
 Authorization: Bearer token123
-Cookie: session=abc
 Content-Type: application/json
 
 { "page": 1, "limit": 20 }
@@ -267,7 +267,9 @@ Client → /api/get-users (Bearer token123)
 
 ### Cookie
 
-Cookie клиента пробрасываются на внешний API для аутентификации.
+Входные cookies клиента **не** пробрасываются во внешний API: аутентификация внешнего API идёт через `Authorization` (management-канал) или HMAC-подпись (instance-канал). Cookies запроса используются только внутри роутера — для выбора кампании (`camp_id`) и чтения `access_token`/`refresh_token`.
+
+Серверная загрузка данных (SSR, `DataFeedServerService`) пересылает cookies пользователя во внутренний запрос к роутеру в percent-encoding (`encodeURIComponent`) — заголовок остаётся ASCII даже при кириллице в `user_data`, а роутер видит ту кампанию, которую выбрал пользователь. Без этого SSR-фиды всегда шли в первую кампанию из `camps.json`.
 
 ---
 

@@ -91,13 +91,16 @@ export async function executeServerDataFeeds(
       // Forward the user's cookies (camp_id, access_token, ...) to the internal
       // API router: without them the router cannot resolve the current campaign
       // (falls back to the first entry in camps.json) or read the auth token.
+      // Values are percent-encoded on purpose: cookie values may contain
+      // non-Latin-1 characters (e.g. user_data holds a user name in Cyrillic)
+      // and fetch() rejects such header values with a ByteString error.
       const requestCookies = serverSources.cookies as
         | Record<string, string>
         | undefined;
       const cookieHeader =
         requestCookies && Object.keys(requestCookies).length > 0
           ? Object.entries(requestCookies)
-              .map(([name, value]) => `${name}=${value}`)
+              .map(([name, value]) => `${name}=${encodeURIComponent(value ?? "")}`)
               .join("; ")
           : undefined;
       if (cookieHeader) {

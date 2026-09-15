@@ -235,7 +235,8 @@ Next.js API Route (`/api/[...route]`) проксирует запросы кли
 - Разрешение макросов на сервере
 - Применение адаптеров к ответам
 - **Автоматическая инъекция access_token** — сервер читает `access_token` из httpOnly cookies и добавляет `Authorization: Bearer <token>` к исходящему запросу
-- Проброс заголовков (Cookie)
+- **Cookie не пересылаются во внешний API** — авторизация идёт через `Authorization` (management-канал) или HMAC-подпись (instance-канал); входной заголовок `Cookie` в исходящий запрос не попадает, чтобы не уносить сессионные cookies панели на хост кампании
+- **Выбор кампании по cookie** — роутер берёт `camp_id` из cookies запроса (фолбэк — первая кампания `camps.json`); SSR-загрузка данных (`DataFeedServerService`) пересылает cookies во внутренний запрос в percent-encoding, поэтому серверные фиды тоже идут в выбранную кампанию
 - Поддержка GET, POST, PUT, PATCH, DELETE
 
 → Полное описание: [docs/api-router-reference.md](docs/api-router-reference.md)

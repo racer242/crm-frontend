@@ -225,11 +225,13 @@ function buildFetchOptions(
   headers["Content-Type"] = "application/json";
   headers["Accept"] = "application/json";
 
-  // Forward cookie if present
-  const cookie = request.headers.get("cookie");
-  if (cookie) {
-    headers["Cookie"] = cookie;
-  }
+  // NOTE: the incoming cookie header is deliberately NOT forwarded to the
+  // external API. The campaign API authenticates via Authorization (management
+  // channel) or via HMAC signature headers (instance channel), so forwarding the
+  // panel's session cookies would only leak access/refresh tokens to the campaign
+  // host. It could also break the outgoing request: cookie values may contain
+  // non-Latin-1 characters (e.g. user_data with a Cyrillic user name) and
+  // fetch() rejects such header values with a ByteString conversion error.
 
   return {
     method: request.method as DataFeedMethod,
