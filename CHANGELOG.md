@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 - **Доработки карточек-детейлов и списков сообщений**:
   - Хлебные крошки карточек вместо статичных подписей показывают id акта (`act.json`, `user-act.json`), название приза (`prize.json`, `user-prize.json`) и id чека (`receipt.json`, `user-receipt.json`).
   - В панель «Информация о призе» (`prize.json`, `user-prize.json`) добавлено поле «ID приза».
-  - Списки сообщений (`messages.json`, `user-messages.json`): убран столбец ID, «Дата» перенесена в начало, текст сообщения сокращается до 25 символов («...» при обрезке); клик по строке открывает модальное окно (`Dialog`) — заголовок = тема, текст = полное сообщение.
+  - Списки сообщений (`messages.json`, `user-messages.json`): убран столбец ID, «Дата» перенесена в начало, текст сообщения сокращается до 25 символов («...» при обрезке); клик по строке открывает модальное окно (`Dialog`) — заголовок = тема («Без темы», если не задана), в теле — все поля сообщения: код обращения, отправитель (имя, e-mail), статус доставки (delivered/failed → «Доставлено»/«Не доставлено»), дата и полный текст сообщения. Строка сообщения целиком кладётся в `state.messagesDialog` командой `setProperty` (`source: "event.data"`), видимость — `state.messagesDialogVisible`; метки `subject_label`/`status_label`/`sender_*_label` готовят адаптеры.
   - Общий список сообщений: вместо ID участника — колонки «Имя» и «E-mail» из полей `sender_name`/`sender_email` (фолбэк «—» — отправитель может быть не авторизован).
   - `config/adapters/messages.response.js`, `user-messages.response.js` — новые колонки и поле `message_short`; `docs/platform updates/Подробное описание эндпоинтов CRM API.md` — в 3.1 добавлены `sender_name`/`sender_email`.
 

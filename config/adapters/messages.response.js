@@ -6,11 +6,23 @@
 function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
 
+  // Статус доставки сообщения
+  const statusLabels = {
+    delivered: "Доставлено",
+    failed: "Не доставлено",
+  };
+
   const value = (payload.items || []).map((message) => ({
     ...message,
     // Отправитель может быть не авторизован (sender_* === null) — «—»
     sender_name_label: message.sender_name || "—",
     sender_email_label: message.sender_email || "—",
+    // Тема и статус доставки для попапа
+    subject_label: message.subject || "Без темы",
+    status_label:
+      statusLabels[String(message.status || "").toLowerCase()] ||
+      message.status ||
+      "—",
     created_at_formatted: message.created_at
       ? convertDateValue(message.created_at)
       : "",
