@@ -322,7 +322,7 @@
                     "id": "messageDialogActions",
                     "type": "component",
                     "componentType": "LayoutGroup",
-                    "className": "flex gap-2 justify-content-end",
+                    "className": "flex gap-2 justify-content-end mt-1",
                     "props": {
                       "components": [
                         {
