@@ -6,10 +6,14 @@
 function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
 
-  // Статус доставки сообщения
+  // Статус доставки сообщения: подпись и severity для Tag
   const statusLabels = {
     delivered: "Доставлено",
     failed: "Не доставлено",
+  };
+  const statusSeverities = {
+    delivered: "success",
+    failed: "danger",
   };
 
   const value = (payload.items || []).map((message) => ({
@@ -23,6 +27,8 @@ function transform(source) {
       statusLabels[String(message.status || "").toLowerCase()] ||
       message.status ||
       "—",
+    status_severity:
+      statusSeverities[String(message.status || "").toLowerCase()] || "info",
     // Кнопка «Написать письмо» в попапе: готовый mailto-линк (тема в subject)
     mailto_link: message.sender_email
       ? `mailto:${message.sender_email}?subject=${encodeURIComponent(
