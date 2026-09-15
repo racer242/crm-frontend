@@ -187,7 +187,7 @@
                 "draggable": false,
                 "resizable": false,
                 "style": { "width": "560px" },
-                "containerClassName": "flex flex-column gap-3",
+                "containerClassName": "flex flex-column gap-1",
                 "components": [
                   {
                     "id": "messageDialogSender",
@@ -282,6 +282,7 @@
                     "id": "messageDialogSubjectLabel",
                     "type": "component",
                     "componentType": "LabelledGroup",
+                    "className": "mb-3",
                     "props": {
                       "label": "Тема обращения",
                       "labelClassName": "text-sm text-500",
@@ -302,6 +303,7 @@
                     "id": "messageDialogMessageLabel",
                     "type": "component",
                     "componentType": "LabelledGroup",
+                    "className": "mb-5",
                     "props": {
                       "label": "Сообщение",
                       "labelClassName": "text-sm text-500",
@@ -322,7 +324,7 @@
                     "id": "messageDialogActions",
                     "type": "component",
                     "componentType": "LayoutGroup",
-                    "className": "flex gap-2 justify-content-end mt-1",
+                    "className": "flex gap-2 justify-content-end",
                     "props": {
                       "components": [
                         {
