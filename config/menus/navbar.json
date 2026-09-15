@@ -25,11 +25,6 @@
       "label": "Сообщения",
       "icon": "pi pi-comment",
       "route": "/ops/messages"
-    },
-    {
-      "label": "Задачи",
-      "icon": "pi pi-list",
-      "route": "/ops/tasks"
     }
   ]
 }

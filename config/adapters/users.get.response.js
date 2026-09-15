@@ -11,9 +11,7 @@ function transform(source) {
       ? [user.first_name, user.third_name, user.last_name]
           .filter(Boolean)
           .join(" ")
-      : user.participant_code
-        ? `Без имени (${user.participant_code})`
-        : "Без имени";
+      : "—";
 
     // Форматирование даты выигрыша через _shared.js функцию
     let created_at = user.created_at ? convertDateValue(user.created_at) : "";
@@ -26,7 +24,7 @@ function transform(source) {
   });
 
   const columns = [
-    { field: "id", header: "ID", width: "8rem" },
+    { field: "participant_code", header: "Код", width: "8rem" },
     { field: "fullName", header: "Имя" },
     { field: "email", header: "E-mail" },
     { field: "status", header: "Статус", width: "6rem" },

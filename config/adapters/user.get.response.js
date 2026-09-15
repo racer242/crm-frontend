@@ -13,17 +13,14 @@ function transform(response) {
   const lastName = data.last_name || "";
   const thirdName = data.third_name || "";
   const full_name =
-    [firstName, lastName].filter(Boolean).join(" ") ||
-    (data.participant_code
-      ? `Без имени (${data.participant_code})`
-      : "Без имени");
+    [firstName, lastName].filter(Boolean).join(" ") || "Без имени";
   const complete_name =
     [firstName, thirdName, lastName].filter(Boolean).join(" ") || "";
   const initials =
     [firstName.charAt(0), lastName.charAt(0)]
       .filter(Boolean)
       .join("")
-      .toUpperCase() || "";
+      .toUpperCase() || "—";
 
   let created_at = data.created_at ? convertDateValue(data.created_at) : "";
   let city =
