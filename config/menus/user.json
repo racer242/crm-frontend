@@ -26,19 +26,6 @@
       ]
     },
     {
-      "id": "achievements",
-      "label": "Достижения",
-      "icon": "pi pi-crown",
-      "items": [
-        {
-          "id": "prizes",
-          "label": "Призы",
-          "icon": "pi pi-gift",
-          "route": "/ops/users/{@state.userData.id}/prizes"
-        }
-      ]
-    },
-    {
       "id": "production",
       "label": "Продукция",
       "icon": "pi pi-shopping-cart",
@@ -54,6 +41,19 @@
           "label": "Покупки",
           "icon": "pi pi-shopping-bag",
           "route": "/ops/users/{@state.userData.id}/products"
+        }
+      ]
+    },
+    {
+      "id": "achievements",
+      "label": "Достижения",
+      "icon": "pi pi-crown",
+      "items": [
+        {
+          "id": "prizes",
+          "label": "Призы",
+          "icon": "pi pi-gift",
+          "route": "/ops/users/{@state.userData.id}/prizes"
         }
       ]
     },

@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **На страницах документов участника не выводились фамилия/имя/отчество паспорта** — адаптер `user-docs.get.response.js` читал несуществующие поля `extra.personal.passport_first_name|last_name|middle_name`, тогда как по API ФИО анкеты лежит в `extra.personal.first_name / last_name / third_name` (два набора ФИО независимы, ключи state-полей страниц `passport_*` сохранены). PATCH-адаптер отправлял правильные ключи — исправлен только маппинг чтения.
+
 - **Фото чеков и бланк акта не работали с файлов** — все файловые ссылки теперь идут через универсальный прокси `ops/files/**`.
   - `config/adapters/receipt.get.response.js` — фото чека переписываются на прокси: `url → /api/ops/files<path>` (сырой путь из API сохраняется в `url_raw`; абсолютные URL со схемой не трогаются) — задействовано на карточках чека `receipt.json` и `user-receipt.json` (`Image` + превью-зум без правок страниц).
   - `config/adapters/act.get.response.js` — `file_url` переписывается на прокси (`file_url`), сырой путь сохранён в `file_url_raw`.

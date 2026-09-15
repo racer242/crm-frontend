@@ -41,8 +41,8 @@ function transform(response) {
     })
     .filter(Boolean);
 
-  const firstName = data.first_name || personal.passport_first_name || "";
-  const lastName = data.last_name || personal.passport_last_name || "";
+  const firstName = data.first_name || "";
+  const lastName = data.last_name || "";
   const participantCode = data.participant_code || "";
   const fullName =
     [lastName, firstName].filter(Boolean).join(" ") ||
@@ -53,10 +53,11 @@ function transform(response) {
     participant_code: participantCode,
     fullName: fullName,
 
-    // Паспортные данные (extra.personal + extra.extended)
-    passport_first_name: personal.passport_first_name || "",
-    passport_last_name: personal.passport_last_name || "",
-    passport_middle_name: personal.passport_middle_name || "",
+    // Паспортные данные: ФИО — extra.personal (first_name/last_name/third_name),
+    // остальные — extra.extended. В API полей personal.passport_* нет.
+    passport_first_name: personal.first_name || "",
+    passport_last_name: personal.last_name || "",
+    passport_middle_name: personal.third_name || "",
     passport_series_number: extended.passport_series_number || "",
     passport_issued_by: extended.passport_issued_by || "",
     // Сырое значение — его же отправляет PATCH (форма редактирования)
