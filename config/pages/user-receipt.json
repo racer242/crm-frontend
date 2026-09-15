@@ -64,7 +64,10 @@
         "commands": [
           {
             "type": "setProperty",
-            "params": { "target": "state.saveResult", "value": null }
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
           },
           {
             "type": "confirm",
@@ -129,9 +132,15 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
                   {
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
@@ -140,7 +149,9 @@
                     "label": "Чеки",
                     "route": "/ops/users/{@state.userData.id}/receipts"
                   },
-                  { "label": "@state.receiptData.id" }
+                  {
+                    "label": "@state.receiptData.id"
+                  }
                 ]
               }
             }
@@ -164,7 +175,11 @@
               "props": {
                 "activeItemId": "production",
                 "activeSubitemId": "receipts",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../menus/user.json"
               }
             }
@@ -177,7 +192,10 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
+        "cols": [
+          "col-12 lg:col-8",
+          "col-12 lg:col-4"
+        ],
         "padding": "p-2"
       },
       "blocks": [
@@ -207,7 +225,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.receiptData.receipt_id"
                     }
@@ -318,7 +338,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.receiptData.fn"
                     }
@@ -341,7 +363,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.receiptData.fd"
                     }
@@ -364,7 +388,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.receiptData.fp"
                     }
@@ -375,144 +401,154 @@
           ]
         },
         {
-          "id": "participantBlock",
+          "id": "participantColumn",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Участник"
-            }
-          },
-          "className": "flex flex-column gap-3",
+          "className": "",
           "components": [
             {
-              "id": "userNameGroup",
+              "id": "participantColumnGroup",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Участник",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userNameLink",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
-                    "props": {
-                      "value": "@state.userData.full_name"
-                    },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column gap-5",
+              "components": [
+                {
+                  "id": "participantPanel",
+                  "type": "component",
+                  "componentType": "Panel",
+                  "props": {
+                    "header": "Участник",
+                    "containerClassName": "flex flex-column gap-3"
+                  },
+                  "components": [
+                    {
+                      "id": "userNameGroup",
+                      "type": "component",
+                      "componentType": "LabelledGroup",
+                      "className": "w-full grid align-items-center mb-2",
+                      "props": {
+                        "label": "Имя",
+                        "labelClassName": "text-sm col-4 text-right",
+                        "containerClassName": "col-8",
+                        "components": [
                           {
-                            "type": "navigate",
-                            "params": {
-                              "url": "/ops/users/{@state.userData.id}"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "userEmailGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "userEmailText",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.userData.email"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "photosSection",
-      "type": "section",
-      "className": "mb-5",
-      "blocks": [
-        {
-          "id": "photosBlock",
-          "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Фото чека"
-            }
-          },
-          "components": [
-            {
-              "id": "photosTable",
-              "type": "component",
-              "componentType": "DataTable",
-              "props": {
-                "value": "@state.receiptData.photos",
-                "columns": [{ "field": "n", "header": "№", "width": "4rem" }],
-                "customColumns": [
-                  {
-                    "field": "download",
-                    "order": -1,
-                    "body": [
-                      {
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-download",
-                          "label": "Скачать",
-                          "size": "small",
-                          "severity": "secondary",
-                          "outlined": true
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
+                            "id": "userNameLink",
+                            "type": "component",
+                            "componentType": "Text",
+                            "className": "m-0 font-bold text-lg text-primary",
+                            "props": {
+                              "value": "@state.userData.full_name"
+                            },
+                            "events": [
                               {
-                                "type": "downloadFile",
-                                "params": {
-                                  "url": "{#row.url}",
-                                  "onError": [
-                                    {
-                                      "type": "showToast",
-                                      "params": {
-                                        "severity": "error",
-                                        "summary": "Ошибка",
-                                        "message": "Не удалось скачать фото чека"
-                                      }
+                                "type": "onClick",
+                                "commands": [
+                                  {
+                                    "type": "navigate",
+                                    "params": {
+                                      "url": "/ops/users/{@state.userData.id}"
                                     }
-                                  ]
-                                }
+                                  }
+                                ]
                               }
                             ]
                           }
                         ]
                       }
-                    ]
-                  }
-                ],
-                "paginator": false,
-                "size": "small",
-                "emptyMessage": "Фото отсутствуют"
-              }
+                    },
+                    {
+                      "id": "userEmailGroup",
+                      "type": "component",
+                      "componentType": "LabelledGroup",
+                      "className": "w-full grid align-items-center mb-2",
+                      "props": {
+                        "label": "Email",
+                        "labelClassName": "text-sm col-4 text-right",
+                        "containerClassName": "col-8",
+                        "components": [
+                          {
+                            "id": "userEmailText",
+                            "type": "component",
+                            "componentType": "Text",
+                            "className": "m-0 font-bold text-lg",
+                            "props": {
+                              "value": "@state.userData.email"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "photosPanel",
+                  "type": "component",
+                  "componentType": "Panel",
+                  "props": {
+                    "header": "Фото чека"
+                  },
+                  "components": [
+                    {
+                      "id": "photosTable",
+                      "type": "component",
+                      "componentType": "DataTable",
+                      "props": {
+                        "value": "@state.receiptData.photos",
+                        "columns": [
+                          {
+                            "field": "n",
+                            "header": "№",
+                            "width": "4rem"
+                          }
+                        ],
+                        "customColumns": [
+                          {
+                            "field": "download",
+                            "order": -1,
+                            "body": [
+                              {
+                                "componentType": "Button",
+                                "props": {
+                                  "icon": "pi pi-download",
+                                  "label": "Скачать",
+                                  "size": "small",
+                                  "severity": "secondary",
+                                  "outlined": true
+                                },
+                                "events": [
+                                  {
+                                    "type": "onClick",
+                                    "commands": [
+                                      {
+                                        "type": "downloadFile",
+                                        "params": {
+                                          "url": "{#row.url}",
+                                          "onError": [
+                                            {
+                                              "type": "showToast",
+                                              "params": {
+                                                "severity": "error",
+                                                "summary": "Ошибка",
+                                                "message": "Не удалось скачать фото чека"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "paginator": false,
+                        "size": "small",
+                        "emptyMessage": "Фото отсутствуют"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -565,7 +601,9 @@
               "className": "flex-grow-1",
               "pt": {
                 "content": {
-                  "style": { "background": "var(--surface-50) !important" }
+                  "style": {
+                    "background": "var(--surface-50) !important"
+                  }
                 }
               }
             }
@@ -610,7 +648,9 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": ["deleteReceipt"]
+                  "commands": [
+                    "deleteReceipt"
+                  ]
                 }
               ]
             }
