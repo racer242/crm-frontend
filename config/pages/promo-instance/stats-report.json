@@ -316,7 +316,7 @@
     {
       "id": "formSqlSection",
       "type": "section",
-      "className": "w-full mb-5",
+      "className": "mb-5",
       "grid": { "cols": ["col-12 md:col-6", "col-12 md:col-6"], "padding": "" },
       "blocks": [
         {
@@ -325,7 +325,7 @@
           "className": "w-full",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "SQL-запрос" }
+            "props": { "header": "SQL-запрос", "className": "w-full" }
           },
           "components": [
             {
@@ -335,7 +335,7 @@
               "props": {
                 "value": "@state.reportData.sql",
                 "placeholder": "Введите SQL-запрос",
-                "rows": 12,
+                "rows": 8,
                 "autoResize": true,
                 "className": "w-full"
               },
@@ -362,7 +362,11 @@
           "className": "w-full",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Поля выдачи (JSON: массив {name, title, type})" }
+
+            "props": {
+              "header": "Поля выдачи [{name, title, type}]",
+              "className": "w-full"
+            }
           },
           "components": [
             {
@@ -402,9 +406,10 @@
         {
           "id": "resultBlock",
           "type": "block",
+
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Результат" }
+            "props": { "header": "Результат", "className": "w-full" }
           },
           "components": [
             {
