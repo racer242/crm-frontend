@@ -1023,7 +1023,29 @@ HTTP-запрос к API с записью результата в state и по
 }
 ```
 
-При `type: "file"` API Router проксирует ответ как бинарный stream, пробрасывая `Content-Type`, `Content-Disposition`, `Content-Length`.
+При `type: "file"` API Router проксирует ответ как бинарный stream, пробрасывая `Content-Type`, `Content-Disposition`, `Content-Length`. Пример file-маршрута с POST-запросом (выгрузка xlsx статистического отчёта):
+
+```json
+{
+  "path": "ops/stats/reports/[report_id]/export",
+  "method": "POST",
+  "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute?format=xlsx",
+  "channel": "instance",
+  "type": "file"
+}
+```
+
+Для API, принимающих параметры POST-запроса в query-строке, у маршрута есть флаг `query: true` — адаптированное тело команды уходит в query внешнего URL, а JSON-body остаётся пустым (хэш тела в HMAC-подписи — от пустой строки):
+
+```json
+{
+  "path": "ops/stats/reports/[report_id]/execute",
+  "method": "POST",
+  "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute",
+  "channel": "instance",
+  "query": true
+}
+```
 
 ---
 

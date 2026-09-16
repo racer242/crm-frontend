@@ -307,5 +307,70 @@
     "url": "receipts/{$location.routeParams.receipt_id}/check",
     "channel": "management",
     "note": "Модерация чеков: Автомодерация (проверка чека)"
+  },
+  {
+    "path": "ops/stats/reports",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/reports",
+    "channel": "instance",
+    "adapter": {
+      "request": "stats.reports.get.request",
+      "response": "stats.reports.get.response"
+    },
+    "note": "Статистика: Список отчётов (page/limit/search/is_active)"
+  },
+  {
+    "path": "ops/stats/reports",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/reports",
+    "channel": "instance",
+    "note": "Статистика: Создать отчёт (title/sql/fields/is_active)"
+  },
+  {
+    "path": "ops/stats/reports/[report_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.report.get.response"
+    },
+    "note": "Статистика: Детали отчёта (включая sql и fields)"
+  },
+  {
+    "path": "ops/stats/reports/[report_id]",
+    "method": "PATCH",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}",
+    "channel": "instance",
+    "adapter": {
+      "request": "stats.report.patch.request"
+    },
+    "note": "Статистика: Обновить отчёт"
+  },
+  {
+    "path": "ops/stats/reports/[report_id]",
+    "method": "DELETE",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}",
+    "channel": "instance",
+    "note": "Статистика: Удалить отчёт"
+  },
+  {
+    "path": "ops/stats/reports/[report_id]/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.execute.request",
+      "response": "stats.execute.response"
+    },
+    "note": "Статистика: Выполнить отчёт (json; page/limit уходят в query — флаг query: true)"
+  },
+  {
+    "path": "ops/stats/reports/[report_id]/export",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute?format=xlsx",
+    "channel": "instance",
+    "type": "file",
+    "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим)"
   }
 ]

@@ -430,7 +430,13 @@ async function handleRequest(
 
     if (adaptedBody) {
       if (["POST", "PUT", "PATCH"].includes(request.method)) {
-        fetchOptions.body = JSON.stringify(adaptedBody);
+        if (routeConfig.query === true) {
+          // Route opted in: adapted body goes to the URL query string instead
+          // of the JSON body (e.g. stats execute takes page/limit as query)
+          resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
+        } else {
+          fetchOptions.body = JSON.stringify(adaptedBody);
+        }
       } else {
         resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
       }
@@ -447,8 +453,13 @@ async function handleRequest(
         const nonce = crypto.randomBytes(16).toString("hex");
 
         // Calculate body hash. For GET/DELETE it's hash of empty string.
+        // Same for query:true routes — the adapted body goes to the URL, body stays empty.
         let bodyToHash = "";
-        if (adaptedBody && ["POST", "PUT", "PATCH"].includes(request.method)) {
+        if (
+          adaptedBody &&
+          ["POST", "PUT", "PATCH"].includes(request.method) &&
+          routeConfig.query !== true
+        ) {
           bodyToHash = JSON.stringify(adaptedBody);
         }
         const bodyHash = crypto

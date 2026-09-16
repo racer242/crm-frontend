@@ -190,5 +190,29 @@
   "mgmt.receipt-products.response": {
     "type": "js",
     "script": "./config/adapters/mgmt.receipt-products.response.js"
+  },
+  "stats.reports.get.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.reports.get.request.js"
+  },
+  "stats.reports.get.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.reports.get.response.js"
+  },
+  "stats.report.get.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.report.get.response.js"
+  },
+  "stats.report.patch.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.report.patch.request.js"
+  },
+  "stats.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.execute.request.js"
+  },
+  "stats.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.execute.response.js"
   }
 }

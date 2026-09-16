@@ -1,0 +1,490 @@
+{
+  "id": "stats-report",
+  "type": "page",
+  "route": "/ops/stats/[report_id]",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "running": false,
+    "saveResult": null,
+    "reportData": {
+      "id": "",
+      "title": "",
+      "sql": "",
+      "is_active": false,
+      "fields": [],
+      "fieldsText": "[]",
+      "_columns": []
+    },
+    "result": {
+      "value": [],
+      "totalRecords": 0,
+      "first": 0,
+      "rows": 20
+    }
+  },
+  "meta": {
+    "title": "Отчёт — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/stats/reports/{$location.routeParams.report_id}",
+      "method": "GET",
+      "target": "state.reportData"
+    }
+  ],
+  "shortcuts": {
+    "saveReport": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.saving", "value": true }
+          },
+          {
+            "type": "setProperty",
+            "params": { "target": "state.saveResult", "value": null }
+          },
+          {
+            "type": "setProperty",
+            "params": { "target": "state.sentSuccessfully", "value": false }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/stats/reports/{$location.routeParams.report_id}",
+              "method": "PATCH",
+              "target": "state.saveResult",
+              "data": {
+                "title": "{$state.reportData.title}",
+                "sql": "{$state.reportData.sql}",
+                "is_active": "{$state.reportData.is_active}",
+                "fieldsText": "{$state.reportData.fieldsText}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.saving", "value": false }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Успешно",
+                    "message": "Отчёт сохранён"
+                  }
+                },
+                { "type": "refresh", "params": {} }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.saving", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить отчёт (проверьте JSON полей выдачи)"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "runReport": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.running", "value": true }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/stats/reports/{$location.routeParams.report_id}/execute",
+              "method": "POST",
+              "target": "state.result",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.result.first}",
+                "rows": "{$state.result.rows}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.running", "value": false }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.running", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось выполнить отчёт"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "deleteReport": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.saveResult", "value": null }
+          },
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Вы уверены, что хотите удалить этот отчёт?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/stats/reports/{$location.routeParams.report_id}",
+                    "method": "DELETE",
+                    "target": "state.saveResult",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Отчёт удалён"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": { "url": "/ops/stats" }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось удалить отчёт"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Статистика", "route": "/ops/stats" },
+                  { "label": "{$state.reportData.title}" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "formBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": true,
+            "header": "Параметры отчёта",
+            "component": "Panel"
+          },
+          "components": [
+            {
+              "id": "titleGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "props": { "label": "Название" },
+              "components": [
+                {
+                  "id": "titleInput",
+                  "type": "component",
+                  "componentType": "InputText",
+                  "className": "w-full",
+                  "props": {
+                    "value": "@state.reportData.title"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "activeGroup",
+              "type": "component",
+              "componentType": "Checkbox",
+              "className": "mb-3",
+              "props": {
+                "label": "Отчёт активен (доступен для выполнения)",
+                "value": "@state.reportData.is_active"
+              }
+            },
+            {
+              "id": "sqlGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "props": { "label": "SQL-запрос" },
+              "components": [
+                {
+                  "id": "sqlInput",
+                  "type": "component",
+                  "componentType": "InputTextarea",
+                  "className": "w-full font-mono text-sm",
+                  "props": {
+                    "value": "@state.reportData.sql",
+                    "rows": 12
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fieldsGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "props": {
+                "label": "Поля выдачи (JSON: массив {name, title, type})"
+              },
+              "components": [
+                {
+                  "id": "fieldsInput",
+                  "type": "component",
+                  "componentType": "InputTextarea",
+                  "className": "w-full font-mono text-sm",
+                  "props": {
+                    "value": "@state.reportData.fieldsText",
+                    "rows": 8
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resultSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "resultBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": true,
+            "header": "Результат",
+            "component": "Panel"
+          },
+          "components": [
+            {
+              "id": "resultTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.result.value",
+                "columns": "@state.reportData._columns",
+                "totalRecords": "@state.result.totalRecords",
+                "rows": "@state.result.rows",
+                "first": "@state.result.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "small",
+                "stripedRows": true,
+                "rowsPerPageOptions": [10, 20, 50, 100],
+                "emptyMessage": "Нажмите «Запустить», чтобы выполнить отчёт"
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["runReport"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnRun",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Запустить",
+                "icon": "pi pi-play",
+                "severity": "success",
+                "disabled": "@state.running",
+                "loading": "@state.running"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["runReport"]
+                }
+              ]
+            },
+            {
+              "id": "btnXlsx",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Выгрузить XLSX",
+                "icon": "pi pi-file-excel",
+                "severity": "info",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "downloadFile",
+                      "params": {
+                        "url": "/api/ops/stats/reports/{$location.routeParams.report_id}/export",
+                        "method": "POST",
+                        "onError": [
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "severity": "error",
+                              "summary": "Ошибка",
+                              "message": "Не удалось выгрузить отчёт"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnSave",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Сохранить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving",
+                "loading": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["saveReport"]
+                }
+              ]
+            },
+            {
+              "id": "btnDelete",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Удалить",
+                "icon": "pi pi-trash",
+                "severity": "danger",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["deleteReport"]
+                }
+              ]
+            },
+            {
+              "id": "btnBack",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "К списку",
+                "icon": "pi pi-arrow-left",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": { "url": "/ops/stats" }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -53,8 +53,17 @@ interface ApiRouteConfig {
   adapter?: string; // ID адаптера (из config.adapters)
   method?: string; // Ограничение по методу (пока не используется)
   headers?: Record<string, string>; // Дополнительные заголовки
+  channel?: "management" | "instance"; // Канал авторизации (по умолчанию management)
+  type?: "file"; // Проксировать бинарный ответ как файл (стрим с Content-Disposition)
+  query?: boolean; // Для POST/PUT/PATCH: тело адаптера уходит в query URL, body остаётся пустым
+  note?: string; // Произвольное описание маршрута
 }
 ```
+
+При `query: true` (POST/PUT/PATCH) адаптированные данные подставляются в query-строку
+внешнего URL (`buildUrlWithParams`), а `body` запроса остаётся пустым — хэш тела в
+HMAC-подписи считается от пустой строки. Пример: выполнение статистического отчёта
+(`page`/`limit` в query, тело не используется).
 
 ---
 

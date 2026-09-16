@@ -66,6 +66,12 @@ export interface ApiRouteConfig {
    * References an adapter defined in the root `adapters` config.
    */
   adapter?: string;
+  /**
+   * For POST/PUT/PATCH routes: put the adapted request data into the
+   * external URL query string instead of the JSON body (body stays empty,
+   * HMAC body hash is computed from an empty string).
+   */
+  query?: boolean;
 }
 
 /**

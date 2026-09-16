@@ -30,6 +30,11 @@
       "route": "/ops/messages"
     },
     {
+      "label": "Статистика",
+      "icon": "pi pi-chart-bar",
+      "route": "/ops/stats"
+    },
+    {
       "header": "CRM-управление"
     },
     {
