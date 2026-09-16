@@ -226,35 +226,70 @@
       ]
     },
     {
-      "id": "formSection",
+      "id": "formMetaSection",
       "type": "section",
+      "className": "w-full",
       "blocks": [
         {
-          "id": "formBlock",
+          "id": "formMetaBlock",
           "type": "block",
+          "className": "w-full",
           "wrapper": {
             "component": "Panel",
             "props": { "header": "Параметры отчёта" }
           },
-          "className": "flex flex-column",
           "components": [
             {
-              "id": "titleGroup",
+              "id": "formMetaLayout",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "componentType": "LayoutGroup",
+              "className": "w-full flex flex-wrap gap-4 align-items-center",
               "props": {
-                "label": "Название",
-                "labelClassName": "font-bold text-sm",
                 "components": [
                   {
-                    "id": "titleInput",
+                    "id": "titleGroup",
                     "type": "component",
-                    "componentType": "InputText",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-1",
                     "props": {
-                      "value": "@state.reportData.title",
-                      "placeholder": "Введите название отчёта",
-                      "className": "w-full"
+                      "label": "Название",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "titleInput",
+                          "type": "component",
+                          "componentType": "InputText",
+                          "props": {
+                            "value": "@state.reportData.title",
+                            "placeholder": "Введите название отчёта",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.reportData.title"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "activeGroup",
+                    "type": "component",
+                    "componentType": "Checkbox",
+                    "className": "flex-grow-0",
+                    "props": {
+                      "label": "Отчёт активен (доступен для выполнения)",
+                      "value": "@state.reportData.is_active"
                     },
                     "events": [
                       {
@@ -264,7 +299,7 @@
                             "type": "setProperty",
                             "params": {
                               "source": "event.value",
-                              "target": "state.reportData.title"
+                              "target": "state.reportData.is_active"
                             }
                           }
                         ]
@@ -273,15 +308,35 @@
                   }
                 ]
               }
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formSqlSection",
+      "type": "section",
+      "className": "w-full",
+      "blocks": [
+        {
+          "id": "sqlBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "SQL-запрос" }
+          },
+          "components": [
             {
-              "id": "activeGroup",
+              "id": "sqlInput",
               "type": "component",
-              "componentType": "Checkbox",
-              "className": "mb-3",
+              "componentType": "InputTextarea",
               "props": {
-                "label": "Отчёт активен (доступен для выполнения)",
-                "value": "@state.reportData.is_active"
+                "value": "@state.reportData.sql",
+                "placeholder": "Введите SQL-запрос",
+                "rows": 12,
+                "autoResize": true,
+                "className": "w-full"
               },
               "events": [
                 {
@@ -291,88 +346,49 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.reportData.is_active"
+                        "target": "state.reportData.sql"
                       }
                     }
                   ]
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "fieldsBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "Поля выдачи (JSON: массив {name, title, type})" }
+          },
+          "components": [
             {
-              "id": "sqlGroup",
+              "id": "fieldsInput",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
+              "componentType": "InputTextarea",
               "props": {
-                "label": "SQL-запрос",
-                "labelClassName": "font-bold text-sm",
-                "components": [
-                  {
-                    "id": "sqlInput",
-                    "type": "component",
-                    "componentType": "InputTextarea",
-                    "props": {
-                      "value": "@state.reportData.sql",
-                      "placeholder": "Введите SQL-запрос",
-                      "rows": 12,
-                      "autoResize": true,
-                      "className": "w-full"
-                    },
-                    "events": [
-                      {
-                        "type": "onChange",
-                        "commands": [
-                          {
-                            "type": "setProperty",
-                            "params": {
-                              "source": "event.value",
-                              "target": "state.reportData.sql"
-                            }
-                          }
-                        ]
+                "value": "@state.reportData.fieldsText",
+                "placeholder": "[{\"name\": \"...\", \"title\": \"...\", \"type\": \"string\"}]",
+                "rows": 8,
+                "autoResize": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.reportData.fieldsText"
                       }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "fieldsGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
-              "props": {
-                "label": "Поля выдачи (JSON: массив {name, title, type})",
-                "labelClassName": "font-bold text-sm",
-                "components": [
-                  {
-                    "id": "fieldsInput",
-                    "type": "component",
-                    "componentType": "InputTextarea",
-                    "props": {
-                      "value": "@state.reportData.fieldsText",
-                      "placeholder": "[{\"name\": \"...\", \"title\": \"...\", \"type\": \"string\"}]",
-                      "rows": 8,
-                      "autoResize": true,
-                      "className": "w-full"
-                    },
-                    "events": [
-                      {
-                        "type": "onChange",
-                        "commands": [
-                          {
-                            "type": "setProperty",
-                            "params": {
-                              "source": "event.value",
-                              "target": "state.reportData.fieldsText"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

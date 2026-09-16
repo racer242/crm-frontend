@@ -119,7 +119,9 @@
                       "search": "{$state.search}",
                       "is_active": "{$state.is_active}"
                     },
-                    "format": { "$ref": "../../system/list-request-format.json" }
+                    "format": {
+                      "$ref": "../../system/list-request-format.json"
+                    }
                   }
                 },
                 {
@@ -247,7 +249,7 @@
               "id": "btnCreateReport",
               "type": "component",
               "componentType": "Button",
-              "className": "flex-grow-0",
+              "className": "flex-grow-0 min-w-max",
               "props": {
                 "label": "Создать отчёт",
                 "icon": "pi pi-plus",
