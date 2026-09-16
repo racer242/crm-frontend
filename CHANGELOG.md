@@ -24,6 +24,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Страницы статистики приведены к общим паттернам** (`stats.json`, `stats-report.json`):
+  - список отчётов: таблица как на странице участников (`size: "normal"`), вместо двух кнопок в строке — стрелка «→» в конце (`pi pi-arrow-right`, `order: -1`, переход на `/ops/stats/{id}` — паттерн users.json);
+  - крошка с названием отчёта — линковкой `@state.reportData.title` (макросы `{$state...}` в props не работают — они только для команд/dataFeed/dataInit; эталон — `act.json`);
+  - из data шортката `runReport` убран `"event": "{$event}"` — для onClick-кнопки `{$event}` это React SyntheticEvent с DOM-узлом, его JSON.stringify падает с «Converting circular structure to JSON» (пагинация таблицы результата читает first/rows из state).
+
 - **Исправлено падение страниц с Panel-обёрткой без заголовка** — `BlockRenderer.tsx:67` читал `wrapperProps.pt.content` без проверки: любой блок с `wrapper.component: "Panel"` и без `props.pt` (или с `pt` без `content`) рендерил страницу в краш `Cannot read properties of undefined (reading 'content')`. Доступ заменён на безопасный `wrapperProps.pt?.content ?? {}`. Заголовок Panel-обёртки теперь документирован как обычный проп: `wrapper: { component: "Panel", props: { header: "..." } }` (попутно убран несуществующий ключ `showHeader: true` из страниц статистики — он нигде не поддерживается).
 
 - **API Router: флаг маршрута `query: true`** (`src/app/api/[...route]/route.ts`) — для POST/PUT/PATCH-маршрутов адаптированное тело подставляется в query-строку внешнего URL (`buildUrlWithParams`), JSON-body остаётся пустым; хэш тела в HMAC-подписи считается от пустой строки. Нужно для API, принимающих параметры POST-запроса в query (выполнение статистического отчёта: `page`/`limit` в query, §5.6 ТЗ). Документировано в `docs/api-router-reference.md` (ApiRouteConfig дополнен `channel`/`type`/`query`/`note`) и `docs/commands-reference.md` (§26 downloadFile).

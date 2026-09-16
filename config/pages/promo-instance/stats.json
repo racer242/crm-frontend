@@ -268,7 +268,7 @@
                 "first": "@state.stats.first",
                 "paginator": true,
                 "lazy": true,
-                "size": "small",
+                "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50],
@@ -279,34 +279,13 @@
                     "header": "",
                     "body": [
                       {
-                        "id": "btnRunRow",
+                        "id": "btnOpenRow",
                         "componentType": "Button",
                         "props": {
-                          "icon": "pi pi-play-circle",
+                          "icon": "pi pi-arrow-right",
                           "link": true,
-                          "size": "small"
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "navigate",
-                                "params": {
-                                  "url": "/ops/stats/{#row.id}"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "id": "btnEditRow",
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-pencil",
-                          "link": true,
-                          "size": "small"
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
                         },
                         "events": [
                           {

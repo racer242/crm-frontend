@@ -120,7 +120,6 @@
               "method": "POST",
               "target": "state.result",
               "data": {
-                "event": "{$event}",
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}"
               },
@@ -218,7 +217,7 @@
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
                   { "label": "Статистика", "route": "/ops/stats" },
-                  { "label": "{$state.reportData.title}" }
+                  { "label": "@state.reportData.title" }
                 ]
               }
             }
