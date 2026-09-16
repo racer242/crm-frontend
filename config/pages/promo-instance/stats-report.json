@@ -236,23 +236,43 @@
             "component": "Panel",
             "props": { "header": "Параметры отчёта" }
           },
+          "className": "flex flex-column",
           "components": [
             {
               "id": "titleGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "props": { "label": "Название" },
-              "components": [
-                {
-                  "id": "titleInput",
-                  "type": "component",
-                  "componentType": "InputText",
-                  "className": "w-full",
-                  "props": {
-                    "value": "@state.reportData.title"
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "titleInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.reportData.title",
+                      "placeholder": "Введите название отчёта",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.reportData.title"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
-                }
-              ]
+                ]
+              }
             },
             {
               "id": "activeGroup",
@@ -262,45 +282,97 @@
               "props": {
                 "label": "Отчёт активен (доступен для выполнения)",
                 "value": "@state.reportData.is_active"
-              }
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.reportData.is_active"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "sqlGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "props": { "label": "SQL-запрос" },
-              "components": [
-                {
-                  "id": "sqlInput",
-                  "type": "component",
-                  "componentType": "InputTextarea",
-                  "className": "w-full font-mono text-sm",
-                  "props": {
-                    "value": "@state.reportData.sql",
-                    "rows": 12
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "SQL-запрос",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "sqlInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.reportData.sql",
+                      "placeholder": "Введите SQL-запрос",
+                      "rows": 12,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.reportData.sql"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
-                }
-              ]
+                ]
+              }
             },
             {
               "id": "fieldsGroup",
               "type": "component",
               "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
               "props": {
-                "label": "Поля выдачи (JSON: массив {name, title, type})"
-              },
-              "components": [
-                {
-                  "id": "fieldsInput",
-                  "type": "component",
-                  "componentType": "InputTextarea",
-                  "className": "w-full font-mono text-sm",
-                  "props": {
-                    "value": "@state.reportData.fieldsText",
-                    "rows": 8
+                "label": "Поля выдачи (JSON: массив {name, title, type})",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "fieldsInput",
+                    "type": "component",
+                    "componentType": "InputTextarea",
+                    "props": {
+                      "value": "@state.reportData.fieldsText",
+                      "placeholder": "[{\"name\": \"...\", \"title\": \"...\", \"type\": \"string\"}]",
+                      "rows": 8,
+                      "autoResize": true,
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.reportData.fieldsText"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
-                }
-              ]
+                ]
+              }
             }
           ]
         }

@@ -25,9 +25,14 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **Страницы статистики приведены к общим паттернам** (`stats.json`, `stats-report.json`):
-  - список отчётов: таблица как на странице участников (`size: "normal"`), вместо двух кнопок в строке — стрелка «→» в конце (`pi pi-arrow-right`, `order: -1`, переход на `/ops/stats/{id}` — паттерн users.json);
+  - список отчётов: таблица как на странице участников (`size: "normal"`), вместо двух кнопок в строке — стрелка «→» в конце (`pi pi-arrow-right`, `order: -1`, переход на `/ops/stats/{id}` — паттерн users.json), стрелка прижата к правому краю ячейки (`style: { marginLeft: "auto" }` — flex-обёртка custom-колонки);
   - крошка с названием отчёта — линковкой `@state.reportData.title` (макросы `{$state...}` в props не работают — они только для команд/dataFeed/dataInit; эталон — `act.json`);
-  - из data шортката `runReport` убран `"event": "{$event}"` — для onClick-кнопки `{$event}` это React SyntheticEvent с DOM-узлом, его JSON.stringify падает с «Converting circular structure to JSON» (пагинация таблицы результата читает first/rows из state).
+  - из data шортката `runReport` убран `"event": "{$event}"` — для onClick-кнопки `{$event}` это React SyntheticEvent с DOM-узлом, его JSON.stringify падает с «Converting circular structure to JSON» (пагинация таблицы результата читает first/rows из state);
+  - **форма отчёта перестроена по паттерну legacy** (`user-docs-edit.json`): у `LabelledGroup` дочерние компоненты находятся в `props.components` (а не на верхнем уровне компонента) — ранее движок рендерил только лейблы, поля формы (InputText/Checkbox/InputTextarea) не отображались; текстareas получили `autoResize`/`placeholder`/`className` внутри props (эталонный набор InputTextarea); всем полям добавлены `onChange → setProperty (event.value)` — без них правки (название, флаг активности, SQL, JSON полей) не попадали в state и не сохранялись; Checkbox шлёт `event.value = checked` (ToggleComponents.tsx).
+
+### Fixed
+
+- **API-роутер: POST-маршруты с `query: true` падали с `TypeError: Response body object should not be disturbed or locked`** (`src/app/api/[...route]/route.ts`). `buildFetchOptions` кладёт в `body` исходный стрим `request.body`; для обычных маршрутов он перезаписывается строкой адаптированного тела, но у маршрутов с `query: true` (stats execute) тело уходило в query, а уже потреблённый стрим оставался в fetchOptions — `fetch()` отвергал такой запрос. Теперь в ветке `query === true` `body` и `duplex` явно сбрасываются (тело пустое — HMAC считается по пустой строке, подпись согласована).
 
 - **Исправлено падение страниц с Panel-обёрткой без заголовка** — `BlockRenderer.tsx:67` читал `wrapperProps.pt.content` без проверки: любой блок с `wrapper.component: "Panel"` и без `props.pt` (или с `pt` без `content`) рендерил страницу в краш `Cannot read properties of undefined (reading 'content')`. Доступ заменён на безопасный `wrapperProps.pt?.content ?? {}`. Заголовок Panel-обёртки теперь документирован как обычный проп: `wrapper: { component: "Panel", props: { header: "..." } }` (попутно убран несуществующий ключ `showHeader: true` из страниц статистики — он нигде не поддерживается).
 

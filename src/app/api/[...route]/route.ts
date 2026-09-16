@@ -434,6 +434,12 @@ async function handleRequest(
           // Route opted in: adapted body goes to the URL query string instead
           // of the JSON body (e.g. stats execute takes page/limit as query)
           resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
+          // The incoming request body stream has already been consumed to
+          // compute the adapted body, and the parameters themselves travel
+          // in the query string. Forwarding the consumed stream to fetch()
+          // throws "Response body object should not be disturbed or locked".
+          fetchOptions.body = undefined;
+          delete (fetchOptions as { duplex?: unknown }).duplex;
         } else {
           fetchOptions.body = JSON.stringify(adaptedBody);
         }
