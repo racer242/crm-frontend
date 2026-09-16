@@ -107,7 +107,32 @@
                   "type": "setProperty",
                   "params": { "target": "state.creating", "value": false }
                 },
-                { "type": "refresh", "params": {} }
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/stats/reports",
+                    "method": "GET",
+                    "target": "state.stats",
+                    "data": {
+                      "first": "{$state.stats.first}",
+                      "rows": "{$state.stats.rows}",
+                      "search": "{$state.search}",
+                      "is_active": "{$state.is_active}"
+                    },
+                    "format": { "$ref": "../../system/list-request-format.json" }
+                  }
+                },
+                {
+                  "type": "mergeUrlParams",
+                  "params": {
+                    "values": {
+                      "first": "{$state.stats.first}",
+                      "rows": "{$state.stats.rows}",
+                      "search": "{$state.search}",
+                      "is_active": "{$state.is_active}"
+                    }
+                  }
+                }
               ],
               "onError": [
                 {
@@ -147,31 +172,6 @@
                 "value": "Статистика",
                 "level": 1
               }
-            }
-          ]
-        },
-        {
-          "id": "statsHeaderActions",
-          "type": "block",
-          "components": [
-            {
-              "id": "btnCreateReport",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Создать отчёт",
-                "icon": "pi pi-plus",
-                "severity": "success",
-                "size": "small",
-                "disabled": "@state.creating",
-                "loading": "@state.creating"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": ["createReport"]
-                }
-              ]
             }
           ]
         }
@@ -240,6 +240,26 @@
                     },
                     "requestReports"
                   ]
+                }
+              ]
+            },
+            {
+              "id": "btnCreateReport",
+              "type": "component",
+              "componentType": "Button",
+              "className": "flex-grow-0",
+              "props": {
+                "label": "Создать отчёт",
+                "icon": "pi pi-plus",
+                "severity": "success",
+                "size": "small",
+                "disabled": "@state.creating",
+                "loading": "@state.creating"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["createReport"]
                 }
               ]
             }
