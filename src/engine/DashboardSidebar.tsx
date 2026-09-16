@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { NavItem, UserMenuConfig } from "@/types";
 import { useAuth } from "@/auth/AuthContext";
 import { Menu } from "primereact/menu";
+import { Divider } from "primereact/divider";
 import { TieredMenu } from "primereact/tieredmenu";
 import { useRef } from "react";
 import { Sidebar } from "primereact/sidebar";
@@ -20,6 +21,14 @@ function buildMenuItems(
   collapsed: boolean,
 ) {
   return items.map((item) => {
+    // Подзаголовок раздела: нет command — переход не выполняется.
+    // Визуально выделен компонентом PrimeReact Divider.
+    // В свёрнутой панели текст не помещается — рендерим только линию.
+    if (item.header) {
+      return {
+        template: collapsed ? <Divider /> : <Divider align="left">{item.header}</Divider>,
+      };
+    }
     if ((item as any).separator) {
       return { separator: true };
     }

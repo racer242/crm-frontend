@@ -2,6 +2,9 @@
   "id": "mainNavbar",
   "items": [
     {
+      "header": "Промо-инстанс"
+    },
+    {
       "label": "Участники",
       "icon": "pi pi-users",
       "route": "/ops/users"
@@ -25,6 +28,9 @@
       "label": "Сообщения",
       "icon": "pi pi-comment",
       "route": "/ops/messages"
+    },
+    {
+      "separator": true
     }
   ]
 }

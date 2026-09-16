@@ -22,6 +22,12 @@ export interface NavItem {
   label?: string;
   icon?: string;
   route?: string;
+  /**
+   * Подзаголовок раздела: если задан, пункт рендерится как заголовок —
+   * визуально выделен (Divider PrimeReact) и не выполняет переход.
+   * Приоритет над `route` и `separator`.
+   */
+  header?: string;
   separator?: boolean;
 }
 
