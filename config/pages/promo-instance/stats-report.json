@@ -228,7 +228,7 @@
     {
       "id": "formMetaSection",
       "type": "section",
-      "className": "w-full",
+      "className": "w-full mb-5",
       "blocks": [
         {
           "id": "formMetaBlock",
@@ -316,7 +316,8 @@
     {
       "id": "formSqlSection",
       "type": "section",
-      "className": "w-full",
+      "className": "w-full mb-5",
+      "grid": { "cols": ["col-12 md:col-6", "col-12 md:col-6"], "padding": "" },
       "blocks": [
         {
           "id": "sqlBlock",
