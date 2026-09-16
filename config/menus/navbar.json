@@ -33,9 +33,9 @@
       "header": "CRM-управление"
     },
     {
-      "label": "Моделация чеков",
+      "label": "Модерация чеков",
       "icon": "pi pi-check-square",
-      "route": "/ops/receipts"
+      "route": "/mgmt/receipts"
     }
   ]
 }

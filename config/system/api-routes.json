@@ -254,5 +254,16 @@
     "url": "/api/v1/crm/{$location.routeParams.path}",
     "channel": "instance",
     "note": "Файловый прокси: /api/ops/files/<путь из ответа API> → {crm_api_url}/api/v1/crm/<путь> (документы участника, фото чеков, сканы актов)"
+  },
+  {
+    "path": "mgmt/receipts",
+    "method": "GET",
+    "url": "receipts",
+    "channel": "management",
+    "adapter": {
+      "request": "mgmt.receipts.get.request",
+      "response": "mgmt.receipts.get.response"
+    },
+    "note": "Модерация чеков"
   }
 ]

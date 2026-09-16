@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Раздел «CRM-управление»** — первый экран второго канала: страница модерации чеков, работающая через management-канал (а не через промо-инстанс).
+  - `config/pages/crm-management/receipts.json` — страница `/mgmt/receipts`: таблица чеков с lazy-пагинацией, сортировкой и поиском/фильтрами (shortcut `requestReceipts`), e-mail-кнопка в строке (mailto) и переход в карточку чека.
+  - `config/system/api-routes.json` — маршрут GET `mgmt/receipts` (`channel: "management"`, `url: "receipts"` → `{base_api_url}/receipts`, т.е. `.../api/v2/{camp_id}/receipts`): роутер строит URL от `base_api_url` кампании и авторизуется Bearer-токеном management-канала.
+  - `config/adapters/mgmt.receipts.get.request.js` — параметры таблицы (first/rows/sortField/sortOrder/search/filters) → параметры API (`first`, `limit`, `sort`, `direction`, `search`, `filters[]`); `config/adapters/mgmt.receipts.get.response.js` — ответ `columns/rows/meta` → формат таблицы (`value/columns/totalRecords/rows/first/sortField/sortOrder`), datetime-колонки форматируются общим хелпером `convertDateColumns` из `_shared.js`; оба зарегистрированы в `config/system/adapters.json`.
+  - `config/menus/navbar.json` — пункт «Модерация чеков» перенесён в раздел «CRM-управление» (маршрут `/mgmt/receipts`), исправлена опечатка в подписи; `config/crm-config.json` — страница добавлена в `pages`.
+  - `docs/config-reference.md`, `README.md` — структура папок страниц (promo-instance, crm-management).
+
 - **Подзаголовки в боковом меню (navbar)** — новый параметр пункта меню `header`: элемент рендерится как заголовок раздела и не выполняет переход.
   - `src/types/app.ts` — `NavItem.header?: string` (JSDoc: приоритет над `route`/`separator`, переход не выполняется).
   - `src/engine/DashboardSidebar.tsx` — ветка `header` в `buildMenuItems()` (единая точка для мобильного и десктопного меню): в `template` выводится компонент PrimeReact `Divider`; в раскрытой панели — `Divider align="left"` с текстом подзаголовка, в свёрнутой — `Divider` с первой буквой заголовка; `command` не навешивается — клик никуда не ведёт, пункт исключён из расчёта активного маршрута. Цвет приглушён PrimeFlex-классом `text-400`.

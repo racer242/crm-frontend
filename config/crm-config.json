@@ -50,7 +50,8 @@
     { "$ref": "./pages/promo-instance/act-add.json" },
     { "$ref": "./pages/promo-instance/act-edit.json" },
     { "$ref": "./pages/promo-instance/tasks.json" },
-    { "$ref": "./pages/promo-instance/messages.json" }
+    { "$ref": "./pages/promo-instance/messages.json" },
+    { "$ref": "./pages/crm-management/receipts.json" }
   ],
   "adapters": { "$ref": "./system/adapters.json" },
   "config": {

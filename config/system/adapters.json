@@ -170,5 +170,13 @@
   "ops.pagination.response": {
     "type": "js",
     "script": "./config/adapters/ops.pagination.response.js"
+  },
+  "mgmt.receipts.get.response": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipts.get.response.js"
+  },
+  "mgmt.receipts.get.request": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipts.get.request.js"
   }
 }
