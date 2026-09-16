@@ -234,9 +234,8 @@
           "id": "formBlock",
           "type": "block",
           "wrapper": {
-            "showHeader": true,
-            "header": "Параметры отчёта",
-            "component": "Panel"
+            "component": "Panel",
+            "props": { "header": "Параметры отчёта" }
           },
           "components": [
             {
@@ -316,9 +315,8 @@
           "id": "resultBlock",
           "type": "block",
           "wrapper": {
-            "showHeader": true,
-            "header": "Результат",
-            "component": "Panel"
+            "component": "Panel",
+            "props": { "header": "Результат" }
           },
           "components": [
             {
