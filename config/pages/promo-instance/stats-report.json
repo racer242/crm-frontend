@@ -84,7 +84,14 @@
                     "message": "Отчёт сохранён"
                   }
                 },
-                { "type": "refresh", "params": {} }
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/stats/reports/{$location.routeParams.report_id}",
+                    "method": "GET",
+                    "target": "state.reportData"
+                  }
+                }
               ],
               "onError": [
                 {
@@ -120,6 +127,50 @@
               "method": "POST",
               "target": "state.result",
               "data": {
+                "first": "{$state.result.first}",
+                "rows": "{$state.result.rows}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.running", "value": false }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.running", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось выполнить отчёт"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "runReportPage": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.running", "value": true }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/stats/reports/{$location.routeParams.report_id}/execute",
+              "method": "POST",
+              "target": "state.result",
+              "data": {
+                "event": "{$event}",
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}"
               },
@@ -432,7 +483,7 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["runReport"]
+                  "commands": ["runReportPage"]
                 }
               ]
             }
