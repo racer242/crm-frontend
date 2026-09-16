@@ -22,11 +22,19 @@ function buildMenuItems(
 ) {
   return items.map((item) => {
     // Подзаголовок раздела: нет command — переход не выполняется.
-    // Визуально выделен компонентом PrimeReact Divider.
-    // В свёрнутой панели текст не помещается — рендерим только линию.
+    // Визуально выделен компонентом PrimeReact Divider, текст приглушён
+    // PrimeFlex-классом. В свёрнутой панели вместо текста — первая буква.
     if (item.header) {
       return {
-        template: collapsed ? <Divider /> : <Divider align="left">{item.header}</Divider>,
+        template: collapsed ? (
+          <div className="flex justify-content-center text-color-secondary">
+            {item.header.trim().charAt(0).toUpperCase()}
+          </div>
+        ) : (
+          <Divider align="left">
+            <span className="text-color-secondary">{item.header}</span>
+          </Divider>
+        ),
       };
     }
     if ((item as any).separator) {

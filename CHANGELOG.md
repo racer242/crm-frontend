@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - **Подзаголовки в боковом меню (navbar)** — новый параметр пункта меню `header`: элемент рендерится как заголовок раздела и не выполняет переход.
   - `src/types/app.ts` — `NavItem.header?: string` (JSDoc: приоритет над `route`/`separator`, переход не выполняется).
-  - `src/engine/DashboardSidebar.tsx` — ветка `header` в `buildMenuItems()` (единая точка для мобильного и десктопного меню): в `template` выводится компонент PrimeReact `Divider` (`align="left"` + текст подзаголовка), `command` не навешивается — клик никуда не ведёт, пункт исключён из расчёта активного маршрута; в свёрнутой панели (4rem) выводится только линия (`<Divider />`). Кастомные CSS-стили не добавлялись — только PrimeReact.
+  - `src/engine/DashboardSidebar.tsx` — ветка `header` в `buildMenuItems()` (единая точка для мобильного и десктопного меню): в `template` выводится компонент PrimeReact `Divider` (`align="left"` + текст подзаголовка), `command` не навешивается — клик никуда не ведёт, пункт исключён из расчёта активного маршрута; в свёрнутой панели (4rem) вместо текста выводится первая буква подзаголовка по центру (`flex justify-content-center`). Цвет текста приглушён PrimeFlex-классом `text-color-secondary`. Кастомные CSS-стили не добавлялись — только PrimeReact/PrimeFlex.
   - `config/menus/navbar.json` — подзаголовок «Промо-инстанс» перед пунктами меню.
   - `docs/config-reference.md` — строка `header` в таблице `NavItem`, пример и описание поведения; `README.md` — состав полей `navbar`.
 
