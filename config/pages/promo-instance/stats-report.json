@@ -18,6 +18,10 @@
       "fieldsText": "[]",
       "_columns": []
     },
+    "params": {
+      "startDate": "",
+      "endDate": ""
+    },
     "result": {
       "value": [],
       "totalRecords": 0,
@@ -128,7 +132,10 @@
               "target": "state.result",
               "data": {
                 "first": "{$state.result.first}",
-                "rows": "{$state.result.rows}"
+                "rows": "{$state.result.rows}",
+                "sql": "{$state.reportData.sql}",
+                "startDate": "{$state.params.startDate}",
+                "endDate": "{$state.params.endDate}"
               },
               "onSuccess": [
                 {
@@ -172,7 +179,10 @@
               "data": {
                 "event": "{$event}",
                 "first": "{$state.result.first}",
-                "rows": "{$state.result.rows}"
+                "rows": "{$state.result.rows}",
+                "sql": "{$state.reportData.sql}",
+                "startDate": "{$state.params.startDate}",
+                "endDate": "{$state.params.endDate}"
               },
               "onSuccess": [
                 {
@@ -337,9 +347,9 @@
                     "id": "activeGroup",
                     "type": "component",
                     "componentType": "Checkbox",
-                    "className": "flex-grow-0",
+                    "className": "flex-grow-0 mb-0",
                     "props": {
-                      "label": "Отчёт активен (доступен для выполнения)",
+                      "label": "Отчёт активен",
                       "value": "@state.reportData.is_active"
                     },
                     "events": [
@@ -356,6 +366,112 @@
                         ]
                       }
                     ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formParamsSection",
+      "type": "section",
+      "className": "w-full mb-5",
+      "blocks": [
+        {
+          "id": "formParamsBlock",
+          "type": "block",
+          "className": "w-full",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "Параметры", "className": "w-full" }
+          },
+          "components": [
+            {
+              "id": "formParamsLayout",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "w-full flex flex-wrap gap-4 align-items-end",
+              "props": {
+                "components": [
+                  {
+                    "id": "startDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-0",
+                    "props": {
+                      "label": "Начало",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "startDateInput",
+                          "type": "component",
+                          "componentType": "Calendar",
+                          "props": {
+                            "value": "@state.params.startDate",
+                            "showTime": true,
+                            "hourFormat": "24",
+                            "showIcon": true,
+                            "placeholder": "Начало периода",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.params.startDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "endDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-0",
+                    "props": {
+                      "label": "Конец",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "endDateInput",
+                          "type": "component",
+                          "componentType": "Calendar",
+                          "props": {
+                            "value": "@state.params.endDate",
+                            "showTime": true,
+                            "hourFormat": "24",
+                            "showIcon": true,
+                            "placeholder": "Конец периода",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.params.endDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
                   }
                 ]
               }
