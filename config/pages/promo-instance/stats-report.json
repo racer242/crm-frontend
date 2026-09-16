@@ -133,7 +133,6 @@
               "data": {
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}",
-                "sql": "{$state.reportData.sql}",
                 "startDate": "{$state.params.startDate}",
                 "endDate": "{$state.params.endDate}"
               },
@@ -180,7 +179,6 @@
                 "event": "{$event}",
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}",
-                "sql": "{$state.reportData.sql}",
                 "startDate": "{$state.params.startDate}",
                 "endDate": "{$state.params.endDate}"
               },

@@ -3,9 +3,9 @@
  * Преобразует параметры таблицы результата (first/rows) в query-параметры API
  * (page/limit, §5.6 ТЗ). Маршрут помечен query: true — значения уходят в URL, а не в тело.
  *
- * SQL отчёта передаётся с запросом с подстановкой макросов периода:
- * {{startDate}} / {{endDate}} заменяются значениями пикеров, пустые значения —
- * текущей датой-временем (now).
+ * Период (startDate/endDate) отправляется как есть в параметре replacements:
+ * { replacements: { "startDate": "...", "endDate": "..." } }.
+ * Замену макросов {{startDate}}/{{endDate}} в SQL выполняет сервер API перед запуском.
  */
 function transform(params = {}) {
   const { event = {}, ...base } = params;
@@ -24,17 +24,18 @@ function transform(params = {}) {
     limit: Math.min(rows, 100),
   };
 
-  // Подстановка макросов периода в SQL. split/join вместо replace,
-  // чтобы символы "$" в датах/SQL не трактовались как паттерны замены.
-  if (base.sql !== undefined && base.sql !== null && base.sql !== "") {
-    const startDate = base.startDate ? String(base.startDate) : new Date().toISOString();
-    const endDate = base.endDate ? String(base.endDate) : new Date().toISOString();
-
-    result.sql = String(base.sql)
-      .split("{{startDate}}")
-      .join(startDate)
-      .split("{{endDate}}")
-      .join(endDate);
+  // Период передаётся без изменений — замены на стороне сервера API
+  if (
+    base.startDate !== undefined ||
+    base.endDate !== undefined
+  ) {
+    result.replacements = {};
+    if (base.startDate) {
+      result.replacements.startDate = base.startDate;
+    }
+    if (base.endDate) {
+      result.replacements.endDate = base.endDate;
+    }
   }
 
   return result;
