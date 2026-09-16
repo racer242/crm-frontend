@@ -178,5 +178,17 @@
   "mgmt.receipts.get.request": {
     "type": "js",
     "script": "./config/adapters/mgmt.receipts.get.request.js"
+  },
+  "mgmt.receipt.get.response": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipt.get.response.js"
+  },
+  "mgmt.receipt-products.get.request": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipt-products.get.request.js"
+  },
+  "mgmt.receipt-products.response": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipt-products.response.js"
   }
 }

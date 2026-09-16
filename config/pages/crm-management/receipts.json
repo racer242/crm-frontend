@@ -44,7 +44,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/receipts",
+              "url": "/api/mgmt/receipts",
               "method": "GET",
               "target": "state.receipts",
               "data": {
@@ -331,7 +331,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/receipts/{#row._rowId}"
+                                  "url": "/mgmt/receipts/{#row._rowId}"
                                 }
                               }
                             ]
@@ -357,7 +357,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{$event.data._rowId}"
+                        "url": "/mgmt/receipts/{$event.data._rowId}"
                       }
                     }
                   ]

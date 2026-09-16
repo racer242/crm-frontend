@@ -1,7 +1,7 @@
 {
-  "id": "receipt-edit",
+  "id": "mgmt-receipt-edit",
   "type": "page",
-  "route": "/receipts/[receipt_id]/edit",
+  "route": "/mgmt/receipts/[receipt_id]/edit",
   "state": {
     "loading": false,
     "saving": false,
@@ -42,7 +42,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/receipts/{$location.routeParams.receipt_id}/products",
+              "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}/products",
               "method": "GET",
               "target": "state.products",
               "data": {
@@ -54,7 +54,7 @@
                 "search": "{$state.products.search}",
                 "filters": "{$state.products.filters}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {
@@ -96,7 +96,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/receipts/{$location.routeParams.receipt_id}/check",
+              "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}/check",
               "method": "POST",
               "target": "state.saveResult",
               "data": {},
@@ -142,7 +142,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/receipts/{$location.routeParams.receipt_id}",
+              "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
               "method": "PATCH",
               "target": "state.saveResult",
               "data": {
@@ -196,12 +196,12 @@
   },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
+      "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
       "method": "GET",
       "target": "state.receiptData"
     },
     {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",
+      "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}/products",
       "method": "GET",
       "target": "state.products"
     }
@@ -224,10 +224,10 @@
               "props": {
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
-                  { "label": "Чеки", "route": "/receipts" },
+                  { "label": "Чеки", "route": "/mgmt/receipts" },
                   {
                     "label": "Чек от {@state.receiptData.registrationDateFormatted}",
-                    "route": "/receipts/{@state.receipt_id}"
+                    "route": "/mgmt/receipts/{@state.receipt_id}"
                   },
                   { "label": "Модерация" }
                 ]
@@ -575,7 +575,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{$location.routeParams.receipt_id}",
+                        "url": "/mgmt/receipts/{$location.routeParams.receipt_id}",
                         "condition": "{$state.sentSuccessfully}"
                       }
                     }
@@ -629,7 +629,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{$location.routeParams.receipt_id}"
+                        "url": "/mgmt/receipts/{$location.routeParams.receipt_id}"
                       }
                     }
                   ]

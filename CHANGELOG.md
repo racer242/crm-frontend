@@ -13,13 +13,17 @@ All notable changes to this project will be documented in this file.
   - `config/menus/navbar.json` — пункт «Модерация чеков» перенесён в раздел «CRM-управление» (маршрут `/mgmt/receipts`), исправлена опечатка в подписи; `config/crm-config.json` — страница добавлена в `pages`.
   - `docs/config-reference.md`, `README.md` — структура папок страниц (promo-instance, crm-management).
 
+- **Карточка и модерация чека в разделе «CRM-управление»** — страницы просмотра и модерации (`receipt.json`, `receipt-edit.json`) зарегистрированы в `config/crm-config.json`; адаптеры `mgmt.receipt.get.response`, `mgmt.receipt-products.get.request`, `mgmt.receipt-products.response` добавлены в `config/system/adapters.json`. Страницам заданы уникальные id (`mgmt-receipt`, `mgmt-receipt-edit`) и маршруты с префиксом раздела: `/mgmt/receipts/[receipt_id]` и `/mgmt/receipts/[receipt_id]/edit` — ранее они дублировали id и маршруты одноимённых страниц промо-инстанса (конфликт роутинга и состояния). Все внутренние переходы (кнопки, крошки, переход после удаления/сохранения) переведены на `/mgmt/receipts/...`.
+
+### Changed
+
+- **Маршруты management-канала для карточки чека** — в `config/system/api-routes.json` добавлены `mgmt/receipts/[receipt_id]` (GET/PATCH/DELETE), `mgmt/receipts/[receipt_id]/products` (GET) и `mgmt/receipts/[receipt_id]/check` (POST — автомодерация); URL всех клиентских запросов и dataFeed страниц раздела переведены с несуществующего `/api/receipts/...` на `/api/mgmt/receipts/...`, из dataFeed убран нестандартный префикс `{$config.baseURL}`; исправлены относительные `$ref` к `list-request-format.json` в `receipt.json`/`receipt-edit.json` (`../system/...` → `../../system/...`).
+
 - **Подзаголовки в боковом меню (navbar)** — новый параметр пункта меню `header`: элемент рендерится как заголовок раздела и не выполняет переход.
   - `src/types/app.ts` — `NavItem.header?: string` (JSDoc: приоритет над `route`/`separator`, переход не выполняется).
   - `src/engine/DashboardSidebar.tsx` — ветка `header` в `buildMenuItems()` (единая точка для мобильного и десктопного меню): в `template` выводится компонент PrimeReact `Divider`; в раскрытой панели — `Divider align="left"` с текстом подзаголовка, в свёрнутой — `Divider` с первой буквой заголовка; `command` не навешивается — клик никуда не ведёт, пункт исключён из расчёта активного маршрута. Цвет приглушён PrimeFlex-классом `text-400`.
   - `config/menus/navbar.json` — подзаголовок «Промо-инстанс» перед пунктами меню.
   - `docs/config-reference.md` — строка `header` в таблице `NavItem`, пример и описание поведения; `README.md` — состав полей `navbar`.
-
-### Changed
 
 - **Страницы промо-инстанса вынесены в подпапку** — все 28 страниц конфигурации перенесены из `config/pages/` в `config/pages/promo-instance/` (`git mv`, история файлов сохранена), ссылки в `config/crm-config.json` обновлены на `./pages/promo-instance/...`. Так как `$ref` резолвятся относительно самого файла (загрузчик — `@apidevtools/json-schema-ref-parser`), внутренние относительные ссылки страниц подняты на уровень выше: `../system/list-request-format.json` → `../../system/list-request-format.json` (10 файлов), `../menus/user.json` → `../../menus/user.json` (11 файлов) — всего 19 файлов, 24 ссылки. Структура готовит разделение страниц по каналам/инстансам.
 - **Мелкие UI-правки**: `src/app/globals.css` — прозрачный фон `.p-breadcrumb`; `src/engine/AppEngine.tsx` — фон приложения `surface-100` вместо `surface-900`; `package.json`/`package-lock.json` — `primeflex` зафиксирован на `^3.3.1`.

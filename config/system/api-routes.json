@@ -265,5 +265,47 @@
       "response": "mgmt.receipts.get.response"
     },
     "note": "Модерация чеков"
+  },
+  {
+    "path": "mgmt/receipts/[receipt_id]",
+    "method": "GET",
+    "url": "receipts/{$location.routeParams.receipt_id}",
+    "channel": "management",
+    "adapter": {
+      "response": "mgmt.receipt.get.response"
+    },
+    "note": "Модерация чеков: Детали чека"
+  },
+  {
+    "path": "mgmt/receipts/[receipt_id]",
+    "method": "PATCH",
+    "url": "receipts/{$location.routeParams.receipt_id}",
+    "channel": "management",
+    "note": "Модерация чеков: Сохранить чек (статус, сеть, комментарий)"
+  },
+  {
+    "path": "mgmt/receipts/[receipt_id]",
+    "method": "DELETE",
+    "url": "receipts/{$location.routeParams.receipt_id}",
+    "channel": "management",
+    "note": "Модерация чеков: Удалить чек"
+  },
+  {
+    "path": "mgmt/receipts/[receipt_id]/products",
+    "method": "GET",
+    "url": "receipts/{$location.routeParams.receipt_id}/products",
+    "channel": "management",
+    "adapter": {
+      "request": "mgmt.receipt-products.get.request",
+      "response": "mgmt.receipt-products.response"
+    },
+    "note": "Модерация чеков: Продукция в чеке"
+  },
+  {
+    "path": "mgmt/receipts/[receipt_id]/check",
+    "method": "POST",
+    "url": "receipts/{$location.routeParams.receipt_id}/check",
+    "channel": "management",
+    "note": "Модерация чеков: Автомодерация (проверка чека)"
   }
 ]

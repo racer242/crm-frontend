@@ -1,7 +1,7 @@
 {
-  "id": "receipt",
+  "id": "mgmt-receipt",
   "type": "page",
-  "route": "/receipts/[receipt_id]",
+  "route": "/mgmt/receipts/[receipt_id]",
   "state": {
     "loading": false,
     "initialized": true,
@@ -46,12 +46,12 @@
   "meta": { "title": "Чек — CRM Platform" },
   "dataFeed": [
     {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}",
+      "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
       "method": "GET",
       "target": "state.receiptData"
     },
     {
-      "url": "{$config.baseURL}/api/receipts/{$location.routeParams.receipt_id}/products",
+      "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}/products",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
@@ -72,7 +72,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/receipts/{$location.routeParams.receipt_id}/products",
+              "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}/products",
               "method": "GET",
               "target": "state.products",
               "data": {
@@ -84,7 +84,7 @@
                 "search": "{$state.products.search}",
                 "filters": "{$state.products.filters}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {
@@ -131,7 +131,7 @@
                 {
                   "type": "sendRequest",
                   "params": {
-                    "url": "/api/receipts/{$location.routeParams.receipt_id}",
+                    "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
                     "method": "DELETE",
                     "target": "state.saveResult",
                     "onSuccess": [
@@ -145,7 +145,7 @@
                       },
                       {
                         "type": "navigate",
-                        "params": { "url": "/receipts" }
+                        "params": { "url": "/mgmt/receipts" }
                       }
                     ],
                     "onError": [
@@ -186,7 +186,7 @@
               "props": {
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
-                  { "label": "Чеки", "route": "/receipts" },
+                  { "label": "Чеки", "route": "/mgmt/receipts" },
                   {
                     "label": "Чек от {@state.receiptData.registrationDateFormatted}"
                   }
@@ -711,7 +711,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/receipts/{$location.routeParams.receipt_id}/edit"
+                        "url": "/mgmt/receipts/{$location.routeParams.receipt_id}/edit"
                       }
                     }
                   ]
