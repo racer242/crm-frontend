@@ -43,7 +43,7 @@
                 "first": "{$state.acts.first}",
                 "rows": "{$state.acts.rows}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {

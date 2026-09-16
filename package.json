@@ -22,7 +22,7 @@
     "jose": "^6.2.3",
     "next": "16.2.2",
     "next-intl": "^4.12.0",
-    "primeflex": "^4.0.0",
+    "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primereact": "10.9.8",
     "react": "19.2.4",

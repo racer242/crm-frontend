@@ -81,7 +81,7 @@
                 "search": "{$state.search}",
                 "status": "{$state.status}"
               },
-              "format": { "$ref": "../system/list-request-format.json" },
+              "format": { "$ref": "../../system/list-request-format.json" },
               "onSuccess": [
                 {
                   "type": "log",

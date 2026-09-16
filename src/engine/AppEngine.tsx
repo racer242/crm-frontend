@@ -267,7 +267,7 @@ export function AppEngine({
   const currentCampId = (config as any)?.currentCampId || 0;
 
   return (
-    <div className="flex flex-column md:flex-row min-h-screen surface-900">
+    <div className="flex flex-column md:flex-row min-h-screen surface-100">
       <Toast ref={toastRef} />
       <ConfirmDialog />
       <DashboardHeader

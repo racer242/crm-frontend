@@ -1,7 +1,7 @@
 {
-  "id": "user-receipts",
+  "id": "user-acts",
   "type": "page",
-  "route": "/ops/users/[user_id]/receipts",
+  "route": "/ops/users/[user_id]/acts",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,7 @@
       "full_name": "",
       "email": ""
     },
-    "receipts": {
+    "acts": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -19,7 +19,7 @@
     }
   },
   "meta": {
-    "title": "Чеки участника — CRM Platform"
+    "title": "Акты участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -28,40 +28,40 @@
       "target": "state.userData"
     },
     {
-      "url": "/api/ops/users/{$location.routeParams.user_id}/receipts",
+      "url": "/api/ops/users/{$location.routeParams.user_id}/acts",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}"
       },
       "method": "GET",
-      "target": "state.receipts"
+      "target": "state.acts"
     }
   ],
   "shortcuts": {
-    "requestUserReceipts": {
+    "requestUserActs": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users/{$location.routeParams.user_id}/receipts",
+              "url": "/api/ops/users/{$location.routeParams.user_id}/acts",
               "method": "GET",
-              "target": "state.receipts",
+              "target": "state.acts",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "first": "{$state.acts.first}",
+                "rows": "{$state.acts.rows}"
               }
             }
           }
@@ -92,7 +92,7 @@
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
                   },
-                  { "label": "Чеки" }
+                  { "label": "Акты" }
                 ]
               }
             }
@@ -114,10 +114,10 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "production",
-                "activeSubitemId": "receipts",
+                "activeItemId": "docs",
+                "activeSubitemId": "acts",
                 "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
+                "$ref": "../../menus/user.json"
               }
             }
           ]
@@ -125,46 +125,76 @@
       ]
     },
     {
-      "id": "receiptsHeader",
+      "id": "actsHeader",
       "type": "section",
       "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
-          "id": "receiptsTitle",
+          "id": "actsTitle",
           "type": "block",
           "components": [
             {
-              "id": "receiptsPageTitle",
+              "id": "actsPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Чеки",
+                "value": "Акты",
                 "level": 1
               }
+            }
+          ]
+        },
+        {
+          "id": "actsAddBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "actsAddButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Добавить акт",
+                "icon": "pi pi-plus",
+                "size": "small",
+                "severity": "success"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/acts/add"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
       ]
     },
     {
-      "id": "receiptsTableSection",
+      "id": "actsTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "receiptsTableBlock",
+          "id": "actsTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "receiptsTable",
+              "id": "actsTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.receipts.value",
-                "columns": "@state.receipts.columns",
-                "totalRecords": "@state.receipts.totalRecords",
-                "rows": "@state.receipts.rows",
-                "first": "@state.receipts.first",
+                "value": "@state.acts.value",
+                "columns": "@state.acts.columns",
+                "totalRecords": "@state.acts.totalRecords",
+                "rows": "@state.acts.rows",
+                "first": "@state.acts.first",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -191,7 +221,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/users/{$location.routeParams.user_id}/receipts/{#row.id}"
+                                  "url": "/ops/users/{$location.routeParams.user_id}/acts/{#row.id}"
                                 }
                               }
                             ]
@@ -205,11 +235,11 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserReceipts"]
+                  "commands": ["requestUserActs"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserReceipts"]
+                  "commands": ["requestUserActs"]
                 },
                 {
                   "type": "onRowClick",
@@ -217,7 +247,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/users/{$location.routeParams.user_id}/receipts/{$event.data.id}"
+                        "url": "/ops/users/{$location.routeParams.user_id}/acts/{$event.data.id}"
                       }
                     }
                   ]

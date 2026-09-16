@@ -92,7 +92,7 @@
                 "activeItemId": "docs",
                 "activeSubitemId": "personal-docs",
                 "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
+                "$ref": "../../menus/user.json"
               }
             }
           ]

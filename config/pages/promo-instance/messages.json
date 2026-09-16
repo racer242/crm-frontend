@@ -45,7 +45,7 @@
                 "first": "{$state.messages.first}",
                 "rows": "{$state.messages.rows}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {

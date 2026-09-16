@@ -1,7 +1,7 @@
 {
-  "id": "user-prizes",
+  "id": "user-products",
   "type": "page",
-  "route": "/ops/users/[user_id]/prizes",
+  "route": "/ops/users/[user_id]/products",
   "state": {
     "loading": false,
     "initialized": true,
@@ -10,7 +10,7 @@
       "full_name": "",
       "email": ""
     },
-    "prizes": {
+    "products": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -19,7 +19,7 @@
     }
   },
   "meta": {
-    "title": "Призы участника — CRM Platform"
+    "title": "Покупки участника — CRM Platform"
   },
   "dataFeed": [
     {
@@ -28,40 +28,40 @@
       "target": "state.userData"
     },
     {
-      "url": "/api/ops/users/{$location.routeParams.user_id}/prizes",
+      "url": "/api/ops/users/{$location.routeParams.user_id}/products",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}"
       },
       "method": "GET",
-      "target": "state.prizes"
+      "target": "state.products"
     }
   ],
   "shortcuts": {
-    "requestUserPrizes": {
+    "requestUserProducts": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users/{$location.routeParams.user_id}/prizes",
+              "url": "/api/ops/users/{$location.routeParams.user_id}/products",
               "method": "GET",
-              "target": "state.prizes",
+              "target": "state.products",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.prizes.first}",
-                "rows": "{$state.prizes.rows}"
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.prizes.first}",
-                "rows": "{$state.prizes.rows}"
+                "first": "{$state.products.first}",
+                "rows": "{$state.products.rows}"
               }
             }
           }
@@ -92,7 +92,7 @@
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
                   },
-                  { "label": "Призы" }
+                  { "label": "Покупки" }
                 ]
               }
             }
@@ -114,10 +114,10 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "achievements",
-                "activeSubitemId": "prizes",
+                "activeItemId": "production",
+                "activeSubitemId": "products",
                 "pt": { "menu": { "className": "gap-1" } },
-                "$ref": "../menus/user.json"
+                "$ref": "../../menus/user.json"
               }
             }
           ]
@@ -125,20 +125,20 @@
       ]
     },
     {
-      "id": "prizesHeader",
+      "id": "productsHeader",
       "type": "section",
       "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
-          "id": "prizesTitle",
+          "id": "productsTitle",
           "type": "block",
           "components": [
             {
-              "id": "prizesPageTitle",
+              "id": "productsPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Призы",
+                "value": "Покупки",
                 "level": 1
               }
             }
@@ -147,80 +147,38 @@
       ]
     },
     {
-      "id": "prizesTableSection",
+      "id": "productsTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "prizesTableBlock",
+          "id": "productsTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "prizesTable",
+              "id": "productsTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.prizes.value",
-                "columns": "@state.prizes.columns",
-                "totalRecords": "@state.prizes.totalRecords",
-                "rows": "@state.prizes.rows",
-                "first": "@state.prizes.first",
+                "value": "@state.products.value",
+                "columns": "@state.products.columns",
+                "totalRecords": "@state.products.totalRecords",
+                "rows": "@state.products.rows",
+                "first": "@state.products.first",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
                 "stripedRows": true,
-                "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
-                "customColumns": [
-                  {
-                    "field": "button",
-                    "order": -1,
-                    "body": [
-                      {
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-arrow-right",
-                          "link": true,
-                          "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "navigate",
-                                "params": {
-                                  "url": "/ops/users/{$location.routeParams.user_id}/prizes/{#row.id}"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                "rowsPerPageOptions": [5, 10, 25, 50]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserPrizes"]
+                  "commands": ["requestUserProducts"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserPrizes"]
-                },
-                {
-                  "type": "onRowClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/ops/users/{$location.routeParams.user_id}/prizes/{$event.data.id}"
-                      }
-                    }
-                  ]
+                  "commands": ["requestUserProducts"]
                 }
               ]
             }

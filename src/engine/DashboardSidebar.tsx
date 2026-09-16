@@ -27,12 +27,12 @@ function buildMenuItems(
     if (item.header) {
       return {
         template: collapsed ? (
-          <div className="flex justify-content-center text-color-secondary">
+          <Divider className="text-400">
             {item.header.trim().charAt(0).toUpperCase()}
-          </div>
+          </Divider>
         ) : (
-          <Divider align="left">
-            <span className="text-color-secondary">{item.header}</span>
+          <Divider align="left" className="text-400">
+            {item.header}
           </Divider>
         ),
       };

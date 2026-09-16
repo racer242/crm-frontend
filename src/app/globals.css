@@ -100,3 +100,7 @@ input.p-inputtext {
 .__p-button {
   transition: none !important;
 }
+
+.p-breadcrumb {
+  background: rgba(255, 255, 255, 0);
+}

@@ -30,7 +30,12 @@
       "route": "/ops/messages"
     },
     {
-      "separator": true
+      "header": "CRM-управление"
+    },
+    {
+      "label": "Моделация чеков",
+      "icon": "pi pi-check-square",
+      "route": "/ops/receipts"
     }
   ]
 }

@@ -1,11 +1,11 @@
 {
-  "id": "receipts",
+  "id": "prizes",
   "type": "page",
-  "route": "/ops/receipts",
+  "route": "/ops/prizes",
   "state": {
     "loading": false,
     "initialized": true,
-    "receipts": {
+    "prizes": {
       "value": [],
       "columns": [],
       "totalRecords": 0,
@@ -14,44 +14,44 @@
     }
   },
   "meta": {
-    "title": "Чеки — CRM Platform"
+    "title": "Призы — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "/api/ops/receipts",
+      "url": "/api/ops/prizes",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}"
       },
       "method": "GET",
-      "target": "state.receipts"
+      "target": "state.prizes"
     }
   ],
   "shortcuts": {
-    "requestReceipts": {
+    "requestPrizes": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/receipts",
+              "url": "/api/ops/prizes",
               "method": "GET",
-              "target": "state.receipts",
+              "target": "state.prizes",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}"
               },
-              "format": { "$ref": "../system/list-request-format.json" }
+              "format": { "$ref": "../../system/list-request-format.json" }
             }
           },
           {
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}"
               }
             }
           }
@@ -76,7 +76,7 @@
               "className": "border-none p-0",
               "props": {
                 "home": { "icon": "pi pi-home", "url": "/" },
-                "model": [{ "label": "Чеки" }]
+                "model": [{ "label": "Призы" }]
               }
             }
           ]
@@ -84,20 +84,20 @@
       ]
     },
     {
-      "id": "receiptsHeader",
+      "id": "prizesHeader",
       "type": "section",
       "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
-          "id": "receiptsTitle",
+          "id": "prizesTitle",
           "type": "block",
           "components": [
             {
-              "id": "receiptsPageTitle",
+              "id": "prizesPageTitle",
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Чеки",
+                "value": "Призы",
                 "level": 1
               }
             }
@@ -106,24 +106,24 @@
       ]
     },
     {
-      "id": "receiptsTableSection",
+      "id": "prizesTableSection",
       "type": "section",
       "blocks": [
         {
-          "id": "receiptsTableBlock",
+          "id": "prizesTableBlock",
           "type": "block",
           "className": "w-full",
           "components": [
             {
-              "id": "receiptsTable",
+              "id": "prizesTable",
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.receipts.value",
-                "columns": "@state.receipts.columns",
-                "totalRecords": "@state.receipts.totalRecords",
-                "rows": "@state.receipts.rows",
-                "first": "@state.receipts.first",
+                "value": "@state.prizes.value",
+                "columns": "@state.prizes.columns",
+                "totalRecords": "@state.prizes.totalRecords",
+                "rows": "@state.prizes.rows",
+                "first": "@state.prizes.first",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -131,33 +131,6 @@
                 "selectionMode": "single",
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
-                  {
-                    "field": "user",
-                    "order": -1,
-                    "body": [
-                      {
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-user",
-                          "link": true,
-                          "size": "small"
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "navigate",
-                                "params": {
-                                  "url": "/ops/users/{#row.user_id}"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
                   {
                     "field": "button",
                     "order": -1,
@@ -177,7 +150,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/receipts/{#row.id}"
+                                  "url": "/ops/prizes/{#row.id}"
                                 }
                               }
                             ]
@@ -191,11 +164,11 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestReceipts"]
+                  "commands": ["requestPrizes"]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestReceipts"]
+                  "commands": ["requestPrizes"]
                 },
                 {
                   "type": "onRowClick",
@@ -203,7 +176,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/receipts/{$event.data.id}"
+                        "url": "/ops/prizes/{$event.data.id}"
                       }
                     }
                   ]
