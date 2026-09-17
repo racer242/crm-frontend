@@ -339,19 +339,13 @@
                       {
                         "id": "btnSelectRow",
                         "componentType": "Button",
-                        "style": { "marginLeft": "auto" },
+                        "style": { "marginLeft": "auto", "pointerEvents": "none" },
                         "props": {
                           "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
                           "pt": { "label": { "className": "font-normal" } }
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": ["selectReport"]
-                          }
-                        ]
+                        }
                       }
                     ]
                   }

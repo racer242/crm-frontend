@@ -742,7 +742,7 @@
                   "commands": [
                     {
                       "type": "navigate",
-                      "params": { "url": "/ops/stats" }
+                      "params": { "url": "/ops/stats/reports" }
                     }
                   ]
                 }
