@@ -25,6 +25,26 @@
 }
 ```
 
+### Видимость компонента (reactive `visible`)
+
+Любой компонент поддерживает свойство `visible` — реактивное управление отображением:
+
+| Вариант | Пример | Поведение |
+| ------- | ------ | --------- |
+| boolean | `"visible": false` | Статически скрыт/показан |
+| binding | `"visible": "@state.selectedReport.id"` | Разрешается через Linkage с подпиской на изменения; falsy (`false`, `undefined`, `null`, `""`) → компонент **не рендерится** (дети тоже), truthy → рендерится |
+
+```json
+{
+  "id": "actionsPanel",
+  "componentType": "Panel",
+  "visible": "@state.selectedReport.id",
+  "props": { "header": "Выполнение", "components": [ ... ] }
+}
+```
+
+Реализовано в `ComponentRenderer`/`useComponentBindings` (early-return до рендера); изменение state автоматически показывает/скрывает компонент без перезагрузки страницы.
+
 ### Общие пропсы для всех компонентов форм
 
 | Пропс    | Тип      | По умолчанию  | Описание                              |

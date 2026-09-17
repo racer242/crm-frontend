@@ -60,9 +60,14 @@ export function ComponentRenderer({ component }: { component: Component }) {
   const t = useTranslations("component");
   const { componentType, className, style } = component;
 
-  const { resolvedProps, handleEvent } = useComponentBindings({
+  const { resolvedProps, handleEvent, isVisible } = useComponentBindings({
     component,
   });
+
+  // Реактивная видимость: config-level visible (boolean | binding) → falsy не рендерится
+  if (!isVisible) {
+    return null;
+  }
 
   const renderProps = {
     component,

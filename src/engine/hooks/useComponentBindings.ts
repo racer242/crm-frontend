@@ -77,6 +77,8 @@ import { useCommandExecutor } from "./useCommandExecutor";
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
   handleEvent: (eventType: string, eventValue: any) => void;
+  /** Реактивная видимость компонента (config-level visible: boolean | binding) */
+  isVisible: boolean;
   /** Выполнить произвольный массив команд с поддержкой shortcut строк */
   executeCommands: (
     commands: (string | Command)[],
@@ -104,9 +106,13 @@ export function useComponentBindings({
     return new Linkage(stateManager, pageId);
   }, [stateManager, pageId]);
 
-  // Собираем все binding-строки из props
+  // Собираем все binding-строки из props и config-level visible
   const allBindings = useMemo(() => {
     const bindings: (string | undefined)[] = [];
+
+    if (typeof component.visible === "string") {
+      bindings.push(component.visible);
+    }
 
     if (component.props) {
       const collectBindings = (obj: any) => {
@@ -124,7 +130,7 @@ export function useComponentBindings({
     }
 
     return bindings;
-  }, [component.props]);
+  }, [component.visible, component.props]);
 
   // Синхронное разрешение всех линковок на этапе рендера (без useEffect)
   // Позволяет избежать пустого первого рендера с {} в resolvedProps
@@ -142,6 +148,22 @@ export function useComponentBindings({
     setResolvedProps(initiallyResolved);
   }, [initiallyResolved]);
 
+  // Реактивная видимость компонента: boolean — как есть, строка — binding через Linkage.
+  // falsy-результат (undefined/null/""/false) → компонент не рендерится.
+  const computeVisible = useCallback((): boolean => {
+    if (component.visible === undefined) return true;
+    if (typeof component.visible === "boolean") return component.visible;
+    if (!linkage) return true;
+    return Boolean(linkage.resolve(component.visible));
+  }, [component.visible, linkage]);
+
+  const [isVisible, setIsVisible] = useState<boolean>(computeVisible);
+
+  // Пересчёт при смене конфига visible или контекста линковки
+  useEffect(() => {
+    setIsVisible(computeVisible());
+  }, [computeVisible]);
+
   // Подписка на изменения bindings через Linkage
   useEffect(() => {
     if (!linkage) return;
@@ -149,10 +171,14 @@ export function useComponentBindings({
     const unsubscribe = linkage.subscribe(allBindings, () => {
       const propsWithValues = linkage.resolveDeep(component.props) || {};
       setResolvedProps(propsWithValues);
+
+      if (typeof component.visible === "string") {
+        setIsVisible(Boolean(linkage.resolve(component.visible)));
+      }
     });
 
     return unsubscribe;
-  }, [linkage, allBindings, component.props]);
+  }, [linkage, allBindings, component.props, component.visible]);
 
   // /**
   //  * Выполнить команды из component.events по типу события
@@ -219,6 +245,7 @@ export function useComponentBindings({
   return {
     resolvedProps,
     handleEvent,
+    isVisible,
     executeCommands,
   };
 }

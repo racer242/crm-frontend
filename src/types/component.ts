@@ -196,6 +196,14 @@ export interface Component extends BaseElement {
   /** Обработчики событий */
   events?: EventHandler[];
 
+  /**
+   * Реактивная видимость компонента.
+   * - boolean — статическое значение (true/false);
+   * - string — binding (например, "@state.selectedReport.id"):
+   *   разрешается через Linkage с подпиской на изменения; falsy → компонент не рендерится.
+   */
+  visible?: string | boolean;
+
   className?: string;
   style?: React.CSSProperties;
 }

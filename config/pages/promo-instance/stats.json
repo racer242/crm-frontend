@@ -16,7 +16,7 @@
     },
     "selectedReport": {
       "id": "",
-      "title": ""
+      "title": "Выберите отчет"
     },
     "selectedDetails": {
       "id": "",
@@ -103,7 +103,15 @@
           },
           {
             "type": "setProperty",
-            "params": { "target": "state.result", "value": { "value": [], "totalRecords": 0, "first": 0, "rows": 20 } }
+            "params": {
+              "target": "state.result",
+              "value": {
+                "value": [],
+                "totalRecords": 0,
+                "first": 0,
+                "rows": 20
+              }
+            }
           },
           {
             "type": "sendRequest",
@@ -296,9 +304,7 @@
               "componentType": "DataTable",
               "props": {
                 "value": "@state.reports.value",
-                "columns": [
-                  { "field": "title", "header": "Название" }
-                ],
+                "columns": [{ "field": "title", "header": "Название" }],
                 "totalRecords": "@state.reports.totalRecords",
                 "rows": "@state.reports.rows",
                 "first": "@state.reports.first",
@@ -454,6 +460,7 @@
               "id": "actionsPanel",
               "type": "component",
               "componentType": "Panel",
+              "visible": "@state.selectedReport.id",
               "className": "w-full",
               "props": {
                 "header": "Выполнение",
