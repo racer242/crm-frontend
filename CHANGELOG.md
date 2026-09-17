@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - **Надёжность удалённого деплоя** (`deploy-remote.sh`, `deploy-remote-configure.sh`, `.dockerignore`):
   - в обоих скриптах `docker compose up -d` заменён на `up -d --force-recreate`: без флага compose не пересоздаёт контейнер при изменении только смонтированных файлов (`config/`, `messages/`), и приложение продолжало работать со старой конфигурацией;
   - перед копированием оба скрипта удаляют на сервере `$REMOTE_DIR/config` и `$REMOTE_DIR/messages` — устаревшие файлы (переименованные/удалённые страницы и адаптеры) больше не накапливаются на сервере;
-  - `.dockerignore` дополнен: `.legacy`, `.skip-read`, `config`, `messages` исключены из build context (в образе не нужны — монтируются с хоста / служебные папки);
+  - `.dockerignore` дополнен: `.legacy`, `.skip-read`, `config` исключены из build context (`messages` остаётся — нужен Turbopack на этапе сборки, см. Fixed);
   - деплой-скрипты перенесены из `deploy/CentOS7/` в корень репозитория (`deploy-remote.sh`, `deploy-remote-configure.sh`), nginx-конфиг и старые версии скриптов архивированы в `.skip-read/deploy/`; пути в README обновлены.
 
 ### Added
@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Сборка Docker-образа падала** (`Module not found: Can't resolve '../../messages/' <dynamic> '.json'`): исключение `messages` из `.dockerignore` (в коммите о надёжности деплоя) сломало `next build` — Turbopack сканирует папку `messages/` при компиляции динамического импорта локалей в `src/i18n/request.ts` (`await import(\`../../messages/${locale}.json\`)`) и без неё не может построить карту модулей. `messages` возвращён в build context (в runner-образ не попадает — монтируется с хоста), `config` остался исключён. Проверено успешной локальной сборкой образа.
 - **Даты не устанавливались в датапикеры страниц статистики**: `isIsoDateLike` (`src/utils/date.ts`) не распознавал ISO с миллисекундами (`…T00:00:00.000Z` — формат макросов) и с временным офсетом (`2026-07-01T00:00:00+03:00` — формат `campaign_start_date` из настроек акции) → Calendar получал нераспознанную строку и оставался пустым. Regex расширен (`.SSS`, `Z`, `±HH:MM`).
 - **Макросы быстрых диапазонов не отрабатывали в командах** («Element not found: {$todayEnd}»): в `setProperty` параметр `source` трактуется как путь (`event.value` / `state.field`), и макро-строка в нём не разрешается — команды кнопок «Сегодня»/«Текущая неделя» переведены на параметр `value` (прямое значение, разрешается MacroEngine). Из «Сроки акции» удалён отладочный `log`. Правило задокументировано в `docs/macros-reference.md`.
 - **Макросы диапазонов дат поддерживают форматирование как `{$now.FORMAT}`**: `{$todayStart.DD.MM.YYYY HH:mm:ss}`, `{$currentWeekEnd.timestamp}`, `{$todayStart.iso}` (без суффикса — ISO). Хелперы `datetime.ts` переведены на возврат `Date`, форматирование выполняет `formatDate` MacroEngine.

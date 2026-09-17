@@ -12,6 +12,7 @@ scripts
 .legacy
 .skip-read
 config
-messages
+# NOTE: `messages` НЕ исключаем — Turbopack сканирует эту папку при сборке
+# (динамический импорт в src/i18n/request.ts), без неё build падает.
 *.md
 *.log
