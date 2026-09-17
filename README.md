@@ -428,7 +428,7 @@ docker compose restart
 
 - `deploy-remote.sh` — сборка образа локально, отправка на сервер (образ + compose + `.env.production` + `config/` + `messages/`), `docker load` и `docker compose up -d --force-recreate`.
 - `deploy-remote-configure.sh` — только конфигурация (compose, `.env.production`, `config/`, `messages/`) и `docker compose up -d --force-recreate`.
-- `logs.sh` — просмотр логов контейнера приложения (`docker logs -f`): разрешает имя контейнера автоматически (`crm-frontend` из compose, иначе единственный подходящий по маске `crm-frontend*`), дополнительные аргументы передаются в `docker logs` (`./logs.sh --tail 200`, `./logs.sh --since 10m`), имя можно переопределить: `CONTAINER=<имя> ./logs.sh`. Выход — Ctrl+C.
+- `remote-docker-logs.sh` — просмотр логов контейнера приложения (`docker logs -f`). Имя контейнера определяется автоматически: кандидаты `crm-frontend` (так задаёт `container_name` в `docker-compose.yml`) и `crm-frontend-crm-frontend` (совпадает с именем образа compose), иначе — единственный подходящий по маске `crm-frontend*`. Дополнительные аргументы передаются в `docker logs` (`./remote-docker-logs.sh --tail 200`, `--since 10m`), имя можно переопределить: `CONTAINER=<имя> ./remote-docker-logs.sh`. Выход — Ctrl+C.
 
 Оба скрипта перед копированием **удаляют на сервере** `config/` и `messages/` — устаревшие файлы (переименованные/удалённые страницы, адаптеры) не накапливаются. `--force-recreate` обязателен: `up -d` без него не пересоздаёт контейнер при изменении только смонтированных файлов, и приложение продолжало бы работать со старым конфигом.
 
