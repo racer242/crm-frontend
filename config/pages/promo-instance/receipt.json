@@ -275,10 +275,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": [
-          "col-12 lg:col-8",
-          "col-12 lg:col-4"
-        ],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -463,6 +460,7 @@
               "id": "photosTable",
               "type": "component",
               "componentType": "DataTable",
+              "className": "border-top-1 surface-border",
               "props": {
                 "value": "@state.receiptData.photos",
                 "columns": [
@@ -518,8 +516,7 @@
                 "size": "small",
                 "emptyMessage": "Фото отсутствуют",
                 "showHeaders": false
-              },
-              "className": "w-full"
+              }
             }
           ]
         },
@@ -778,9 +775,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "deleteReceipt"
-                  ]
+                  "commands": ["deleteReceipt"]
                 }
               ]
             }
