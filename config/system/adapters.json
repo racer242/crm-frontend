@@ -214,5 +214,9 @@
   "stats.execute.response": {
     "type": "js",
     "script": "./config/adapters/stats.execute.response.js"
+  },
+  "stats.export.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.export.request.js"
   }
 }

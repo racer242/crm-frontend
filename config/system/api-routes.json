@@ -371,6 +371,9 @@
     "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute?format=xlsx",
     "channel": "instance",
     "type": "file",
-    "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим)"
+    "adapter": {
+      "request": "stats.export.request"
+    },
+    "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим); тело — format + replacements (даты подстановки)"
   }
 ]

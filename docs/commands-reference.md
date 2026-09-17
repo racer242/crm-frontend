@@ -1031,9 +1031,12 @@ HTTP-запрос к API с записью результата в state и по
   "method": "POST",
   "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute?format=xlsx",
   "channel": "instance",
-  "type": "file"
+  "type": "file",
+  "adapter": { "request": "stats.export.request" }
 }
 ```
+
+Request-адаптер file-маршрута формирует JSON-тело (например, `format` и `replacements` с датами подстановки) — без него POST-тело команды уходит на внешний API «как есть».
 
 Для API, принимающих параметры POST-запроса в query-строке, у маршрута есть флаг `query: true` — адаптированное тело команды уходит в query внешнего URL, а JSON-body остаётся пустым (хэш тела в HMAC-подписи — от пустой строки):
 

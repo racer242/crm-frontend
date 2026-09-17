@@ -664,6 +664,10 @@
                       "params": {
                         "url": "/api/ops/stats/reports/{$location.routeParams.report_id}/export",
                         "method": "POST",
+                        "data": {
+                          "startDate": "{$state.params.startDate}",
+                          "endDate": "{$state.params.endDate}"
+                        },
                         "onError": [
                           {
                             "type": "showToast",
