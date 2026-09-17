@@ -467,7 +467,10 @@
                 "value": "@state.receiptData.photos",
                 "columns": [
                   {
-                    "field": "label"
+                    "field": "label",
+                    "bodyStyle": {
+                      "textAlign": "right"
+                    }
                   }
                 ],
                 "customColumns": [

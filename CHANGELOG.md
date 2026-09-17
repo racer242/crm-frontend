@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Таблица фото чека без строки заголовков** (`config/pages/promo-instance/receipt.json`, `user-receipt.json` + адаптер `receipt.get.response.js`): убрана шапка таблицы (`showHeaders: false` — штатный проп PrimeReact DataTable), нумерация «№» заменена на подписи «Фото чека 1», «Фото чека 2»… (новое поле `label` в адаптере, колонка без `header`).
+- **Таблица фото чека без строки заголовков** (`config/pages/promo-instance/receipt.json`, `user-receipt.json` + адаптер `receipt.get.response.js`): убрана шапка таблицы (`showHeaders: false` — штатный проп PrimeReact DataTable), нумерация «№» заменена на подписи «Фото чека 1», «Фото чека 2»… (новое поле `label` в адаптере, колонка без `header`; подпись выровнена по правому краю ячейки (`bodyStyle.textAlign`).
 
 - **Карточка чека: компоновка по замечаниям** (`config/pages/promo-instance/receipt.json`): кнопка «Сохранить» переименована в «Применить», сделана outlined и перенесена в панель «Модерация» (под причину отклонения); кнопка «Отменить изменения» удалена (перезагрузка страницы возвращает исходные данные), панель кнопок осталась только с «Удалить»; таблица фото чека перенесена в панель «Информация о чеке», отдельная панель «Фото чека» упразднена.
 
