@@ -39,6 +39,7 @@ function transform(response) {
       url_raw: photo.url || "",
       url: proxyFileUrl(photo.url),
       n: index + 1,
+      label: `Фото чека ${index + 1}`,
     }),
   );
 

@@ -495,9 +495,7 @@
                         "value": "@state.receiptData.photos",
                         "columns": [
                           {
-                            "field": "n",
-                            "header": "№",
-                            "width": "4rem"
+                            "field": "label"
                           }
                         ],
                         "customColumns": [
@@ -543,7 +541,8 @@
                         ],
                         "paginator": false,
                         "size": "small",
-                        "emptyMessage": "Фото отсутствуют"
+                        "emptyMessage": "Фото отсутствуют",
+                        "showHeaders": false
                       }
                     }
                   ]
