@@ -363,170 +363,170 @@
               }
             },
             {
-              "id": "paramsBlock",
-              "type": "block",
+              "id": "paramsPanel",
+              "type": "component",
+              "componentType": "Panel",
               "className": "w-full",
-              "wrapper": {
-                "component": "Panel",
-                "props": { "header": "Параметры", "className": "w-full" }
-              },
-              "components": [
-                {
-                  "id": "startDateGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "mb-3",
-                  "props": {
-                    "label": "Начало",
-                    "labelClassName": "font-bold text-sm",
-                    "components": [
-                      {
-                        "id": "startDateInput",
-                        "type": "component",
-                        "componentType": "Calendar",
-                        "props": {
-                          "value": "@state.params.startDate",
-                          "showTime": true,
-                          "hourFormat": "24",
-                          "showIcon": true,
-                          "placeholder": "Начало периода",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.params.startDate"
+              "props": {
+                "header": "Параметры",
+                "components": [
+                  {
+                    "id": "startDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Начало",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "startDateInput",
+                          "type": "component",
+                          "componentType": "Calendar",
+                          "props": {
+                            "value": "@state.params.startDate",
+                            "showTime": true,
+                            "hourFormat": "24",
+                            "showIcon": true,
+                            "placeholder": "Начало периода",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.params.startDate"
+                                  }
                                 }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "endDateGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "props": {
-                    "label": "Конец",
-                    "labelClassName": "font-bold text-sm",
-                    "components": [
-                      {
-                        "id": "endDateInput",
-                        "type": "component",
-                        "componentType": "Calendar",
-                        "props": {
-                          "value": "@state.params.endDate",
-                          "showTime": true,
-                          "hourFormat": "24",
-                          "showIcon": true,
-                          "placeholder": "Конец периода",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.params.endDate"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "endDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "props": {
+                      "label": "Конец",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "endDateInput",
+                          "type": "component",
+                          "componentType": "Calendar",
+                          "props": {
+                            "value": "@state.params.endDate",
+                            "showTime": true,
+                            "hourFormat": "24",
+                            "showIcon": true,
+                            "placeholder": "Конец периода",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.params.endDate"
+                                  }
                                 }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
                   }
-                }
-              ]
+                ]
+              }
             },
             {
-              "id": "actionsBlock",
-              "type": "block",
+              "id": "actionsPanel",
+              "type": "component",
+              "componentType": "Panel",
               "className": "w-full",
-              "wrapper": {
-                "component": "Panel",
-                "props": { "header": "Выполнение", "className": "w-full" }
-              },
-              "components": [
-                {
-                  "id": "actionsLayout",
-                  "type": "component",
-                  "componentType": "LayoutGroup",
-                  "className": "flex flex-wrap gap-2",
-                  "props": {
-                    "components": [
-                      {
-                        "id": "btnRun",
-                        "type": "component",
-                        "componentType": "Button",
-                        "props": {
-                          "label": "Запустить",
-                          "icon": "pi pi-play",
-                          "severity": "success",
-                          "disabled": "@state.running",
-                          "loading": "@state.running"
+              "props": {
+                "header": "Выполнение",
+                "components": [
+                  {
+                    "id": "actionsLayout",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex flex-wrap gap-2",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "btnRun",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Запустить",
+                            "icon": "pi pi-play",
+                            "severity": "success",
+                            "disabled": "@state.running",
+                            "loading": "@state.running"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": ["runReport"]
+                            }
+                          ]
                         },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": ["runReport"]
-                          }
-                        ]
-                      },
-                      {
-                        "id": "btnXlsx",
-                        "type": "component",
-                        "componentType": "Button",
-                        "props": {
-                          "label": "Выгрузить XLSX",
-                          "icon": "pi pi-file-excel",
-                          "severity": "info",
-                          "outlined": true
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "downloadFile",
-                                "params": {
-                                  "url": "/api/ops/stats/reports/{$state.selectedReport.id}/export",
-                                  "method": "POST",
-                                  "data": {
-                                    "startDate": "{$state.params.startDate}",
-                                    "endDate": "{$state.params.endDate}"
-                                  },
-                                  "onError": [
-                                    {
-                                      "type": "showToast",
-                                      "params": {
-                                        "severity": "error",
-                                        "summary": "Ошибка",
-                                        "message": "Не удалось выгрузить отчёт"
+                        {
+                          "id": "btnXlsx",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Выгрузить XLSX",
+                            "icon": "pi pi-file-excel",
+                            "severity": "info",
+                            "outlined": true
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "downloadFile",
+                                  "params": {
+                                    "url": "/api/ops/stats/reports/{$state.selectedReport.id}/export",
+                                    "method": "POST",
+                                    "data": {
+                                      "startDate": "{$state.params.startDate}",
+                                      "endDate": "{$state.params.endDate}"
+                                    },
+                                    "onError": [
+                                      {
+                                        "type": "showToast",
+                                        "params": {
+                                          "severity": "error",
+                                          "summary": "Ошибка",
+                                          "message": "Не удалось выгрузить отчёт"
+                                        }
                                       }
-                                    }
-                                  ]
+                                    ]
+                                  }
                                 }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
                   }
-                }
-              ]
+                ]
+              }
             }
           ]
         }
