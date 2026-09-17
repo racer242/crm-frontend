@@ -19,7 +19,7 @@
       "passport_series_number": "",
       "passport_issued_by": "",
       "passport_issue_date": "",
-      "passport_issue_date_formatted": "",
+      "passport_issue_date": "",
       "passport_registration_address": "",
       "inn": "",
       "snils": "",
@@ -253,7 +253,7 @@
                           "componentType": "Text",
                           "className": "m-0 font-bold text-lg",
                           "props": {
-                            "value": "@state.docsData.passport_issue_date_formatted"
+                            "value": "@state.docsData.passport_issue_date"
                           },
                           "state": {}
                         }

@@ -22,9 +22,9 @@
       "sum": "",
       "sum_label": "",
       "date": "",
-      "date_formatted": "",
+      "date": "",
       "registered_at": "",
-      "registered_at_formatted": "",
+      "registered_at": "",
       "photos": [],
       "photos_count": 0,
       "photos_label": "",
@@ -375,7 +375,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.registered_at_formatted"
+                      "value": "@state.receiptData.registered_at"
                     }
                   }
                 ]
