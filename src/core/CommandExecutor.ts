@@ -41,7 +41,7 @@ import { getPublicEnv } from "@/utils/env";
 import { getClientLocation } from "@/utils/location";
 import { FormatEngine, FormatRule } from "./FormatEngine";
 import { applyRules } from "./RulesEngine";
-import { ApiError } from "@/utils/parseApiError";
+import { ApiError, formatApiError } from "@/utils/parseApiError";
 
 export interface CommandExecutionContext {
   pageId: string;
@@ -598,6 +598,16 @@ export class CommandExecutor {
     let message = this.macroEngine.apply(rawMessage, 0, extraSources) as string;
     message = this.applyFormatToValue(message, "message", params);
     const severity = params.severity || "info";
+
+    // В onError-контексте sendRequest/downloadFile в extraSources лежит
+    // объект ошибки (ApiError) — дополним сообщение детализацией:
+    // error.message + details ("• field: issue").
+    // Внимание: createExtraSources заворачивает контекст в `event`,
+    // поэтому ошибка может быть на верхнем уровне или в event.error
+    const ctxError = extraSources?.error ?? extraSources?.event?.error;
+    if (ctxError !== undefined && ctxError !== null) {
+      message = formatApiError(ctxError as ApiError | string, message);
+    }
 
     if (this.context.showToast) {
       this.context.showToast(message, severity);

@@ -530,6 +530,7 @@ async function handleRequest(
       "------ Headers --",
       JSON.stringify(fetchOptions.headers, null, 2),
     );
+    console.log("------ Body --");
     console.dir(adaptedBody, { depth: null, colors: true });
 
     // Forward the request to the external API
@@ -539,7 +540,7 @@ async function handleRequest(
     if (!externalResponse.ok) {
       const errorBody = await externalResponse.text().catch(() => "");
 
-      console.log("------ Response Error --", errorBody);
+      console.log("------ Response Error --\n", errorBody);
 
       const errorResponse = new NextResponse(errorBody, {
         status: externalResponse.status,

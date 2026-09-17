@@ -18,14 +18,7 @@
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Toast } from "primereact/toast";
-import { ApiError } from "@/utils/parseApiError";
-
-/**
- * Extract error message from ApiError object
- */
-function getErrorMessage(error: ApiError): string {
-  return error.message || error.rawText || "Unknown error";
-}
+import { ApiError, formatApiError } from "@/utils/parseApiError";
 
 /**
  * Hook that watches page state for dataFeedErrors and shows Toast notifications
@@ -58,7 +51,8 @@ export function useDataFeedErrors(
         toastRef.current?.show({
           severity: "error",
           summary: t("dataFeedError"),
-          detail: getErrorMessage(error), // Показываем только message
+          // Полный текст: message + details ("• field: issue")
+          detail: formatApiError(error),
           life: 5000,
         });
       });
