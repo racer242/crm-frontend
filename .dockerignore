@@ -9,5 +9,9 @@ README.md
 CHANGELOG.md
 screenshots
 scripts
+.legacy
+.skip-read
+config
+messages
 *.md
 *.log

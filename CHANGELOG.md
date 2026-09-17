@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Надёжность удалённого деплоя** (`deploy-remote.sh`, `deploy-remote-configure.sh`, `.dockerignore`):
+  - в обоих скриптах `docker compose up -d` заменён на `up -d --force-recreate`: без флага compose не пересоздаёт контейнер при изменении только смонтированных файлов (`config/`, `messages/`), и приложение продолжало работать со старой конфигурацией;
+  - перед копированием оба скрипта удаляют на сервере `$REMOTE_DIR/config` и `$REMOTE_DIR/messages` — устаревшие файлы (переименованные/удалённые страницы и адаптеры) больше не накапливаются на сервере;
+  - `.dockerignore` дополнен: `.legacy`, `.skip-read`, `config`, `messages` исключены из build context (в образе не нужны — монтируются с хоста / служебные папки);
+  - деплой-скрипты перенесены из `deploy/CentOS7/` в корень репозитория (`deploy-remote.sh`, `deploy-remote-configure.sh`), nginx-конфиг и старые версии скриптов архивированы в `.skip-read/deploy/`; пути в README обновлены.
+
 ### Added
 
 - **Предзаполнение диапазона дат на страницах статистики датами акции** (`config/pages/promo-instance/stats.json`, `stats-report.json`): новый маршрут `GET ops/settings` → `GET /api/v1/crm/settings?group=campaign` (instance-канал, §3.6.1 API) + feed-адаптер `settings.campaign.response` (разворачивает конверт, `campaign_start_date`/`campaign_end_date` → `{startDate, endDate}`, `null` → пустая строка). Оба фида пишут в `state.params` → Calendar'ы «Начало»/«Конец» открываются с датами акции; на `stats.json` дополнительно кэш в `state.campaign`.

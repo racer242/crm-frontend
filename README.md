@@ -385,15 +385,15 @@ docker compose down           # Остановить
 - **Публичный URL:** `https://dev.ssd26.srv08.ru:3003`
 - **Внутренний порт контейнера:** 3000
 - **Внутренний порт Docker (localhost):** 3030 (только для nginx)
-- **nginx config:** `deploy/CentOS7/nginx-crm.conf`
-- **deploy script:** `deploy/CentOS7/deploy-remote.sh`
-- **reconfigure script (update config only):** `deploy/CentOS7/deploy-remote-configure.sh`
+- **nginx config:** `.skip-read/deploy/CentOS7/nginx-crm.conf` (одноразовая настройка, архивирована)
+- **deploy script:** `deploy-remote.sh` (в корне репозитория)
+- **reconfigure script (update config only):** `deploy-remote-configure.sh` (в корне репозитория)
 
 **Настройка nginx на сервере (выполняется один раз):**
 
 ```bash
-# 1. Копируем и активируем конфигурацию Nginx
-sudo cp deploy/CentOS7/nginx-crm.conf /etc/nginx/bx/site_avaliable/
+# 1. Копируем и активируем конфигурацию Nginx (файл в архиве .skip-read/deploy/CentOS7/)
+sudo cp .skip-read/deploy/CentOS7/nginx-crm.conf /etc/nginx/bx/site_avaliable/
 sudo ln -s /etc/nginx/bx/site_avaliable/nginx-crm.conf /etc/nginx/bx/site_enabled/nginx-crm.conf
 
 # 2. Проверяем синтаксис и перезапускаем Nginx
@@ -423,6 +423,15 @@ sudo firewall-cmd --reload
 ```bash
 docker compose restart
 ```
+
+**Удалённый деплой (скрипты в корне репозитория):**
+
+- `deploy-remote.sh` — сборка образа локально, отправка на сервер (образ + compose + `.env.production` + `config/` + `messages/`), `docker load` и `docker compose up -d --force-recreate`.
+- `deploy-remote-configure.sh` — только конфигурация (compose, `.env.production`, `config/`, `messages/`) и `docker compose up -d --force-recreate`.
+
+Оба скрипта перед копированием **удаляют на сервере** `config/` и `messages/` — устаревшие файлы (переименованные/удалённые страницы, адаптеры) не накапливаются. `--force-recreate` обязателен: `up -d` без него не пересоздаёт контейнер при изменении только смонтированных файлов, и приложение продолжало бы работать со старым конфигом.
+
+Файлы `.legacy`, `.skip-read`, `config`, `messages` исключены из docker build context (`.dockerignore`) — в образ они не нужны (монтируются с хоста / служебные).
 
 # Конфигурация
 
