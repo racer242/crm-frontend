@@ -458,6 +458,66 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "photosTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.receiptData.photos",
+                "columns": [
+                  {
+                    "field": "n",
+                    "header": "№",
+                    "width": "4rem"
+                  }
+                ],
+                "customColumns": [
+                  {
+                    "field": "download",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-download",
+                          "label": "Скачать",
+                          "size": "small",
+                          "severity": "secondary",
+                          "outlined": true
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "downloadFile",
+                                "params": {
+                                  "url": "{#row.url}",
+                                  "onError": [
+                                    {
+                                      "type": "showToast",
+                                      "params": {
+                                        "severity": "error",
+                                        "summary": "Ошибка",
+                                        "message": "Не удалось скачать фото чека"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "paginator": false,
+                "size": "small",
+                "emptyMessage": "Фото отсутствуют"
+              },
+              "className": "w-full"
             }
           ]
         },
@@ -606,89 +666,40 @@
                               }
                             ]
                           }
+                        },
+                        {
+                          "id": "btnApply",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Применить",
+                            "icon": "pi pi-check",
+                            "severity": "success",
+                            "disabled": "@state.saving",
+                            "outlined": true
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                "saveReceipt",
+                                {
+                                  "type": "showToast",
+                                  "params": {
+                                    "severity": "success",
+                                    "summary": "Успешно",
+                                    "message": "Данные чека сохранены",
+                                    "condition": "{$state.sentSuccessfully}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
                   }
                 ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "photosSection",
-      "type": "section",
-      "className": "mb-5",
-      "blocks": [
-        {
-          "id": "photosBlock",
-          "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Фото чека"
-            }
-          },
-          "components": [
-            {
-              "id": "photosTable",
-              "type": "component",
-              "componentType": "DataTable",
-              "props": {
-                "value": "@state.receiptData.photos",
-                "columns": [
-                  {
-                    "field": "n",
-                    "header": "№",
-                    "width": "4rem"
-                  }
-                ],
-                "customColumns": [
-                  {
-                    "field": "download",
-                    "order": -1,
-                    "body": [
-                      {
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-download",
-                          "label": "Скачать",
-                          "size": "small",
-                          "severity": "secondary",
-                          "outlined": true
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "downloadFile",
-                                "params": {
-                                  "url": "{#row.url}",
-                                  "onError": [
-                                    {
-                                      "type": "showToast",
-                                      "params": {
-                                        "severity": "error",
-                                        "summary": "Ошибка",
-                                        "message": "Не удалось скачать фото чека"
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "paginator": false,
-                "size": "small",
-                "emptyMessage": "Фото отсутствуют"
               }
             }
           ]
@@ -751,53 +762,6 @@
           },
           "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
-            {
-              "id": "btnSave",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Сохранить",
-                "icon": "pi pi-check",
-                "severity": "success",
-                "disabled": "@state.saving"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    "saveReceipt",
-                    {
-                      "type": "showToast",
-                      "params": {
-                        "severity": "success",
-                        "summary": "Успешно",
-                        "message": "Данные чека сохранены",
-                        "condition": "{$state.sentSuccessfully}"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "btnRevert",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "label": "Отменить изменения",
-                "icon": "pi pi-times",
-                "severity": "secondary",
-                "outlined": true
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    "reloadReceipt"
-                  ]
-                }
-              ]
-            },
             {
               "id": "btnDelete",
               "type": "component",
