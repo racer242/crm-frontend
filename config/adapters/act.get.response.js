@@ -39,8 +39,8 @@ function transform(response) {
     // Путь к файлу акта: сырой путь из API + переписанный на файловый прокси
     file_url_raw: data.file_url || "",
     file_url: proxyFileUrl(data.file_url),
-    created_at: data.created_at ? convertDateValue(data.created_at) : "",
-    updated_at: data.updated_at ? convertDateValue(data.updated_at) : "",
+    created_at: data.created_at || "",
+    updated_at: data.updated_at || "",
   };
 }
 

@@ -22,7 +22,7 @@ function transform(response) {
       .join("")
       .toUpperCase() || "—";
 
-  let created_at = data.created_at ? convertDateValue(data.created_at) : "";
+  let created_at = data.created_at || "";
   let city =
     (data.city || "") + (data.city_id ? " (" + data.city_id + ")" : "");
 

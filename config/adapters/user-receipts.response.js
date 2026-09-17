@@ -40,9 +40,6 @@ function transform(source) {
           ? String(receipt.promo_products)
           : "—",
       fns_status_label: receipt.fns_status || "—",
-      registered_at_formatted: receipt.registered_at
-        ? convertDateValue(receipt.registered_at)
-        : "",
     };
   });
 
@@ -53,7 +50,7 @@ function transform(source) {
     { field: "total_products_label", header: "Продуктов", width: "8rem" },
     { field: "promo_products_label", header: "Акционных", width: "8rem" },
     {
-      field: "registered_at_formatted",
+      field: "registered_at",
       header: "Зарегистрирован",
       width: "12rem",
     },

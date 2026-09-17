@@ -29,8 +29,8 @@ function transform(source) {
       id: act.act_id || "",
       status_label: statusLabels[statusKey] || act.status || "",
       status_severity: statusSeverities[statusKey] || "secondary",
-      created_at: act.created_at ? convertDateValue(act.created_at) : "",
-      updated_at: act.updated_at ? convertDateValue(act.updated_at) : "",
+      created_at: act.created_at || "",
+      updated_at: act.updated_at || "",
     };
   });
 

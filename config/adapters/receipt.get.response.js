@@ -58,11 +58,7 @@ function transform(response) {
     sum: data.sum !== undefined && data.sum !== null ? data.sum : "",
     sum_label: formatSum(data.sum),
     date: data.date || "",
-    date_formatted: data.date ? convertDateValue(data.date) : "",
     registered_at: data.registered_at || "",
-    registered_at_formatted: data.registered_at
-      ? convertDateValue(data.registered_at)
-      : "",
     photos,
     photos_count: photos.length,
     photos_label: photos.length ? `Фото чека (${photos.length})` : "—",

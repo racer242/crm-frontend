@@ -13,9 +13,9 @@ function transform(source) {
   }));
 
   // 2. Преобразуем строки: из { values: {...} } в плоские объекты
-  //    Поля c type: 'datetime' в колонках автоматически преобразуются в DD.MM.YYYY HH:mm
+  //    Даты остаются сырыми ISO — форматирование выполняется на клиенте
   const value = (source.rows || []).map((row) => ({
-    ...convertDateColumns(row.values, source.columns),
+    ...(row.values || {}),
     // Опционально: сохраняем ID строки, если он есть и нужен
     ...(row.id && { _rowId: row.id }),
     // Добавляем кастомные поля для иконки is_promo (Prime Icons + severity)

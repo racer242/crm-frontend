@@ -13,8 +13,8 @@ function transform(source) {
           .join(" ")
       : "—";
 
-    // Форматирование даты выигрыша через _shared.js функцию
-    let created_at = user.created_at ? convertDateValue(user.created_at) : "";
+    // Дата остаётся сырой ISO — форматирование выполняется на клиенте
+    let created_at = user.created_at || "";
 
     return {
       ...user,

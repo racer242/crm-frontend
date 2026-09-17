@@ -62,7 +62,6 @@ function transform(response) {
     passport_issued_by: extended.passport_issued_by || "",
     // Сырое значение — его же отправляет PATCH (форма редактирования)
     passport_issue_date: extended.passport_issue_date || "",
-    passport_issue_date_formatted: formatDateOnly(extended.passport_issue_date),
     passport_registration_address: extended.passport_address || "",
 
     // ИНН / СНИЛС
@@ -78,14 +77,3 @@ function transform(response) {
   };
 }
 
-/**
- * Форматирует дату в формате ДД.ММ.ГГГГ (без времени).
- * @param {string} value - Дата (ISO-строка вида YYYY-MM-DD[THH:mm:ss])
- * @returns {string} Отформатированная дата или исходное значение
- */
-function formatDateOnly(value) {
-  if (!value) return "";
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value));
-  if (!match) return value;
-  return match[3] + "." + match[2] + "." + match[1];
-}

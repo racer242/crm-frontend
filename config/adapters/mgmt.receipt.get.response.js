@@ -6,14 +6,6 @@
 function transform(data) {
   if (!data || typeof data !== "object") return data;
 
-  // Форматирование дат через _shared.js
-  const registrationDateFormatted = data.registration_date
-    ? convertDateValue(data.registration_date)
-    : "";
-  const purchaseDateFormatted = data.purchase_date
-    ? convertDateValue(data.purchase_date)
-    : "";
-
   // Розничная сеть из списка
   const retailChains = data.retail_chains || [];
   const retailChainName =
@@ -49,8 +41,6 @@ function transform(data) {
     ...data,
     user_name,
     user_email,
-    registrationDateFormatted,
-    purchaseDateFormatted,
     retail_chain_name: retailChainName,
     moderationStatusLabel,
     moderationStatusSeverity,

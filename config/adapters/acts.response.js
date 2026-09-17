@@ -29,9 +29,6 @@ function transform(source) {
       id: act.act_id || "",
       status_label: statusLabels[statusKey] || act.status || "",
       status_severity: statusSeverities[statusKey] || "secondary",
-      created_at_formatted: act.created_at
-        ? convertDateValue(act.created_at)
-        : "",
     };
   });
 
@@ -40,7 +37,7 @@ function transform(source) {
     { field: "user_id", header: "Участник" },
     { field: "prize_id", header: "Приз" },
     { field: "status_label", header: "Статус", width: "10rem" },
-    { field: "created_at_formatted", header: "Дата создания", width: "12rem" },
+    { field: "created_at", header: "Дата создания", width: "12rem" },
   ];
 
   return {

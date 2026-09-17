@@ -36,15 +36,12 @@ function transform(source) {
         )}`
       : "",
     mailto_disabled: !message.sender_email,
-    created_at_formatted: message.created_at
-      ? convertDateValue(message.created_at)
-      : "",
     // Сокращённый текст для колонки «Сообщение» (полный текст — в попапе по клику)
     message_short: truncateMessage(message.message),
   }));
 
   const columns = [
-    { field: "created_at_formatted", header: "Дата", width: "12rem" },
+    { field: "created_at", header: "Дата", width: "12rem" },
     { field: "subject", header: "Тема", width: "20rem" },
     { field: "message_short", header: "Сообщение" },
   ];
