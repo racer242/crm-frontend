@@ -52,6 +52,7 @@
     { "$ref": "./pages/promo-instance/tasks.json" },
     { "$ref": "./pages/promo-instance/messages.json" },
     { "$ref": "./pages/promo-instance/stats.json" },
+    { "$ref": "./pages/promo-instance/stats-reports.json" },
     { "$ref": "./pages/promo-instance/stats-report.json" },
     { "$ref": "./pages/crm-management/receipts.json" },
     { "$ref": "./pages/crm-management/receipt.json" },

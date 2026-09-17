@@ -1,0 +1,377 @@
+{
+  "id": "stats-reports",
+  "type": "page",
+  "route": "/ops/stats/reports",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "creating": false,
+    "createResult": null,
+    "search": "",
+    "is_active": "",
+    "activeOptions": [
+      { "label": "Активные", "value": "true" },
+      { "label": "Неактивные", "value": "false" }
+    ],
+    "stats": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 10,
+      "rows": 25,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Отчёты статистики — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/stats/reports",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "search": "{$location.params.search}",
+        "is_active": "{$location.params.is_active}"
+      },
+      "method": "GET",
+      "target": "state.stats"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.is_active}",
+      "target": "state.is_active"
+    }
+  ],
+  "shortcuts": {
+    "requestReports": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/stats/reports",
+              "method": "GET",
+              "target": "state.stats",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.stats.first}",
+                "rows": "{$state.stats.rows}",
+                "search": "{$state.search}",
+                "is_active": "{$state.is_active}"
+              },
+              "format": { "$ref": "../../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.stats.first}",
+                "rows": "{$state.stats.rows}",
+                "search": "{$state.search}",
+                "is_active": "{$state.is_active}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "createReport": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": { "target": "state.creating", "value": true }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/stats/reports",
+              "method": "POST",
+              "target": "state.createResult",
+              "data": {
+                "title": "Новый отчёт",
+                "sql": "",
+                "fields": [],
+                "is_active": false
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.creating", "value": false }
+                },
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/stats/reports",
+                    "method": "GET",
+                    "target": "state.stats",
+                    "data": {
+                      "first": "{$state.stats.first}",
+                      "rows": "{$state.stats.rows}",
+                      "search": "{$state.search}",
+                      "is_active": "{$state.is_active}"
+                    },
+                    "format": {
+                      "$ref": "../../system/list-request-format.json"
+                    }
+                  }
+                },
+                {
+                  "type": "mergeUrlParams",
+                  "params": {
+                    "values": {
+                      "first": "{$state.stats.first}",
+                      "rows": "{$state.stats.rows}",
+                      "search": "{$state.search}",
+                      "is_active": "{$state.is_active}"
+                    }
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": { "target": "state.creating", "value": false }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось создать отчёт"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "reports",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../../menus/stats.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statsHeader",
+      "type": "section",
+      "className": "flex justify-content-between align-items-center",
+      "blocks": [
+        {
+          "id": "statsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "statsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Отчёты статистики",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statsFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "searchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "searchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Поиск по названию...",
+                "throttleDelay": 500,
+                "value": "@state.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.search"
+                      }
+                    },
+                    "requestReports"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "activeFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.activeOptions",
+                "value": "@state.is_active",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.is_active"
+                      }
+                    },
+                    "requestReports"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnCreateReport",
+              "type": "component",
+              "componentType": "Button",
+              "className": "flex-grow-0 min-w-max",
+              "props": {
+                "label": "Создать отчёт",
+                "icon": "pi pi-plus",
+                "severity": "success",
+                "size": "small",
+                "disabled": "@state.creating",
+                "loading": "@state.creating"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": ["createReport"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "statsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "statsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.stats.value",
+                "columns": "@state.stats.columns",
+                "totalRecords": "@state.stats.totalRecords",
+                "rows": "@state.stats.rows",
+                "first": "@state.stats.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "actions",
+                    "order": -1,
+                    "header": "",
+                    "body": [
+                      {
+                        "id": "btnOpenRow",
+                        "componentType": "Button",
+                        "style": { "marginLeft": "auto" },
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": { "label": { "className": "font-normal" } }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/stats/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestReports"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/stats/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

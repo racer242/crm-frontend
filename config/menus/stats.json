@@ -1,0 +1,16 @@
+{
+  "model": [
+    {
+      "id": "run",
+      "label": "Статистика",
+      "icon": "pi pi-chart-line",
+      "route": "/ops/stats"
+    },
+    {
+      "id": "reports",
+      "label": "Управление отчетами",
+      "icon": "pi pi-file-edit",
+      "route": "/ops/stats/reports"
+    }
+  ]
+}

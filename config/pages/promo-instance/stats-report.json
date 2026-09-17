@@ -237,7 +237,7 @@
                       },
                       {
                         "type": "navigate",
-                        "params": { "url": "/ops/stats" }
+                        "params": { "url": "/ops/stats/reports" }
                       }
                     ],
                     "onError": [
@@ -275,7 +275,7 @@
               "props": {
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
-                  { "label": "Статистика", "route": "/ops/stats" },
+                  { "label": "Отчёты статистики", "route": "/ops/stats/reports" },
                   { "label": "@state.reportData.title" }
                 ]
               }
