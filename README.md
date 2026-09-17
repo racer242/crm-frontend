@@ -114,6 +114,8 @@ App (приложение)
 | `{$config.PATH}`               | Конфиг приложения              |   ✅   |   ✅   |
 | `{$location.*}`                | URL, slug, params, routeParams |   ✅   |   ✅   |
 | `{$now.*}`                     | Дата/время                     |   ✅   |   ✅   |
+| `{$todayStart}` / `{$todayEnd}` | Границы текущего дня (ISO)    |   ✅   |   ✅   |
+| `{$currentWeekStart}` / `{$currentWeekEnd}` | Границы текущей недели Пн–Вс (ISO) |   ✅   |   ✅   |
 | `{$math.*}`                    | random, GUID, UUID             |   ✅   |   ✅   |
 | `{$device.*}` / `{$browser.*}` | Платформа, User-Agent          |   ✅   |   ✅   |
 | `{$env.VAR}`                   | Переменные окружения           |   ✅   |   ✅   |

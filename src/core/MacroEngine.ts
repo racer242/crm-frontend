@@ -14,6 +14,12 @@
  */
 
 import { MacroSources } from "@/types";
+import {
+  getCurrentWeekEndISO,
+  getCurrentWeekStartISO,
+  getTodayEndISO,
+  getTodayStartISO,
+} from "@/utils/datetime";
 
 /** Pattern для поиска макросов */
 const MACRO_PATTERN = /\{\$([^}]+)\}/g;
@@ -208,6 +214,19 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
       if (fullPath === "timestamp") return now.getTime();
       return formatDate(now, fullPath);
     }
+
+    // === Date ranges (today / current week), ISO strings ===
+    case "todayStart":
+      return getTodayStartISO();
+
+    case "todayEnd":
+      return getTodayEndISO();
+
+    case "currentWeekStart":
+      return getCurrentWeekStartISO();
+
+    case "currentWeekEnd":
+      return getCurrentWeekEndISO();
 
     // === Session ===
     case "session": {

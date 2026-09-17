@@ -375,5 +375,12 @@
       "request": "stats.export.request"
     },
     "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим); тело — format + replacements (даты подстановки)"
+  },
+  {
+    "path": "ops/settings",
+    "method": "GET",
+    "url": "/api/v1/crm/settings",
+    "channel": "instance",
+    "note": "Настройки инстанса (§3.6.1, только просмотр); параметр group задают вызывающие — например, /api/ops/settings?group=campaign"
   }
 ]

@@ -4,18 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Fixed
-
-- **Подпись POST-запросов: подписывается ровно то тело, которое отправляется** (`src/app/api/[...route]/route.ts`, `src/core/CommandExecutor.ts`). Причина сбоя выгрузки XLSX: клиентский `downloadFile` отправлял JSON **без заголовка `Content-Type`** → роутер пропускал разбор тела (страж по Content-Type) → не вызывался request-адаптер (`stats.export.request` — отсюда даты не в `replacements`), в API пересылался сырой стрим `request.body` (29 байт от браузера), а подпись считалась от пустой строки (`sha256("")`) → отказ API. Исправление по принципу «подписывать ровно ту строку, которая уйдёт в fetch»:
-  - `executeDownloadFile` — при JSON-body на POST/PUT/PATCH ставится `Content-Type: application/json`;
-  - роутер читает тело как **текст независимо от Content-Type** и парсит JSON (не-JSON пересылается «как есть»);
-  - тело сериализуется **один раз** в строку `outgoingBody` до подписи; `fetch` отправляет именно её, и `bodyHash = sha256(outgoingBody ?? "")` считается именно от неё (вторичная сериализация устранена);
-  - стрим `request.body` больше нигде не пересылается — класс ошибок `Response body object should not be disturbed or locked` исключён;
-  - GET/DELETE с пустым набором параметров больше не добавляют хвостовой `?` к URL.
-  Симуляция логики на 6 кейсах (POST+адаптер, POST `query:true`, POST без адаптера, не-JSON, GET без параметров, POST без тела) — `signed == sent` везде. Задокументировано в `docs/api-router-reference.md` (новый раздел 4.1 «Конвейер тела запроса»).
-
 ### Added
 
+- **Предзаполнение диапазона дат на страницах статистики датами акции** (`config/pages/promo-instance/stats.json`, `stats-report.json`): новый маршрут `GET ops/settings` → `GET /api/v1/crm/settings?group=campaign` (instance-канал, §3.6.1 API) + feed-адаптер `settings.campaign.response` (разворачивает конверт, `campaign_start_date`/`campaign_end_date` → `{startDate, endDate}`, `null` → пустая строка). Оба фида пишут в `state.params` → Calendar'ы «Начало»/«Конец» открываются с датами акции; на `stats.json` дополнительно кэш в `state.campaign`.
+- **Быстрые диапазоны в панели «Параметры» страницы «Статистика»** — три кнопки (`quickRangesRow`): «Сроки акции» (`setProperty` из кэша `state.campaign`), «Сегодня» и «Текущая неделя» (новые макросы).
+- **Новые макросы диапазонов дат** (`src/utils/datetime.ts`, `src/core/MacroEngine.ts`): `{$todayStart}` — сегодня 00:00:00.000, `{$todayEnd}` — сегодня 23:59:59.999, `{$currentWeekStart}` — понедельник текущей недели 00:00:00.000, `{$currentWeekEnd}` — воскресенье 23:59:59.999. Вычисляются от локального времени браузера, возвращают ISO-строки (абсолютные мгновения, корректны для любой таймзоны сервера); неделя — с понедельника. Задокументированы в `docs/macros-reference.md` (§5 и таблица поддержки).
 - **Реактивная видимость компонентов (`visible`)** — новый config-level механизм движка: любой компонент поддерживает свойство `visible` как boolean или как binding-строку (например, `"@state.selectedReport.id"`). Строка разрешается через Linkage **с подпиской на изменения state**; falsy-результат → компонент и его дети не рендерятся (`ComponentRenderer` early-return через `useComponentBindings.isVisible`), изменение state автоматически показывает/скрывает без перезагрузки страницы. Применено на странице «Статистика»: панель «Выполнение» (`actionsPanel`) отображается только после выбора отчёта в таблице. Задокументировано в `docs/components-reference.md` (раздел «Видимость компонента»).
 - **Разделение страниц раздела «Статистика»** — страница работы с отчётами и страница управления отчётами разведены, добавлена навигация между ними.
   - `config/pages/promo-instance/stats.json` (новая, маршрут `/ops/stats`, заголовок «Статистика») — рабочий экран: слева поиск + таблица **только активных** отчётов (dataFeed с жёстким `is_active: "true"`; колонка «Название» + стрелка, `marginLeft: auto`); клик по строке/стрелке — шорткат `selectReport`: строка таблицы → `state.selectedReport` (`source: "event.data"`), детали отчёта → `state.selectedDetails` (адаптер отдаёт `_columns`); справа — название выбранного отчёта, панель «Параметры» (Calendar startDate/endDate **в столбик**, showTime/24h) и панель «Выполнение» (кнопки «Запустить» → `runReport`, «Выгрузить XLSX» → `downloadFile` POST export с телом `{startDate, endDate}`); секция «Результат» — таблица с колонками из `@state.selectedDetails._columns`, lazy-пагинация (`runReportPage`), emptyMessage «Выберите отчёт и нажмите „Запустить“».
@@ -38,6 +31,16 @@ All notable changes to this project will be documented in this file.
   - `docs/config-reference.md`, `README.md` — структура папок страниц (promo-instance, crm-management).
 
 - **Карточка и модерация чека в разделе «CRM-управление»** — страницы просмотра и модерации (`receipt.json`, `receipt-edit.json`) зарегистрированы в `config/crm-config.json`; адаптеры `mgmt.receipt.get.response`, `mgmt.receipt-products.get.request`, `mgmt.receipt-products.response` добавлены в `config/system/adapters.json`. Страницам заданы уникальные id (`mgmt-receipt`, `mgmt-receipt-edit`) и маршруты с префиксом раздела: `/mgmt/receipts/[receipt_id]` и `/mgmt/receipts/[receipt_id]/edit` — ранее они дублировали id и маршруты одноимённых страниц промо-инстанса (конфликт роутинга и состояния). Все внутренние переходы (кнопки, крошки, переход после удаления/сохранения) переведены на `/mgmt/receipts/...`.
+
+### Fixed
+
+- **Подпись POST-запросов: подписывается ровно то тело, которое отправляется** (`src/app/api/[...route]/route.ts`, `src/core/CommandExecutor.ts`). Причина сбоя выгрузки XLSX: клиентский `downloadFile` отправлял JSON **без заголовка `Content-Type`** → роутер пропускал разбор тела (страж по Content-Type) → не вызывался request-адаптер (`stats.export.request` — отсюда даты не в `replacements`), в API пересылался сырой стрим `request.body` (29 байт от браузера), а подпись считалась от пустой строки (`sha256("")`) → отказ API. Исправление по принципу «подписывать ровно ту строку, которая уйдёт в fetch»:
+  - `executeDownloadFile` — при JSON-body на POST/PUT/PATCH ставится `Content-Type: application/json`;
+  - роутер читает тело как **текст независимо от Content-Type** и парсит JSON (не-JSON пересылается «как есть»);
+  - тело сериализуется **один раз** в строку `outgoingBody` до подписи; `fetch` отправляет именно её, и `bodyHash = sha256(outgoingBody ?? "")` считается именно от неё (вторичная сериализация устранена);
+  - стрим `request.body` больше нигде не пересылается — класс ошибок `Response body object should not be disturbed or locked` исключён;
+  - GET/DELETE с пустым набором параметров больше не добавляют хвостовой `?` к URL.
+  Симуляция логики на 6 кейсах (POST+адаптер, POST `query:true`, POST без адаптера, не-JSON, GET без параметров, POST без тела) — `signed == sent` везде. Задокументировано в `docs/api-router-reference.md` (новый раздел 4.1 «Конвейер тела запроса»).
 
 ### Changed
 

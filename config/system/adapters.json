@@ -218,5 +218,9 @@
   "stats.export.request": {
     "type": "js",
     "script": "./config/adapters/stats.export.request.js"
+  },
+  "settings.campaign.response": {
+    "type": "js",
+    "script": "./config/adapters/settings.campaign.response.js"
   }
 }

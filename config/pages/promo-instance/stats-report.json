@@ -37,6 +37,12 @@
       "url": "/api/ops/stats/reports/{$location.routeParams.report_id}",
       "method": "GET",
       "target": "state.reportData"
+    },
+    {
+      "url": "/api/ops/settings?group=campaign",
+      "method": "GET",
+      "adapter": "settings.campaign.response",
+      "target": "state.params"
     }
   ],
   "shortcuts": {

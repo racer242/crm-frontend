@@ -27,6 +27,10 @@
       "startDate": "",
       "endDate": ""
     },
+    "campaign": {
+      "startDate": "",
+      "endDate": ""
+    },
     "result": {
       "value": [],
       "totalRecords": 0,
@@ -48,6 +52,18 @@
       },
       "method": "GET",
       "target": "state.reports"
+    },
+    {
+      "url": "/api/ops/settings?group=campaign",
+      "method": "GET",
+      "adapter": "settings.campaign.response",
+      "target": "state.params"
+    },
+    {
+      "url": "/api/ops/settings?group=campaign",
+      "method": "GET",
+      "adapter": "settings.campaign.response",
+      "target": "state.campaign"
     }
   ],
   "dataInit": [
@@ -444,6 +460,115 @@
                                   "type": "setProperty",
                                   "params": {
                                     "source": "event.value",
+                                    "target": "state.params.endDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "quickRangesRow",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex flex-wrap gap-2 mt-1",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "btnCampaignRange",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Сроки акции",
+                            "icon": "pi pi-calendar-plus",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$state.campaign.startDate}",
+                                    "target": "state.params.startDate"
+                                  }
+                                },
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$state.campaign.endDate}",
+                                    "target": "state.params.endDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "btnThisWeek",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Текущая неделя",
+                            "icon": "pi pi-arrows-h",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$currentWeekStart}",
+                                    "target": "state.params.startDate"
+                                  }
+                                },
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$currentWeekEnd}",
+                                    "target": "state.params.endDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "btnToday",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Сегодня",
+                            "icon": "pi pi-clock",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$todayStart}",
+                                    "target": "state.params.startDate"
+                                  }
+                                },
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "{$todayEnd}",
                                     "target": "state.params.endDate"
                                   }
                                 }
