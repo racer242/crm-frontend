@@ -3,10 +3,13 @@
  */
 
 /**
- * Проверка, является ли строка ISO датой (YYYY-MM-DD или YYYY-MM-DDTHH:mm:ss)
+ * Проверка, является ли строка ISO датой:
+ * YYYY-MM-DD | YYYY-MM-DDTHH:mm:ss | с миллисекундами (.SSS) и зоной (Z или ±HH:MM)
  */
 export function isIsoDateLike(str: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?$/.test(str);
+  return /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:?\d{2})?)?$/.test(
+    str,
+  );
 }
 
 /**

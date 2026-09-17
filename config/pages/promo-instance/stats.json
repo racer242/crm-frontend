@@ -495,14 +495,14 @@
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$state.campaign.startDate}",
+                                    "source": "state.campaign.startDate",
                                     "target": "state.params.startDate"
                                   }
                                 },
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$state.campaign.endDate}",
+                                    "source": "state.campaign.endDate",
                                     "target": "state.params.endDate"
                                   }
                                 }
@@ -528,14 +528,14 @@
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$currentWeekStart}",
+                                    "value": "{$currentWeekStart}",
                                     "target": "state.params.startDate"
                                   }
                                 },
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$currentWeekEnd}",
+                                    "value": "{$currentWeekEnd}",
                                     "target": "state.params.endDate"
                                   }
                                 }
@@ -561,14 +561,14 @@
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$todayStart}",
+                                    "value": "{$todayStart}",
                                     "target": "state.params.startDate"
                                   }
                                 },
                                 {
                                   "type": "setProperty",
                                   "params": {
-                                    "source": "{$todayEnd}",
+                                    "value": "{$todayEnd}",
                                     "target": "state.params.endDate"
                                   }
                                 }

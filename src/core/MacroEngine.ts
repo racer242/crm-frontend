@@ -15,10 +15,10 @@
 
 import { MacroSources } from "@/types";
 import {
-  getCurrentWeekEndISO,
-  getCurrentWeekStartISO,
-  getTodayEndISO,
-  getTodayStartISO,
+  getCurrentWeekEnd,
+  getCurrentWeekStart,
+  getTodayEnd,
+  getTodayStart,
 } from "@/utils/datetime";
 
 /** Pattern для поиска макросов */
@@ -215,18 +215,25 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
       return formatDate(now, fullPath);
     }
 
-    // === Date ranges (today / current week), ISO strings ===
+    // === Date ranges (today / current week) ===
+    // Без суффикса или ".iso" — ISO-строка; ".timestamp" — мс; иначе formatDate
+    // (аналогично {$now.FORMAT}, например {$todayStart.dd.MM.yyyy HH:mm:ss})
     case "todayStart":
-      return getTodayStartISO();
-
     case "todayEnd":
-      return getTodayEndISO();
-
     case "currentWeekStart":
-      return getCurrentWeekStartISO();
-
-    case "currentWeekEnd":
-      return getCurrentWeekEndISO();
+    case "currentWeekEnd": {
+      const rangeDate =
+        prefix === "todayStart"
+          ? getTodayStart()
+          : prefix === "todayEnd"
+            ? getTodayEnd()
+            : prefix === "currentWeekStart"
+              ? getCurrentWeekStart()
+              : getCurrentWeekEnd();
+      if (!fullPath || fullPath === "iso") return rangeDate.toISOString();
+      if (fullPath === "timestamp") return rangeDate.getTime();
+      return formatDate(rangeDate, fullPath);
+    }
 
     // === Session ===
     case "session": {
