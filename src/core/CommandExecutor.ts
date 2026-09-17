@@ -413,6 +413,13 @@ export class CommandExecutor {
         if (
           ["POST", "PUT", "PATCH"].includes((method || "GET").toUpperCase())
         ) {
+          // Explicit content-type is required: the API router parses the body
+          // as JSON (falling back to raw forwarding only when parsing fails),
+          // and an explicit header also keeps the request self-describing.
+          fetchOptions.headers = {
+            ...fetchOptions.headers,
+            "Content-Type": "application/json",
+          };
           fetchOptions.body = JSON.stringify(resolvedData);
         } else {
           resolvedUrl = buildUrlWithParams(resolvedUrl, resolvedData);

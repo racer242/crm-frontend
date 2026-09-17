@@ -11,7 +11,9 @@
  */
 function transform(params = {}) {
   const result = { format: "xlsx" };
+  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+  result.format = "xlsx";
   if (params.startDate || params.endDate) {
     result.replacements = {};
     if (params.startDate) {

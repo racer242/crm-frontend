@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Подпись POST-запросов: подписывается ровно то тело, которое отправляется** (`src/app/api/[...route]/route.ts`, `src/core/CommandExecutor.ts`). Причина сбоя выгрузки XLSX: клиентский `downloadFile` отправлял JSON **без заголовка `Content-Type`** → роутер пропускал разбор тела (страж по Content-Type) → не вызывался request-адаптер (`stats.export.request` — отсюда даты не в `replacements`), в API пересылался сырой стрим `request.body` (29 байт от браузера), а подпись считалась от пустой строки (`sha256("")`) → отказ API. Исправление по принципу «подписывать ровно ту строку, которая уйдёт в fetch»:
+  - `executeDownloadFile` — при JSON-body на POST/PUT/PATCH ставится `Content-Type: application/json`;
+  - роутер читает тело как **текст независимо от Content-Type** и парсит JSON (не-JSON пересылается «как есть»);
+  - тело сериализуется **один раз** в строку `outgoingBody` до подписи; `fetch` отправляет именно её, и `bodyHash = sha256(outgoingBody ?? "")` считается именно от неё (вторичная сериализация устранена);
+  - стрим `request.body` больше нигде не пересылается — класс ошибок `Response body object should not be disturbed or locked` исключён;
+  - GET/DELETE с пустым набором параметров больше не добавляют хвостовой `?` к URL.
+  Симуляция логики на 6 кейсах (POST+адаптер, POST `query:true`, POST без адаптера, не-JSON, GET без параметров, POST без тела) — `signed == sent` везде. Задокументировано в `docs/api-router-reference.md` (новый раздел 4.1 «Конвейер тела запроса»).
+
 ### Added
 
 - **Реактивная видимость компонентов (`visible`)** — новый config-level механизм движка: любой компонент поддерживает свойство `visible` как boolean или как binding-строку (например, `"@state.selectedReport.id"`). Строка разрешается через Linkage **с подпиской на изменения state**; falsy-результат → компонент и его дети не рендерятся (`ComponentRenderer` early-return через `useComponentBindings.isVisible`), изменение state автоматически показывает/скрывает без перезагрузки страницы. Применено на странице «Статистика»: панель «Выполнение» (`actionsPanel`) отображается только после выбора отчёта в таблице. Задокументировано в `docs/components-reference.md` (раздел «Видимость компонента»).

@@ -114,6 +114,21 @@ Authorization: Bearer token123
 - `Content-Type: application/json` → добавляется
 - `Accept: application/json` → добавляется
 
+### 4.1. Конвейер тела запроса (body pipeline)
+
+Тело обрабатывается в одну строку `outgoingBody`, которая используется **и для подписи, и для `fetch`** — подписывается ровно то, что отправляется:
+
+1. **Чтение**: для POST/PUT/PATCH тело читается как текст (`request.text()`) **независимо от `Content-Type`**, затем парсится как JSON (при ошибке парсинга текст пересылается дальше «как есть»). Клиентский `downloadFile` отправляет JSON с явным `Content-Type: application/json`.
+2. **Адаптация**: если у маршрута есть `adapter.request` — к разобранному объекту применяется адаптер.
+3. **Сериализация**:
+   - POST/PUT/PATCH + адаптированное тело → `outgoingBody = JSON.stringify(adaptedBody)`;
+   - POST/PUT/PATCH + `query: true` → адаптированное тело уходит в query-строку URL, `outgoingBody = undefined` (тело пустое, подписывается хэш пустой строки);
+   - POST/PUT/PATCH без результата адаптера (нет тела или не-JSON) → пересылается исходный текст;
+   - GET/DELETE → параметры из query адаптируются и добавляются обратно в query-строку URL (пустой набор не добавляет ничего, включая хвостовой `?`).
+4. **Подпись** (instance-канал): `bodyHash = sha256(outgoingBody ?? "")` — тело не сериализуется второй раз.
+
+Сырой стрим `request.body` никуда не пересылается — класс ошибок `Response body object should not be disturbed or locked` исключён.
+
 ### 5. Запрос к внешнему API
 
 ```

@@ -236,13 +236,6 @@ function buildFetchOptions(
   return {
     method: request.method as DataFeedMethod,
     headers,
-    body: ["POST", "PUT", "PATCH"].includes(request.method)
-      ? request.body
-      : undefined,
-    // @ts-expect-error - duplex is needed for streaming responses
-    duplex: ["POST", "PUT", "PATCH"].includes(request.method)
-      ? "half"
-      : undefined,
   };
 }
 
@@ -287,14 +280,18 @@ async function handleRequest(
 
     // Read request body — from JSON body for POST/PUT/PATCH, from URL params for others
     let requestBody: any;
+    let rawBodyText: string | undefined;
     if (["POST", "PUT", "PATCH"].includes(request.method)) {
       try {
-        const contentType = request.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          requestBody = await request.json();
+        // Read the body as text regardless of Content-Type: some clients
+        // (e.g. downloadFile) send JSON without an explicit content-type
+        // header, and the browser then defaults to text/plain.
+        rawBodyText = await request.text();
+        if (rawBodyText && rawBodyText.trim()) {
+          requestBody = JSON.parse(rawBodyText);
         }
       } catch {
-        // Body not parseable, continue without it
+        // Body is not valid JSON — rawBodyText is kept for raw forwarding
       }
     } else {
       const searchParams = request.nextUrl.searchParams;
@@ -428,25 +425,34 @@ async function handleRequest(
     // Build the fetch options with refreshed token if available
     const fetchOptions = buildFetchOptions(request, refreshedAccessToken);
 
-    if (adaptedBody) {
-      if (["POST", "PUT", "PATCH"].includes(request.method)) {
+    // --- Compute the outgoing body BEFORE signing ---
+    // The HMAC signature must cover exactly the string that is sent to the
+    // external API, so the body is serialized ONCE here and the resulting
+    // string is reused for both the signature body hash and the fetch() call.
+    const isBodyMethod = ["POST", "PUT", "PATCH"].includes(request.method);
+    let outgoingBody: string | undefined;
+    if (isBodyMethod) {
+      if (adaptedBody !== undefined && adaptedBody !== null) {
         if (routeConfig.query === true) {
           // Route opted in: adapted body goes to the URL query string instead
-          // of the JSON body (e.g. stats execute takes page/limit as query)
+          // of the JSON body (e.g. stats execute takes page/limit as query).
           resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
-          // The incoming request body stream has already been consumed to
-          // compute the adapted body, and the parameters themselves travel
-          // in the query string. Forwarding the consumed stream to fetch()
-          // throws "Response body object should not be disturbed or locked".
-          fetchOptions.body = undefined;
-          delete (fetchOptions as { duplex?: unknown }).duplex;
+          // Parameters travel in the query string, so the request body — and
+          // therefore the signed body hash — stays empty.
+          outgoingBody = undefined;
         } else {
-          fetchOptions.body = JSON.stringify(adaptedBody);
+          outgoingBody = JSON.stringify(adaptedBody);
         }
-      } else {
-        resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
+      } else if (rawBodyText && rawBodyText.trim()) {
+        // No adapter produced a body — forward the raw request body as-is
+        // (also covers non-JSON bodies that failed to parse).
+        outgoingBody = rawBodyText;
       }
+    } else if (adaptedBody && Object.keys(adaptedBody).length > 0) {
+      // GET/DELETE: adapted params are appended to the URL query string.
+      resolvedUrl = buildUrlWithParams(resolvedUrl, adaptedBody);
     }
+    fetchOptions.body = outgoingBody;
 
     // Add HMAC signature headers for instance channel
     if (channel === "instance") {
@@ -458,15 +464,11 @@ async function handleRequest(
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = crypto.randomBytes(16).toString("hex");
 
-        // Calculate body hash. For GET/DELETE it's hash of empty string.
-        // Same for query:true routes — the adapted body goes to the URL, body stays empty.
+        // Calculate body hash over EXACTLY the outgoing body string
+        // (empty string when the request carries no body).
         let bodyToHash = "";
-        if (
-          adaptedBody &&
-          ["POST", "PUT", "PATCH"].includes(request.method) &&
-          routeConfig.query !== true
-        ) {
-          bodyToHash = JSON.stringify(adaptedBody);
+        if (isBodyMethod && outgoingBody !== undefined) {
+          bodyToHash = outgoingBody;
         }
         const bodyHash = crypto
           .createHash("sha256")
@@ -530,8 +532,7 @@ async function handleRequest(
       "------ Headers --",
       JSON.stringify(fetchOptions.headers, null, 2),
     );
-    console.log("------ Body --");
-    console.dir(adaptedBody, { depth: null, colors: true });
+    console.log("------ Body --", outgoingBody ?? "(empty)");
 
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
