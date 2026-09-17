@@ -4,7 +4,7 @@
     "name": "DEV Монарх 2026",
     "base_api_url": "https://dev.ssd26.srv08.ru/api/v2/7384",
     "crm_api_url": "https://dev.mn26.srv08.ru",
-    "crm_key_id": "dobrycola-dev",
+    "crm_key_id": "crm-next",
     "crm_signature": "7acc1674eda5ca3923f62295b8b3bb004c186ccd0ba2cce391d008b20d9d6219"
   },
   {
@@ -12,7 +12,7 @@
     "name": "PROD Монарх 2026",
     "base_api_url": "https://dev.ssd26.srv08.ru/api/v2/7384",
     "crm_api_url": "https://jdecoffee-bts.ru",
-    "crm_key_id": "crm-next",
-    "crm_signature": "7acc1674eda5ca3923f62295b8b3bb004c186ccd0ba2cce391d008b20d9d6219"
+    "crm_key_id": "crm-prod",
+    "crm_signature": "d3c3bc1f0e6947d6597eb3a6bd63690e64d2a3ccae94f32158fb96b9a348402e"
   }
 ]

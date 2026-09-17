@@ -3,7 +3,9 @@
   "type": "app",
   "title": "CRM Platform",
   "state": {},
-  "navbar": { "$ref": "./menus/navbar.json" },
+  "navbar": {
+    "$ref": "./menus/navbar.json"
+  },
   "userMenu": {
     "loginLabel": "Войти",
     "items": [
@@ -23,42 +25,109 @@
     ]
   },
   "pages": [
-    { "$ref": "./pages/promo-instance/profile.json" },
-    { "$ref": "./pages/promo-instance/users.json" },
-    { "$ref": "./pages/promo-instance/user.json" },
-    { "$ref": "./pages/promo-instance/user-edit.json" },
-    { "$ref": "./pages/promo-instance/user-docs.json" },
-    { "$ref": "./pages/promo-instance/user-docs-edit.json" },
-    { "$ref": "./pages/promo-instance/user-acts.json" },
-    { "$ref": "./pages/promo-instance/user-act.json" },
-    { "$ref": "./pages/promo-instance/user-act-add.json" },
-    { "$ref": "./pages/promo-instance/user-act-edit.json" },
-    { "$ref": "./pages/promo-instance/user-prizes.json" },
-    { "$ref": "./pages/promo-instance/user-prize.json" },
-    { "$ref": "./pages/promo-instance/user-receipts.json" },
-    { "$ref": "./pages/promo-instance/user-receipt.json" },
-    { "$ref": "./pages/promo-instance/user-receipt-edit.json" },
-    { "$ref": "./pages/promo-instance/user-products.json" },
-    { "$ref": "./pages/promo-instance/user-messages.json" },
-    { "$ref": "./pages/promo-instance/receipts.json" },
-    { "$ref": "./pages/promo-instance/receipt.json" },
-    { "$ref": "./pages/promo-instance/receipt-edit.json" },
-    { "$ref": "./pages/promo-instance/prizes.json" },
-    { "$ref": "./pages/promo-instance/prize.json" },
-    { "$ref": "./pages/promo-instance/acts.json" },
-    { "$ref": "./pages/promo-instance/act.json" },
-    { "$ref": "./pages/promo-instance/act-add.json" },
-    { "$ref": "./pages/promo-instance/act-edit.json" },
-    { "$ref": "./pages/promo-instance/tasks.json" },
-    { "$ref": "./pages/promo-instance/messages.json" },
-    { "$ref": "./pages/promo-instance/stats.json" },
-    { "$ref": "./pages/promo-instance/stats-reports.json" },
-    { "$ref": "./pages/promo-instance/stats-report.json" },
-    { "$ref": "./pages/crm-management/receipts.json" },
-    { "$ref": "./pages/crm-management/receipt.json" },
-    { "$ref": "./pages/crm-management/receipt-edit.json" }
+    {
+      "$ref": "./pages/promo-instance/profile.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/users.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-edit.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-docs.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-docs-edit.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-acts.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-act.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-act-add.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-act-edit.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-prizes.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-prize.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-receipts.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-receipt.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-receipt-edit.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-products.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/user-messages.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/receipts.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/receipt.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/prizes.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/prize.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/acts.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/act.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/act-add.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/act-edit.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/tasks.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/messages.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/stats.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/stats-reports.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/stats-report.json"
+    },
+    {
+      "$ref": "./pages/crm-management/receipts.json"
+    },
+    {
+      "$ref": "./pages/crm-management/receipt.json"
+    },
+    {
+      "$ref": "./pages/crm-management/receipt-edit.json"
+    }
   ],
-  "adapters": { "$ref": "./system/adapters.json" },
+  "adapters": {
+    "$ref": "./system/adapters.json"
+  },
   "config": {
     "name": "CRM Platform",
     "version": "1.0.0",
@@ -73,6 +142,10 @@
       "twoFactorAuth": false
     }
   },
-  "camps": { "$ref": "./system/camps.json" },
-  "apiRoutes": { "$ref": "./system/api-routes.json" }
+  "camps": {
+    "$ref": "./system/camps.json"
+  },
+  "apiRoutes": {
+    "$ref": "./system/api-routes.json"
+  }
 }

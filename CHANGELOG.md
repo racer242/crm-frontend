@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Модерация чека перенесена на карточку чека** (`config/pages/promo-instance/receipt.json`): блок «Модерация» (Dropdown статуса `@state.receiptStatuses` + причина отказа) и кнопки «Сохранить»/«Отменить изменения»/«Удалить» переехали со страницы редактирования; правая колонка карточки — вертикальный `LayoutGroup` из панелей «Участник» и «Модерация»; фото чека — таблица с кнопкой «Скачать» (как в «Личных документах» участника); страница `receipt-edit.json` (`/ops/receipts/[receipt_id]/edit`) удалена из репозитория и `config/crm-config.json` (PATCH/DELETE маршруты `ops/receipts/[receipt_id]` сохранены и используются карточкой).
+
 - **Надёжность удалённого деплоя** (`deploy-remote.sh`, `deploy-remote-configure.sh`, `.dockerignore`):
   - в обоих скриптах `docker compose up -d` заменён на `up -d --force-recreate`: без флага compose не пересоздаёт контейнер при изменении только смонтированных файлов (`config/`, `messages/`), и приложение продолжало работать со старой конфигурацией;
   - перед копированием оба скрипта удаляют на сервере `$REMOTE_DIR/config` и `$REMOTE_DIR/messages` — устаревшие файлы (переименованные/удалённые страницы и адаптеры) больше не накапливаются на сервере;
