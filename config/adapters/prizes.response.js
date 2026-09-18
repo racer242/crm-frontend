@@ -35,7 +35,7 @@ function transform(source) {
   });
 
   const columns = [
-    { field: "id", header: "ID", width: "12rem" },
+    { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
     { field: "title", header: "Название" },
     { field: "price", header: "Стоимость", width: "8rem" },
     { field: "status_label", header: "Статус", width: "10rem" },

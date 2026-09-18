@@ -8,6 +8,7 @@ import { ComponentRenderer } from "../ComponentRenderer";
 import { useTranslations } from "next-intl";
 import { resolveRowBindings } from "../utils/resolveRowBindings";
 import { DateCell } from "./DateCell";
+import { formatUuid } from "../../utils/uuid";
 
 type CustomColumnDefinition = {
   field: string;
@@ -212,18 +213,22 @@ export function renderDataTable({
               const isDate =
                 col.dataType === "date" || rowData?.dataType === "date";
               const raw = rowData?.[col.field];
-              return isDate ? (
-                <DateCell
-                  value={raw}
-                  pattern={
-                    (col.dateFormat as string) ||
-                    (rowData?.dateFormat as string) ||
-                    undefined
-                  }
-                />
-              ) : (
-                (raw as React.ReactNode)
-              );
+              if (isDate) {
+                return (
+                  <DateCell
+                    value={raw}
+                    pattern={
+                      (col.dateFormat as string) ||
+                      (rowData?.dateFormat as string) ||
+                      undefined
+                    }
+                  />
+                );
+              }
+              if (col.dataType === "uuid") {
+                return formatUuid(raw);
+              }
+              return raw as React.ReactNode;
             }}
           />
         );

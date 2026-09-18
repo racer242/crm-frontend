@@ -44,7 +44,7 @@ function transform(source) {
   });
 
   const columns = [
-    { field: "id", header: "ID", width: "12rem" },
+    { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
     { field: "status_label", header: "Статус", width: "10rem" },
     { field: "fns_status_label", header: "Статус ФНС", width: "10rem" },
     { field: "total_products_label", header: "Продуктов", width: "8rem" },

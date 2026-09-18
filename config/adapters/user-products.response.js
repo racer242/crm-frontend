@@ -12,7 +12,7 @@ function transform(source) {
   }));
 
   const columns = [
-    { field: "id", header: "ID", width: "12rem" },
+    { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
     { field: "product_name", header: "Название" },
     { field: "total_quantity", header: "Количество", width: "10rem" },
     { field: "total_amount", header: "Сумма", width: "10rem" },

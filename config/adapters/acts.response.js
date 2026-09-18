@@ -33,9 +33,9 @@ function transform(source) {
   });
 
   const columns = [
-    { field: "id", header: "ID", width: "12rem" },
-    { field: "user_id", header: "Участник" },
-    { field: "prize_id", header: "Приз" },
+    { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
+    { field: "user_id", header: "Участник", dataType: "uuid" },
+    { field: "prize_id", header: "Приз", dataType: "uuid" },
     { field: "status_label", header: "Статус", width: "10rem" },
     { field: "created_at", header: "Дата создания", width: "12rem", dataType: "date" },
   ];
