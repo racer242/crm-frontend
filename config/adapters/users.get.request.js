@@ -34,5 +34,10 @@ function transform(params = {}) {
     result.status = base.status;
   }
 
+  // Пробрасываем фильтр по участнику (общий список чеков 2.11: user_id+status)
+  if (base.user_id) {
+    result.user_id = base.user_id;
+  }
+
   return result;
 }

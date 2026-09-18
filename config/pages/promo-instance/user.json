@@ -22,15 +22,17 @@
       "status_label": "",
       "status_severity": ""
     },
-    "productData": {
-      "receipts": 0,
-      "products": 0
+    "receiptsStats": {
+      "totalRecords": 0
     },
-    "achevementsData": {
-      "prizes": 0
+    "productsStats": {
+      "totalRecords": 0
     },
-    "feedbackData": {
-      "messages": 0
+    "messagesStats": {
+      "totalRecords": 0
+    },
+    "prizesStats": {
+      "totalRecords": 0
     }
   },
   "meta": {
@@ -41,6 +43,26 @@
       "url": "/api/ops/users/{$location.routeParams.user_id}",
       "method": "GET",
       "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/receipts?user_id={$location.routeParams.user_id}&status=ACCEPTED&rows=1",
+      "method": "GET",
+      "target": "state.receiptsStats"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/products?rows=1",
+      "method": "GET",
+      "target": "state.productsStats"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/messages?rows=1",
+      "method": "GET",
+      "target": "state.messagesStats"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/prizes?rows=1",
+      "method": "GET",
+      "target": "state.prizesStats"
     }
   ],
   "sections": [
@@ -59,10 +81,18 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
-                  { "label": "@state.userData.full_name" }
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
+                  {
+                    "label": "@state.userData.full_name"
+                  }
                 ]
               }
             }
@@ -85,7 +115,11 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "profile",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/user.json"
               }
             }
@@ -103,7 +137,11 @@
           "type": "block",
           "className": "mb-5",
           "grid": {
-            "cols": ["col-6 lg:col-4", "col-6 lg:col-4", "col-12 lg:col-4"],
+            "cols": [
+              "col-6 lg:col-4",
+              "col-6 lg:col-4",
+              "col-12 lg:col-4"
+            ],
             "padding": "p-2"
           },
           "components": [
@@ -115,7 +153,7 @@
               "props": {
                 "title": "Чеки",
                 "subTitle": "проверены",
-                "value": "@state.productData.receipts",
+                "value": "@state.receiptsStats.totalRecords",
                 "icon": "pi pi-receipt"
               }
             },
@@ -127,7 +165,7 @@
               "props": {
                 "title": "Продукты",
                 "subTitle": "акционные",
-                "value": "@state.productData.products",
+                "value": "@state.productsStats.totalRecords",
                 "icon": "pi pi-shopping-cart"
               },
               "state": {}
@@ -140,7 +178,7 @@
               "props": {
                 "title": "Сообщения",
                 "subTitle": "",
-                "value": "@state.feedbackData.messages",
+                "value": "@state.messagesStats.totalRecords",
                 "icon": "pi pi-envelope"
               },
               "state": {}
@@ -154,7 +192,10 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "cols": [
+          "col-12 lg:col-6",
+          "col-12 lg:col-6"
+        ],
         "padding": "p-2"
       },
       "blocks": [
@@ -232,7 +273,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.userData.email"
                     },
@@ -287,7 +330,6 @@
                 ]
               }
             },
-
             {
               "id": "userDivider3",
               "type": "component",
@@ -363,7 +405,10 @@
               "className": "mb-3",
               "props": {
                 "grid": {
-                  "cols": ["col-6", "col-6"],
+                  "cols": [
+                    "col-6",
+                    "col-6"
+                  ],
                   "padding": "p-2"
                 },
                 "components": [
@@ -400,7 +445,7 @@
                       "valueClassName": "text-4xl font-bold mt-1",
                       "iconClassName": "text-2xl text-primary",
                       "title": "Призы",
-                      "value": "@state.achevementsData.prizes",
+                      "value": "@state.prizesStats.totalRecords",
                       "icon": "pi pi-gift"
                     },
                     "state": {}
@@ -416,7 +461,10 @@
               "props": {
                 "showHeaders": false,
                 "value": [
-                  { "label": "ID", "value": "@state.userData.id" },
+                  {
+                    "label": "ID",
+                    "value": "@state.userData.id"
+                  },
                   {
                     "label": "Код",
                     "value": "@state.userData.participant_code"
@@ -435,7 +483,14 @@
                     "value": "@state.userData.mailing"
                   }
                 ],
-                "columns": [{ "field": "label" }, { "field": "value" }]
+                "columns": [
+                  {
+                    "field": "label"
+                  },
+                  {
+                    "field": "value"
+                  }
+                ]
               },
               "state": {}
             }
