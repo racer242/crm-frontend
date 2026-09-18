@@ -7,6 +7,7 @@ import { ComponentRendererProps } from "./types";
 import { ComponentRenderer } from "../ComponentRenderer";
 import { useTranslations } from "next-intl";
 import { resolveRowBindings } from "../utils/resolveRowBindings";
+import { formatDateByPattern } from "../../utils/dateFormat";
 
 type CustomColumnDefinition = {
   field: string;
@@ -118,6 +119,30 @@ function mergeCustomColumns(
 }
 
 /**
+ * Ячейка даты для колонок с dataType="date".
+ * SSR-безопасно: на сервере и при первом клиентском рендере показывается
+ * сырое значение (как пришло от адаптера), после гидратации —
+ * форматированное в часовом поясе зрителя (без hydration-mismatch).
+ * Паттерн задаётся в конфиге колонки (dateFormat, токены DD/MM/YYYY/HH/mm/ss),
+ * по умолчанию — DD.MM.YYYY HH:mm.
+ */
+function DateCell({
+  value,
+  pattern,
+}: {
+  value: unknown;
+  pattern: string;
+}) {
+  const [formatted, setFormatted] = React.useState<string>(() =>
+    value === null || value === undefined ? "" : String(value),
+  );
+  React.useEffect(() => {
+    setFormatted(formatDateByPattern(value, pattern));
+  }, [value, pattern]);
+  return <span suppressHydrationWarning>{formatted}</span>;
+}
+
+/**
  * Renders the body content for a custom column cell.
  */
 function renderCustomColumnBody(
@@ -200,7 +225,24 @@ export function renderDataTable({
           );
         }
 
-        return <Column key={index} {...col} />;
+        return (
+          <Column
+            key={index}
+            {...col}
+            // Колонки с dataType="date" форматируются на клиенте
+            // (формат в поясе зрителя; паттерн — col.dateFormat или по умолчанию)
+            {...(col.dataType === "date" && !hasCustomBody
+              ? {
+                  body: (rowData: Record<string, unknown>) => (
+                    <DateCell
+                      value={rowData?.[col.field]}
+                      pattern={col.dateFormat || "DD.MM.YYYY HH:mm"}
+                    />
+                  ),
+                }
+              : {})}
+          />
+        );
       })}
     </DataTable>
   );
