@@ -37,7 +37,7 @@ function transform(source) {
     { field: "user_id", header: "Участник" },
     { field: "prize_id", header: "Приз" },
     { field: "status_label", header: "Статус", width: "10rem" },
-    { field: "created_at", header: "Дата создания", width: "12rem" },
+    { field: "created_at", header: "Дата создания", width: "12rem", dataType: "date" },
   ];
 
   return {

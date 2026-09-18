@@ -9,6 +9,9 @@ function transform(source) {
     field: col.id,
     header: col.title || col.id,
     sortable: !!col.sortable,
+    // Даты форматируются на клиенте (DataTableComponent: dataType === "date")
+    dataType:
+      col.type === "datetime" || col.type === "date" ? "date" : undefined,
     ...col.props,
   }));
 

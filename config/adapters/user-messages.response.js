@@ -41,7 +41,7 @@ function transform(source) {
   }));
 
   const columns = [
-    { field: "created_at", header: "Дата", width: "12rem" },
+    { field: "created_at", header: "Дата", width: "12rem", dataType: "date" },
     { field: "subject", header: "Тема", width: "20rem" },
     { field: "message_short", header: "Сообщение" },
   ];

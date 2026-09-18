@@ -28,7 +28,7 @@ function transform(source) {
     { field: "fullName", header: "Имя" },
     { field: "email", header: "E-mail" },
     { field: "status", header: "Статус", width: "6rem" },
-    { field: "created_at", header: "Создан", width: "10rem" },
+    { field: "created_at", header: "Создан", width: "10rem", dataType: "date" },
   ];
 
   return {

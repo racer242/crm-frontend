@@ -54,6 +54,7 @@ function transform(source) {
       field: "registered_at",
       header: "Зарегистрирован",
       width: "12rem",
+      dataType: "date",
     },
   ];
 

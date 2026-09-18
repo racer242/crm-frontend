@@ -17,6 +17,8 @@ function transform(source) {
     .map((f) => ({
       field: f.name,
       header: f.title || f.name,
+      dataType:
+        f.type === "datetime" || f.type === "date" ? "date" : undefined,
     }));
 
   return {
