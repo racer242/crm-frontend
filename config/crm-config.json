@@ -68,9 +68,6 @@
       "$ref": "./pages/promo-instance/user-receipt.json"
     },
     {
-      "$ref": "./pages/promo-instance/user-receipt-edit.json"
-    },
-    {
       "$ref": "./pages/promo-instance/user-products.json"
     },
     {

@@ -24,18 +24,42 @@
       "sum": "",
       "sum_label": "",
       "date": "",
-      "date": "",
-      "registered_at": "",
       "registered_at": "",
       "photos": [],
       "photos_count": 0,
-      "photos_label": ""
+      "photos_label": "",
+      "decline_reason": ""
     },
     "products": {
       "value": [],
       "columns": [],
       "totalRecords": 0
-    }
+    },
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "receiptStatuses": [
+      {
+        "label": "На проверке",
+        "value": "CHECKING"
+      },
+      {
+        "label": "Принят",
+        "value": "ACCEPTED"
+      },
+      {
+        "label": "Отклонён",
+        "value": "REFUSED"
+      },
+      {
+        "label": "Приостановлен",
+        "value": "SUSPENDED"
+      },
+      {
+        "label": "Требуется фото",
+        "value": "NEED_PHOTO"
+      }
+    ]
   },
   "meta": {
     "title": "Чек участника — CRM Platform"
@@ -110,6 +134,92 @@
                 }
               ],
               "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "saveReceipt": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
+              "method": "PATCH",
+              "target": "state.saveResult",
+              "data": {
+                "status": "{$state.receiptData.status}",
+                "decline_reason": "{$state.receiptData.decline_reason}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить чек"
+                  }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.saveResult}"
+                  }
+                }
+              ]
             }
           }
         ]
@@ -297,7 +407,7 @@
                     "props": {
                       "value": "@state.receiptData.date",
                       "dataType": "date"
-                  }
+                    }
                   }
                 ]
               }
@@ -320,7 +430,7 @@
                     "props": {
                       "value": "@state.receiptData.registered_at",
                       "dataType": "date"
-                  }
+                    }
                   }
                 ]
               }
@@ -399,6 +509,68 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "photosTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "className": "border-top-1 surface-border",
+              "props": {
+                "value": "@state.receiptData.photos",
+                "columns": [
+                  {
+                    "field": "label",
+                    "bodyStyle": {
+                      "textAlign": "right"
+                    }
+                  }
+                ],
+                "customColumns": [
+                  {
+                    "field": "download",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-download",
+                          "label": "Скачать",
+                          "size": "small",
+                          "severity": "secondary",
+                          "outlined": true
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "downloadFile",
+                                "params": {
+                                  "url": "{#row.url}",
+                                  "onError": [
+                                    {
+                                      "type": "showToast",
+                                      "params": {
+                                        "severity": "error",
+                                        "summary": "Ошибка",
+                                        "message": "Не удалось скачать фото чека"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "paginator": false,
+                "size": "small",
+                "emptyMessage": "Фото отсутствуют",
+                "showHeaders": false
+              }
             }
           ]
         },
@@ -411,7 +583,7 @@
               "id": "participantColumnGroup",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "flex flex-column gap-5",
+              "className": "flex flex-column gap-3",
               "components": [
                 {
                   "id": "participantPanel",
@@ -482,75 +654,120 @@
                   ]
                 },
                 {
-                  "id": "photosPanel",
+                  "id": "moderationPanel",
                   "type": "component",
                   "componentType": "Panel",
                   "props": {
-                    "header": "Фото чека"
-                  },
-                  "components": [
-                    {
-                      "id": "photosTable",
-                      "type": "component",
-                      "componentType": "DataTable",
-                      "props": {
-                        "value": "@state.receiptData.photos",
-                        "columns": [
-                          {
-                            "field": "label",
-                            "bodyStyle": {
-                              "textAlign": "right"
-                            }
-                          }
-                        ],
-                        "customColumns": [
-                          {
-                            "field": "download",
-                            "order": -1,
-                            "body": [
-                              {
-                                "componentType": "Button",
-                                "props": {
-                                  "icon": "pi pi-download",
-                                  "label": "Скачать",
-                                  "size": "small",
-                                  "severity": "secondary",
-                                  "outlined": true
-                                },
-                                "events": [
-                                  {
-                                    "type": "onClick",
-                                    "commands": [
-                                      {
-                                        "type": "downloadFile",
-                                        "params": {
-                                          "url": "{#row.url}",
-                                          "onError": [
-                                            {
-                                              "type": "showToast",
-                                              "params": {
-                                                "severity": "error",
-                                                "summary": "Ошибка",
-                                                "message": "Не удалось скачать фото чека"
-                                              }
-                                            }
-                                          ]
-                                        }
+                    "header": "Модерация",
+                    "components": [
+                      {
+                        "id": "statusGroup",
+                        "type": "component",
+                        "componentType": "LabelledGroup",
+                        "className": "flex flex-column gap-1 mb-2",
+                        "props": {
+                          "label": "Статус",
+                          "labelClassName": "font-bold text-sm",
+                          "components": [
+                            {
+                              "id": "statusDropdown",
+                              "type": "component",
+                              "componentType": "Dropdown",
+                              "props": {
+                                "options": "@state.receiptStatuses",
+                                "value": "@state.receiptData.status",
+                                "optionLabel": "label",
+                                "optionValue": "value",
+                                "placeholder": "Выберите статус",
+                                "className": "w-full"
+                              },
+                              "events": [
+                                {
+                                  "type": "onChange",
+                                  "commands": [
+                                    {
+                                      "type": "setProperty",
+                                      "params": {
+                                        "source": "event.value",
+                                        "target": "state.receiptData.status"
                                       }
-                                    ]
-                                  }
-                                ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "declineReasonGroup",
+                        "type": "component",
+                        "componentType": "LabelledGroup",
+                        "className": "flex flex-column gap-1 mb-2",
+                        "props": {
+                          "label": "Причина отклонения",
+                          "labelClassName": "font-bold text-sm",
+                          "components": [
+                            {
+                              "id": "declineReasonInput",
+                              "type": "component",
+                              "componentType": "InputTextarea",
+                              "props": {
+                                "value": "@state.receiptData.decline_reason",
+                                "rows": 3,
+                                "autoResize": true,
+                                "className": "w-full",
+                                "placeholder": "Указывается при отклонении чека"
+                              },
+                              "events": [
+                                {
+                                  "type": "onChange",
+                                  "commands": [
+                                    {
+                                      "type": "setProperty",
+                                      "params": {
+                                        "source": "event.value",
+                                        "target": "state.receiptData.decline_reason"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "btnApply",
+                        "type": "component",
+                        "componentType": "Button",
+                        "props": {
+                          "label": "Применить",
+                          "icon": "pi pi-check",
+                          "severity": "success",
+                          "disabled": "@state.saving",
+                          "outlined": true
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              "saveReceipt",
+                              {
+                                "type": "showToast",
+                                "params": {
+                                  "severity": "success",
+                                  "summary": "Успешно",
+                                  "message": "Данные чека сохранены",
+                                  "condition": "{$state.sentSuccessfully}"
+                                }
                               }
                             ]
                           }
-                        ],
-                        "paginator": false,
-                        "size": "small",
-                        "emptyMessage": "Фото отсутствуют",
-                        "showHeaders": false
+                        ]
                       }
-                    }
-                  ]
+                    ]
+                  }
                 }
               ]
             }
@@ -614,30 +831,6 @@
           },
           "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
           "components": [
-            {
-              "id": "btnEdit",
-              "type": "component",
-              "componentType": "Button",
-              "props": {
-                "icon": "pi pi-pencil",
-                "label": "Модерировать",
-                "size": "small",
-                "severity": "info"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/ops/users/{$location.routeParams.user_id}/receipts/{$location.routeParams.receipt_id}/edit"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
             {
               "id": "btnDelete",
               "type": "component",
