@@ -41,7 +41,7 @@ function transform(source) {
   }));
 
   const columns = [
-    { field: "created_at", header: "Дата", width: "12rem", type: "datetime" },
+    { field: "created_at", header: "Дата", width: "12rem", dataType: "date" },
     { field: "sender_name_label", header: "Имя" },
     { field: "sender_email_label", header: "E-mail" },
     { field: "subject", header: "Тема", width: "20rem" },
