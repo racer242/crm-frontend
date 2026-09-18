@@ -25,6 +25,9 @@
     "receiptsStats": {
       "totalRecords": 0
     },
+    "allReceiptsStats": {
+      "totalRecords": 0
+    },
     "productsStats": {
       "totalRecords": 0
     },
@@ -48,6 +51,11 @@
       "url": "/api/ops/receipts?user_id={$location.routeParams.user_id}&status=ACCEPTED&rows=1",
       "method": "GET",
       "target": "state.receiptsStats"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/receipts?rows=1",
+      "method": "GET",
+      "target": "state.allReceiptsStats"
     },
     {
       "url": "/api/ops/users/{$location.routeParams.user_id}/products?rows=1",
@@ -138,13 +146,26 @@
           "className": "mb-5",
           "grid": {
             "cols": [
-              "col-6 lg:col-4",
-              "col-6 lg:col-4",
-              "col-12 lg:col-4"
+              "col-6 lg:col-3",
+              "col-6 lg:col-3",
+              "col-6 lg:col-3",
+              "col-6 lg:col-3"
             ],
             "padding": "p-2"
           },
           "components": [
+            {
+              "id": "allReceiptsCount",
+              "type": "component",
+              "componentType": "StatCard",
+              "className": "h-full p-1",
+              "props": {
+                "title": "Чеки",
+                "subTitle": "все",
+                "value": "@state.allReceiptsStats.totalRecords",
+                "icon": "pi pi-receipt"
+              }
+            },
             {
               "id": "activityReceipts",
               "type": "component",
@@ -152,7 +173,7 @@
               "className": "h-full p-1",
               "props": {
                 "title": "Чеки",
-                "subTitle": "проверены",
+                "subTitle": "приняты",
                 "value": "@state.receiptsStats.totalRecords",
                 "icon": "pi pi-receipt"
               }
@@ -164,7 +185,6 @@
               "className": "h-full p-1",
               "props": {
                 "title": "Продукты",
-                "subTitle": "акционные",
                 "value": "@state.productsStats.totalRecords",
                 "icon": "pi pi-shopping-cart"
               },
