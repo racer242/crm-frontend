@@ -427,7 +427,8 @@
                   },
                   {
                     "label": "Дата регистрации",
-                    "value": "@state.userData.created_at"
+                    "value": "@state.userData.created_at",
+                    "dataType": "date"
                   },
                   {
                     "label": "Согласие на рассылку",

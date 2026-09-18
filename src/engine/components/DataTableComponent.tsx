@@ -205,18 +205,26 @@ export function renderDataTable({
           <Column
             key={index}
             {...col}
-            // Колонки с dataType="date" форматируются на клиенте
-            // (формат в поясе зрителя; паттерн — col.dateFormat или по умолчанию)
-            {...(col.dataType === "date" && !hasCustomBody
-              ? {
-                  body: (rowData: Record<string, unknown>) => (
-                    <DateCell
-                      value={rowData?.[col.field]}
-                      pattern={col.dateFormat || "DD.MM.YYYY HH:mm"}
-                    />
-                  ),
-                }
-              : {})}
+            // Форматирование дат на клиенте:
+            // - колонка помечена dataType="date", либо
+            // - помечена строка таблицы (detail-таблицы вида {label, value, dataType})
+            body={(rowData: Record<string, unknown>) => {
+              const isDate =
+                col.dataType === "date" || rowData?.dataType === "date";
+              const raw = rowData?.[col.field];
+              return isDate ? (
+                <DateCell
+                  value={raw}
+                  pattern={
+                    (col.dateFormat as string) ||
+                    (rowData?.dateFormat as string) ||
+                    undefined
+                  }
+                />
+              ) : (
+                (raw as React.ReactNode)
+              );
+            }}
           />
         );
       })}
