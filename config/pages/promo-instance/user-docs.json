@@ -253,8 +253,10 @@
                           "componentType": "Text",
                           "className": "m-0 font-bold text-lg",
                           "props": {
-                            "value": "@state.docsData.passport_issue_date"
-                          },
+                            "value": "@state.docsData.passport_issue_date",
+                            "dataType": "date",
+                            "dateFormat": "DD.MM.YYYY"
+                        },
                           "state": {}
                         }
                       ]

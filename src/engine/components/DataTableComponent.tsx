@@ -7,7 +7,7 @@ import { ComponentRendererProps } from "./types";
 import { ComponentRenderer } from "../ComponentRenderer";
 import { useTranslations } from "next-intl";
 import { resolveRowBindings } from "../utils/resolveRowBindings";
-import { formatDateByPattern } from "../../utils/dateFormat";
+import { DateCell } from "./DateCell";
 
 type CustomColumnDefinition = {
   field: string;
@@ -116,30 +116,6 @@ function mergeCustomColumns(
 
   // Build final column list: first + middle + result (preserved positions + non-replaced) + last
   return [...first, ...middle, ...result, ...last];
-}
-
-/**
- * Ячейка даты для колонок с dataType="date".
- * SSR-безопасно: на сервере и при первом клиентском рендере показывается
- * сырое значение (как пришло от адаптера), после гидратации —
- * форматированное в часовом поясе зрителя (без hydration-mismatch).
- * Паттерн задаётся в конфиге колонки (dateFormat, токены DD/MM/YYYY/HH/mm/ss),
- * по умолчанию — DD.MM.YYYY HH:mm.
- */
-function DateCell({
-  value,
-  pattern,
-}: {
-  value: unknown;
-  pattern: string;
-}) {
-  const [formatted, setFormatted] = React.useState<string>(() =>
-    value === null || value === undefined ? "" : String(value),
-  );
-  React.useEffect(() => {
-    setFormatted(formatDateByPattern(value, pattern));
-  }, [value, pattern]);
-  return <span suppressHydrationWarning>{formatted}</span>;
 }
 
 /**

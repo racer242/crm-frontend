@@ -295,8 +295,9 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.date"
-                    }
+                      "value": "@state.receiptData.date",
+                      "dataType": "date"
+                  }
                   }
                 ]
               }
@@ -317,8 +318,9 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.registered_at"
-                    }
+                      "value": "@state.receiptData.registered_at",
+                      "dataType": "date"
+                  }
                   }
                 ]
               }

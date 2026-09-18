@@ -227,8 +227,9 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.actData.created_at"
-                    }
+                      "value": "@state.actData.created_at",
+                      "dataType": "date"
+                  }
                   }
                 ]
               }
@@ -249,8 +250,9 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.actData.updated_at"
-                    }
+                      "value": "@state.actData.updated_at",
+                      "dataType": "date"
+                  }
                   }
                 ]
               }

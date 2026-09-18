@@ -253,8 +253,9 @@
                                 "componentType": "Text",
                                 "className": "m-0 text-sm text-500",
                                 "props": {
-                                  "value": "@state.messagesDialog.created_at"
-                                }
+                                  "value": "@state.messagesDialog.created_at",
+                                  "dataType": "date"
+                              }
                               },
                               {
                                 "id": "messageDialogStatusTag",
