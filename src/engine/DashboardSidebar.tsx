@@ -139,11 +139,11 @@ const UserMenuSection = React.memo(function UserMenuSection({
               className="flex-none pointer-events-none"
             />
             {!collapsed && (
-              <div className="flex flex-column align-items-start pointer-events-none">
-                <span className="font-bold">
+              <div className="flex flex-column align-items-start pointer-events-none min-w-0">
+                <span className="font-bold wrap-anywhere">
                   {user?.name ?? userMenu?.userName}
                 </span>
-                <span className="text-sm">
+                <span className="text-sm wrap-anywhere">
                   {user?.role ?? userMenu?.userRole}
                 </span>
               </div>
@@ -201,11 +201,11 @@ const UserMenuSection = React.memo(function UserMenuSection({
               className="flex-none pointer-events-none"
             />
             {!collapsed && (
-              <div className="flex flex-column align-items-start pointer-events-none">
-                <span className="font-bold">
+              <div className="flex flex-column align-items-start pointer-events-none min-w-0">
+                <span className="font-bold wrap-anywhere">
                   {user?.name ?? userMenu?.userName}
                 </span>
-                <span className="text-sm">
+                <span className="text-sm wrap-anywhere">
                   {user?.role ?? userMenu?.userRole}
                 </span>
               </div>
@@ -358,8 +358,10 @@ const CampMenuSection = React.memo(function CampMenuSection({
             </div>
             {/* Campaign name - same style as UserMenuSection user block */}
             {!collapsed && (
-              <div className="flex flex-column align-items-start pointer-events-none overflow-hidden">
-                <span className="font-bold">{currentCampName}</span>
+              <div className="flex flex-column align-items-start pointer-events-none overflow-hidden min-w-0">
+                <span className="font-bold wrap-anywhere">
+                  {currentCampName}
+                </span>
               </div>
             )}
             {!collapsed && collapsible && otherCamps.length > 0 && (

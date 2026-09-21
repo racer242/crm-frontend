@@ -223,7 +223,7 @@
                                 "id": "messageDialogSenderNameLink",
                                 "type": "component",
                                 "componentType": "Button",
-                                "className": "m-0 font-semibold p-0 text-left justify-content-start",
+                                "className": "m-0 font-semibold p-0 text-left justify-content-start wrap-anywhere-btn",
                                 "visible": "@state.messagesDialog.user_id",
                                 "props": {
                                   "label": "@state.messagesDialog.sender_name_label",

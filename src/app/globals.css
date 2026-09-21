@@ -104,3 +104,17 @@ input.p-inputtext {
 .p-breadcrumb {
   background: rgba(255, 255, 255, 0);
 }
+
+/* Принудительный перенос длинных слов (e-mail, имена, UUID) в узких контейнерах.
+   PrimeFlex не содержит утилит overflow-wrap/word-break. */
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Вариант для кнопок (у p-button однострочный текст) */
+.wrap-anywhere-btn {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
