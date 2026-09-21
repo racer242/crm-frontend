@@ -3,9 +3,9 @@
  * Собирает тело запроса из состояния страницы; fieldsText (JSON из textarea)
  * парсится в массив fields — при ошибке парсинга запрос падает с сообщением.
  *
- * Пустое fieldsText (пусто/пробелы) → body.fields = null:
- * API трактует null как «выводить все доступные поля запроса».
- * Пустой массив [] означал бы «не выводить ни одного поля».
+ * Пустое fieldsText (пусто/пробелы) ИЛИ распарсенный пустой массив [] —
+ * ключ fields в тело запроса вообще не включается: API трактует отсутствие
+ * поля как «выводить все доступные поля запроса».
  */
 function transform(params = {}) {
   const body = {
@@ -16,10 +16,7 @@ function transform(params = {}) {
 
   if (params.fieldsText !== undefined) {
     const text = String(params.fieldsText || "").trim();
-    if (text === "") {
-      // Пустая textarea = «все доступные поля» (null), а не пустой список
-      body.fields = null;
-    } else {
+    if (text !== "") {
       let fields;
       try {
         fields = JSON.parse(text);
@@ -29,10 +26,15 @@ function transform(params = {}) {
       if (!Array.isArray(fields)) {
         throw new Error("Поля выдачи должны быть JSON-массивом");
       }
-      body.fields = fields;
+      if (fields.length > 0) {
+        body.fields = fields;
+      }
+      // fields.length === 0 → ключ не добавляем («все доступные поля»)
     }
+    // text === "" → ключ не добавляем («все доступные поля»)
   }
 
   return body;
 }
+
 
