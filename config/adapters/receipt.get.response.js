@@ -30,6 +30,21 @@ function transform(response) {
   };
   const statusKey = String(data.status || "").toLowerCase();
 
+  // Статус проверки ФНС (словарь и severity как в mgmt-ТЗ §4.2)
+  const fnsStatusLabels = {
+    no_check: "Не проверен",
+    wait: "Ожидает ФНС",
+    wrong: "Не найден в ФНС",
+    correct: "Чек корректный",
+  };
+  const fnsStatusSeverities = {
+    no_check: "secondary",
+    wait: "warning",
+    wrong: "danger",
+    correct: "success",
+  };
+  const fnsKey = String(data.fns_status || "").toLowerCase();
+
   // Фото чека: массив { file_id, url } + порядковый номер для таблицы.
   // url переписывается на файловый прокси (роутер добавит Bearer+HMAC),
   // сырой путь из API сохраняется в url_raw.
@@ -50,6 +65,11 @@ function transform(response) {
     status: data.status || "",
     status_label: statusLabels[statusKey] || data.status || "",
     status_severity: statusSeverities[statusKey] || "secondary",
+    fns_status: data.fns_status || "",
+    fns_status_label: fnsStatusLabels[fnsKey] || data.fns_status || "",
+    fns_status_severity: fnsStatusSeverities[fnsKey] || "secondary",
+    total_products: data.total_products !== undefined && data.total_products !== null ? data.total_products : "",
+    promo_products: data.promo_products !== undefined && data.promo_products !== null ? data.promo_products : "",
     // Фискальные данные
     fn: data.fn || "",
     fp: data.fp || "",

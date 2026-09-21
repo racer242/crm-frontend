@@ -368,6 +368,28 @@
               }
             },
             {
+              "id": "receiptFnsStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус ФНС",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptFnsStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "props": {
+                      "value": "@state.receiptData.fns_status_label",
+                      "severity": "@state.receiptData.fns_status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
               "id": "receiptSumGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -407,6 +429,50 @@
                     "props": {
                       "value": "@state.receiptData.date",
                       "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "receiptTotalProductsGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Продуктов",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptTotalProductsText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.total_products"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "receiptPromoProductsGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Акционных",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptPromoProductsText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.promo_products"
                     }
                   }
                 ]
