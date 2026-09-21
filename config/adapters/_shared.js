@@ -26,3 +26,22 @@ function formatSum(sum) {
       .replace(/\u00A0/g, " ") + " ₽"
   );
 }
+
+/**
+ * Форматирует сумму, уже выраженную в рублях («590.30» → «590,30 ₽»).
+ * Канал CRM-управления (mgmt): деньги приходят рублями с копейками (§2 ТЗ),
+ * делить на 100 не нужно — в отличие от formatSum (промо-инстанс, копейки).
+ */
+function formatRubles(value) {
+  if (value === undefined || value === null || value === "") return "—";
+  const num = Number(value);
+  if (isNaN(num)) return String(value);
+  return (
+    num
+      .toLocaleString("ru-RU", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+      .replace(/\u00A0/g, " ") + " ₽"
+  );
+}

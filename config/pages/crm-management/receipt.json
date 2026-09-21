@@ -9,8 +9,6 @@
     "receiptData": {
       "id": "",
       "user_id": "",
-      "user_name": "",
-      "user_email": "",
       "registration_date": "",
       "purchase_date": "",
       "retail_chain_id": "",
@@ -21,14 +19,19 @@
       "receipt_status": "",
       "moderation_status": "",
       "comment": "",
-      "registrationDateFormatted": "",
-      "purchaseDateFormatted": "",
-      "receiptStatusLabel": "",
-      "receiptStatusSeverity": "",
       "moderationStatusLabel": "",
       "moderationStatusSeverity": "",
       "retail_chains": [],
-      "statuses": []
+      "statuses": [],
+      "fns_status": "",
+      "fns_status_label": "",
+      "fns_status_severity": "",
+      "decline_reason": "",
+      "decline_reason_label": "",
+      "show_decline_reason": false,
+      "receipt_id": "",
+      "store_inn_label": "",
+      "store_address_label": ""
     },
     "products": {
       "value": [],
@@ -226,7 +229,8 @@
               "data": {
                 "retail_chain_id": "{$state.receiptData.retail_chain_id}",
                 "moderation_status": "{$state.receiptData.moderation_status}",
-                "comment": "{$state.receiptData.comment}"
+                "comment": "{$state.receiptData.comment}",
+                "decline_reason": "{$state.receiptData.decline_reason}"
               },
               "onSuccess": [
                 {
@@ -404,7 +408,8 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.registrationDateFormatted"
+                      "value": "@state.receiptData.registration_date",
+                      "dataType": "date"
                     }
                   }
                 ]
@@ -426,7 +431,98 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.purchaseDateFormatted"
+                      "value": "@state.receiptData.purchase_date",
+                      "dataType": "date",
+                      "dateFormat": "DD.MM.YYYY"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "receiptIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID чека (пром.)",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptIdText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.receipt_id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "fnsStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус ФНС",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "fnsStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.receiptData.fns_status_label",
+                      "severity": "@state.receiptData.fns_status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "storeInnGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ИНН магазина",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "storeInnText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.store_inn_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "storeAddressGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Адрес магазина",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "storeAddressText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.store_address_label"
                     }
                   }
                 ]
@@ -497,6 +593,29 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "declineReasonGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Причина отклонения",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "declineReasonText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.receiptData.decline_reason_label"
+                    }
+                  }
+                ]
+              },
+              "visible": "@state.receiptData.show_decline_reason"
             }
           ]
         },
@@ -705,6 +824,47 @@
                               }
                             ]
                           }
+                        },
+                        {
+                          "id": "declineReasonEditGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Причина отклонения",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "declineReasonDropdown",
+                                "type": "component",
+                                "componentType": "Dropdown",
+                                "props": {
+                                  "options": "@state.receiptData.decline_reasons",
+                                  "value": "@state.receiptData.decline_reason",
+                                  "optionLabel": "name",
+                                  "optionValue": "id",
+                                  "placeholder": "Выберите причину",
+                                  "className": "w-full"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onChange",
+                                    "commands": [
+                                      {
+                                        "type": "setProperty",
+                                        "params": {
+                                          "source": "event.value",
+                                          "target": "state.receiptData.decline_reason"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "visible": "@state.receiptData.show_decline_reason"
                         },
                         {
                           "id": "commentGroup",
