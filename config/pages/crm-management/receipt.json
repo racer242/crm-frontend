@@ -895,11 +895,10 @@
                           "id": "declineReasonEditGroup",
                           "type": "component",
                           "componentType": "LabelledGroup",
-                          "className": "w-full grid align-items-center mb-2",
+                          "className": "flex flex-column gap-1 mb-2",
                           "props": {
                             "label": "Причина отклонения",
-                            "labelClassName": "text-sm col-4 text-right",
-                            "containerClassName": "col-8",
+                            "labelClassName": "font-bold text-sm",
                             "components": [
                               {
                                 "id": "declineReasonDropdown",

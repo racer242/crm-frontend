@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Карточка mgmt-чека: группа «Причина отклонения» приведена к стилю панели «Модерация»** (vertical label сверху, `font-bold text-sm`, как у «Торговая сеть»/«Статус модерации»/«Комментарий» — grid-стиль col-4/col-8 от левой панели убран).
+
 - **Карточка mgmt-чека: вывод статусов и фискальных данных как на промо-карточке** (`config/adapters/mgmt.receipt.get.response.js`, `config/pages/crm-management/receipt.json`): добавлена строка «Статус» (Tag из `moderationStatusLabel/Severity`); «Фискальные данные» одной строкой заменены на отдельные «ФН»/«ФД»/«ФП» (`fiscal_data.fiscal_number/fiscal_document_number/fiscal_sign`). Адаптер исправлен под реальные данные сервера: id статусов модерации приходят В ВЕРХНЕМ регистре (CHECKING/ACCEPTED/REFUSED/SUSPENDED/NEED_PHOTO/HAND_LOAD) — severity-карта и признак `show_decline_reason` (REFUSED) нормализованы по регистру, добавлен hand_load; «Причина отклонения» в форме модерации — выбор из справочника `decline_reasons` из ответа (13 реальных кодов вместо 5 из ранней редакции ТЗ), PATCH отправляет `decline_reason`.
 
 - **Карточки чеков: навигация и правая колонка** (`config/pages/promo-instance/user-receipt.json`, `config/pages/crm-management/receipt.json`): на карточке чека участника убрана панель «Участник» (внутри раздела участника контекст очевиден; осталась только «Модерация»); в хлебных крошках карточки чека CRM-управления текущая страница — ID чека (биндинг `receiptData.receipt_id`; прежний «Чек от {registrationDateFormatted}» ссылался на удалённое поле и выводился пустым).
