@@ -17,6 +17,8 @@ import { MacroEngine } from "./MacroEngine";
 import { buildUrlWithParams } from "@/utils/http";
 import { parseApiError } from "@/utils/parseApiError";
 import { applyAdapter } from "./DataAdapterEngine";
+import { PathResolver } from "./PathResolver";
+import type { StateManager } from "./StateManager";
 
 let cachedConfig: any = null;
 
@@ -49,10 +51,60 @@ export async function executeServerDataFeeds(
 
   const results: DataFeedResult[] = [];
 
-  const macroEngine = new MacroEngine(serverSources);
+  // Временное состояние страницы для цепочек фидов: результат каждого
+  // успешного фида сразу записывается сюда, поэтому последующие фиды
+  // могут ссылаться на него макросами {$state.<target>...} на SSR.
+  // Финальное применение к клиентскому StateManager не меняется.
+  const feedState = new Map<string, Record<string, any>>();
+
+  const stateShim = {
+    // MacroEngine вызывает getStateField(pageId, "a.b.c") — читаем из feedState
+    getStateField: (pid: string, path: string): any => {
+      const segments = path.split(".").filter(Boolean);
+      let node: any = feedState.get(pid || pageId);
+      for (const seg of segments) {
+        if (node === undefined || node === null || typeof node !== "object") {
+          return undefined;
+        }
+        node = node[seg];
+      }
+      return node;
+    },
+  } as unknown as StateManager;
+
+  // Применить результат фида во временный state страницы
+  const applyToFeedState = (target: string | undefined, data: any) => {
+    if (!target || !pageId || typeof data !== "object" || data === null) return;
+    const { elementId, statePath } = PathResolver.parseTarget(target);
+    const targetId = elementId || pageId;
+    let bucket = feedState.get(targetId);
+    if (!bucket || typeof bucket !== "object") {
+      bucket = {};
+      feedState.set(targetId, bucket);
+    }
+    if (statePath) {
+      const segments = statePath.split(".").filter(Boolean);
+      let node = bucket;
+      for (let i = 0; i < segments.length - 1; i++) {
+        const seg = segments[i];
+        if (!node[seg] || typeof node[seg] !== "object") node[seg] = {};
+        node = node[seg];
+      }
+      node[segments[segments.length - 1]] = data;
+    } else {
+      Object.assign(bucket, data);
+    }
+  };
 
   for (const feed of dataFeeds) {
     try {
+      // Sources этого фида: базовые + доступ к состоянию предыдущих фидов
+      const feedSources: MacroSources = {
+        ...serverSources,
+        pageId,
+        stateManager: stateShim,
+      };
+      const macroEngine = new MacroEngine(feedSources);
       // Resolve macros in URL
       let url = macroEngine.apply(feed.url) as string;
 
@@ -179,6 +231,9 @@ export async function executeServerDataFeeds(
           continue;
         }
       }
+
+      // Результат сразу доступен последующим фидам (SSR-цепочки)
+      applyToFeedState(feed.target, responseData);
 
       results.push({
         success: true,

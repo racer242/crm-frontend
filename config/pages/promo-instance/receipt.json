@@ -2,21 +2,6 @@
   "id": "receipt",
   "type": "page",
   "route": "/ops/receipts/[receipt_id]",
-  "events": [
-    {
-      "type": "onLoad",
-      "commands": [
-        {
-          "type": "sendRequest",
-          "params": {
-            "url": "/api/ops/users/{@state.receiptData.user_id}",
-            "method": "GET",
-            "target": "state.participantData"
-          }
-        }
-      ]
-    }
-  ],
   "state": {
     "loading": false,
     "initialized": true,
@@ -89,6 +74,11 @@
       "url": "/api/ops/receipts/{$location.routeParams.receipt_id}/products",
       "method": "GET",
       "target": "state.products"
+    },
+    {
+      "url": "/api/ops/users/{$state.receiptData.user_id}",
+      "method": "GET",
+      "target": "state.participantData"
     }
   ],
   "shortcuts": {
