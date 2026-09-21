@@ -462,6 +462,28 @@
               }
             },
             {
+              "id": "receiptModerationStatusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptModerationStatusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "props": {
+                      "value": "@state.receiptData.moderationStatusLabel",
+                      "severity": "@state.receiptData.moderationStatusSeverity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
               "id": "fnsStatusGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -573,22 +595,66 @@
               }
             },
             {
-              "id": "fiscalDataGroup",
+              "id": "receiptFnGroup",
               "type": "component",
               "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-start mb-2",
+              "className": "w-full grid align-items-center mb-2",
               "props": {
-                "label": "Фискальные данные",
+                "label": "ФН",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "fiscalData",
+                    "id": "receiptFnText",
                     "type": "component",
                     "componentType": "Text",
-                    "className": "m-0",
+                    "className": "m-0 font-bold text-lg wrap-anywhere",
                     "props": {
-                      "value": "ФН: {@state.receiptData.fiscal_data.fiscal_number}, ФД: {@state.receiptData.fiscal_data.fiscal_document_number}, ФП: {@state.receiptData.fiscal_data.fiscal_sign}"
+                      "value": "@state.receiptData.fiscal_data.fiscal_number"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "receiptFdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ФД",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptFdText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg wrap-anywhere",
+                    "props": {
+                      "value": "@state.receiptData.fiscal_data.fiscal_document_number"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "receiptFpGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ФП",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "receiptFpText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg wrap-anywhere",
+                    "props": {
+                      "value": "@state.receiptData.fiscal_data.fiscal_sign"
                     }
                   }
                 ]

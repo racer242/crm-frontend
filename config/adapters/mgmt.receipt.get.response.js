@@ -23,15 +23,19 @@ function transform(data) {
   const moderationStatusLabel = moderationStatusObj
     ? moderationStatusObj.name
     : moderationStatusId;
+  // Реальные id статусов приходят В ВЕРХНЕМ регистре (CHECKING/ACCEPTED/REFUSED/
+  // SUSPENDED/NEED_PHOTO/HAND_LOAD) — нормализуем для severity
+  const moderationStatusKey = String(moderationStatusId || "").toLowerCase();
   const moderationSeverityMap = {
-    pending: "warn",
-    approved: "success",
-    rejected: "danger",
+    checking: "info",
+    accepted: "success",
+    refused: "danger",
     suspended: "warning",
-    need_photo: "info",
+    need_photo: "warning",
+    hand_load: "secondary",
   };
   const moderationStatusSeverity =
-    moderationSeverityMap[moderationStatusId] || "secondary";
+    moderationSeverityMap[moderationStatusKey] || "secondary";
 
   // Статус ФНС: label из справочника fns_statuses (§4.2)
   const fnsStatuses = data.fns_statuses || [];
@@ -54,7 +58,8 @@ function transform(data) {
   const decline_reason_label = declineReasonObj
     ? declineReasonObj.name
     : declineReasonId;
-  const show_decline_reason = moderationStatusId === "rejected";
+  // Причина отклонения показывается при статусе REFUSED (регистр не важен)
+  const show_decline_reason = moderationStatusKey === "refused";
 
   return {
     ...data,
