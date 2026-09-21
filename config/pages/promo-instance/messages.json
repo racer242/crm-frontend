@@ -216,17 +216,18 @@
                           "id": "messageDialogSenderInfo",
                           "type": "component",
                           "componentType": "LayoutGroup",
-                          "className": "flex flex-column",
+                          "className": "flex flex-column gap-1",
                           "props": {
                             "components": [
                               {
                                 "id": "messageDialogSenderNameLink",
                                 "type": "component",
-                                "componentType": "Text",
-                                "className": "m-0 font-semibold text-primary cursor-pointer",
+                                "componentType": "Button",
+                                "className": "m-0 font-semibold p-0 text-left justify-content-start",
                                 "visible": "@state.messagesDialog.user_id",
                                 "props": {
-                                  "value": "@state.messagesDialog.sender_name_label"
+                                  "label": "@state.messagesDialog.sender_name_label",
+                                  "link": true
                                 },
                                 "events": [
                                   {
@@ -267,7 +268,7 @@
                                 "componentType": "Tag",
                                 "visible": "@state.messagesDialog.sender_unauthorized",
                                 "props": {
-                                  "value": "неавторизован",
+                                  "value": "Неавторизован",
                                   "severity": "warning"
                                 }
                               }
@@ -289,7 +290,7 @@
                                 "props": {
                                   "value": "@state.messagesDialog.created_at",
                                   "dataType": "date"
-                              }
+                                }
                               },
                               {
                                 "id": "messageDialogStatusTag",
