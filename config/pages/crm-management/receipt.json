@@ -360,7 +360,7 @@
                     "route": "/mgmt/receipts"
                   },
                   {
-                    "label": "Чек от {@state.receiptData.registrationDateFormatted}"
+                    "label": "@state.receiptData.receipt_id"
                   }
                 ]
               }
