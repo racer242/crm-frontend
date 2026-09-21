@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { resolveRowBindings } from "../utils/resolveRowBindings";
 import { DateCell } from "./DateCell";
 import { formatUuid } from "../../utils/uuid";
+import { isDateLike } from "../../utils/dateFormat";
 
 type CustomColumnDefinition = {
   field: string;
@@ -158,7 +159,29 @@ export function renderDataTable({
 }: ComponentRendererProps) {
   const t = useTranslations("datatable");
   const { columns, customColumns, emptyMessage, ...restProps } = props;
-  const baseColumnList: any[] = columns || [];
+  const rawValue = props.value as unknown[] | undefined;
+
+  // Автоколонки: если колонки не заданы (например, у SQL-отчёта пустой fields —
+  // «все доступные поля»), строим их из ключей первой строки данных.
+  // header = имя поля; ISO-значения помечаем dataType:"date" (клиентский формат).
+  let baseColumnList: any[] = columns || [];
+  if (
+    (!baseColumnList || baseColumnList.length === 0) &&
+    Array.isArray(rawValue) &&
+    rawValue.length > 0 &&
+    typeof rawValue[0] === "object" &&
+    rawValue[0] !== null
+  ) {
+    baseColumnList = Object.keys(rawValue[0] as Record<string, unknown>)
+      .filter((key) => !key.startsWith("_"))
+      .map((key) => ({
+        field: key,
+        header: key,
+        ...(isDateLike((rawValue[0] as Record<string, unknown>)[key])
+          ? { dataType: "date" }
+          : {}),
+      }));
+  }
 
   // Merge custom columns into the column list
   const mergedColumns = mergeCustomColumns(baseColumnList, customColumns);
