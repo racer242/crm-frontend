@@ -21,6 +21,9 @@ function transform(source) {
     // Отправитель может быть не авторизован (sender_* === null) — «—»
     sender_name_label: message.sender_name || "—",
     sender_email_label: message.sender_email || "—",
+    // Переход в попапе на участника: user_id уже в строке (...message),
+    // sender_unauthorized — для чипа «неавторизован» (user_id === null)
+    sender_unauthorized: !message.user_id,
     // Тема и статус доставки для попапа
     subject_label: message.subject || "Без темы",
     status_label:

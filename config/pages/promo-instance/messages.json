@@ -220,10 +220,34 @@
                           "props": {
                             "components": [
                               {
-                                "id": "messageDialogSenderName",
+                                "id": "messageDialogSenderNameLink",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold text-primary cursor-pointer",
+                                "visible": "@state.messagesDialog.user_id",
+                                "props": {
+                                  "value": "@state.messagesDialog.sender_name_label"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onClick",
+                                    "commands": [
+                                      {
+                                        "type": "navigate",
+                                        "params": {
+                                          "url": "/ops/users/{@state.messagesDialog.user_id}"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "messageDialogSenderNamePlain",
                                 "type": "component",
                                 "componentType": "Text",
                                 "className": "m-0 font-semibold",
+                                "visible": "@state.messagesDialog.sender_unauthorized",
                                 "props": {
                                   "value": "@state.messagesDialog.sender_name_label"
                                 }
@@ -235,6 +259,16 @@
                                 "className": "m-0 text-sm text-500",
                                 "props": {
                                   "value": "@state.messagesDialog.sender_email_label"
+                                }
+                              },
+                              {
+                                "id": "messageDialogSenderUnauthorizedTag",
+                                "type": "component",
+                                "componentType": "Tag",
+                                "visible": "@state.messagesDialog.sender_unauthorized",
+                                "props": {
+                                  "value": "неавторизован",
+                                  "severity": "warning"
                                 }
                               }
                             ]
