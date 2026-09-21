@@ -5,15 +5,26 @@
  */
 function transform(source) {
   // 1. Преобразуем колонки: id→field, title→header, оставляем sortable
-  const columns = (source.columns || []).map((col) => ({
-    field: col.id,
-    header: col.title || col.id,
-    sortable: !!col.sortable,
-    // Даты форматируются на клиенте (DataTableComponent: dataType === "date")
-    dataType:
-      col.type === "datetime" || col.type === "date" ? "date" : undefined,
-    ...col.props,
-  }));
+  //    UUID-поля (§5.1 ТЗ: receipt_id, user_id) помечаем dataType:"uuid" —
+  //    ячейки выводятся сокращённо (01a0...afef) на клиенте
+  const UUID_FIELDS = ["receipt_id", "user_id"];
+  const columns = (source.columns || []).map((col) => {
+    const isUuid =
+      UUID_FIELDS.includes(col.id) ||
+      (col.type && String(col.type).toLowerCase().includes("uuid"));
+    return {
+      field: col.id,
+      header: col.title || col.id,
+      sortable: !!col.sortable,
+      // Даты форматируются на клиенте (DataTableComponent: dataType === "date")
+      dataType: isUuid
+        ? "uuid"
+        : col.type === "datetime" || col.type === "date"
+          ? "date"
+          : undefined,
+      ...col.props,
+    };
+  });
 
   // 2. Преобразуем строки: из { values: {...} } в плоские объекты
   //    Даты остаются сырыми ISO — форматирование выполняется на клиенте

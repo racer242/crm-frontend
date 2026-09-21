@@ -281,38 +281,6 @@
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
                   {
-                    "field": "email",
-                    "body": [
-                      {
-                        "id": "sendButton",
-                        "componentType": "Button",
-                        "props": {
-                          "icon": "pi pi-envelope",
-                          "label": "{#field}",
-                          "link": true,
-                          "size": "small",
-                          "pt": {
-                            "label": { "className": "font-normal" },
-                            "root": { "className": "p-1" }
-                          }
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "navigate",
-                                "params": {
-                                  "url": "mailto:{#field}"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
                     "field": "button",
                     "order": -1,
                     "body": [
