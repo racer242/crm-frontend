@@ -117,9 +117,6 @@
     },
     {
       "$ref": "./pages/crm-management/receipt.json"
-    },
-    {
-      "$ref": "./pages/crm-management/receipt-edit.json"
     }
   ],
   "adapters": {
