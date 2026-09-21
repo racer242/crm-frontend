@@ -281,6 +281,33 @@
                 "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
                   {
+                    "field": "user",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-user",
+                          "link": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.user_id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
                     "field": "button",
                     "order": -1,
                     "body": [
