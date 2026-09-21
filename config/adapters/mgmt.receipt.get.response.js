@@ -41,6 +41,9 @@ function transform(data) {
     ...data,
     user_name,
     user_email,
+    // Суммы приходят в копейках — форматирование в рубли
+    total_amount_label: formatSum(data.total_amount),
+    promo_products_amount_label: formatSum(data.promo_products_amount),
     retail_chain_name: retailChainName,
     moderationStatusLabel,
     moderationStatusSeverity,

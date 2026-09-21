@@ -15,8 +15,8 @@
       "purchase_date": "",
       "retail_chain_id": "",
       "retail_chain_name": "",
-      "promo_products_amount": 0,
-      "total_amount": 0,
+      "promo_products_amount_label": "",
+      "total_amount_label": "",
       "fiscal_data": {},
       "receipt_status": "",
       "moderation_status": "",
@@ -295,7 +295,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.receiptData.promo_products_amount"
+                      "value": "@state.receiptData.promo_products_amount_label"
                     }
                   }
                 ]
@@ -316,7 +316,7 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "props": { "value": "@state.receiptData.total_amount" }
+                    "props": { "value": "@state.receiptData.total_amount_label" }
                   }
                 ]
               }

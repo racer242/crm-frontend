@@ -32,6 +32,8 @@ function transform(source) {
       _num: index + 1,
       product_status_label:
         productStatusLabels[statusKey] || product.product_status || "—",
+      // Сумма приходит в копейках — форматирование в рубли
+      amount_label: formatSum(product.amount),
     };
   });
 
@@ -39,7 +41,7 @@ function transform(source) {
     { field: "_num", header: "№", width: "4rem" },
     { field: "product_name", header: "Название" },
     { field: "quantity", header: "Кол-во", width: "8rem" },
-    { field: "amount", header: "Сумма", width: "10rem" },
+    { field: "amount_label", header: "Сумма", width: "10rem" },
     { field: "product_status_label", header: "Статус", width: "12rem" },
   ];
 

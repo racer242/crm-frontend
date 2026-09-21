@@ -9,13 +9,15 @@ function transform(source) {
   const value = (payload.items || []).map((product) => ({
     ...product,
     id: product.product_id || "",
+    // Сумма приходит в копейках — форматирование в рубли
+    total_amount_label: formatSum(product.total_amount),
   }));
 
   const columns = [
     { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
     { field: "product_name", header: "Название" },
     { field: "total_quantity", header: "Количество", width: "10rem" },
-    { field: "total_amount", header: "Сумма", width: "10rem" },
+    { field: "total_amount_label", header: "Сумма", width: "10rem" },
   ];
 
   return {

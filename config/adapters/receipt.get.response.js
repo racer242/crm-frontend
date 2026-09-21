@@ -77,21 +77,4 @@ function proxyFileUrl(url) {
   return "/api/ops/files" + url;
 }
 
-/**
- * Форматирует сумму из копеек в рубли («1 234,56 ₽»)
- */
-function formatSum(sum) {
-  if (sum === undefined || sum === null || sum === "") return "—";
-  const value = Number(sum);
-  if (isNaN(value)) return String(sum);
-  return (
-    (value / 100)
-      .toLocaleString("ru-RU", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-      // toLocaleString('ru-RU') использует неразрывный пробел (U+00A0) —
-      // нормализуем к обычному пробелу для одинакового вывода в Node и браузере
-      .replace(/\u00A0/g, " ") + " ₽"
-  );
-}
+// formatSum объявлена в _shared.js (общая функция для всех адаптеров)
