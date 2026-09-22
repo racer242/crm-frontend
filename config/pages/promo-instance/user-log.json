@@ -341,6 +341,48 @@
                     }
                   },
                   {
+                    "id": "eventDialogIpLabel",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "IP-адрес",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "eventDialogIpValue",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.eventsDialog.ip_address_label"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "eventDialogUserAgentLabel",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "User-Agent",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "eventDialogUserAgentValue",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.eventsDialog.user_agent_label"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
                     "id": "eventDialogPayloadLabel",
                     "type": "component",
                     "componentType": "LabelledGroup",
