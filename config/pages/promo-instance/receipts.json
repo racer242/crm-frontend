@@ -101,29 +101,6 @@
   },
   "sections": [
     {
-      "id": "breadcrumbSection",
-      "type": "section",
-      "className": "",
-      "blocks": [
-        {
-          "id": "breadcrumbBlock",
-          "type": "block",
-          "components": [
-            {
-              "id": "breadcrumb",
-              "type": "component",
-              "componentType": "Breadcrumb",
-              "className": "border-none p-0",
-              "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
-                "model": [{ "label": "Чеки" }]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "receiptsHeader",
       "type": "section",
       "className": "flex align-items-center justify-content-between",

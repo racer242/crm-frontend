@@ -20,6 +20,8 @@ All notable changes to this project will be documented in this file.
 - **Телефон в списке участников** (`config/adapters/users.get.response.js`): колонка «Телефон» после E-mail (`phone_label`, фолбэк «—» при отсутствии; поле `phone` уже приходило в items §2.1).
 - **Переход в CRM-модерацию с карточек чеков** (`config/pages/promo-instance/receipt.json`, `user-receipt.json`, `user-receipts.json`): в панели «Модерация» обеих карточек чека кнопка «Найти чек в модерации» → `/mgmt/receipts?search={receipt_id}`; на списке чеков участника правее фильтров кнопка «Найти чеки в модерации» → `/mgmt/receipts?search={user_id}`. На странице модерации (`config/pages/crm-management/receipts.json`) добавлен `dataInit` для `search` — поисковый запрос из URL отображается в поле поиска.
 - **Поиск и фильтры на списке чеков участника** (`config/pages/promo-instance/user-receipts.json`, `config/system/api-routes.json`): как на общей странице чеков — поиск + статусы модерации/ФНС, синхронизация с URL; маршрут `ops/users/[user_id]/receipts` переведён со shared-адаптера участников на `ops-receipts.get.request` (page/limit + search/status/fns_status).
+- **Убраны хлебные крошки с заглавных страниц разделов** (`config/pages/promo-instance/receipts.json`, `prizes.json`, `acts.json`, `messages.json`): секция `breadcrumbSection` с единственной текущей страницей в модели не несёт навигационной ценности (на карточках/подстраницах крошки сохранены).
+- **Кнопка «Обновить» на странице «Участники»** (`config/pages/promo-instance/users.json`): иконка-кнопка (`pi pi-refresh`, rounded text, tooltip «Обновить») справа в секции заголовка (секция переведена на `justify-content-between`), команда `refresh`.
 
 ### Fixed
 
