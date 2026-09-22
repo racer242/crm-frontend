@@ -53,7 +53,9 @@
                 "first": "{$state.products.first}",
                 "rows": "{$state.products.rows}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -85,14 +87,22 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
                   {
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
                   },
-                  { "label": "Покупки" }
+                  {
+                    "label": "Покупки"
+                  }
                 ]
               }
             }
@@ -116,7 +126,11 @@
               "props": {
                 "activeItemId": "production",
                 "activeSubitemId": "products",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/user.json"
               }
             }
@@ -127,20 +141,49 @@
     {
       "id": "productsHeader",
       "type": "section",
-      "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
           "id": "productsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "productsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Покупки",
                 "level": 1
               }
+            },
+            {
+              "id": "productsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -169,16 +212,25 @@
                 "lazy": true,
                 "size": "normal",
                 "stripedRows": true,
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUserProducts"]
+                  "commands": [
+                    "requestUserProducts"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUserProducts"]
+                  "commands": [
+                    "requestUserProducts"
+                  ]
                 }
               ]
             }

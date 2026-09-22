@@ -10,8 +10,14 @@
     "search": "",
     "is_active": "",
     "activeOptions": [
-      { "label": "Активные", "value": "true" },
-      { "label": "Неактивные", "value": "false" }
+      {
+        "label": "Активные",
+        "value": "true"
+      },
+      {
+        "label": "Неактивные",
+        "value": "false"
+      }
     ],
     "stats": {
       "value": [],
@@ -65,7 +71,9 @@
                 "search": "{$state.search}",
                 "is_active": "{$state.is_active}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -88,7 +96,10 @@
         "commands": [
           {
             "type": "setProperty",
-            "params": { "target": "state.creating", "value": true }
+            "params": {
+              "target": "state.creating",
+              "value": true
+            }
           },
           {
             "type": "sendRequest",
@@ -105,7 +116,10 @@
               "onSuccess": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.creating", "value": false }
+                  "params": {
+                    "target": "state.creating",
+                    "value": false
+                  }
                 },
                 {
                   "type": "sendRequest",
@@ -139,7 +153,10 @@
               "onError": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.creating", "value": false }
+                  "params": {
+                    "target": "state.creating",
+                    "value": false
+                  }
                 },
                 {
                   "type": "showToast",
@@ -172,7 +189,11 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "reports",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/stats.json"
               }
             }
@@ -183,20 +204,49 @@
     {
       "id": "statsHeader",
       "type": "section",
-      "className": "flex justify-content-between align-items-center",
       "blocks": [
         {
           "id": "statsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "statsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Отчёты статистики",
                 "level": 1
               }
+            },
+            {
+              "id": "statsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -284,7 +334,9 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": ["createReport"]
+                  "commands": [
+                    "createReport"
+                  ]
                 }
               ]
             }
@@ -316,7 +368,12 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
                 "customColumns": [
                   {
                     "field": "actions",
@@ -326,12 +383,18 @@
                       {
                         "id": "btnOpenRow",
                         "componentType": "Button",
-                        "style": { "marginLeft": "auto" },
+                        "style": {
+                          "marginLeft": "auto"
+                        },
                         "props": {
                           "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
                         },
                         "events": [
                           {
@@ -354,7 +417,9 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestReports"]
+                  "commands": [
+                    "requestReports"
+                  ]
                 },
                 {
                   "type": "onRowClick",

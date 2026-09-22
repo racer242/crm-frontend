@@ -9,18 +9,48 @@
     "status": "",
     "fns_status": "",
     "moderationStatuses": [
-      { "label": "На проверке", "value": "CHECKING" },
-      { "label": "Принят", "value": "ACCEPTED" },
-      { "label": "Отклонён", "value": "REFUSED" },
-      { "label": "Отложен", "value": "SUSPENDED" },
-      { "label": "Требуется загрузка фото", "value": "NEED_PHOTO" },
-      { "label": "Ручная загрузка", "value": "HAND_LOAD" }
+      {
+        "label": "На проверке",
+        "value": "CHECKING"
+      },
+      {
+        "label": "Принят",
+        "value": "ACCEPTED"
+      },
+      {
+        "label": "Отклонён",
+        "value": "REFUSED"
+      },
+      {
+        "label": "Отложен",
+        "value": "SUSPENDED"
+      },
+      {
+        "label": "Требуется загрузка фото",
+        "value": "NEED_PHOTO"
+      },
+      {
+        "label": "Ручная загрузка",
+        "value": "HAND_LOAD"
+      }
     ],
     "fnsStatuses": [
-      { "label": "Не проверен", "value": "no_check" },
-      { "label": "Ожидает ФНС", "value": "wait" },
-      { "label": "Не найден в ФНС", "value": "wrong" },
-      { "label": "Чек корректный", "value": "correct" }
+      {
+        "label": "Не проверен",
+        "value": "no_check"
+      },
+      {
+        "label": "Ожидает ФНС",
+        "value": "wait"
+      },
+      {
+        "label": "Не найден в ФНС",
+        "value": "wrong"
+      },
+      {
+        "label": "Чек корректный",
+        "value": "correct"
+      }
     ],
     "receipts": {
       "value": [],
@@ -80,7 +110,9 @@
                 "status": "{$state.status}",
                 "fns_status": "{$state.fns_status}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -103,20 +135,49 @@
     {
       "id": "receiptsHeader",
       "type": "section",
-      "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
           "id": "receiptsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "receiptsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Чеки",
                 "level": 1
               }
+            },
+            {
+              "id": "receiptsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -246,7 +307,12 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
                 "customColumns": [
                   {
                     "field": "user",
@@ -285,7 +351,11 @@
                           "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
                         },
                         "events": [
                           {
@@ -308,11 +378,15 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestReceipts"]
+                  "commands": [
+                    "requestReceipts"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestReceipts"]
+                  "commands": [
+                    "requestReceipts"
+                  ]
                 },
                 {
                   "type": "onRowClick",

@@ -67,7 +67,9 @@
                 "search": "{$state.search}",
                 "topic": "{$state.topic}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -89,20 +91,49 @@
     {
       "id": "messagesHeader",
       "type": "section",
-      "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
           "id": "messagesTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "messagesPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Сообщения",
                 "level": 1
               }
+            },
+            {
+              "id": "messagesRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -202,16 +233,25 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestMessages"]
+                  "commands": [
+                    "requestMessages"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestMessages"]
+                  "commands": [
+                    "requestMessages"
+                  ]
                 },
                 {
                   "type": "onRowClick",
@@ -257,7 +297,9 @@
                 "closable": true,
                 "draggable": false,
                 "resizable": false,
-                "style": { "width": "560px" },
+                "style": {
+                  "width": "560px"
+                },
                 "containerClassName": "flex flex-column gap-1",
                 "components": [
                   {
@@ -383,7 +425,9 @@
                     "type": "component",
                     "componentType": "Divider",
                     "className": "my-1",
-                    "props": { "type": "solid" }
+                    "props": {
+                      "type": "solid"
+                    }
                   },
                   {
                     "id": "messageDialogSubjectLabel",

@@ -90,7 +90,9 @@
                 "search": "{$state.search}",
                 "is_active": "true"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -146,7 +148,10 @@
         "commands": [
           {
             "type": "setProperty",
-            "params": { "target": "state.running", "value": true }
+            "params": {
+              "target": "state.running",
+              "value": true
+            }
           },
           {
             "type": "sendRequest",
@@ -163,13 +168,19 @@
               "onSuccess": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.running", "value": false }
+                  "params": {
+                    "target": "state.running",
+                    "value": false
+                  }
                 }
               ],
               "onError": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.running", "value": false }
+                  "params": {
+                    "target": "state.running",
+                    "value": false
+                  }
                 },
                 {
                   "type": "showToast",
@@ -191,7 +202,10 @@
         "commands": [
           {
             "type": "setProperty",
-            "params": { "target": "state.running", "value": true }
+            "params": {
+              "target": "state.running",
+              "value": true
+            }
           },
           {
             "type": "sendRequest",
@@ -209,13 +223,19 @@
               "onSuccess": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.running", "value": false }
+                  "params": {
+                    "target": "state.running",
+                    "value": false
+                  }
                 }
               ],
               "onError": [
                 {
                   "type": "setProperty",
-                  "params": { "target": "state.running", "value": false }
+                  "params": {
+                    "target": "state.running",
+                    "value": false
+                  }
                 },
                 {
                   "type": "showToast",
@@ -248,7 +268,11 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "run",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/stats.json"
               }
             }
@@ -259,20 +283,49 @@
     {
       "id": "statsHeader",
       "type": "section",
-      "className": "flex justify-content-between align-items-center",
       "blocks": [
         {
           "id": "statsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "statsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Статистика",
                 "level": 1
               }
+            },
+            {
+              "id": "statsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -281,7 +334,13 @@
     {
       "id": "mainSection",
       "type": "section",
-      "grid": { "cols": ["col-12 lg:col-6", "col-12 lg:col-6"], "padding": "" },
+      "grid": {
+        "cols": [
+          "col-12 lg:col-6",
+          "col-12 lg:col-6"
+        ],
+        "padding": ""
+      },
       "blocks": [
         {
           "id": "reportsBlock",
@@ -320,7 +379,12 @@
               "componentType": "DataTable",
               "props": {
                 "value": "@state.reports.value",
-                "columns": [{ "field": "title", "header": "Название" }],
+                "columns": [
+                  {
+                    "field": "title",
+                    "header": "Название"
+                  }
+                ],
                 "totalRecords": "@state.reports.totalRecords",
                 "rows": "@state.reports.rows",
                 "first": "@state.reports.first",
@@ -329,7 +393,12 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
                 "customColumns": [
                   {
                     "field": "actions",
@@ -339,12 +408,19 @@
                       {
                         "id": "btnSelectRow",
                         "componentType": "Button",
-                        "style": { "marginLeft": "auto", "pointerEvents": "none" },
+                        "style": {
+                          "marginLeft": "auto",
+                          "pointerEvents": "none"
+                        },
                         "props": {
                           "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
                         }
                       }
                     ]
@@ -354,11 +430,15 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestReports"]
+                  "commands": [
+                    "requestReports"
+                  ]
                 },
                 {
                   "type": "onRowClick",
-                  "commands": ["selectReport"]
+                  "commands": [
+                    "selectReport"
+                  ]
                 }
               ]
             }
@@ -606,7 +686,9 @@
                           "events": [
                             {
                               "type": "onClick",
-                              "commands": ["runReport"]
+                              "commands": [
+                                "runReport"
+                              ]
                             }
                           ]
                         },
@@ -668,7 +750,10 @@
           "type": "block",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Результат", "className": "w-full" }
+            "props": {
+              "header": "Результат",
+              "className": "w-full"
+            }
           },
           "components": [
             {
@@ -685,13 +770,20 @@
                 "lazy": true,
                 "size": "small",
                 "stripedRows": true,
-                "rowsPerPageOptions": [10, 20, 50, 100],
+                "rowsPerPageOptions": [
+                  10,
+                  20,
+                  50,
+                  100
+                ],
                 "emptyMessage": "Выберите отчёт и нажмите «Запустить»"
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["runReportPage"]
+                  "commands": [
+                    "runReportPage"
+                  ]
                 }
               ]
             }

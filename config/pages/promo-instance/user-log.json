@@ -55,7 +55,9 @@
                 "first": "{$state.events.first}",
                 "rows": "{$state.events.rows}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -87,14 +89,22 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
                   {
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
                   },
-                  { "label": "Журнал" }
+                  {
+                    "label": "Журнал"
+                  }
                 ]
               }
             }
@@ -117,7 +127,11 @@
               "componentType": "Menubar",
               "props": {
                 "activeItemId": "events",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/user.json"
               }
             }
@@ -128,20 +142,49 @@
     {
       "id": "eventsHeader",
       "type": "section",
-      "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
           "id": "eventsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "eventsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Журнал событий",
                 "level": 1
               }
+            },
+            {
+              "id": "eventsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -171,16 +214,25 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
               },
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestEvents"]
+                  "commands": [
+                    "requestEvents"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestEvents"]
+                  "commands": [
+                    "requestEvents"
+                  ]
                 },
                 {
                   "type": "onRowClick",
@@ -226,7 +278,9 @@
                 "closable": true,
                 "draggable": false,
                 "resizable": false,
-                "style": { "width": "560px" },
+                "style": {
+                  "width": "560px"
+                },
                 "containerClassName": "flex flex-column gap-1",
                 "components": [
                   {
@@ -282,7 +336,9 @@
                     "type": "component",
                     "componentType": "Divider",
                     "className": "my-1",
-                    "props": { "type": "solid" }
+                    "props": {
+                      "type": "solid"
+                    }
                   },
                   {
                     "id": "eventDialogPayloadLabel",

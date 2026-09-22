@@ -43,7 +43,9 @@
                 "first": "{$state.acts.first}",
                 "rows": "{$state.acts.rows}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" }
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -63,20 +65,49 @@
     {
       "id": "actsHeader",
       "type": "section",
-      "className": "flex align-items-center justify-content-between",
       "blocks": [
         {
           "id": "actsTitle",
           "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
           "components": [
             {
               "id": "actsPageTitle",
               "type": "component",
               "componentType": "Text",
+              "className": "w-full",
               "props": {
                 "value": "Акты",
                 "level": 1
               }
+            },
+            {
+              "id": "actsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -106,7 +137,12 @@
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
                 "customColumns": [
                   {
                     "field": "user",
@@ -145,7 +181,11 @@
                           "icon": "pi pi-arrow-right",
                           "link": true,
                           "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
                         },
                         "events": [
                           {
@@ -168,11 +208,15 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestActs"]
+                  "commands": [
+                    "requestActs"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestActs"]
+                  "commands": [
+                    "requestActs"
+                  ]
                 },
                 {
                   "type": "onRowClick",
