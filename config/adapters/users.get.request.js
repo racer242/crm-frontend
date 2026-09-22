@@ -34,6 +34,11 @@ function transform(params = {}) {
     result.status = base.status;
   }
 
+  // Пробрасываем фильтр по теме сообщения (справочник feedback_topics)
+  if (base.topic) {
+    result.topic = base.topic;
+  }
+
   // Пробрасываем фильтр по участнику (общий список чеков 2.11: user_id+status)
   if (base.user_id) {
     result.user_id = base.user_id;

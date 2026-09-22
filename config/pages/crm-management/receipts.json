@@ -103,7 +103,7 @@
               "type": "component",
               "componentType": "Text",
               "props": {
-                "value": "Чеки",
+                "value": "Модерация чеков",
                 "level": 1
               }
             }

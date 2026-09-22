@@ -120,10 +120,20 @@
     "url": "/api/v1/crm/receipts",
     "channel": "instance",
     "adapter": {
-      "request": "users.get.request",
+      "request": "ops-receipts.get.request",
       "response": "receipts.response"
     },
-    "note": "Операционные данные: Список чеков"
+    "note": "Операционные данные: Список чеков (search, status, fns_status, user_id)"
+  },
+  {
+    "path": "ops/dictionaries/[name]",
+    "method": "GET",
+    "url": "/api/v1/crm/dictionaries/{$location.routeParams.name}",
+    "channel": "instance",
+    "adapter": {
+      "response": "dictionaries.response"
+    },
+    "note": "Операционные данные: Записи справочника (§3.6.3; feedback_topics для фильтра сообщений)"
   },
   {
     "path": "ops/users/[user_id]/receipts",

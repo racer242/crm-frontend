@@ -5,6 +5,9 @@
   "state": {
     "loading": false,
     "initialized": true,
+    "search": "",
+    "topic": "",
+    "topics": [],
     "messages": {
       "value": [],
       "columns": [],
@@ -20,13 +23,30 @@
   },
   "dataFeed": [
     {
+      "url": "/api/ops/dictionaries/feedback_topics",
+      "method": "GET",
+      "target": "state.topics"
+    },
+    {
       "url": "/api/ops/messages",
       "data": {
         "first": "{$location.params.first}",
-        "rows": "{$location.params.rows}"
+        "rows": "{$location.params.rows}",
+        "search": "{$location.params.search}",
+        "topic": "{$location.params.topic}"
       },
       "method": "GET",
       "target": "state.messages"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.topic}",
+      "target": "state.topic"
     }
   ],
   "shortcuts": {
@@ -43,7 +63,9 @@
               "data": {
                 "event": "{$event}",
                 "first": "{$state.messages.first}",
-                "rows": "{$state.messages.rows}"
+                "rows": "{$state.messages.rows}",
+                "search": "{$state.search}",
+                "topic": "{$state.topic}"
               },
               "format": { "$ref": "../../system/list-request-format.json" }
             }
@@ -53,7 +75,9 @@
             "params": {
               "values": {
                 "first": "{$state.messages.first}",
-                "rows": "{$state.messages.rows}"
+                "rows": "{$state.messages.rows}",
+                "search": "{$state.search}",
+                "topic": "{$state.topic}"
               }
             }
           }
@@ -102,6 +126,76 @@
                 "value": "Сообщения",
                 "level": 1
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "messagesFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "messagesSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "messagesSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.search"
+                      }
+                    },
+                    "requestMessages"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "messagesTopicFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.topics.options",
+                "value": "@state.topic",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Тема...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.topic"
+                      }
+                    },
+                    "requestMessages"
+                  ]
+                }
+              ]
             }
           ]
         }

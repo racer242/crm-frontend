@@ -67,6 +67,14 @@
     "type": "js",
     "script": "./config/adapters/user-log.response.js"
   },
+  "ops-receipts.get.request": {
+    "type": "js",
+    "script": "./config/adapters/ops-receipts.get.request.js"
+  },
+  "dictionaries.response": {
+    "type": "js",
+    "script": "./config/adapters/dictionaries.response.js"
+  },
   "messages.response": {
     "type": "js",
     "script": "./config/adapters/messages.response.js"
