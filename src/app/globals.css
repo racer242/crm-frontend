@@ -105,6 +105,12 @@ input.p-inputtext {
   background: rgba(255, 255, 255, 0);
 }
 
+/* Надпись «Всего: N» в пагинаторе — не интерактивный элемент
+   (наследует cursor:pointer от элементов пагинатора) */
+.p-paginator .p-paginator-current {
+  cursor: default;
+}
+
 /* Принудительный перенос длинных слов (e-mail, имена, UUID) в узких контейнерах.
    PrimeFlex не содержит утилит overflow-wrap/word-break. */
 .wrap-anywhere {
