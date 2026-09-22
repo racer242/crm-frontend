@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Журнал событий участника** — страница `/ops/users/[user_id]/log` (`config/pages/promo-instance/user-log.json`, по образцу страницы сообщений):
+  - пункт «Журнал» в меню участника (`config/menus/user.json`, `activeItemId: events`);
+  - lazy-таблица событий: ID (`dataType: uuid`), Тип события, Данные события (`payload_summary` — краткая сводка payload), Дата (`dataType: date` — пояс зрителя); интерактивные строки (`selectionMode: single`);
+  - клик по строке открывает попап (по механике попапа сообщений): тип события, ID, дата, полный `payload` события — отформатированный JSON с переносами (`payload_pretty` готовит адаптер);
+  - пагинация (шорткат `requestEvents` + `mergeUrlParams`);
+  - response-адаптер `user-log.response` (конверт `{status,data}` → `{value, columns, totalRecords, first, rows}`) + переиспользованный request-адаптер `users.get.request` (first/rows → page/limit);
+  - маршрут `ops/users/[user_id]/log/events` GET → `/api/v1/crm/users/{user_id}/log/events` (channel: instance, HMAC).
+  - примечание: при несуществующем `user_id` API отдаёт 404 `RESOURCE_NOT_FOUND` (проверено живым запросом) — страница рассчитана на вход из карточки участника.
+
 ### Changed
 
 - **Карточка mgmt-чека: группа «Причина отклонения» приведена к стилю панели «Модерация»** (vertical label сверху, `font-bold text-sm`, как у «Торговая сеть»/«Статус модерации»/«Комментарий» — grid-стиль col-4/col-8 от левой панели убран).

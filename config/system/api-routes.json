@@ -159,6 +159,17 @@
     "note": "Операционные данные: Сообщения участника"
   },
   {
+    "path": "ops/users/[user_id]/log/events",
+    "method": "GET",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/log/events",
+    "channel": "instance",
+    "adapter": {
+      "request": "users.get.request",
+      "response": "user-log.response"
+    },
+    "note": "Операционные данные: Журнал событий участника (§5.3)"
+  },
+  {
     "path": "ops/receipts/[receipt_id]",
     "method": "GET",
     "url": "/api/v1/crm/receipts/{$location.routeParams.receipt_id}",

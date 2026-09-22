@@ -62,6 +62,12 @@
       "label": "Общение",
       "icon": "pi pi-envelope",
       "route": "/ops/users/{@state.userData.id}/messages"
+    },
+    {
+      "id": "events",
+      "label": "Журнал",
+      "icon": "pi pi-history",
+      "route": "/ops/users/{@state.userData.id}/log"
     }
   ]
 }

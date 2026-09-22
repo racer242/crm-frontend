@@ -74,6 +74,9 @@
       "$ref": "./pages/promo-instance/user-messages.json"
     },
     {
+      "$ref": "./pages/promo-instance/user-log.json"
+    },
+    {
       "$ref": "./pages/promo-instance/receipts.json"
     },
     {

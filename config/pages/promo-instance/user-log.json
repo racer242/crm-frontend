@@ -1,0 +1,366 @@
+{
+  "id": "user-log",
+  "type": "page",
+  "route": "/ops/users/[user_id]/log",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "events": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    },
+    "eventsDialog": {},
+    "eventsDialogVisible": false
+  },
+  "meta": {
+    "title": "Журнал событий участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/log/events",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.events"
+    }
+  ],
+  "shortcuts": {
+    "requestEvents": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}/log/events",
+              "method": "GET",
+              "target": "state.events",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.events.first}",
+                "rows": "{$state.events.rows}"
+              },
+              "format": { "$ref": "../../system/list-request-format.json" }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.events.first}",
+                "rows": "{$state.events.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": { "icon": "pi pi-home", "url": "/" },
+                "model": [
+                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  { "label": "Журнал" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "events",
+                "pt": { "menu": { "className": "gap-1" } },
+                "$ref": "../../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eventsHeader",
+      "type": "section",
+      "className": "flex align-items-center justify-content-between",
+      "blocks": [
+        {
+          "id": "eventsTitle",
+          "type": "block",
+          "components": [
+            {
+              "id": "eventsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "props": {
+                "value": "Журнал событий",
+                "level": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eventsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "eventsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "eventsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.events.value",
+                "columns": "@state.events.columns",
+                "totalRecords": "@state.events.totalRecords",
+                "rows": "@state.events.rows",
+                "first": "@state.events.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestEvents"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": ["requestEvents"]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.data",
+                        "target": "state.eventsDialog"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.eventsDialogVisible",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eventDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "eventDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "eventDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "Событие",
+                "visible": "@state.eventsDialogVisible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": { "width": "560px" },
+                "containerClassName": "flex flex-column gap-1",
+                "components": [
+                  {
+                    "id": "eventDialogHeader",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex align-items-start gap-2",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "eventDialogType",
+                          "type": "component",
+                          "componentType": "LayoutGroup",
+                          "className": "flex flex-column gap-1",
+                          "props": {
+                            "components": [
+                              {
+                                "id": "eventDialogTypeValue",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.eventsDialog.event_type"
+                                }
+                              },
+                              {
+                                "id": "eventDialogId",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 text-sm text-500",
+                                "props": {
+                                  "value": "@state.eventsDialog.event_id"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "eventDialogDate",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 text-sm text-500 ml-auto",
+                          "props": {
+                            "value": "@state.eventsDialog.created_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "eventDialogDivider",
+                    "type": "component",
+                    "componentType": "Divider",
+                    "className": "my-1",
+                    "props": { "type": "solid" }
+                  },
+                  {
+                    "id": "eventDialogPayloadLabel",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Данные события",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "eventDialogPayload",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 white-space-pre-wrap",
+                          "props": {
+                            "value": "@state.eventsDialog.payload_pretty"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "eventDialogActions",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex gap-2 justify-content-end",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "eventDialogCloseButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Закрыть",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.eventsDialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.eventsDialogVisible",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
