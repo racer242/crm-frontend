@@ -764,6 +764,31 @@
                               ]
                             }
                           ]
+                        },
+                        {
+                          "id": "btnFindInMgmt",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Найти чек в модерации",
+                            "icon": "pi pi-external-link",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/mgmt/receipts?search={$location.routeParams.receipt_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     },

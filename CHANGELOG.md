@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
   - маршрут `ops/users/[user_id]/log/events` GET → `/api/v1/crm/users/{user_id}/log/events` (channel: instance, HMAC).
   - примечание: при несуществующем `user_id` API отдаёт 404 `RESOURCE_NOT_FOUND` (проверено живым запросом) — страница рассчитана на вход из карточки участника.
 - **Телефон в списке участников** (`config/adapters/users.get.response.js`): колонка «Телефон» после E-mail (`phone_label`, фолбэк «—» при отсутствии; поле `phone` уже приходило в items §2.1).
+- **Переход в CRM-модерацию с карточек чеков** (`config/pages/promo-instance/receipt.json`, `user-receipt.json`, `user-receipts.json`): в панели «Модерация» обеих карточек чека кнопка «Найти чек в модерации» → `/mgmt/receipts?search={receipt_id}`; на списке чеков участника правее фильтров кнопка «Найти чеки в модерации» → `/mgmt/receipts?search={user_id}`. На странице модерации (`config/pages/crm-management/receipts.json`) добавлен `dataInit` для `search` — поисковый запрос из URL отображается в поле поиска.
+- **Поиск и фильтры на списке чеков участника** (`config/pages/promo-instance/user-receipts.json`, `config/system/api-routes.json`): как на общей странице чеков — поиск + статусы модерации/ФНС, синхронизация с URL; маршрут `ops/users/[user_id]/receipts` переведён со shared-адаптера участников на `ops-receipts.get.request` (page/limit + search/status/fns_status).
 
 ### Fixed
 

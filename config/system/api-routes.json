@@ -141,10 +141,10 @@
     "url": "/api/v1/crm/users/{$location.routeParams.user_id}/receipts",
     "channel": "instance",
     "adapter": {
-      "request": "users.get.request",
+      "request": "ops-receipts.get.request",
       "response": "user-receipts.response"
     },
-    "note": "Операционные данные: Чеки участника"
+    "note": "Операционные данные: Чеки участника (search, status, fns_status)"
   },
   {
     "path": "ops/users/[user_id]/products",

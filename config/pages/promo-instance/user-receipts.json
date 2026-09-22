@@ -10,6 +10,23 @@
       "full_name": "",
       "email": ""
     },
+    "search": "",
+    "status": "",
+    "fns_status": "",
+    "moderationStatuses": [
+      { "label": "На проверке", "value": "CHECKING" },
+      { "label": "Принят", "value": "ACCEPTED" },
+      { "label": "Отклонён", "value": "REFUSED" },
+      { "label": "Отложен", "value": "SUSPENDED" },
+      { "label": "Требуется загрузка фото", "value": "NEED_PHOTO" },
+      { "label": "Ручная загрузка", "value": "HAND_LOAD" }
+    ],
+    "fnsStatuses": [
+      { "label": "Не проверен", "value": "no_check" },
+      { "label": "Ожидает ФНС", "value": "wait" },
+      { "label": "Не найден в ФНС", "value": "wrong" },
+      { "label": "Чек корректный", "value": "correct" }
+    ],
     "receipts": {
       "value": [],
       "columns": [],
@@ -31,10 +48,27 @@
       "url": "/api/ops/users/{$location.routeParams.user_id}/receipts",
       "data": {
         "first": "{$location.params.first}",
-        "rows": "{$location.params.rows}"
+        "rows": "{$location.params.rows}",
+        "search": "{$location.params.search}",
+        "status": "{$location.params.status}",
+        "fns_status": "{$location.params.fns_status}"
       },
       "method": "GET",
       "target": "state.receipts"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.status}",
+      "target": "state.status"
+    },
+    {
+      "source": "{$location.params.fns_status}",
+      "target": "state.fns_status"
     }
   ],
   "shortcuts": {
@@ -51,7 +85,10 @@
               "data": {
                 "event": "{$event}",
                 "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "rows": "{$state.receipts.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "fns_status": "{$state.fns_status}"
               },
               "format": { "$ref": "../../system/list-request-format.json" }
             }
@@ -61,7 +98,10 @@
             "params": {
               "values": {
                 "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}"
+                "rows": "{$state.receipts.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "fns_status": "{$state.fns_status}"
               }
             }
           }
@@ -141,6 +181,132 @@
                 "value": "Чеки",
                 "level": 1
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "receiptsSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "userReceiptsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.search"
+                      }
+                    },
+                    "requestUserReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "userReceiptsStatusFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.moderationStatuses",
+                "value": "@state.status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус модерации...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.status"
+                      }
+                    },
+                    "requestUserReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "userReceiptsFnsStatusFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.fnsStatuses",
+                "value": "@state.fns_status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус ФНС...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.fns_status"
+                      }
+                    },
+                    "requestUserReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "userReceiptsFindInMgmtButton",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0",
+              "props": {
+                "label": "Найти чеки в модерации",
+                "icon": "pi pi-external-link",
+                "severity": "secondary",
+                "outlined": true,
+                "size": "small"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/mgmt/receipts?search={$location.routeParams.user_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

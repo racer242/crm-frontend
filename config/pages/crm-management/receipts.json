@@ -36,6 +36,12 @@
       "target": "state.receipts"
     }
   ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.receipts.search"
+    }
+  ],
   "shortcuts": {
     "requestReceipts": {
       "type": "sequence",
