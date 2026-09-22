@@ -212,10 +212,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": [
-          "col-12 lg:col-6",
-          "col-12 lg:col-6"
-        ],
+        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
         "padding": "p-2"
       },
       "blocks": [
@@ -231,6 +228,7 @@
                   "id": "userRefreshButton",
                   "type": "component",
                   "componentType": "Button",
+                  "className": "-m-3",
                   "props": {
                     "icon": "pi pi-refresh",
                     "rounded": true,
@@ -453,10 +451,7 @@
               "className": "mb-3",
               "props": {
                 "grid": {
-                  "cols": [
-                    "col-6",
-                    "col-6"
-                  ],
+                  "cols": ["col-6", "col-6"],
                   "padding": "p-2"
                 },
                 "components": [

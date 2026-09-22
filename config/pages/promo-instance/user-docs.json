@@ -19,7 +19,6 @@
       "passport_series_number": "",
       "passport_issued_by": "",
       "passport_issue_date": "",
-      "passport_issue_date": "",
       "passport_registration_address": "",
       "inn": "",
       "snils": "",
@@ -60,14 +59,22 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
                   {
                     "label": "@state.docsData.fullName",
                     "route": "/ops/users/{@state.docsData.id}"
                   },
-                  { "label": "Документы" }
+                  {
+                    "label": "Документы"
+                  }
                 ]
               }
             }
@@ -91,7 +98,11 @@
               "props": {
                 "activeItemId": "docs",
                 "activeSubitemId": "personal-docs",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/user.json"
               }
             }
@@ -104,7 +115,10 @@
       "type": "section",
       "className": "flex",
       "grid": {
-        "cols": ["col-12 lg:col-6", "col-12 lg:col-6"],
+        "cols": [
+          "col-12 lg:col-6",
+          "col-12 lg:col-6"
+        ],
         "padding": "p-2"
       },
       "blocks": [
@@ -256,7 +270,7 @@
                             "value": "@state.docsData.passport_issue_date",
                             "dataType": "date",
                             "dateFormat": "DD.MM.YYYY"
-                        },
+                          },
                           "state": {}
                         }
                       ]
@@ -380,7 +394,38 @@
           "wrapper": {
             "component": "Panel",
             "props": {
-              "header": "Документы"
+              "header": "Документы",
+              "headerComponents": [
+                {
+                  "id": "userDocsRefreshButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "className": "-m-3",
+                  "props": {
+                    "icon": "pi pi-refresh",
+                    "rounded": true,
+                    "text": true,
+                    "severity": "secondary",
+                    "size": "small",
+                    "aria-label": "Обновить",
+                    "tooltip": "Обновить",
+                    "tooltipOptions": {
+                      "position": "left"
+                    }
+                  },
+                  "events": [
+                    {
+                      "type": "onClick",
+                      "commands": [
+                        {
+                          "type": "refresh",
+                          "params": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           },
           "components": [
@@ -391,7 +436,10 @@
               "props": {
                 "value": "@state.docsData.documents",
                 "columns": [
-                  { "field": "label", "header": "Тип документа" }
+                  {
+                    "field": "label",
+                    "header": "Тип документа"
+                  }
                 ],
                 "customColumns": [
                   {
@@ -458,7 +506,9 @@
               "className": "flex-grow-1",
               "pt": {
                 "content": {
-                  "style": { "background": "var(--surface-50) !important" }
+                  "style": {
+                    "background": "var(--surface-50) !important"
+                  }
                 }
               }
             }

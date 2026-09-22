@@ -315,7 +315,38 @@
           "wrapper": {
             "component": "Panel",
             "props": {
-              "header": "Информация о чеке"
+              "header": "Информация о чеке",
+              "headerComponents": [
+                {
+                  "id": "userReceiptRefreshButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "className": "-m-3",
+                  "props": {
+                    "icon": "pi pi-refresh",
+                    "rounded": true,
+                    "text": true,
+                    "severity": "secondary",
+                    "size": "small",
+                    "aria-label": "Обновить",
+                    "tooltip": "Обновить",
+                    "tooltipOptions": {
+                      "position": "left"
+                    }
+                  },
+                  "events": [
+                    {
+                      "type": "onClick",
+                      "commands": [
+                        {
+                          "type": "refresh",
+                          "params": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           },
           "className": "flex flex-column gap-3",

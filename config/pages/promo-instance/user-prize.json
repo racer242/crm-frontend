@@ -58,9 +58,15 @@
               "componentType": "Breadcrumb",
               "className": "border-none p-0",
               "props": {
-                "home": { "icon": "pi pi-home", "url": "/" },
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
                 "model": [
-                  { "label": "Участники", "route": "/ops/users" },
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
                   {
                     "label": "@state.userData.full_name",
                     "route": "/ops/users/{@state.userData.id}"
@@ -69,7 +75,9 @@
                     "label": "Призы",
                     "route": "/ops/users/{@state.userData.id}/prizes"
                   },
-                  { "label": "@state.prizeData.title" }
+                  {
+                    "label": "@state.prizeData.title"
+                  }
                 ]
               }
             }
@@ -93,7 +101,11 @@
               "props": {
                 "activeItemId": "achievements",
                 "activeSubitemId": "prizes",
-                "pt": { "menu": { "className": "gap-1" } },
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
                 "$ref": "../../menus/user.json"
               }
             }
@@ -106,7 +118,10 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
+        "cols": [
+          "col-12 lg:col-8",
+          "col-12 lg:col-4"
+        ],
         "padding": "p-2"
       },
       "blocks": [
@@ -116,7 +131,38 @@
           "wrapper": {
             "component": "Panel",
             "props": {
-              "header": "Информация о призе"
+              "header": "Информация о призе",
+              "headerComponents": [
+                {
+                  "id": "userPrizeRefreshButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "className": "-m-3",
+                  "props": {
+                    "icon": "pi pi-refresh",
+                    "rounded": true,
+                    "text": true,
+                    "severity": "secondary",
+                    "size": "small",
+                    "aria-label": "Обновить",
+                    "tooltip": "Обновить",
+                    "tooltipOptions": {
+                      "position": "left"
+                    }
+                  },
+                  "events": [
+                    {
+                      "type": "onClick",
+                      "commands": [
+                        {
+                          "type": "refresh",
+                          "params": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           },
           "className": "flex flex-column gap-3",
@@ -136,7 +182,9 @@
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
-                    "style": { "wordBreak": "break-all" },
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
                     "props": {
                       "value": "@state.prizeData.id"
                     }
