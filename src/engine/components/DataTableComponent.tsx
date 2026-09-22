@@ -188,9 +188,25 @@ export function renderDataTable({
 
   if (!mergedColumns || mergedColumns.length === 0) return null;
 
+  // Пагинация: при известном totalRecords добавляем в конец панели
+  // CurrentPageReport «Всего: N» (после селектора строк), не меняя
+  // остальной вид пагинатора. Явные paginatorTemplate /
+  // currentPageReportTemplate из конфига страницы имеют приоритет.
+  const paginatorDefaults =
+    props.paginator && props.totalRecords != null
+      ? {
+          paginatorTemplate:
+            props.paginatorTemplate ||
+            "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport",
+          currentPageReportTemplate:
+            props.currentPageReportTemplate || "Всего: {totalRecords}",
+        }
+      : {};
+
   return (
     <DataTable
       {...restProps}
+      {...paginatorDefaults}
       value={props.value || []}
       emptyMessage={emptyMessage || t("emptyMessage")}
       className={`w-full ${className || ""}`}

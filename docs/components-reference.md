@@ -554,6 +554,8 @@ InputText с прикреплённой кнопкой справа, объед�
 
 **События:** `onPage` → `{ first, rows, ... }` (только при `lazy: true`)
 
+**Пагинация — счётчик записей:** при `paginator: true` и известном `totalRecords` в конец панели пагинации (после селектора строк) автоматически добавляется надпись **«Всего: N»** (элемент `CurrentPageReport`, `{totalRecords}` подставляет PrimeReact). Остальной вид пагинатора не меняется. Переопределяется пропсами `paginatorTemplate` и `currentPageReportTemplate` из конфига; при отсутствии `totalRecords` надпись не выводится.
+
 **Колонки (`columns`):**
 
 ```json
