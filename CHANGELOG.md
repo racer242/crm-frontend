@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
   - маршрут `ops/users/[user_id]/log/events` GET → `/api/v1/crm/users/{user_id}/log/events` (channel: instance, HMAC).
   - примечание: при несуществующем `user_id` API отдаёт 404 `RESOURCE_NOT_FOUND` (проверено живым запросом) — страница рассчитана на вход из карточки участника.
 
+### Fixed
+
+- **Адаптер `user-log.response` читал `data.items` вместо конверта** — движок передаёт response-адаптеру весь ответ API `{status:"ok", data:{items, pagination}}` без разворачивания (как остальные адаптеры, напр. `messages.response.js`), а адаптер обращался к `items`/`pagination` напрямую → пустой `value` и `totalRecords: 0`. Добавлено разворачивание конверта (`source.status === "ok" ? source.data : source`); проверено исполнением адаптера в среде движка (`new Function("data", ...)` на синтетическом конверте §5.3): колонки/маркеры dataType, payload_summary/payload_pretty, пагинация — корректны.
+
 ### Changed
 
 - **Карточка mgmt-чека: группа «Причина отклонения» приведена к стилю панели «Модерация»** (vertical label сверху, `font-bold text-sm`, как у «Торговая сеть»/«Статус модерации»/«Комментарий» — grid-стиль col-4/col-8 от левой панели убран).

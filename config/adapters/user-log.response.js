@@ -2,7 +2,9 @@
 // Envelope {status:"ok", data:{items:[...], pagination:{...}}} → list-request format.
 // Date formatting is client-side (dataType markers in columns), adapters keep raw ISO.
 
-function transform(data) {
+function transform(source) {
+  // Конверт {status:"ok", data:{items, pagination}} → внутренний data
+  const data = source && source.status === "ok" ? source.data : source;
   const items = Array.isArray(data && data.items) ? data.items : [];
 
   const value = items.map(function (item, index) {
