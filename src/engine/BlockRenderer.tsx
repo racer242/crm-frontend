@@ -71,7 +71,32 @@ export function BlockRenderer({ block }: BlockRendererProps) {
               },
             }
           : wrapperProps;
-        return <Panel {...panelProps}>{content}</Panel>;
+
+        // headerComponents — JSON-компоненты в правой части хедера панели
+        // (слот icons PrimeReact Panel); рендерятся через ComponentRenderer,
+        // поэтому биндинги и события кнопок работают как в теле блока.
+        const headerComponents = wrapperProps.headerComponents as
+          | Array<Record<string, any>>
+          | undefined;
+        const headerIconsNode =
+          headerComponents && headerComponents.length > 0 ? (
+            <div className="flex gap-2 align-items-center">
+              {headerComponents
+                .filter((c) => c !== null && c !== undefined)
+                .map((c) => (
+                  <ComponentRenderer key={c.id} component={c as any} />
+                ))}
+            </div>
+          ) : undefined;
+        // Пропс не должен утекать в PrimeReact Panel
+        const cleanPanelProps = { ...panelProps } as Record<string, any>;
+        delete cleanPanelProps.headerComponents;
+
+        return (
+          <Panel {...cleanPanelProps} icons={headerIconsNode}>
+            {content}
+          </Panel>
+        );
       }
       case "Fieldset":
         return <Fieldset {...wrapperProps}>{content}</Fieldset>;

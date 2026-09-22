@@ -100,11 +100,31 @@ export function renderPanel(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
   const { props, className, style } = renderProps;
-  const { components, grid, containerClassName, ...restProps } = props;
+  const {
+    components,
+    grid,
+    containerClassName,
+    headerComponents,
+    ...restProps
+  } = props;
   const componentList: Component[] = components || [];
   const gridConfig = grid;
   const containerClassNameValue: string =
     containerClassName || "flex flex-column gap-2";
+
+  // headerComponents — JSON-компоненты в правой части хедера панели
+  // (слот icons PrimeReact Panel): рендерятся тем же ComponentRenderer,
+  // поэтому биндинги и события кнопок работают как в теле панели.
+  const headerIconsNode =
+    headerComponents && headerComponents.length > 0 ? (
+      <div className="flex gap-2 align-items-center">
+        {headerComponents
+          .filter((c: any) => c !== null && c !== undefined)
+          .map((c: any) => (
+            <ComponentRenderer key={c.id} component={c} />
+          ))}
+      </div>
+    ) : undefined;
 
   const renderComponents = () => {
     if (!componentList || componentList.length === 0) {
@@ -162,7 +182,7 @@ export function renderPanel(
     : restProps;
 
   return (
-    <Panel {...panelProps} className={className} style={style}>
+    <Panel {...panelProps} icons={headerIconsNode} className={className} style={style}>
       {renderComponents()}
     </Panel>
   );
