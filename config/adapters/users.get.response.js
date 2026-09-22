@@ -20,6 +20,7 @@ function transform(source) {
       ...user,
       fullName,
       created_at,
+      phone_label: user.phone || "—",
     };
   });
 
@@ -27,6 +28,7 @@ function transform(source) {
     { field: "participant_code", header: "Код", width: "8rem" },
     { field: "fullName", header: "Имя" },
     { field: "email", header: "E-mail" },
+    { field: "phone_label", header: "Телефон", width: "12rem" },
     { field: "status", header: "Статус", width: "6rem" },
     { field: "created_at", header: "Создан", width: "10rem", dataType: "date" },
   ];

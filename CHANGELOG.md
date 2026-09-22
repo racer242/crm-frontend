@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
   - response-адаптер `user-log.response` (конверт `{status,data}` → `{value, columns, totalRecords, first, rows}`) + переиспользованный request-адаптер `users.get.request` (first/rows → page/limit);
   - маршрут `ops/users/[user_id]/log/events` GET → `/api/v1/crm/users/{user_id}/log/events` (channel: instance, HMAC).
   - примечание: при несуществующем `user_id` API отдаёт 404 `RESOURCE_NOT_FOUND` (проверено живым запросом) — страница рассчитана на вход из карточки участника.
+- **Телефон в списке участников** (`config/adapters/users.get.response.js`): колонка «Телефон» после E-mail (`phone_label`, фолбэк «—» при отсутствии; поле `phone` уже приходило в items §2.1).
 
 ### Fixed
 
