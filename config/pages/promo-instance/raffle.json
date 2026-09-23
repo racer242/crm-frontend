@@ -1,0 +1,388 @@
+{
+  "id": "raffle",
+  "type": "page",
+  "route": "/ops/raffles/[raffle_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "saveResult": null,
+    "raffleData": {
+      "id": "",
+      "name": "",
+      "name_label": "",
+      "status": "",
+      "status_label": "",
+      "status_severity": "secondary",
+      "chance_source_type": "",
+      "chance_source_type_label": "",
+      "collection_from": "",
+      "collection_to": "",
+      "collection_period_label": "",
+      "conducted_at": "",
+      "published": false,
+      "published_label": "Нет"
+    }
+  },
+  "meta": {
+    "title": "Розыгрыш — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
+      "method": "GET",
+      "target": "state.raffleData"
+    }
+  ],
+  "shortcuts": {
+    "downloadProtocol": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "downloadFile",
+            "params": {
+              "url": "/api/ops/raffles/protocol?raffle_id={$location.routeParams.raffle_id}",
+              "method": "GET",
+              "filename": "protocol_{$location.routeParams.raffle_id}.json",
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось скачать протокол"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
+                "model": [
+                  {
+                    "label": "Розыгрыши",
+                    "route": "/ops/raffles"
+                  },
+                  {
+                    "label": "@state.raffleData.name_label"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": [
+          "col-12 lg:col-8",
+          "col-12 lg:col-4"
+        ],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "infoBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о розыгрыше",
+              "headerComponents": [
+                {
+                  "id": "raffleRefreshButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "className": "-m-3",
+                  "props": {
+                    "icon": "pi pi-refresh",
+                    "rounded": true,
+                    "text": true,
+                    "severity": "secondary",
+                    "size": "small",
+                    "aria-label": "Обновить",
+                    "tooltip": "Обновить",
+                    "tooltipOptions": {
+                      "position": "left"
+                    }
+                  },
+                  "events": [
+                    {
+                      "type": "onClick",
+                      "commands": [
+                        {
+                          "type": "refresh",
+                          "params": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "nameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "nameText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
+                    "props": {
+                      "value": "@state.raffleData.name_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "props": {
+                      "value": "@state.raffleData.status_label",
+                      "severity": "@state.raffleData.status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "sourceGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Источник шансов",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "sourceText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.chance_source_type_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "periodGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Срок сбора",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "periodText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.collection_period_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "conductedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата проведения",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "conductedText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.conducted_at",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publishedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Публикация",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "publishedText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.published_label"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "protocolBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Протокол розыгрыша"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "protocolHint",
+              "type": "component",
+              "componentType": "Text",
+              "className": "m-0 text-sm text-color-secondary",
+              "props": {
+                "value": "Протокол содержит параметры розыгрыша, период выборки, seed генератора, хеши данных и список победителей. Доступен для завершённого и аннулированного розыгрыша."
+              }
+            },
+            {
+              "id": "protocolBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-download",
+                "label": "Скачать протокол",
+                "size": "small",
+                "severity": "secondary",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "downloadProtocol"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": {
+                    "background": "var(--surface-50) !important"
+                  }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/raffles/{$location.routeParams.raffle_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

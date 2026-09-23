@@ -115,6 +115,58 @@
     "note": "Операционные данные: Удалить акт"
   },
   {
+    "path": "ops/raffles",
+    "method": "GET",
+    "url": "/api/v1/crm/raffles",
+    "channel": "instance",
+    "adapter": {
+      "request": "raffles.get.request",
+      "response": "raffles.get.response"
+    },
+    "note": "Операционные данные: Список розыгрышей (§8.1)"
+  },
+  {
+    "path": "ops/raffles/publish",
+    "method": "POST",
+    "url": "/api/v1/crm/raffles/publish",
+    "channel": "instance",
+    "note": "Операционные данные: Опубликовать розыгрыш (raffle_id в body, §8.5)"
+  },
+  {
+    "path": "ops/raffles/annul",
+    "method": "POST",
+    "url": "/api/v1/crm/raffles/annul",
+    "channel": "instance",
+    "note": "Операционные данные: Аннулировать розыгрыш (raffle_id в body, §8.6)"
+  },
+  {
+    "path": "ops/raffles/protocol",
+    "method": "GET",
+    "url": "/api/v1/crm/raffles/protocol",
+    "channel": "instance",
+    "note": "Операционные данные: Протокол розыгрыша (raffle_id в query, §8.7)"
+  },
+  {
+    "path": "ops/raffles/[raffle_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/raffles/{$location.routeParams.raffle_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "raffle.get.response"
+    },
+    "note": "Операционные данные: Детали розыгрыша (§8.3)"
+  },
+  {
+    "path": "ops/raffles/[raffle_id]",
+    "method": "PATCH",
+    "url": "/api/v1/crm/raffles/{$location.routeParams.raffle_id}",
+    "channel": "instance",
+    "adapter": {
+      "request": "raffle.patch.request"
+    },
+    "note": "Операционные данные: Редактировать розыгрыш (§8.4)"
+  },
+  {
     "path": "ops/receipts",
     "method": "GET",
     "url": "/api/v1/crm/receipts",

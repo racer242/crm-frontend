@@ -1,0 +1,178 @@
+{
+  "id": "raffles",
+  "type": "page",
+  "route": "/ops/raffles",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "raffles": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "Розыгрыши — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/raffles",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}"
+      },
+      "method": "GET",
+      "target": "state.raffles"
+    }
+  ],
+  "shortcuts": {
+    "requestRaffles": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/raffles",
+              "method": "GET",
+              "target": "state.raffles",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.raffles.first}",
+                "rows": "{$state.raffles.rows}"
+              },
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.raffles.first}",
+                "rows": "{$state.raffles.rows}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "rafflesHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "rafflesTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "rafflesPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "Розыгрыши",
+                "level": 1
+              }
+            },
+            {
+              "id": "rafflesRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rafflesTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "rafflesTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "rafflesTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.raffles.value",
+                "columns": "@state.raffles.columns",
+                "totalRecords": "@state.raffles.totalRecords",
+                "rows": "@state.raffles.rows",
+                "first": "@state.raffles.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestRaffles"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    "requestRaffles"
+                  ]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/raffles/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

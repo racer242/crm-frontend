@@ -39,6 +39,22 @@
     "type": "js",
     "script": "./config/adapters/acts.response.js"
   },
+  "raffles.get.request": {
+    "type": "js",
+    "script": "./config/adapters/raffles.get.request.js"
+  },
+  "raffles.get.response": {
+    "type": "js",
+    "script": "./config/adapters/raffles.get.response.js"
+  },
+  "raffle.get.response": {
+    "type": "js",
+    "script": "./config/adapters/raffle.get.response.js"
+  },
+  "raffle.patch.request": {
+    "type": "js",
+    "script": "./config/adapters/raffle.patch.request.js"
+  },
   "user-acts.response": {
     "type": "js",
     "script": "./config/adapters/user-acts.response.js"

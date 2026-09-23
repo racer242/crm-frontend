@@ -1,0 +1,698 @@
+{
+  "id": "raffle-edit",
+  "type": "page",
+  "route": "/ops/raffles/[raffle_id]/edit",
+  "state": {
+    "loading": false,
+    "saving": false,
+    "saved": false,
+    "sentSuccessfully": false,
+    "saveResult": null,
+    "raffleData": {
+      "id": "",
+      "name": "",
+      "name_label": "",
+      "status": "",
+      "status_label": "",
+      "status_severity": "secondary",
+      "chance_source_type": "",
+      "chance_source_type_label": "",
+      "collection_from": "",
+      "collection_to": "",
+      "collection_period_label": "",
+      "conducted_at": "",
+      "published": false,
+      "published_label": "Нет"
+    },
+    "chanceSourceTypes": [
+      { "label": "Чек", "value": "receipt" },
+      { "label": "Промокод", "value": "promo_code" },
+      { "label": "Код GTIN", "value": "gtin_code" },
+      { "label": "Победа в игре", "value": "game_win" },
+      { "label": "Покупка за баллы", "value": "points_purchase" },
+      { "label": "Вручную", "value": "manual" }
+    ]
+  },
+  "meta": {
+    "title": "Редактирование розыгрыша — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
+      "method": "GET",
+      "target": "state.raffleData"
+    }
+  ],
+  "shortcuts": {
+    "saveRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saving",
+              "value": true
+            }
+          },
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.saveResult",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
+              "method": "PATCH",
+              "target": "state.saveResult",
+              "data": {
+                "name": "{$state.raffleData.name}",
+                "chance_source_type": "{$state.raffleData.chance_source_type}",
+                "collection_from": "{$state.raffleData.collection_from}",
+                "collection_to": "{$state.raffleData.collection_to}"
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saved",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": true
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.saving",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.sentSuccessfully",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить розыгрыш"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "publishRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Опубликовать розыгрыш? После публикации его данные будут показаны на фронтенде промо-сайта.",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/publish",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Розыгрыш опубликован"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/ops/raffles/{$location.routeParams.raffle_id}"
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось опубликовать розыгрыш"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "annulRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Аннулировать розыгрыш? Статусы и параметры шансов будут сброшены. Действие необратимо.",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/annul",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Розыгрыш аннулирован"
+                        }
+                      },
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/ops/raffles/{$location.routeParams.raffle_id}"
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось аннулировать розыгрыш"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
+                "model": [
+                  {
+                    "label": "Розыгрыши",
+                    "route": "/ops/raffles"
+                  },
+                  {
+                    "label": "Редактирование розыгрыша"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": [
+          "col-12 lg:col-8",
+          "col-12 lg:col-4"
+        ],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "infoBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о розыгрыше"
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "nameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "nameText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
+                    "props": {
+                      "value": "@state.raffleData.name_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "props": {
+                      "value": "@state.raffleData.status_label",
+                      "severity": "@state.raffleData.status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "periodGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Срок сбора",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "periodText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.collection_period_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publishedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Публикация",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "publishedText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.published_label"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "editBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Редактирование"
+            }
+          },
+          "className": "flex flex-column",
+          "components": [
+            {
+              "id": "editNameGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "nameInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.raffleData.name",
+                      "placeholder": "Название розыгрыша",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.name"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "sourceGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Источник шансов",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "sourceDropdown",
+                    "type": "component",
+                    "componentType": "Dropdown",
+                    "props": {
+                      "options": "@state.chanceSourceTypes",
+                      "value": "@state.raffleData.chance_source_type",
+                      "optionLabel": "label",
+                      "optionValue": "value",
+                      "placeholder": "Выберите источник шансов",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.chance_source_type"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "periodFromGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Начало сбора",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "periodFromInput",
+                    "type": "component",
+                    "componentType": "Calendar",
+                    "props": {
+                      "value": "@state.raffleData.collection_from",
+                      "showTime": true,
+                      "hourFormat": "24",
+                      "showIcon": true,
+                      "placeholder": "Начало периода сбора",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.collection_from"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "periodToGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Конец сбора",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "periodToInput",
+                    "type": "component",
+                    "componentType": "Calendar",
+                    "props": {
+                      "value": "@state.raffleData.collection_to",
+                      "showTime": true,
+                      "hourFormat": "24",
+                      "showIcon": true,
+                      "placeholder": "Конец периода сбора",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.collection_to"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttonsSection",
+      "type": "section",
+      "className": "flex justify-content-center",
+      "blocks": [
+        {
+          "id": "buttonsBlock",
+          "type": "block",
+          "wrapper": {
+            "showHeader": false,
+            "component": "Panel",
+            "props": {
+              "className": "flex-grow-1",
+              "pt": {
+                "content": {
+                  "style": { "background": "var(--surface-50) !important" }
+                }
+              }
+            }
+          },
+          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "components": [
+            {
+              "id": "btnSaveAndGo",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Сохранить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveRaffle",
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/raffles/{$location.routeParams.raffle_id}",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnApply",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Применить",
+                "icon": "pi pi-check",
+                "severity": "success",
+                "outlined": true,
+                "disabled": "@state.saving"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "saveRaffle",
+                    {
+                      "type": "showToast",
+                      "params": {
+                        "severity": "success",
+                        "summary": "Успешно",
+                        "message": "Данные розыгрыша сохранены",
+                        "condition": "{$state.sentSuccessfully}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnPublish",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Опубликовать",
+                "icon": "pi pi-globe",
+                "severity": "success"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "publishRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnAnnul",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Аннулировать",
+                "icon": "pi pi-ban",
+                "severity": "danger",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "annulRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "btnCancel",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "label": "Отменить изменения",
+                "icon": "pi pi-times",
+                "severity": "secondary",
+                "outlined": true
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/raffles/{$location.routeParams.raffle_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -101,6 +101,15 @@
       "$ref": "./pages/promo-instance/act-edit.json"
     },
     {
+      "$ref": "./pages/promo-instance/raffles.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/raffle.json"
+    },
+    {
+      "$ref": "./pages/promo-instance/raffle-edit.json"
+    },
+    {
       "$ref": "./pages/promo-instance/tasks.json"
     },
     {

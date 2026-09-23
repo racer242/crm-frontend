@@ -25,6 +25,11 @@
       "route": "/ops/acts"
     },
     {
+      "label": "Розыгрыши",
+      "icon": "pi pi-trophy",
+      "route": "/ops/raffles"
+    },
+    {
       "label": "Сообщения",
       "icon": "pi pi-comment",
       "route": "/ops/messages"
