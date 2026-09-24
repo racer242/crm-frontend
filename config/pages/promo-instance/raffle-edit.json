@@ -93,7 +93,9 @@
               "target": "state.saveResult",
               "data": {
                 "name": "{$state.raffleData.name}",
+                "type": "{$state.raffleData.type}",
                 "source_types": "{$state.raffleData.source_types}",
+                "publish_at": "{$state.raffleData.publish_at}",
                 "collection_from": "{$state.raffleData.collection_from}",
                 "collection_to": "{$state.raffleData.collection_to}"
               },
@@ -249,6 +251,42 @@
               }
             },
             {
+              "id": "typeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Тип",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "typeInput",
+                    "type": "component",
+                    "componentType": "InputText",
+                    "props": {
+                      "value": "@state.raffleData.type",
+                      "placeholder": "Тип розыгрыша",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.type"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
               "id": "sourcesGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -281,6 +319,45 @@
                             "params": {
                               "source": "event.value",
                               "target": "state.raffleData.source_types"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publishAtGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Дата публикации",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "publishAtInput",
+                    "type": "component",
+                    "componentType": "Calendar",
+                    "props": {
+                      "value": "@state.raffleData.publish_at",
+                      "showTime": true,
+                      "hourFormat": "24",
+                      "showIcon": true,
+                      "placeholder": "Дата публикации розыгрыша",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.publish_at"
                             }
                           }
                         ]
