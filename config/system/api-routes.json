@@ -147,6 +147,37 @@
     "note": "Операционные данные: Протокол розыгрыша (raffle_id в query, §8.7)"
   },
   {
+    "path": "ops/raffles/start",
+    "method": "POST",
+    "url": "/api/v1/crm/raffles/start",
+    "channel": "instance",
+    "note": "Операционные данные: Начать проведение розыгрыша, draft → in_progress (raffle_id в body; путь предварительный — уточнить у бэкенда)"
+  },
+  {
+    "path": "ops/raffles/finish",
+    "method": "POST",
+    "url": "/api/v1/crm/raffles/finish",
+    "channel": "instance",
+    "note": "Операционные данные: Закончить проведение розыгрыша, in_progress → completed (raffle_id в body; путь предварительный — уточнить у бэкенда)"
+  },
+  {
+    "path": "ops/raffles/draft",
+    "method": "POST",
+    "url": "/api/v1/crm/raffles/draft",
+    "channel": "instance",
+    "note": "Операционные данные: Вернуть розыгрыш в статус черновика (raffle_id в body; путь предварительный — уточнить у бэкенда)"
+  },
+  {
+    "path": "ops/raffles/chances/count",
+    "method": "GET",
+    "url": "/api/v1/crm/raffles/chances/count",
+    "channel": "instance",
+    "adapter": {
+      "response": "raffle.chances.count.response"
+    },
+    "note": "Операционные данные: Посчитать шансы — количество под условиями розыгрыша (raffle_id в query; §8.10, путь предварительный — уточнить у бэкенда)"
+  },
+  {
     "path": "ops/raffles/[raffle_id]",
     "method": "GET",
     "url": "/api/v1/crm/raffles/{$location.routeParams.raffle_id}",

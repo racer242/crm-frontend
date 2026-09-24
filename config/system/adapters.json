@@ -55,6 +55,10 @@
     "type": "js",
     "script": "./config/adapters/raffle.patch.request.js"
   },
+  "raffle.chances.count.response": {
+    "type": "js",
+    "script": "./config/adapters/raffle.chances.count.response.js"
+  },
   "user-acts.response": {
     "type": "js",
     "script": "./config/adapters/user-acts.response.js"

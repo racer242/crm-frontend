@@ -10,18 +10,42 @@
       "id": "",
       "name": "",
       "name_label": "",
+      "type": "",
+      "type_label": "",
       "status": "",
       "status_label": "",
       "status_severity": "secondary",
-      "chance_source_type": "",
-      "chance_source_type_label": "",
       "collection_from": "",
       "collection_to": "",
-      "collection_period_label": "",
+      "collection_from_label": "—",
+      "collection_to_label": "—",
+      "collection_period_label": "—",
+      "source_types": [],
+      "source_types_label": "—",
+      "start_at": "",
+      "start_at_label": "—",
+      "end_at": "",
+      "end_at_label": "—",
+      "publish_at": "",
+      "publish_at_label": "—",
       "drawn_at": "",
-      "published": false,
-      "published_label": "Нет"
-    }
+      "drawn_at_label": "—",
+      "is_published": false,
+      "published_label": "Нет",
+      "is_editable": false,
+      "edit_disabled": true,
+      "is_stale": false,
+      "is_stale_label": "Нет",
+      "created_at": "",
+      "created_at_label": "—",
+      "updated_at": "",
+      "updated_at_label": "—",
+      "booked_chances": "",
+      "booked_chances_label": "—",
+      "annul_reason": "",
+      "annul_reason_label": "—"
+    },
+    "chancesCount": null
   },
   "meta": {
     "title": "Розыгрыш — CRM Platform"
@@ -34,6 +58,303 @@
     }
   ],
   "shortcuts": {
+    "reloadRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
+              "method": "GET",
+              "target": "state.raffleData"
+            }
+          }
+        ]
+      }
+    },
+    "publishRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Опубликовать розыгрыш? После публикации его данные будут показаны на фронтенде промо-сайта.",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/publish",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Розыгрыш опубликован"
+                        }
+                      },
+                      "reloadRaffle"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось опубликовать розыгрыш"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "startRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Начать проведение розыгрыша? Статус изменится на «Идёт розыгрыш».",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/start",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Проведение розыгрыша начато"
+                        }
+                      },
+                      "reloadRaffle"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось начать проведение розыгрыша"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "finishRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Закончить проведение розыгрыша? Статус изменится на «Завершён».",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/finish",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Проведение розыгрыша закончено"
+                        }
+                      },
+                      "reloadRaffle"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось закончить проведение розыгрыша"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "draftRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Вернуть розыгрыш в статус «Черновик»?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/draft",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Розыгрыш переведён в черновик"
+                        }
+                      },
+                      "reloadRaffle"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось перевести розыгрыш в черновик"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "annulRaffle": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Аннулировать розыгрыш? Статусы и параметры шансов будут сброшены. Действие необратимо.",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/raffles/annul",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "raffle_id": "{$location.routeParams.raffle_id}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Розыгрыш аннулирован"
+                        }
+                      },
+                      "reloadRaffle"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось аннулировать розыгрыш"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    },
+    "calculateChances": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.chancesCount",
+              "value": null
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/raffles/chances/count?raffle_id={$location.routeParams.raffle_id}",
+              "method": "GET",
+              "target": "state.chancesCount",
+              "onSuccess": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "info",
+                    "summary": "Посчитать шансы",
+                    "message": "Шансов под условия розыгрыша: {$state.chancesCount.count}"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось посчитать шансы"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "downloadProtocol": {
       "type": "sequence",
       "params": {
@@ -150,6 +471,28 @@
           "className": "flex flex-column gap-3",
           "components": [
             {
+              "id": "idGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID розыгрыша",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "idText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
               "id": "nameGroup",
               "type": "component",
               "componentType": "LabelledGroup",
@@ -169,6 +512,28 @@
                     },
                     "props": {
                       "value": "@state.raffleData.name_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "typeGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Тип",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "typeText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.type_label"
                     }
                   }
                 ]
@@ -197,12 +562,58 @@
               }
             },
             {
+              "id": "collectionFromGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата сбора шансов — начало",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "collectionFromText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.collection_from_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "collectionToGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата сбора шансов — конец",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "collectionToText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.collection_to_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
               "id": "sourceGroup",
               "type": "component",
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
               "props": {
-                "label": "Источник шансов",
+                "label": "Типы источников шансов",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
@@ -212,36 +623,83 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.raffleData.chance_source_type_label"
+                      "value": "@state.raffleData.source_types_label"
                     }
                   }
                 ]
               }
             },
             {
-              "id": "periodGroup",
+              "id": "startAtGroup",
               "type": "component",
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
               "props": {
-                "label": "Срок сбора",
+                "label": "Дата начала розыгрыша",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "periodText",
+                    "id": "startAtText",
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.raffleData.collection_period_label"
+                      "value": "@state.raffleData.start_at_label",
+                      "dataType": "date"
                     }
                   }
                 ]
               }
             },
             {
-              "id": "conductedGroup",
+              "id": "endAtGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата конца розыгрыша",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "endAtText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.end_at_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publishAtGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата публикации",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "publishAtText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.publish_at_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "drawnAtGroup",
               "type": "component",
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
@@ -251,12 +709,12 @@
                 "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "conductedText",
+                    "id": "drawnAtText",
                     "type": "component",
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.raffleData.drawn_at",
+                      "value": "@state.raffleData.drawn_at_label",
                       "dataType": "date"
                     }
                   }
@@ -269,7 +727,7 @@
               "componentType": "LabelledGroup",
               "className": "w-full grid align-items-center mb-2",
               "props": {
-                "label": "Публикация",
+                "label": "Опубликован",
                 "labelClassName": "text-sm col-4 text-right",
                 "containerClassName": "col-8",
                 "components": [
@@ -284,20 +742,257 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "staleGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Признак «завис»",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "staleText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.is_stale_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "createdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата создания",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "createdText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.created_at_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "updatedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Дата изменения",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "updatedText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.updated_at_label",
+                      "dataType": "date"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "bookedGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Забронировано шансов",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "bookedText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.booked_chances_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "annulReasonGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Причина аннулирования",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "annulReasonText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.raffleData.annul_reason_label"
+                    }
+                  }
+                ]
+              }
             }
           ]
         },
         {
-          "id": "protocolBlock",
+          "id": "controlBlock",
           "type": "block",
           "wrapper": {
             "component": "Panel",
             "props": {
-              "header": "Протокол розыгрыша"
+              "header": "Управление"
             }
           },
           "className": "flex flex-column gap-3",
           "components": [
+            {
+              "id": "publishBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-globe",
+                "label": "Опубликовать",
+                "size": "small",
+                "severity": "success",
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "publishRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "startBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-play",
+                "label": "Начать проведение",
+                "size": "small",
+                "severity": "success",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "startRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "finishBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-stop",
+                "label": "Закончить проведение",
+                "size": "small",
+                "severity": "warning",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "finishRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "calculateBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-calculator",
+                "label": "Посчитать шансы",
+                "size": "small",
+                "severity": "info",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "calculateChances"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "draftBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-replay",
+                "label": "Черновик",
+                "size": "small",
+                "severity": "secondary",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "draftRaffle"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "annulBtn",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-ban",
+                "label": "Аннулировать",
+                "size": "small",
+                "severity": "danger",
+                "outlined": true,
+                "className": "w-full"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    "annulRaffle"
+                  ]
+                }
+              ]
+            },
             {
               "id": "protocolHint",
               "type": "component",
@@ -364,7 +1059,12 @@
                 "icon": "pi pi-pencil",
                 "label": "Редактировать",
                 "size": "small",
-                "severity": "info"
+                "severity": "info",
+                "disabled": "@state.raffleData.edit_disabled",
+                "tooltip": "Редактирование доступно, пока розыгрыш это позволяет",
+                "tooltipOptions": {
+                  "position": "bottom"
+                }
               },
               "events": [
                 {
