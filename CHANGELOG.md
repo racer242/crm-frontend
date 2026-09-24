@@ -106,7 +106,14 @@ All notable changes to this project will be documented in this file.
 - **Быстрые диапазоны в панели «Параметры» страницы «Статистика»** — три кнопки (`quickRangesRow`): «Сроки акции» (`setProperty` из кэша `state.campaign`), «Сегодня» и «Текущая неделя» (новые макросы).
 - **Новые макросы диапазонов дат** (`src/utils/datetime.ts`, `src/core/MacroEngine.ts`): `{$todayStart}` — сегодня 00:00:00.000, `{$todayEnd}` — сегодня 23:59:59.999, `{$currentWeekStart}` — понедельник текущей недели 00:00:00.000, `{$currentWeekEnd}` — воскресенье 23:59:59.999. Вычисляются от локального времени браузера, возвращают ISO-строки (абсолютные мгновения, корректны для любой таймзоны сервера); неделя — с понедельника. Задокументированы в `docs/macros-reference.md` (§5 и таблица поддержки).
 
+### Changed
+
+- **Состав колонок списка «Розыгрыши»** (`config/adapters/raffles.get.response.js`) приведён к актуальной версии §8.1: ID розыгрыша (сокращённый UUID `01a0...afef`), Название, Тип (`type`), Дата проведения (`drawn_at`, форматирование на клиенте через `dataType: "date"`), Дата публикации (`publish_at`), Статус (`status_label`), Опубликован (`is_published` → Да/Нет). Колонки «Источник шансов» и «Срок сбора» из списка убраны (поля остаются в данных строк и на карточке розыгрыша); адаптер толерантен к прежним именам полей (`raffle_id` / `conducted_at` / `published`).
+- **Карточка розыгрыша — новые имена полей** (`config/adapters/raffle.get.response.js`, `config/pages/promo-instance/raffle.json`, `raffle-edit.json`): «Дата проведения» переведена на `drawn_at` (фолбэк `conducted_at`), признак публикации читается из `is_published` (фолбэк `published`); в state-заготовках страниц ключ `conducted_at` заменён на `drawn_at`; в адаптер карточки добавлены `type`/`type_label`.
+
 ### Fixed
+
+- **Не работал переход на карточку розыгрыша из списка** (`config/adapters/raffles.get.response.js`): адаптер брал идентификатор только из `raffle_id`, а актуальная версия API (§8.1) отдаёт его в поле `id` — в строках получался пустой `id`, и `navigate` по `onRowClick` уходил на `/ops/raffles/` (тот же список), что выглядело как «никаких действий» при клике. Теперь `id = raffle.id || raffle.raffle_id`. Проверено тестами адаптера на обеих версиях ответа API.
 
 - **Перенос длинных слов (e-mail, имена, UUID)** (`src/app/globals.css`, `src/engine/components/TextComponent.tsx`, `src/engine/DashboardSidebar.tsx`, `config/pages/promo-instance/messages.json`): длинные значения перестали вылезать за пределы контейнеров — добавлены CSS-утилиты `.wrap-anywhere` (`overflow-wrap: anywhere` + `word-break: break-word`; в PrimeFlex таких классов нет) и `.wrap-anywhere-btn` (плюс `white-space: normal` для кнопок); класс автоматически применяется ко всем компонентам `Text` (значения LabelledGroup-полей, карточки, попапы), а также к блоку пользователя и названию кампании в сайдбаре (`min-w-0` родителю) и кнопке-имени отправителя в попапе сообщений.
 

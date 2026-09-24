@@ -18,7 +18,7 @@
       "collection_from": "",
       "collection_to": "",
       "collection_period_label": "",
-      "conducted_at": "",
+      "drawn_at": "",
       "published": false,
       "published_label": "Нет"
     }
@@ -256,7 +256,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.raffleData.conducted_at",
+                      "value": "@state.raffleData.drawn_at",
                       "dataType": "date"
                     }
                   }

@@ -2,6 +2,10 @@
  * Адаптер списка розыгрышей (ops/raffles → GET /api/v1/crm/raffles, §8.1).
  * Ответ API инстанса ({status:"ok", data:{items, pagination}}) →
  * формат lazy-таблицы {value, columns, totalRecords, first, rows}.
+ * Колонки: ID розыгрыша (сокращённый UUID), Название, Тип,
+ * Дата проведения (drawn_at), Дата публикации (publish_at), Статус,
+ * Опубликован (is_published). Фолбэки на прежние имена полей:
+ * raffle_id / conducted_at / published.
  */
 function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
@@ -23,82 +27,44 @@ function transform(source) {
     annulled: "danger",
   };
 
-  // Типы источников шансов (настройка инстанса raffle_chance_source_types).
-  const sourceLabels = {
-    receipt: "Чек",
-    promo_code: "Промокод",
-    gtin_code: "Код GTIN",
-    game_win: "Победа в игре",
-    points_purchase: "Покупка за баллы",
-    manual: "Вручную",
-  };
-
-  const pad = (n) => String(n).padStart(2, "0");
-  const fmtDate = (v) => {
-    if (!v) return "";
-    const d = new Date(v);
-    if (isNaN(d.getTime())) return String(v);
-    return (
-      pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear()
-    );
-  };
-  const fmtDateTime = (v) => {
-    if (!v) return "";
-    const d = new Date(v);
-    if (isNaN(d.getTime())) return String(v);
-    return (
-      pad(d.getDate()) +
-      "." +
-      pad(d.getMonth() + 1) +
-      "." +
-      d.getFullYear() +
-      " " +
-      pad(d.getHours()) +
-      ":" +
-      pad(d.getMinutes())
-    );
-  };
-
-  // Срок сбора {from, to} → «01.10.2026 – 15.10.2026».
-  const periodLabel = (period) => {
-    if (!period || typeof period !== "object") return "—";
-    const from = fmtDate(period.from);
-    const to = fmtDate(period.to);
-    if (!from && !to) return "—";
-    return (from || "…") + " – " + (to || "…");
-  };
-
   const value = (payload.items || []).map((raffle) => {
     const statusKey = String(raffle.status || "").toLowerCase();
+    const published = raffle.is_published ?? raffle.published;
     return {
       ...raffle,
-      id: raffle.raffle_id || "",
+      // Идентификатор: актуальная версия §8.1 отдаёт `id`, ранее — `raffle_id`.
+      // Пустой id ломал переход на карточку: navigate уходил на /ops/raffles/
+      // (список) и клик по строке выглядел «без действия».
+      id: raffle.id || raffle.raffle_id || "",
       name_label: raffle.name || "—",
+      type_label: raffle.type || "—",
+      drawn_at: raffle.drawn_at || raffle.conducted_at || "",
+      publish_at: raffle.publish_at || "",
       status_label: statusLabels[statusKey] || raffle.status || "",
       status_severity: statusSeverities[statusKey] || "secondary",
-      source_type_label:
-        sourceLabels[raffle.chance_source_type] ||
-        raffle.chance_source_type ||
-        "—",
-      period_label: periodLabel(raffle.collection_period),
-      conducted_at_label: fmtDateTime(raffle.conducted_at) || "—",
-      published_label: raffle.published ? "Да" : "Нет",
+      published: !!published,
+      published_label: published ? "Да" : "Нет",
     };
   });
 
   const columns = [
+    { field: "id", header: "ID розыгрыша", width: "10rem", dataType: "uuid" },
     { field: "name_label", header: "Название" },
-    { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
-    { field: "status_label", header: "Статус", width: "11rem" },
-    { field: "source_type_label", header: "Источник шансов", width: "12rem" },
-    { field: "period_label", header: "Срок сбора", width: "15rem" },
+    { field: "type_label", header: "Тип", width: "10rem" },
     {
-      field: "conducted_at",
+      field: "drawn_at",
       header: "Дата проведения",
       width: "12rem",
       dataType: "date",
     },
-    { field: "published_label", header: "Публикация", width: "8rem" },
+    {
+      field: "publish_at",
+      header: "Дата публикации",
+      width: "12rem",
+      dataType: "date",
+    },
+    { field: "status_label", header: "Статус", width: "11rem" },
+    { field: "published_label", header: "Опубликован", width: "10rem" },
   ];
 
   return {

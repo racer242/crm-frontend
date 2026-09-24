@@ -52,9 +52,12 @@ function transform(response) {
       : {};
   const from = fmtDate(period.from);
   const to = fmtDate(period.to);
+  // Признак публикации: новая версия API — is_published, прежняя — published.
+  const published = data.is_published ?? data.published;
 
   return {
-    id: data.raffle_id || "",
+    // Идентификатор: актуальная версия API отдаёт `id`, ранее — `raffle_id`.
+    id: data.id || data.raffle_id || "",
     // Сырые поля — для формы редактирования.
     name: data.name || "",
     chance_source_type: data.chance_source_type || "",
@@ -72,8 +75,11 @@ function transform(response) {
     collection_period_label: (from || to)
       ? (from || "…") + " – " + (to || "…")
       : "—",
-    conducted_at: data.conducted_at || "",
-    published: !!data.published,
-    published_label: data.published ? "Да" : "Нет",
+    // Дата проведения: новая версия — drawn_at, прежняя — conducted_at.
+    type: data.type || "",
+    type_label: data.type || "—",
+    drawn_at: data.drawn_at || data.conducted_at || "",
+    published: !!published,
+    published_label: published ? "Да" : "Нет",
   };
 }
