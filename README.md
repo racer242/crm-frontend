@@ -481,6 +481,8 @@ docker compose restart
 
 Полное описание всех реализованных компонентов системы: пропсы, события, типы фильтров, примеры конфигурации.
 
+Движок передаёт MultiSelect и Panel стабильные DOM-id из `id` компонента в конфиге (`{id}-input` для скрытого инпута MultiSelect) — иначе PrimeReact генерирует их через `UniqueComponentId()`, чей счётчик различается между SSR и гидратацией, что даёт hydration-mismatch в React 19.
+
 ## Конфигурация
 
 → [docs/config-reference.md](docs/config-reference.md)

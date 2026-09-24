@@ -99,7 +99,7 @@ export function renderCarousel({
 export function renderPanel(
   renderProps: ComponentRendererProps & Record<string, any>,
 ) {
-  const { props, className, style } = renderProps;
+  const { component, props, className, style } = renderProps;
   const {
     components,
     grid,
@@ -182,7 +182,16 @@ export function renderPanel(
     : restProps;
 
   return (
-    <Panel {...panelProps} icons={headerIconsNode} className={className} style={style}>
+    <Panel
+      {...panelProps}
+      // Стабильный id из конфига: PrimeReact строит contentId = id + "_content"
+      // и aria-controls кнопки сворачивания; без id все панели страницы
+      // получают одинаковый "null_content".
+      id={restProps.id || component.id || undefined}
+      icons={headerIconsNode}
+      className={className}
+      style={style}
+    >
       {renderComponents()}
     </Panel>
   );

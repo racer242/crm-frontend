@@ -49,6 +49,7 @@ export function renderDropdown({
 }
 
 export function renderMultiSelect({
+  component,
   props,
   className,
   style,
@@ -62,6 +63,14 @@ export function renderMultiSelect({
   return (
     <MultiSelect
       {...multiSelectProps}
+      // Стабильные id из конфига: без них PrimeReact вычисляет inputId
+      // через UniqueComponentId() прямо в теле рендера (aria-controls =
+      // "{inputId}-multi-selectbox"), счётчик на сервере и клиенте
+      // различается → hydration-mismatch (React 19).
+      id={props.id || component.id || undefined}
+      inputId={
+        props.inputId || (component.id ? `${component.id}-input` : undefined)
+      }
       className={`${props?.inline ? "" : "field"} w-full ${className || ""}`}
       style={style}
       onChange={(e) => handleEvent("onChange", { value: e.value })}

@@ -40,6 +40,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Hydration-mismatch на MultiSelect (страница редактирования розыгрыша)** (`src/engine/components/SelectComponents.tsx`, `src/engine/components/ContainerComponents.tsx`): PrimeReact 10.9.8 вычисляет `inputId` MultiSelect через `UniqueComponentId()` прямо в теле рендера — счётчик id на сервере (SSR) и на клиенте различается (StrictMode/ре-рендеры после dataFeed), и React 19 фиксирует расхождение атрибутов скрытого инпута (`id`, `aria-controls="pr_id_{N}-multi-selectbox"`: сервер `pr_id_42` vs клиент `pr_id_276`). Движок теперь передаёт MultiSelect стабильные `id`/`inputId` из id компонента в конфиге (напр. `sourceMultiSelect` / `sourceMultiSelect-input`); PrimeReact перестаёт вызывать генератор. Заодно Panel получает `id` из конфига — без него PrimeReact строит `contentId` из пустого id (все панели страницы имеют одинаковый DOM-id `null_content`, ломая `aria-controls`); у Dropdown/Calendar/AutoComplete генерация id происходит в эффектах/оверлеях и SSR-HTML не затрагивает. Проверено `tsc --noEmit` (exit 0).
+
 - **Адаптер `user-log.response` читал `data.items` вместо конверта** — движок передаёт response-адаптеру весь ответ API `{status:"ok", data:{items, pagination}}` без разворачивания (как остальные адаптеры, напр. `messages.response.js`), а адаптер обращался к `items`/`pagination` напрямую → пустой `value` и `totalRecords: 0`. Добавлено разворачивание конверта (`source.status === "ok" ? source.data : source`); проверено исполнением адаптера в среде движка (`new Function("data", ...)` на синтетическом конверте §5.3): колонки/маркеры dataType, payload_summary/payload_pretty, пагинация — корректны.
 
 ### Changed
