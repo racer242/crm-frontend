@@ -123,20 +123,14 @@
                   "prop": "filters",
                   "type": "PopIfHasNullProps",
                   "params": {
-                    "props": [
-                      "value"
-                    ]
+                    "props": ["value"]
                   }
                 },
                 {
                   "prop": "filters",
                   "type": "RemoveProps",
                   "params": {
-                    "props": [
-                      "name",
-                      "type",
-                      "opts"
-                    ]
+                    "props": ["name", "type", "opts"]
                   }
                 }
               ]
@@ -253,6 +247,14 @@
                     "target": "state.sentSuccessfully",
                     "value": true
                   }
+                },
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
+                    "method": "GET",
+                    "target": "state.receiptData"
+                  }
                 }
               ],
               "onError": [
@@ -356,7 +358,7 @@
                 },
                 "model": [
                   {
-                    "label": "Чеки",
+                    "label": "Модерация чеков",
                     "route": "/mgmt/receipts"
                   },
                   {
@@ -374,10 +376,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": [
-          "col-12 lg:col-8",
-          "col-12 lg:col-4"
-        ],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -963,43 +962,6 @@
                           "visible": "@state.receiptData.show_decline_reason"
                         },
                         {
-                          "id": "commentGroup",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "className": "flex flex-column gap-1 mb-2",
-                          "props": {
-                            "label": "Комментарий",
-                            "labelClassName": "font-bold text-sm",
-                            "components": [
-                              {
-                                "id": "commentInput",
-                                "type": "component",
-                                "componentType": "InputTextarea",
-                                "props": {
-                                  "value": "@state.receiptData.comment",
-                                  "rows": 3,
-                                  "autoResize": true,
-                                  "className": "w-full"
-                                },
-                                "events": [
-                                  {
-                                    "type": "onChange",
-                                    "commands": [
-                                      {
-                                        "type": "setProperty",
-                                        "params": {
-                                          "source": "event.value",
-                                          "target": "state.receiptData.comment"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        {
                           "id": "btnAutoModerate",
                           "type": "component",
                           "componentType": "Button",
@@ -1012,9 +974,7 @@
                           "events": [
                             {
                               "type": "onClick",
-                              "commands": [
-                                "autoModerate"
-                              ]
+                              "commands": ["autoModerate"]
                             }
                           ]
                         },
@@ -1222,12 +1182,7 @@
                 "paginator": true,
                 "lazy": true,
                 "size": "small",
-                "rowsPerPageOptions": [
-                  5,
-                  10,
-                  25,
-                  50
-                ],
+                "rowsPerPageOptions": [5, 10, 25, 50],
                 "customColumns": [
                   {
                     "field": "is_promo",
@@ -1250,15 +1205,11 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": [
-                    "requestProducts"
-                  ]
+                  "commands": ["requestProducts"]
                 },
                 {
                   "type": "onSort",
-                  "commands": [
-                    "requestProducts"
-                  ]
+                  "commands": ["requestProducts"]
                 }
               ]
             }
@@ -1304,9 +1255,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "deleteReceipt"
-                  ]
+                  "commands": ["deleteReceipt"]
                 }
               ]
             }

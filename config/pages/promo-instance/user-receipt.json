@@ -188,6 +188,14 @@
                     "target": "state.sentSuccessfully",
                     "value": true
                   }
+                },
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
+                    "method": "GET",
+                    "target": "state.receiptData"
+                  }
                 }
               ],
               "onError": [
@@ -720,44 +728,6 @@
                                         "params": {
                                           "source": "event.value",
                                           "target": "state.receiptData.status"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "id": "declineReasonGroup",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "className": "flex flex-column gap-1 mb-2",
-                          "props": {
-                            "label": "Причина отклонения",
-                            "labelClassName": "font-bold text-sm",
-                            "components": [
-                              {
-                                "id": "declineReasonInput",
-                                "type": "component",
-                                "componentType": "InputTextarea",
-                                "props": {
-                                  "value": "@state.receiptData.decline_reason",
-                                  "rows": 3,
-                                  "autoResize": true,
-                                  "className": "w-full",
-                                  "placeholder": "Указывается при отклонении чека"
-                                },
-                                "events": [
-                                  {
-                                    "type": "onChange",
-                                    "commands": [
-                                      {
-                                        "type": "setProperty",
-                                        "params": {
-                                          "source": "event.value",
-                                          "target": "state.receiptData.decline_reason"
                                         }
                                       }
                                     ]

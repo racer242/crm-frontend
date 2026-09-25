@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useTranslations } from "next-intl";
 import { App, Page, NavItem, DataFeedResult, Command } from "@/types";
 import { PageRenderer } from "./PageRenderer";
@@ -43,6 +49,7 @@ export function AppEngine({
 
   const stateManagerRef = useRef<StateManager | null>(null);
   const prevPageIdRef = useRef<string | null>(null);
+  const lastFeedSignatureRef = useRef<string>("");
   if (!stateManagerRef.current) {
     stateManagerRef.current = new StateManager(
       config,
@@ -70,16 +77,30 @@ export function AppEngine({
   // or resolve on client-side with fallback
   const route = initialRoute ?? resolveRouteWithFallback(pathname);
 
-  // On client-side navigation, re-apply initialDataFeed for the new page
+  // Signature of the initialDataFeed content. It changes when the server
+  // delivers fresh data for the same page (router.refresh() executed by the
+  // "refresh" command), so the effect below can re-apply it to the state.
+  const initialFeedSignature = useMemo(
+    () => JSON.stringify(initialDataFeed ?? []),
+    [initialDataFeed],
+  );
+
+  // On client-side navigation, re-apply initialDataFeed for the new page.
+  // Also re-apply when the feed content changed for the current page:
+  // otherwise the "Обновить" buttons (refresh command -> router.refresh())
+  // would fetch fresh data on the server but never update the client state.
   useEffect(() => {
     // Resolve page to get its ID (with fallback matching)
     const resolvedRoute = resolveRouteWithFallback(pathname);
     const page = stateManager.getPageByRoute(resolvedRoute);
     const newPageId = page?.id || null;
 
-    // If page changed and we have new dataFeed results, apply them
+    const isPageChanged = prevPageIdRef.current !== newPageId;
+    const isFeedChanged = lastFeedSignatureRef.current !== initialFeedSignature;
+
+    // If page changed or feed data is fresh, apply the dataFeed results
     if (
-      prevPageIdRef.current !== newPageId &&
+      (isPageChanged || isFeedChanged) &&
       initialDataFeed &&
       initialDataFeed.length > 0
     ) {
@@ -102,8 +123,15 @@ export function AppEngine({
         }
       }
     }
+    lastFeedSignatureRef.current = initialFeedSignature;
     prevPageIdRef.current = newPageId;
-  }, [pathname, initialDataFeed, stateManager, resolveRouteWithFallback]);
+  }, [
+    pathname,
+    initialDataFeed,
+    initialFeedSignature,
+    stateManager,
+    resolveRouteWithFallback,
+  ]);
 
   const [currentPage, setCurrentPage] = useState<Page | null>(() => {
     return stateManager.getPageByRoute(route);
