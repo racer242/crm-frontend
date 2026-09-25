@@ -10,21 +10,18 @@ function transform(source) {
 
   const fields = Array.isArray(data.fields) ? data.fields : [];
 
-  const fieldsText = JSON.stringify(fields, null, 2);
-
   const _columns = fields
     .filter((f) => f && f.name)
     .map((f) => ({
       field: f.name,
       header: f.title || f.name,
-      dataType:
-        f.type === "datetime" || f.type === "date" ? "date" : undefined,
+      dataType: f.type === "datetime" || f.type === "date" ? "date" : undefined,
     }));
 
   return {
     ...data,
-    fields,
-    fieldsText,
+    fields: fields.length > 0 ? fields : "",
+    fieldsText: fields.length > 0 ? JSON.stringify(fields, null, 2) : "",
     _columns,
   };
 }

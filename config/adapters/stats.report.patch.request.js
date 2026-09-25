@@ -15,9 +15,9 @@ function transform(params = {}) {
   };
 
   if (params.fieldsText !== undefined) {
+    let fields;
     const text = String(params.fieldsText || "").trim();
     if (text !== "") {
-      let fields;
       try {
         fields = JSON.parse(text);
       } catch (e) {
@@ -26,15 +26,10 @@ function transform(params = {}) {
       if (!Array.isArray(fields)) {
         throw new Error("Поля выдачи должны быть JSON-массивом");
       }
-      if (fields.length > 0) {
-        body.fields = fields;
-      }
-      // fields.length === 0 → ключ не добавляем («все доступные поля»)
     }
-    // text === "" → ключ не добавляем («все доступные поля»)
+    if (fields && fields.length > 0) body.fields = fields;
+    else body.fields = "";
   }
 
   return body;
 }
-
-
