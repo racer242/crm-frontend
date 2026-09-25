@@ -198,6 +198,17 @@
     "note": "Операционные данные: Редактировать розыгрыш (§8.4)"
   },
   {
+    "path": "ops/raffles/[raffle_id]/chances",
+    "method": "GET",
+    "url": "/api/v1/crm/raffles/{$location.routeParams.raffle_id}/chances",
+    "channel": "instance",
+    "adapter": {
+      "request": "raffle.chances.get.request",
+      "response": "raffle.chances.response"
+    },
+    "note": "Операционные данные: Шансы под условиями розыгрыша (page/limit, §8.9)"
+  },
+  {
     "path": "ops/receipts",
     "method": "GET",
     "url": "/api/v1/crm/receipts",

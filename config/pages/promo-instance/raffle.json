@@ -45,7 +45,14 @@
       "annul_reason": "",
       "annul_reason_label": "—"
     },
-    "chancesCount": null
+    "chancesCount": null,
+    "raffleChances": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "first": 0,
+      "rows": 10
+    }
   },
   "meta": {
     "title": "Розыгрыш — CRM Platform"
@@ -55,6 +62,15 @@
       "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
       "method": "GET",
       "target": "state.raffleData"
+    },
+    {
+      "url": "/api/ops/raffles/{$location.routeParams.raffle_id}/chances",
+      "method": "GET",
+      "data": {
+        "first": "0",
+        "rows": "10"
+      },
+      "target": "state.raffleChances"
     }
   ],
   "shortcuts": {
@@ -68,6 +84,39 @@
               "url": "/api/ops/raffles/{$location.routeParams.raffle_id}",
               "method": "GET",
               "target": "state.raffleData"
+            }
+          }
+        ]
+      }
+    },
+    "requestRaffleChances": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/raffles/{$location.routeParams.raffle_id}/chances",
+              "method": "GET",
+              "target": "state.raffleChances",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.raffleChances.first}",
+                "rows": "{$state.raffleChances.rows}"
+              },
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              },
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось загрузить шансы розыгрыша"
+                  }
+                }
+              ]
             }
           }
         ]
@@ -421,10 +470,7 @@
       "type": "section",
       "className": "flex mb-5",
       "grid": {
-        "cols": [
-          "col-12 lg:col-8",
-          "col-12 lg:col-4"
-        ],
+        "cols": ["col-12 lg:col-8", "col-12 lg:col-4"],
         "padding": "p-2"
       },
       "blocks": [
@@ -854,6 +900,41 @@
                   }
                 ]
               }
+            },
+            {
+              "id": "raffleEditDivider",
+              "type": "component",
+              "componentType": "Divider",
+              "className": "w-full"
+            },
+            {
+              "id": "btnEdit",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-pencil",
+                "label": "Редактировать",
+                "size": "small",
+                "severity": "info",
+                "disabled": "@state.raffleData.edit_disabled",
+                "tooltip": "Редактирование доступно, пока розыгрыш это позволяет",
+                "tooltipOptions": {
+                  "position": "bottom"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/raffles/{$location.routeParams.raffle_id}/edit"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -882,9 +963,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "publishRaffle"
-                  ]
+                  "commands": ["publishRaffle"]
                 }
               ]
             },
@@ -903,9 +982,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "startRaffle"
-                  ]
+                  "commands": ["startRaffle"]
                 }
               ]
             },
@@ -924,9 +1001,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "finishRaffle"
-                  ]
+                  "commands": ["finishRaffle"]
                 }
               ]
             },
@@ -945,9 +1020,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "calculateChances"
-                  ]
+                  "commands": ["calculateChances"]
                 }
               ]
             },
@@ -966,9 +1039,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "draftRaffle"
-                  ]
+                  "commands": ["draftRaffle"]
                 }
               ]
             },
@@ -987,20 +1058,9 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "annulRaffle"
-                  ]
+                  "commands": ["annulRaffle"]
                 }
               ]
-            },
-            {
-              "id": "protocolHint",
-              "type": "component",
-              "componentType": "Text",
-              "className": "m-0 text-sm text-color-secondary",
-              "props": {
-                "value": "Протокол содержит параметры розыгрыша, период выборки, seed генератора, хеши данных и список победителей. Доступен для завершённого и аннулированного розыгрыша."
-              }
             },
             {
               "id": "protocolBtn",
@@ -1017,9 +1077,7 @@
               "events": [
                 {
                   "type": "onClick",
-                  "commands": [
-                    "downloadProtocol"
-                  ]
+                  "commands": ["downloadProtocol"]
                 }
               ]
             }
@@ -1028,54 +1086,53 @@
       ]
     },
     {
-      "id": "buttonsSection",
+      "id": "chancesSection",
       "type": "section",
-      "className": "flex justify-content-center",
+      "className": "",
       "blocks": [
         {
-          "id": "buttonsBlock",
+          "id": "chancesBlock",
           "type": "block",
           "wrapper": {
-            "showHeader": false,
             "component": "Panel",
             "props": {
-              "className": "flex-grow-1",
-              "pt": {
-                "content": {
-                  "style": {
-                    "background": "var(--surface-50) !important"
-                  }
-                }
-              }
+              "header": "Шансы розыгрыша"
             }
           },
-          "className": "flex flex-wrap gap-3 justify-content-center md:justify-content-start",
+          "className": "w-full",
           "components": [
             {
-              "id": "btnEdit",
+              "id": "raffleChancesTable",
               "type": "component",
-              "componentType": "Button",
+              "componentType": "DataTable",
               "props": {
-                "icon": "pi pi-pencil",
-                "label": "Редактировать",
-                "size": "small",
-                "severity": "info",
-                "disabled": "@state.raffleData.edit_disabled",
-                "tooltip": "Редактирование доступно, пока розыгрыш это позволяет",
-                "tooltipOptions": {
-                  "position": "bottom"
-                }
+                "value": "@state.raffleChances.value",
+                "columns": "@state.raffleChances.columns",
+                "totalRecords": "@state.raffleChances.totalRecords",
+                "rows": "@state.raffleChances.rows",
+                "first": "@state.raffleChances.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
               },
               "events": [
                 {
-                  "type": "onClick",
+                  "type": "onPage",
                   "commands": [
-                    {
-                      "type": "navigate",
-                      "params": {
-                        "url": "/ops/raffles/{$location.routeParams.raffle_id}/edit"
-                      }
-                    }
+                    "requestRaffleChances"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    "requestRaffleChances"
                   ]
                 }
               ]

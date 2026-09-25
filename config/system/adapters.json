@@ -59,6 +59,14 @@
     "type": "js",
     "script": "./config/adapters/raffle.chances.count.response.js"
   },
+  "raffle.chances.get.request": {
+    "type": "js",
+    "script": "./config/adapters/raffle.chances.get.request.js"
+  },
+  "raffle.chances.response": {
+    "type": "js",
+    "script": "./config/adapters/raffle.chances.response.js"
+  },
   "user-acts.response": {
     "type": "js",
     "script": "./config/adapters/user-acts.response.js"
