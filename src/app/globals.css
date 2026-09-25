@@ -111,6 +111,32 @@ input.p-inputtext {
   cursor: default;
 }
 
+/* Кнопка-переход (actionIcon) в углу StatCard:
+   кликабельна только она, карточка остаётся статичной */
+.stat-card-action {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.stat-card-action:hover,
+.stat-card-action:focus-visible {
+  background-color: var(--surface-100);
+}
+.stat-card-action:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
 /* Принудительный перенос длинных слов (e-mail, имена, UUID) в узких контейнерах.
    PrimeFlex не содержит утилит overflow-wrap/word-break. */
 .wrap-anywhere {

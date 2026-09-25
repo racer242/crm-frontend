@@ -689,6 +689,25 @@ InputText с прикреплённой кнопкой справа, объед�
 
 ---
 
+### StatCard (`"componentType": "StatCard"`)
+
+Карточка-счётчик на основе `primereact/card` (заголовок + значение + иконка справа).
+
+| Пропс             | Тип      | По умолч.         | Описание                                                             |
+| ----------------- | -------- | ----------------- | -------------------------------------------------------------------- |
+| `title`           | `string` | —                 | Заголовок                                                            |
+| `subTitle`        | `string` | —                 | Подзаголовок (не выводится, если пустой)                             |
+| `value`           | `any`    | —                 | Значение (биндинг `@state...`)                                       |
+| `icon`            | `string` | —                 | Иконка справа (класс PrimeIcons)                                     |
+| `iconColor`       | `string` | `--primary-color` | Цвет иконки                                                          |
+| `actionIcon`      | `string` | —                 | Класс иконки кнопки-перехода в правом верхнем углу (напр. `pi pi-arrow-right`); без пропса кнопка не рендерится |
+| `actionIconColor` | `string` | `--surface-400`   | Цвет иконки кнопки (для цветных карточек — `var(--primary-color-text)`) |
+| `titleClassName` / `subTitleClassName` / `valueClassName` / `iconClassName` | `string` | см. движок | Классы оформления |
+
+**Кнопка-переход (`actionIcon`):** кликабельна только иконка-кнопка в углу (класс `stat-card-action` из `globals.css`: круглый hover-фон, `focus-visible`-обводка, aria-label «Перейти: {title}»), сама карточка остаётся статичной. Команды задаются в `events` компонента по `onClick` (напр. `navigate` на список участника); при заданном `actionIcon` карточка получает `relative` для позиционирования. Пример — счётчики карточки участника (`config/pages/promo-instance/user.json`).
+
+---
+
 ### Panel (`"componentType": "Panel"`)
 
 Сворачиваемая панель на основе `primereact/panel`. Компонент-контейнер, который может содержать дочерние компоненты и имеет заголовок. Движок передаёт Panel `id` из `id` компонента в конфиге (если не задан в `props`) — PrimeReact строит от него `contentId = id + "_content"` и `aria-controls` кнопки сворачивания; без этого все панели страницы получают одинаковый `null_content`.

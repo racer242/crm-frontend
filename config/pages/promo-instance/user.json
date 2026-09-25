@@ -163,8 +163,22 @@
                 "title": "Чеки",
                 "subTitle": "все",
                 "value": "@state.allReceiptsStats.totalRecords",
-                "icon": "pi pi-receipt"
-              }
+                "icon": "pi pi-receipt",
+                "actionIcon": "pi pi-arrow-right"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/receipts"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "activityReceipts",
@@ -175,8 +189,22 @@
                 "title": "Чеки",
                 "subTitle": "приняты",
                 "value": "@state.receiptsStats.totalRecords",
-                "icon": "pi pi-receipt"
-              }
+                "icon": "pi pi-receipt",
+                "actionIcon": "pi pi-arrow-right"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/receipts?status=ACCEPTED"
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "id": "activityProducts",
@@ -186,8 +214,22 @@
               "props": {
                 "title": "Продукты",
                 "value": "@state.productsStats.totalRecords",
-                "icon": "pi pi-shopping-cart"
+                "icon": "pi pi-shopping-cart",
+                "actionIcon": "pi pi-arrow-right"
               },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/products"
+                      }
+                    }
+                  ]
+                }
+              ],
               "state": {}
             },
             {
@@ -199,8 +241,22 @@
                 "title": "Сообщения",
                 "subTitle": "",
                 "value": "@state.messagesStats.totalRecords",
-                "icon": "pi pi-envelope"
+                "icon": "pi pi-envelope",
+                "actionIcon": "pi pi-arrow-right"
               },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/users/{$location.routeParams.user_id}/messages"
+                      }
+                    }
+                  ]
+                }
+              ],
               "state": {}
             }
           ]
@@ -489,8 +545,23 @@
                       "iconClassName": "text-2xl text-primary",
                       "title": "Призы",
                       "value": "@state.prizesStats.totalRecords",
-                      "icon": "pi pi-gift"
+                      "icon": "pi pi-gift",
+                      "actionIcon": "pi pi-arrow-right",
+                      "actionIconColor": "var(--primary-color-text)"
                     },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "/ops/users/{$location.routeParams.user_id}/prizes"
+                            }
+                          }
+                        ]
+                      }
+                    ],
                     "state": {}
                   }
                 ]

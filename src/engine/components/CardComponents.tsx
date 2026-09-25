@@ -21,6 +21,8 @@ export function renderStatCard({
     value,
     icon,
     iconColor,
+    actionIcon,
+    actionIconColor,
     titleClassName = "text-xl font-semibold line-height-1",
     subTitleClassName = "text-xs line-height-1",
     valueClassName = "text-5xl font-bold mt-4 line-height-1",
@@ -29,10 +31,11 @@ export function renderStatCard({
   },
   className,
   style,
+  handleEvent,
 }: ComponentRendererProps) {
   return (
     <Card
-      className={className + " flex"}
+      className={(className || "") + " flex" + (actionIcon ? " relative" : "")}
       style={style}
       pt={{
         content: { className: "p-0 flex w-full" },
@@ -55,6 +58,27 @@ export function renderStatCard({
           />
         )}
       </div>
+      {/*
+        Кнопка-переход в правом верхнем углу (actionIcon):
+        кликабельна только она — сама карточка остаётся статичной.
+        Команды берутся из component.events по onClick (handleEvent движка).
+      */}
+      {actionIcon && (
+        <button
+          type="button"
+          className="stat-card-action"
+          aria-label={`Перейти: ${title ?? ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEvent("onClick", e);
+          }}
+        >
+          <i
+            className={actionIcon}
+            style={{ color: actionIconColor || "var(--surface-400)" }}
+          />
+        </button>
+      )}
     </Card>
   );
 }
