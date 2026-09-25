@@ -959,7 +959,13 @@
                               }
                             ]
                           },
-                          "visible": "@state.receiptData.show_decline_reason"
+                          "visible": {
+                            "calc": "equals",
+                            "params": {
+                              "value": "@state.receiptData.moderation_status",
+                              "equals": "REFUSED"
+                            }
+                          }
                         },
                         {
                           "id": "btnAutoModerate",

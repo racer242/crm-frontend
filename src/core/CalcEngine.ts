@@ -77,6 +77,12 @@ export class CalcEngine {
         : params.defaultValue;
     });
 
+    // equals — сравнение значений (обе стороны приводятся к строке)
+    // params: { value: any, equals: any }
+    this.operations.set("equals", (params) => {
+      return String(params.value ?? "") === String(params.equals ?? "");
+    });
+
     // format — форматирование строки
     // params: { template: string, args: any[] }
     // template: "Привет, {0}! Твой статус: {1}"

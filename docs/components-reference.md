@@ -33,6 +33,7 @@
 | ------- | ------ | --------- |
 | boolean | `"visible": false` | Статически скрыт/показан |
 | binding | `"visible": "@state.selectedReport.id"` | Разрешается через Linkage с подпиской на изменения; falsy (`false`, `undefined`, `null`, `""`) → компонент **не рендерится** (дети тоже), truthy → рендерится |
+| calc-объект | `"visible": { "calc": "equals", "params": { "value": "@state.receiptData.moderation_status", "equals": "REFUSED" } }` | Любое calc-выражение (см. calc-reference); биндинги внутри `params` реактивны, результат приводится к boolean как в binding-варианте |
 
 ```json
 {
@@ -40,6 +41,23 @@
   "componentType": "Panel",
   "visible": "@state.selectedReport.id",
   "props": { "header": "Выполнение", "components": [ ... ] }
+}
+```
+
+Пример с calc-выражением — поле «Причина отклонения» на странице модерации чека показывается **сразу при переключении статуса на «Отклонен»** (значение берётся из дропдауна, до сохранения на сервер) и скрывается при любом другом статусе:
+
+```json
+{
+  "id": "declineReasonEditGroup",
+  "componentType": "LabelledGroup",
+  "visible": {
+    "calc": "equals",
+    "params": {
+      "value": "@state.receiptData.moderation_status",
+      "equals": "REFUSED"
+    }
+  },
+  "props": { "label": "Причина отклонения", "components": [ ... ] }
 }
 ```
 

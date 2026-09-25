@@ -77,7 +77,7 @@ import { useCommandExecutor } from "./useCommandExecutor";
 export interface ComponentBindings {
   resolvedProps: Record<string, any>;
   handleEvent: (eventType: string, eventValue: any) => void;
-  /** Реактивная видимость компонента (config-level visible: boolean | binding) */
+  /** Реактивная видимость компонента (config-level visible: boolean | binding | calc) */
   isVisible: boolean;
   /** Выполнить произвольный массив команд с поддержкой shortcut строк */
   executeCommands: (
@@ -110,22 +110,26 @@ export function useComponentBindings({
   const allBindings = useMemo(() => {
     const bindings: (string | undefined)[] = [];
 
+    const collectBindings = (obj: any) => {
+      if (typeof obj === "string") {
+        bindings.push(obj);
+      } else if (Array.isArray(obj)) {
+        obj.forEach(collectBindings);
+      } else if (obj && typeof obj === "object") {
+        for (const val of Object.values(obj)) {
+          collectBindings(val);
+        }
+      }
+    };
+
+    // visible: строка-биндинг ИЛИ calc-объект (биндинги внутри params)
     if (typeof component.visible === "string") {
       bindings.push(component.visible);
+    } else if (component.visible && typeof component.visible === "object") {
+      collectBindings(component.visible);
     }
 
     if (component.props) {
-      const collectBindings = (obj: any) => {
-        if (typeof obj === "string") {
-          bindings.push(obj);
-        } else if (Array.isArray(obj)) {
-          obj.forEach(collectBindings);
-        } else if (obj && typeof obj === "object") {
-          for (const val of Object.values(obj)) {
-            collectBindings(val);
-          }
-        }
-      };
       collectBindings(component.props);
     }
 
@@ -148,13 +152,17 @@ export function useComponentBindings({
     setResolvedProps(initiallyResolved);
   }, [initiallyResolved]);
 
-  // Реактивная видимость компонента: boolean — как есть, строка — binding через Linkage.
+  // Реактивная видимость компонента: boolean — как есть, строка — binding через
+  // Linkage, объект — calc-выражение (resolveDeep выполняет операцию реактивно).
   // falsy-результат (undefined/null/""/false) → компонент не рендерится.
   const computeVisible = useCallback((): boolean => {
     if (component.visible === undefined) return true;
     if (typeof component.visible === "boolean") return component.visible;
     if (!linkage) return true;
-    return Boolean(linkage.resolve(component.visible));
+    if (typeof component.visible === "string") {
+      return Boolean(linkage.resolve(component.visible));
+    }
+    return Boolean(linkage.resolveDeep(component.visible));
   }, [component.visible, linkage]);
 
   const [isVisible, setIsVisible] = useState<boolean>(computeVisible);
@@ -172,13 +180,11 @@ export function useComponentBindings({
       const propsWithValues = linkage.resolveDeep(component.props) || {};
       setResolvedProps(propsWithValues);
 
-      if (typeof component.visible === "string") {
-        setIsVisible(Boolean(linkage.resolve(component.visible)));
-      }
+      setIsVisible(computeVisible());
     });
 
     return unsubscribe;
-  }, [linkage, allBindings, component.props, component.visible]);
+  }, [linkage, allBindings, component.props, component.visible, computeVisible]);
 
   // /**
   //  * Выполнить команды из component.events по типу события

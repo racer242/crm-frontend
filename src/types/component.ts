@@ -1,5 +1,6 @@
 import { BaseElement, ElementPath } from "./base";
 import { Command } from "./commands";
+import { CalcOperation } from "./calc";
 
 /** Типы компонентов PrimeReact */
 export type ComponentType =
@@ -200,9 +201,11 @@ export interface Component extends BaseElement {
    * Реактивная видимость компонента.
    * - boolean — статическое значение (true/false);
    * - string — binding (например, "@state.selectedReport.id"):
-   *   разрешается через Linkage с подпиской на изменения; falsy → компонент не рендерится.
+   *   разрешается через Linkage с подпиской на изменения; falsy → компонент не рендерится;
+   * - CalcOperation — calc-выражение (например, equals/if над биндингами):
+   *   выполняется через Linkage.resolveDeep, биндинги в params реактивны.
    */
-  visible?: string | boolean;
+  visible?: string | boolean | CalcOperation;
 
   className?: string;
   style?: React.CSSProperties;
