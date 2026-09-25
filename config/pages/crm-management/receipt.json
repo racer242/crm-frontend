@@ -416,6 +416,9 @@
                     "method": "GET",
                     "target": "state.receiptData"
                   }
+                },
+                {
+                  "type": "refresh"
                 }
               ],
               "onError": [
