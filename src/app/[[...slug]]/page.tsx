@@ -162,6 +162,22 @@ export default async function Page({
   // dataFeed results will overwrite dataInit results if they have the same target
   const initialDataFeed = [...initResults, ...successResults];
 
+  if (process.env.NODE_ENV === "development") {
+    // Диагностика SSR-dataFeed при router.refresh() (команда refresh).
+    // Смотрим в терминале dev-сервера: head — первые 100 символов данных
+    // каждого фида; если данные там не свежие — проблема на серверной стороне.
+    console.log(
+      "[SSR feed]",
+      JSON.stringify(
+        initialDataFeed.map((r) => ({
+          target: r.target,
+          ok: r.success,
+          head: JSON.stringify(r.data ?? null)?.slice(0, 100),
+        })),
+      ),
+    );
+  }
+
   // Filter camps for client: strip server-only fields (base_api_url, crm_*), pass only id + name
   const clientCamps: { id: number; name: string; current: boolean }[] =
     allCamps.map((c: CampItem) => ({

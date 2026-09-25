@@ -98,6 +98,25 @@ export function AppEngine({
     const isPageChanged = prevPageIdRef.current !== newPageId;
     const isFeedChanged = lastFeedSignatureRef.current !== initialFeedSignature;
 
+    if (process.env.NODE_ENV === "development") {
+      // Диагностика re-гидрации SSR-фида после router.refresh() (команда refresh).
+      // Смотрим в консоли БРАУЗЕРА: feedChanged=true означает, что свежие данные
+      // дошли до клиента и будут применены в state.
+      console.log(
+        "[AppEngine feed]",
+        JSON.stringify({
+          page: newPageId,
+          pageChanged: isPageChanged,
+          feedChanged: isFeedChanged,
+          results: (initialDataFeed ?? []).map((r) => ({
+            target: r.target,
+            ok: r.success,
+            head: JSON.stringify(r.data ?? null)?.slice(0, 100),
+          })),
+        }),
+      );
+    }
+
     // If page changed or feed data is fresh, apply the dataFeed results
     if (
       (isPageChanged || isFeedChanged) &&
