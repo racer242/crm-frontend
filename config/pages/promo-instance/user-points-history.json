@@ -145,7 +145,8 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "points",
+                "activeItemId": "achievements",
+                "activeSubitemId": "points",
                 "pt": {
                   "menu": {
                     "className": "gap-1"

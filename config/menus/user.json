@@ -54,14 +54,14 @@
           "label": "Призы",
           "icon": "pi pi-gift",
           "route": "/ops/users/{@state.userData.id}/prizes"
+        },
+        {
+          "id": "points",
+          "label": "Баллы",
+          "icon": "pi pi-wallet",
+          "route": "/ops/users/{@state.userData.id}/points/history"
         }
       ]
-    },
-    {
-      "id": "points",
-      "label": "Баллы",
-      "icon": "pi pi-wallet",
-      "route": "/ops/users/{@state.userData.id}/points/history"
     },
     {
       "id": "communication",
