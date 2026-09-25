@@ -700,11 +700,11 @@ InputText с прикреплённой кнопкой справа, объед�
 | `value`           | `any`    | —                 | Значение (биндинг `@state...`)                                       |
 | `icon`            | `string` | —                 | Иконка справа (класс PrimeIcons)                                     |
 | `iconColor`       | `string` | `--primary-color` | Цвет иконки                                                          |
-| `actionIcon`      | `string` | —                 | Класс иконки кнопки-перехода в правом верхнем углу (напр. `pi pi-arrow-right`); без пропса кнопка не рендерится |
+| `actionIcon`      | `string` | —                 | Класс иконки кнопки-перехода в правом нижнем углу (напр. `pi pi-arrow-right`); без пропса кнопка не рендерится |
 | `actionIconColor` | `string` | `--surface-400`   | Цвет иконки кнопки (для цветных карточек — `var(--primary-color-text)`) |
 | `titleClassName` / `subTitleClassName` / `valueClassName` / `iconClassName` | `string` | см. движок | Классы оформления |
 
-**Кнопка-переход (`actionIcon`):** кликабельна только иконка-кнопка в углу (класс `stat-card-action` из `globals.css`: круглый hover-фон, `focus-visible`-обводка, aria-label «Перейти: {title}»), сама карточка остаётся статичной. Команды задаются в `events` компонента по `onClick` (напр. `navigate` на список участника); при заданном `actionIcon` карточка получает `relative` для позиционирования. Пример — счётчики карточки участника (`config/pages/promo-instance/user.json`).
+**Кнопка-переход (`actionIcon`):** кликабельна только иконка-кнопка в нижнем правом углу (класс `stat-card-action` из `globals.css`: круглый hover-фон, `focus-visible`-обводка, aria-label «Перейти: {title}»), сама карточка остаётся статичной. Команды задаются в `events` компонента по `onClick` (напр. `navigate` на список участника); при заданном `actionIcon` карточка получает `relative` для позиционирования. Пример — счётчики карточки участника (`config/pages/promo-instance/user.json`).
 
 ---
 

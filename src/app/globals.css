@@ -115,7 +115,7 @@ input.p-inputtext {
    кликабельна только она, карточка остаётся статичной */
 .stat-card-action {
   position: absolute;
-  top: 0.5rem;
+  bottom: 0.5rem;
   right: 0.5rem;
   width: 2rem;
   height: 2rem;
