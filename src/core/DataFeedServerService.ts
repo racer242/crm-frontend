@@ -162,6 +162,10 @@ export async function executeServerDataFeeds(
       // Prepare options
       const options: RequestInit = {
         method: feed.method,
+        // Данные фида всегда должны быть свежими: без этого прод-семантика
+        // зависит от автоопределения Request-time API, а в dev кэш всё равно
+        // может отдать устаревший ответ (см. serverComponentsHmrCache).
+        cache: "no-store",
         headers,
       };
 

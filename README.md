@@ -72,6 +72,13 @@ App (приложение)
 
 ---
 
+## Конфигурация Next.js (`next.config.ts`)
+
+- `output: "standalone"` — минимальный production-образ для Docker.
+- `experimental.serverComponentsHmrCache: false` — отключает кэширование `fetch`-ответов в Server Components между HMR-обновлениями в dev. При включённом по умолчанию кэше `router.refresh()` (команда `refresh`, кнопки «Обновить», onSuccess-цепочки) получал те же закэшированные данные SSR-фидов — страница не обновлялась до полной перезагрузки (кэш очищается только навигацией или F5). Дополнительно SSR-фиды запрашиваются с `cache: "no-store"` (`src/core/DataFeedServerService.ts`).
+
+---
+
 # Ключевые возможности платформы
 
 ## 1. Система состояний (StateManager)
