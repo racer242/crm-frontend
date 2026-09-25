@@ -327,45 +327,6 @@
                   }
                 ]
               }
-            },
-            {
-              "id": "publishAtGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "flex flex-column gap-1 mb-2",
-              "props": {
-                "label": "Дата публикации",
-                "labelClassName": "font-bold text-sm",
-                "components": [
-                  {
-                    "id": "publishAtInput",
-                    "type": "component",
-                    "componentType": "Calendar",
-                    "props": {
-                      "value": "@state.raffleData.publish_at",
-                      "showTime": true,
-                      "hourFormat": "24",
-                      "showIcon": true,
-                      "placeholder": "Дата публикации розыгрыша",
-                      "className": "w-full"
-                    },
-                    "events": [
-                      {
-                        "type": "onChange",
-                        "commands": [
-                          {
-                            "type": "setProperty",
-                            "params": {
-                              "source": "event.value",
-                              "target": "state.raffleData.publish_at"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
             }
           ]
         },
@@ -375,7 +336,7 @@
           "wrapper": {
             "component": "Panel",
             "props": {
-              "header": "Срок сбора шансов"
+              "header": "Даты розыгрыша"
             }
           },
           "className": "flex flex-column",
@@ -449,6 +410,45 @@
                             "params": {
                               "source": "event.value",
                               "target": "state.raffleData.collection_to"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publishAtGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "flex flex-column gap-1 mb-2",
+              "props": {
+                "label": "Дата публикации",
+                "labelClassName": "font-bold text-sm",
+                "components": [
+                  {
+                    "id": "publishAtInput",
+                    "type": "component",
+                    "componentType": "Calendar",
+                    "props": {
+                      "value": "@state.raffleData.publish_at",
+                      "showTime": true,
+                      "hourFormat": "24",
+                      "showIcon": true,
+                      "placeholder": "Дата публикации розыгрыша",
+                      "className": "w-full"
+                    },
+                    "events": [
+                      {
+                        "type": "onChange",
+                        "commands": [
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "source": "event.value",
+                              "target": "state.raffleData.publish_at"
                             }
                           }
                         ]
