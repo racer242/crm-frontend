@@ -90,10 +90,15 @@ export function AppEngine({
   // otherwise the "Обновить" buttons (refresh command -> router.refresh())
   // would fetch fresh data on the server but never update the client state.
   useEffect(() => {
-    // Resolve page to get its ID (with fallback matching)
-    const resolvedRoute = resolveRouteWithFallback(pathname);
+    // Resolve page to get its ID (with fallback matching).
+    // ВАЖНО: сначала серверный маршрут (initialRoute — шаблон вида
+    // "/x/[param]"), а не resolveRouteWithFallback(pathname): getPageByRoute
+    // сравнивает строго, реальный URL с динамическим сегментом шаблону не
+    // равен — newPageId получался null, и применение фида после
+    // router.refresh() пропускалось (targetId = elementId || newPageId = null).
+    const resolvedRoute = initialRoute ?? resolveRouteWithFallback(pathname);
     const page = stateManager.getPageByRoute(resolvedRoute);
-    const newPageId = page?.id || null;
+    const newPageId = page?.id || initialPageId || null;
 
     const isPageChanged = prevPageIdRef.current !== newPageId;
     const isFeedChanged = lastFeedSignatureRef.current !== initialFeedSignature;
@@ -148,6 +153,8 @@ export function AppEngine({
     pathname,
     initialDataFeed,
     initialFeedSignature,
+    initialRoute,
+    initialPageId,
     stateManager,
     resolveRouteWithFallback,
   ]);
