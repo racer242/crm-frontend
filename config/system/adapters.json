@@ -95,6 +95,14 @@
     "type": "js",
     "script": "./config/adapters/user-log.response.js"
   },
+  "user-points-history.get.request": {
+    "type": "js",
+    "script": "./config/adapters/user-points-history.get.request.js"
+  },
+  "user-points-history.response": {
+    "type": "js",
+    "script": "./config/adapters/user-points-history.response.js"
+  },
   "ops-receipts.get.request": {
     "type": "js",
     "script": "./config/adapters/ops-receipts.get.request.js"

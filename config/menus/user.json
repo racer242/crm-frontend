@@ -58,6 +58,12 @@
       ]
     },
     {
+      "id": "points",
+      "label": "Баллы",
+      "icon": "pi pi-wallet",
+      "route": "/ops/users/{@state.userData.id}/points/history"
+    },
+    {
       "id": "communication",
       "label": "Общение",
       "icon": "pi pi-envelope",

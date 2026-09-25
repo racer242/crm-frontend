@@ -1,0 +1,306 @@
+{
+  "id": "user-points-history",
+  "type": "page",
+  "route": "/ops/users/[user_id]/points/history",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "type": "",
+    "pointsHistory": {
+      "value": [],
+      "columns": [],
+      "typeOptions": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    }
+  },
+  "meta": {
+    "title": "История баллов участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}/points/history",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "type": "{$location.params.type}"
+      },
+      "method": "GET",
+      "target": "state.pointsHistory"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.type}",
+      "target": "state.type"
+    }
+  ],
+  "shortcuts": {
+    "requestPointsHistory": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users/{$location.routeParams.user_id}/points/history",
+              "method": "GET",
+              "target": "state.pointsHistory",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.pointsHistory.first}",
+                "rows": "{$state.pointsHistory.rows}",
+                "type": "{$state.type}"
+              },
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              },
+              "onError": [
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось загрузить историю баллов"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.pointsHistory.first}",
+                "rows": "{$state.pointsHistory.rows}",
+                "type": "{$state.type}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
+                "model": [
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  {
+                    "label": "Баллы"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "points",
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
+                "$ref": "../../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pointsHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "pointsTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "pointsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "История начисления и списания баллов",
+                "level": 1
+              }
+            },
+            {
+              "id": "pointsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pointsFilterSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "pointsFilterBlock",
+          "type": "block",
+          "className": "w-full flex flex-wrap gap-3 align-items-center",
+          "components": [
+            {
+              "id": "pointTypeFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.pointsHistory.typeOptions",
+                "value": "@state.type",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Все типы",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.type"
+                      }
+                    },
+                    "requestPointsHistory"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pointsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "pointsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "pointsHistoryTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.pointsHistory.value",
+                "columns": "@state.pointsHistory.columns",
+                "totalRecords": "@state.pointsHistory.totalRecords",
+                "rows": "@state.pointsHistory.rows",
+                "first": "@state.pointsHistory.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestPointsHistory"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    "requestPointsHistory"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
