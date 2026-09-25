@@ -5,7 +5,6 @@ import React, {
   useState,
   useRef,
   useCallback,
-  useMemo,
 } from "react";
 import { useTranslations } from "next-intl";
 import { App, Page, NavItem, DataFeedResult, Command } from "@/types";
@@ -49,7 +48,6 @@ export function AppEngine({
 
   const stateManagerRef = useRef<StateManager | null>(null);
   const prevPageIdRef = useRef<string | null>(null);
-  const lastFeedSignatureRef = useRef<string>("");
   if (!stateManagerRef.current) {
     stateManagerRef.current = new StateManager(
       config,
@@ -77,16 +75,8 @@ export function AppEngine({
   // or resolve on client-side with fallback
   const route = initialRoute ?? resolveRouteWithFallback(pathname);
 
-  // Signature of the initialDataFeed content. It changes when the server
-  // delivers fresh data for the same page (router.refresh() executed by the
-  // "refresh" command), so the effect below can re-apply it to the state.
-  const initialFeedSignature = useMemo(
-    () => JSON.stringify(initialDataFeed ?? []),
-    [initialDataFeed],
-  );
-
   // On client-side navigation, re-apply initialDataFeed for the new page.
-  // Also re-apply when the feed content changed for the current page:
+  // Also re-apply when the feed content differs from the CURRENT client state:
   // otherwise the "Обновить" buttons (refresh command -> router.refresh())
   // would fetch fresh data on the server but never update the client state.
   useEffect(() => {
@@ -100,19 +90,45 @@ export function AppEngine({
     const page = stateManager.getPageByRoute(resolvedRoute);
     const newPageId = page?.id || initialPageId || null;
 
-    const isPageChanged = prevPageIdRef.current !== newPageId;
-    const isFeedChanged = lastFeedSignatureRef.current !== initialFeedSignature;
+    // Собираем только те результаты фида, которые отличаются от ТЕКУЩЕГО
+    // состояния. Сравнение с live-состоянием (а не с сигнатурой последнего
+    // применённого фида) обязательно: клиентские изменения state (например,
+    // «Применить» с вложенным GET, редактирование продукта) уводят state от
+    // последнего SSR-фида, и повторная доставка ТОГО ЖЕ фида должна вернуть
+    // state к серверным данным, хотя сигнатура фида не изменилась.
+    const pending: {
+      targetId: string;
+      statePath: string | null;
+      data: unknown;
+    }[] = [];
+    for (const result of initialDataFeed ?? []) {
+      if (!result.success || !result.target) continue;
+      const { elementId, statePath } = PathResolver.parseTarget(result.target);
+      const targetId = elementId || newPageId;
+      if (!targetId) continue;
+
+      const currentValue = statePath
+        ? stateManager.getStateField(targetId, statePath)
+        : stateManager.getState(targetId);
+      if (
+        JSON.stringify(currentValue ?? null) ===
+        JSON.stringify(result.data ?? null)
+      ) {
+        continue; // данные совпадают с состоянием — перезапись не нужна
+      }
+      pending.push({ targetId, statePath: statePath || null, data: result.data });
+    }
 
     if (process.env.NODE_ENV === "development") {
       // Диагностика re-гидрации SSR-фида после router.refresh() (команда refresh).
-      // Смотрим в консоли БРАУЗЕРА: feedChanged=true означает, что свежие данные
-      // дошли до клиента и будут применены в state.
+      // Смотрим в консоли БРАУЗЕРА: applying — сколько результатов отличается
+      // от текущего состояния и будет применено.
       console.log(
         "[AppEngine feed]",
         JSON.stringify({
           page: newPageId,
-          pageChanged: isPageChanged,
-          feedChanged: isFeedChanged,
+          applying: pending.length,
+          of: initialDataFeed?.length ?? 0,
           results: (initialDataFeed ?? []).map((r) => ({
             target: r.target,
             ok: r.success,
@@ -122,37 +138,19 @@ export function AppEngine({
       );
     }
 
-    // If page changed or feed data is fresh, apply the dataFeed results
-    if (
-      (isPageChanged || isFeedChanged) &&
-      initialDataFeed &&
-      initialDataFeed.length > 0
-    ) {
-      for (const result of initialDataFeed) {
-        if (result.success && result.target) {
-          const { elementId, statePath } = PathResolver.parseTarget(
-            result.target,
-          );
-          const targetId = elementId || newPageId;
-          if (!targetId) continue;
-
-          if (statePath) {
-            stateManager.setStateField(targetId, statePath, result.data);
-          } else {
-            // No path: merge data into existing state
-            if (typeof result.data === "object") {
-              stateManager.mergeState(targetId, result.data);
-            }
-          }
-        }
+    for (const item of pending) {
+      if (item.statePath) {
+        stateManager.setStateField(item.targetId, item.statePath, item.data);
+      } else if (typeof item.data === "object" && item.data !== null) {
+        // No path: merge data into existing state
+        stateManager.mergeState(item.targetId, item.data as Record<string, any>);
       }
     }
-    lastFeedSignatureRef.current = initialFeedSignature;
+
     prevPageIdRef.current = newPageId;
   }, [
     pathname,
     initialDataFeed,
-    initialFeedSignature,
     initialRoute,
     initialPageId,
     stateManager,
