@@ -231,6 +231,10 @@
     "type": "js",
     "script": "./config/adapters/mgmt.receipt.get.response.js"
   },
+  "mgmt.receipt.patch.request": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipt.patch.request.js"
+  },
   "mgmt.receipt-products.get.request": {
     "type": "js",
     "script": "./config/adapters/mgmt.receipt-products.get.request.js"

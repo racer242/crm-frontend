@@ -407,7 +407,10 @@
     "method": "PATCH",
     "url": "receipts/{$location.routeParams.receipt_id}",
     "channel": "management",
-    "note": "Модерация чеков: Сохранить чек (статус, сеть, комментарий)"
+    "adapter": {
+      "request": "mgmt.receipt.patch.request"
+    },
+    "note": "Модерация чеков: Сохранить чек (статус, сеть, комментарий) / сохранить продукт из попапа (products[])"
   },
   {
     "path": "mgmt/receipts/[receipt_id]",

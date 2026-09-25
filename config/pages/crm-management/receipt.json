@@ -33,6 +33,15 @@
       "store_inn_label": "",
       "store_address_label": ""
     },
+    "productsEditVisible": false,
+    "productsEdit": {
+      "gtin": "",
+      "product_name": "",
+      "is_promo": false,
+      "product_status": ""
+    },
+    "savingProduct": false,
+    "productSaveResult": null,
     "products": {
       "value": [],
       "columns": [],
@@ -328,6 +337,108 @@
                 },
                 {
                   "type": "refresh"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "closeProductEdit": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.productsEditVisible",
+              "value": false
+            }
+          }
+        ]
+      }
+    },
+    "saveProduct": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "setProperty",
+            "params": {
+              "target": "state.savingProduct",
+              "value": true
+            }
+          },
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
+              "method": "PATCH",
+              "target": "state.productSaveResult",
+              "data": {
+                "moderation_status": "{$state.receiptData.moderation_status}",
+                "products": [
+                  {
+                    "gtin": "{$state.productsEdit.gtin}",
+                    "is_promo": "{$state.productsEdit.is_promo}",
+                    "product_status": "{$state.productsEdit.product_status}"
+                  }
+                ]
+              },
+              "onSuccess": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.savingProduct",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.productsEditVisible",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "success",
+                    "summary": "Сохранено",
+                    "message": "Продукт обновлён"
+                  }
+                },
+                "requestProducts",
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
+                    "method": "GET",
+                    "target": "state.receiptData"
+                  }
+                }
+              ],
+              "onError": [
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.savingProduct",
+                    "value": false
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "message": "Не удалось сохранить продукт"
+                  }
+                },
+                {
+                  "type": "log",
+                  "params": {
+                    "message": "{$state.productSaveResult}"
+                  }
                 }
               ]
             }
@@ -1205,6 +1316,64 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "field": "edit",
+                    "header": "",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-pencil",
+                          "severity": "secondary",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.productsEdit.gtin",
+                                  "value": "{#row.gtin}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.productsEdit.product_name",
+                                  "value": "{#row.product_name}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.productsEdit.is_promo",
+                                  "value": "{#row.is_promo}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.productsEdit.product_status",
+                                  "value": "{#row.product_status}"
+                                }
+                              },
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.productsEditVisible",
+                                  "value": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               },
@@ -1216,6 +1385,208 @@
                 {
                   "type": "onSort",
                   "commands": ["requestProducts"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "productEditDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "productEditDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "productEditDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "Редактирование продукта",
+                "visible": "@state.productsEditVisible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": {
+                  "width": "520px"
+                }
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.productsEditVisible",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "components": [
+                {
+                  "id": "productEditNameGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "flex flex-column gap-1 mb-2",
+                  "props": {
+                    "label": "Продукт",
+                    "labelClassName": "font-bold text-sm",
+                    "components": [
+                      {
+                        "id": "productEditName",
+                        "type": "component",
+                        "componentType": "Text",
+                        "className": "m-0",
+                        "props": {
+                          "value": "@state.productsEdit.product_name"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "productEditPromoGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "flex flex-column gap-1 mb-2",
+                  "props": {
+                    "label": "Акционный",
+                    "labelClassName": "font-bold text-sm",
+                    "components": [
+                      {
+                        "id": "productEditPromoSwitch",
+                        "type": "component",
+                        "componentType": "InputSwitch",
+                        "props": {
+                          "value": {
+                            "calc": "if",
+                            "params": {
+                              "condition": {
+                                "calc": "equals",
+                                "params": {
+                                  "value": "@state.productsEdit.is_promo",
+                                  "equals": "true"
+                                }
+                              },
+                              "then": true,
+                              "else": false
+                            }
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onChange",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "source": "event.value",
+                                  "target": "state.productsEdit.is_promo"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "productEditStatusGroup",
+                  "type": "component",
+                  "componentType": "LabelledGroup",
+                  "className": "flex flex-column gap-1 mb-2",
+                  "props": {
+                    "label": "Статус продукта",
+                    "labelClassName": "font-bold text-sm",
+                    "components": [
+                      {
+                        "id": "productEditStatusDropdown",
+                        "type": "component",
+                        "componentType": "Dropdown",
+                        "props": {
+                          "options": [
+                            { "label": "Ожидает проверки", "value": "PENDING" },
+                            { "label": "Подтверждён", "value": "CONFIRMED" },
+                            { "label": "Отменён", "value": "CANCELLED" }
+                          ],
+                          "optionLabel": "label",
+                          "optionValue": "value",
+                          "value": "@state.productsEdit.product_status",
+                          "placeholder": "Выберите статус",
+                          "className": "w-full"
+                        },
+                        "events": [
+                          {
+                            "type": "onChange",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "source": "event.value",
+                                  "target": "state.productsEdit.product_status"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "productEditActions",
+                  "type": "component",
+                  "componentType": "LayoutGroup",
+                  "className": "flex gap-2 justify-content-end",
+                  "props": {
+                    "components": [
+                      {
+                        "id": "productEditCancelButton",
+                        "type": "component",
+                        "componentType": "Button",
+                        "props": {
+                          "label": "Отмена",
+                          "icon": "pi pi-times",
+                          "severity": "secondary",
+                          "outlined": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": ["closeProductEdit"]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "productEditSaveButton",
+                        "type": "component",
+                        "componentType": "Button",
+                        "props": {
+                          "label": "Сохранить",
+                          "icon": "pi pi-check",
+                          "severity": "success",
+                          "disabled": "@state.savingProduct",
+                          "outlined": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": ["saveProduct"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 }
               ]
             }
