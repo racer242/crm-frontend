@@ -53,9 +53,6 @@
       "$ref": "./pages/promo-instance/user-act-add.json"
     },
     {
-      "$ref": "./pages/promo-instance/user-act-edit.json"
-    },
-    {
       "$ref": "./pages/promo-instance/user-prizes.json"
     },
     {
@@ -99,9 +96,6 @@
     },
     {
       "$ref": "./pages/promo-instance/act-add.json"
-    },
-    {
-      "$ref": "./pages/promo-instance/act-edit.json"
     },
     {
       "$ref": "./pages/promo-instance/raffles.json"

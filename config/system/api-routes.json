@@ -102,13 +102,6 @@
   },
   {
     "path": "ops/acts/[act_id]",
-    "method": "PATCH",
-    "url": "/api/v1/crm/acts/{$location.routeParams.act_id}",
-    "channel": "instance",
-    "note": "Операционные данные: Обновить акт (статус)"
-  },
-  {
-    "path": "ops/acts/[act_id]",
     "method": "DELETE",
     "url": "/api/v1/crm/acts/{$location.routeParams.act_id}",
     "channel": "instance",
