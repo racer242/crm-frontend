@@ -456,10 +456,6 @@ async function handleRequest(
 
     // Add HMAC signature headers for instance channel
     if (channel === "instance") {
-      console.log(
-        `[API Router] 🔑 Instance channel detected. Secret: ${!!signingSecret}, KeyId: ${keyId}`,
-      );
-
       if (signingSecret) {
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = crypto.randomBytes(16).toString("hex");
@@ -485,8 +481,6 @@ async function handleRequest(
         } catch {
           urlPath = resolvedUrl;
         }
-
-        console.log(`[API Router] 📝 Signing path: ${urlPath}`);
 
         const signature = generateSignature(
           signingSecret,
@@ -527,7 +521,7 @@ async function handleRequest(
       }
     }
 
-    console.log("------ Request --", resolvedUrl);
+    console.log("------ Request --", request.method, resolvedUrl);
     console.log(
       "------ Headers --",
       JSON.stringify(fetchOptions.headers, null, 2),

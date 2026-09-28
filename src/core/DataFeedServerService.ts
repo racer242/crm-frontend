@@ -128,8 +128,9 @@ export async function executeServerDataFeeds(
       }
 
       // IMPORTANT: Forward requests to our own internal API endpoint to use unified logic
-      const host = serverSources.env?.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      
+      const host =
+        serverSources.env?.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
       // Build headers for the INTERNAL request
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -152,7 +153,9 @@ export async function executeServerDataFeeds(
       const cookieHeader =
         requestCookies && Object.keys(requestCookies).length > 0
           ? Object.entries(requestCookies)
-              .map(([name, value]) => `${name}=${encodeURIComponent(value ?? "")}`)
+              .map(
+                ([name, value]) => `${name}=${encodeURIComponent(value ?? "")}`,
+              )
               .join("; ")
           : undefined;
       if (cookieHeader) {
@@ -183,7 +186,6 @@ export async function executeServerDataFeeds(
         }
       }
 
-      console.log(`[DataFeed SSR] 🚀 Fetching: ${requestUrl}`);
       const response = await fetch(requestUrl, options);
 
       if (!response.ok) {
