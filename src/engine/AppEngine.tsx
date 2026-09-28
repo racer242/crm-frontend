@@ -119,25 +119,6 @@ export function AppEngine({
       pending.push({ targetId, statePath: statePath || null, data: result.data });
     }
 
-    if (process.env.NODE_ENV === "development") {
-      // Диагностика re-гидрации SSR-фида после router.refresh() (команда refresh).
-      // Смотрим в консоли БРАУЗЕРА: applying — сколько результатов отличается
-      // от текущего состояния и будет применено.
-      console.log(
-        "[AppEngine feed]",
-        JSON.stringify({
-          page: newPageId,
-          applying: pending.length,
-          of: initialDataFeed?.length ?? 0,
-          results: (initialDataFeed ?? []).map((r) => ({
-            target: r.target,
-            ok: r.success,
-            head: JSON.stringify(r.data ?? null)?.slice(0, 100),
-          })),
-        }),
-      );
-    }
-
     for (const item of pending) {
       if (item.statePath) {
         stateManager.setStateField(item.targetId, item.statePath, item.data);
