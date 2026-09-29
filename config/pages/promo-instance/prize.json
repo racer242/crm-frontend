@@ -60,21 +60,6 @@
     }
   ],
   "shortcuts": {
-    "reloadPrize": {
-      "type": "sequence",
-      "params": {
-        "commands": [
-          {
-            "type": "sendRequest",
-            "params": {
-              "url": "/api/ops/prizes/{$location.routeParams.prize_id}",
-              "method": "GET",
-              "target": "state.prizeData"
-            }
-          }
-        ]
-      }
-    },
     "changePrizeStatus": {
       "type": "sequence",
       "params": {
@@ -103,7 +88,9 @@
                           "message": "Статус приза изменён"
                         }
                       },
-                      "reloadPrize"
+                      {
+                        "type": "refresh"
+                      }
                     ],
                     "onError": [
                       {
@@ -113,6 +100,9 @@
                           "summary": "Ошибка",
                           "message": "Не удалось изменить статус приза"
                         }
+                      },
+                      {
+                        "type": "refresh"
                       }
                     ]
                   }
