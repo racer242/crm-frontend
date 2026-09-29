@@ -406,7 +406,7 @@
                                 "id": "participantText",
                                 "type": "component",
                                 "componentType": "Text",
-                                "className": "m-0 font-bold text-lg",
+                                "className": "m-0",
                                 "style": {
                                   "wordBreak": "break-all"
                                 },
