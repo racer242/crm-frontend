@@ -169,7 +169,12 @@
                           "message": "Приз отозван"
                         }
                       },
-                      "reloadPrize"
+                      {
+                        "type": "navigate",
+                        "params": {
+                          "url": "/ops/users/{$location.routeParams.user_id}/prizes"
+                        }
+                      }
                     ],
                     "onError": [
                       {
