@@ -42,6 +42,17 @@
         "label": "Не требуют акта",
         "value": "0"
       }
+    ],
+    "owner": "",
+    "ownerOptions": [
+      {
+        "label": "Выданные (есть владелец)",
+        "value": "1"
+      },
+      {
+        "label": "Свободные (владельца нет)",
+        "value": "0"
+      }
     ]
   },
   "meta": {
@@ -55,7 +66,8 @@
         "rows": "{$location.params.rows}",
         "search": "{$location.params.search}",
         "status": "{$location.params.status}",
-        "act_required": "{$location.params.act_required}"
+        "act_required": "{$location.params.act_required}",
+        "owner": "{$location.params.owner}"
       },
       "method": "GET",
       "target": "state.prizes"
@@ -73,6 +85,10 @@
     {
       "source": "{$location.params.act_required}",
       "target": "state.act_required"
+    },
+    {
+      "source": "{$location.params.owner}",
+      "target": "state.owner"
     }
   ],
   "shortcuts": {
@@ -92,7 +108,8 @@
                 "rows": "{$state.prizes.rows}",
                 "search": "{$state.search}",
                 "status": "{$state.status}",
-                "act_required": "{$state.act_required}"
+                "act_required": "{$state.act_required}",
+                "owner": "{$state.owner}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -107,7 +124,8 @@
                 "rows": "{$state.prizes.rows}",
                 "search": "{$state.search}",
                 "status": "{$state.status}",
-                "act_required": "{$state.act_required}"
+                "act_required": "{$state.act_required}",
+                "owner": "{$state.owner}"
               }
             }
           }
@@ -256,6 +274,36 @@
                       "params": {
                         "source": "event.value",
                         "target": "state.act_required"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesOwnerFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.ownerOptions",
+                "value": "@state.owner",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Владелец...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.owner"
                       }
                     },
                     "requestPrizes"
