@@ -1,6 +1,6 @@
 /**
  * Преобразует ответ API /api/v1/crm/prizes/{id} в формат для отображения
- * на странице просмотра приза (user-prize).
+ * на страницах просмотра приза (prize, user-prize).
  * В page dataFeed адаптер не указывается — его применяет API-роутер,
  * поэтому на вход может прийти как обёртка { status, data }, так и данные.
  * @param {Object} response - Ответ сервера (обёртка { status, data } или чистые данные)
@@ -10,24 +10,26 @@ function transform(response) {
   const data = (response && response.data) || response || {};
   if (!data || typeof data !== "object") return {};
 
-  // Словарь статусов приза (русские лейблы + severity для Tag).
-  // В API статусы приходят в верхнем регистре (PENDING, APPROVED, ...) —
-  // ключи словаря в нижнем регистре, нормализация ниже.
+  // Единый словарь статусов выдачи приза (обновление 29.09.26): PENDING,
+  // ACT_UPLOADED, APPROVED, REJECTED. API отдаёт готовый status_label —
+  // словарь остаётся фолбэком для старых ответов.
   const statusLabels = {
     pending: "Ожидает",
+    act_uploaded: "Акт загружен",
     approved: "Одобрен",
-    delivered: "Доставлен",
     rejected: "Отклонен",
   };
   const statusSeverities = {
     pending: "warning",
+    act_uploaded: "info",
     approved: "success",
-    delivered: "info",
     rejected: "danger",
   };
   const statusKey = String(data.status || "").toLowerCase();
 
-  const missingData = Array.isArray(data.missing_data) ? data.missing_data : [];
+  // Розыгрыш, в котором приз выигран (§2.1); null — выдан не розыгрышем
+  const raffle =
+    data.raffle && typeof data.raffle === "object" ? data.raffle : null;
 
   return {
     id: data.prize_id || "",
@@ -37,13 +39,24 @@ function transform(response) {
     title: data.title || "",
     price: data.price !== undefined && data.price !== null ? data.price : "",
     status: data.status || "",
-    status_label: statusLabels[statusKey] || data.status || "",
+    status_label:
+      data.status_label || statusLabels[statusKey] || data.status || "",
     status_severity: statusSeverities[statusKey] || "secondary",
     is_active: Boolean(data.is_active),
     is_active_label: data.is_active ? "Да" : "Нет",
     act_required: Boolean(data.act_required),
     act_required_label: data.act_required ? "Да" : "Нет",
-    missing_data: missingData,
-    missing_data_label: missingData.length ? missingData.join(", ") : "—",
+    missing_data: Array.isArray(data.missing_data) ? data.missing_data : [],
+    // Готовый человекочитаемый текст недостающих данных (§2.2); null — «—»
+    missing_data_text: data.missing_data_text || "—",
+    raffle_id: raffle ? raffle.id || "" : "",
+    raffle_name: raffle ? raffle.name || "" : "",
+    raffle_name_label: raffle && raffle.name ? raffle.name : "—",
+    raffle_status_label:
+      raffle && (raffle.status_label || raffle.status)
+        ? raffle.status_label || raffle.status
+        : "—",
+    // Кнопка «Перейти к розыгрышу» неактивна, если приз выдан не розыгрышем
+    raffle_go_disabled: !raffle,
   };
 }

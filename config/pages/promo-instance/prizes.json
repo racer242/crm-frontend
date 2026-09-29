@@ -11,7 +11,38 @@
       "totalRecords": 0,
       "rows": 10,
       "first": 0
-    }
+    },
+    "search": "",
+    "status": "",
+    "act_required": "",
+    "prizeStatuses": [
+      {
+        "label": "Ожидает",
+        "value": "PENDING"
+      },
+      {
+        "label": "Акт загружен",
+        "value": "ACT_UPLOADED"
+      },
+      {
+        "label": "Одобрен",
+        "value": "APPROVED"
+      },
+      {
+        "label": "Отклонен",
+        "value": "REJECTED"
+      }
+    ],
+    "actRequiredOptions": [
+      {
+        "label": "Требуют акта",
+        "value": "1"
+      },
+      {
+        "label": "Не требуют акта",
+        "value": "0"
+      }
+    ]
   },
   "meta": {
     "title": "Призы — CRM Platform"
@@ -21,10 +52,27 @@
       "url": "/api/ops/prizes",
       "data": {
         "first": "{$location.params.first}",
-        "rows": "{$location.params.rows}"
+        "rows": "{$location.params.rows}",
+        "search": "{$location.params.search}",
+        "status": "{$location.params.status}",
+        "act_required": "{$location.params.act_required}"
       },
       "method": "GET",
       "target": "state.prizes"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.status}",
+      "target": "state.status"
+    },
+    {
+      "source": "{$location.params.act_required}",
+      "target": "state.act_required"
     }
   ],
   "shortcuts": {
@@ -41,7 +89,10 @@
               "data": {
                 "event": "{$event}",
                 "first": "{$state.prizes.first}",
-                "rows": "{$state.prizes.rows}"
+                "rows": "{$state.prizes.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "act_required": "{$state.act_required}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -53,7 +104,10 @@
             "params": {
               "values": {
                 "first": "{$state.prizes.first}",
-                "rows": "{$state.prizes.rows}"
+                "rows": "{$state.prizes.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "act_required": "{$state.act_required}"
               }
             }
           }
@@ -105,6 +159,106 @@
                       "type": "refresh",
                       "params": {}
                     }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "prizesSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "prizesSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.search"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesStatusFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.prizeStatuses",
+                "value": "@state.status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.status"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesActRequiredFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.actRequiredOptions",
+                "value": "@state.act_required",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Требует акта...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.act_required"
+                      }
+                    },
+                    "requestPrizes"
                   ]
                 }
               ]

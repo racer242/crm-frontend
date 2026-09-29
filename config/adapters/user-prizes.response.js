@@ -6,19 +6,19 @@
 function transform(source) {
   const payload = source.status === "ok" ? source.data : source;
 
-  // Словарь статусов приза (русские лейблы + severity для Tag).
-  // В API статусы приходят в верхнем регистре (PENDING, APPROVED, ...) —
-  // ключи словаря в нижнем регистре, нормализация ниже.
+  // Единый словарь статусов выдачи приза (обновление 29.09.26): PENDING,
+  // ACT_UPLOADED, APPROVED, REJECTED. API отдаёт готовый status_label —
+  // словарь остаётся фолбэком для старых ответов.
   const statusLabels = {
     pending: "Ожидает",
+    act_uploaded: "Акт загружен",
     approved: "Одобрен",
-    delivered: "Доставлен",
     rejected: "Отклонен",
   };
   const statusSeverities = {
     pending: "warning",
+    act_uploaded: "info",
     approved: "success",
-    delivered: "info",
     rejected: "danger",
   };
 
@@ -27,8 +27,10 @@ function transform(source) {
     return {
       ...prize,
       id: prize.prize_id || "",
-      status_label: statusLabels[statusKey] || prize.status || "",
+      status_label:
+        prize.status_label || statusLabels[statusKey] || prize.status || "",
       status_severity: statusSeverities[statusKey] || "secondary",
+      act_required_label: prize.act_required ? "Да" : "Нет",
     };
   });
 
@@ -36,6 +38,7 @@ function transform(source) {
     { field: "id", header: "ID", width: "12rem", dataType: "uuid" },
     { field: "title", header: "Название" },
     { field: "price", header: "Стоимость (баллы)", width: "12rem" },
+    { field: "act_required_label", header: "Требует акта", width: "9rem" },
     { field: "status_label", header: "Статус", width: "10rem" },
   ];
 

@@ -23,9 +23,35 @@
       "is_active_label": "",
       "act_required": false,
       "act_required_label": "",
-      "missing_data": [],
-      "missing_data_label": ""
-    }
+      "missing_data_text": "—",
+      "raffle_id": "",
+      "raffle_name": "",
+      "raffle_name_label": "—",
+      "raffle_status_label": "—",
+      "raffle_go_disabled": true
+    },
+    "saveResult": null,
+    "prizeControl": {
+      "status": ""
+    },
+    "prizeStatuses": [
+      {
+        "label": "Ожидает",
+        "value": "PENDING"
+      },
+      {
+        "label": "Акт загружен",
+        "value": "ACT_UPLOADED"
+      },
+      {
+        "label": "Одобрен",
+        "value": "APPROVED"
+      },
+      {
+        "label": "Отклонен",
+        "value": "REJECTED"
+      }
+    ]
   },
   "meta": {
     "title": "Приз участника — CRM Platform"
@@ -42,6 +68,129 @@
       "target": "state.prizeData"
     }
   ],
+  "shortcuts": {
+    "reloadPrize": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/prizes/{$location.routeParams.prize_id}",
+              "method": "GET",
+              "target": "state.prizeData"
+            }
+          }
+        ]
+      }
+    },
+    "changePrizeStatus": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Изменить статус выдачи приза?",
+              "condition": "{$state.prizeControl.status}",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/prizes/{$location.routeParams.prize_id}/status",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "status": "{$state.prizeControl.status}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Статус приза изменён"
+                        }
+                      },
+                      "reloadPrize"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось изменить статус приза"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          },
+          {
+            "type": "showToast",
+            "params": {
+              "severity": "warn",
+              "summary": "Статус не выбран",
+              "message": "Выберите новый статус выдачи приза",
+              "condition": {
+                "value": "{$state.prizeControl.status}",
+                "not": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "revokePrize": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Отозвать приз у участника? Приз вернётся в пул свободных экземпляров со статусом «Ожидает», списанные баллы не возвращаются.",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/users/{$location.routeParams.user_id}/prizes/{$location.routeParams.prize_id}",
+                    "method": "DELETE",
+                    "target": "state.saveResult",
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Приз отозван"
+                        }
+                      },
+                      "reloadPrize"
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось отозвать приз"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    }
+  },
   "sections": [
     {
       "id": "breadcrumbSection",
@@ -319,7 +468,7 @@
                     "componentType": "Text",
                     "className": "m-0 font-bold text-lg",
                     "props": {
-                      "value": "@state.prizeData.missing_data_label"
+                      "value": "@state.prizeData.missing_data_text"
                     }
                   }
                 ]
@@ -328,68 +477,257 @@
           ]
         },
         {
-          "id": "participantBlock",
+          "id": "rightColumnBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Участник"
-            }
-          },
-          "className": "flex flex-column gap-3",
+          "className": "w-full",
           "components": [
             {
-              "id": "userNameGroup",
+              "id": "rightColumnLayout",
               "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column gap-3",
               "props": {
-                "label": "Участник",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
                 "components": [
                   {
-                    "id": "userNameLink",
+                    "id": "participantPanel",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg text-primary",
+                    "componentType": "Panel",
+                    "className": "w-full",
                     "props": {
-                      "value": "@state.userData.full_name"
-                    },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
-                          {
-                            "type": "navigate",
-                            "params": {
-                              "url": "/ops/users/{@state.userData.id}"
-                            }
+                      "header": "Участник",
+                      "components": [
+                        {
+                          "id": "userNameGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Участник",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "userNameLink",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg text-primary",
+                                "props": {
+                                  "value": "@state.userData.full_name"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onClick",
+                                    "commands": [
+                                      {
+                                        "type": "navigate",
+                                        "params": {
+                                          "url": "/ops/users/{@state.userData.id}"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
                           }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "userEmailGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Email",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                        },
+                        {
+                          "id": "userEmailGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Email",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "userEmailText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "props": {
+                                  "value": "@state.userData.email"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
                   {
-                    "id": "userEmailText",
+                    "id": "rafflePanel",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "Panel",
+                    "className": "w-full",
                     "props": {
-                      "value": "@state.userData.email"
+                      "header": "Розыгрыш",
+                      "components": [
+                        {
+                          "id": "raffleNameGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Название",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleNameText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeData.raffle_name_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeData.raffle_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleGoButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "mt-2",
+                          "props": {
+                            "label": "Перейти",
+                            "icon": "pi pi-arrow-right",
+                            "iconPos": "right",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small",
+                            "disabled": "@state.prizeData.raffle_go_disabled"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/ops/raffles/{$state.prizeData.raffle_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "controlPanel",
+                    "type": "component",
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "props": {
+                      "header": "Управление",
+                      "components": [
+                        {
+                          "id": "prizeStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "flex flex-column gap-1 mb-2",
+                          "props": {
+                            "label": "Статус выдачи",
+                            "labelClassName": "font-bold text-sm",
+                            "components": [
+                              {
+                                "id": "prizeStatusDropdown",
+                                "type": "component",
+                                "componentType": "Dropdown",
+                                "props": {
+                                  "options": "@state.prizeStatuses",
+                                  "value": "@state.prizeControl.status",
+                                  "optionLabel": "label",
+                                  "optionValue": "value",
+                                  "placeholder": "Выберите статус",
+                                  "className": "w-full"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onChange",
+                                    "commands": [
+                                      {
+                                        "type": "setProperty",
+                                        "params": {
+                                          "source": "event.value",
+                                          "target": "state.prizeControl.status"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "applyStatusBtn",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "w-full",
+                          "props": {
+                            "icon": "pi pi-check",
+                            "label": "Применить",
+                            "size": "small",
+                            "severity": "success"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                "changePrizeStatus"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "revokePrizeBtn",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "w-full",
+                          "props": {
+                            "icon": "pi pi-undo",
+                            "label": "Отозвать",
+                            "size": "small",
+                            "severity": "danger",
+                            "outlined": true
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                "revokePrize"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   }
                 ]

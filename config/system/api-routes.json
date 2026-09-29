@@ -68,10 +68,17 @@
     "url": "/api/v1/crm/users/{$location.routeParams.user_id}/prizes",
     "channel": "instance",
     "adapter": {
-      "request": "users.get.request",
+      "request": "prizes.get.request",
       "response": "user-prizes.response"
     },
     "note": "Операционные данные: Призы участника (список, выбор приза в форме акта)"
+  },
+  {
+    "path": "ops/users/[user_id]/prizes/[prize_id]",
+    "method": "DELETE",
+    "url": "/api/v1/crm/users/{$location.routeParams.user_id}/prizes/{$location.routeParams.prize_id}",
+    "channel": "instance",
+    "note": "Операционные данные: Отозвать приз у участника (обновление 29.09.26 §7.6)"
   },
   {
     "path": "ops/prizes/[prize_id]",
@@ -82,6 +89,13 @@
       "response": "prize.get.response"
     },
     "note": "Операционные данные: Детали приза"
+  },
+  {
+    "path": "ops/prizes/[prize_id]/status",
+    "method": "POST",
+    "url": "/api/v1/crm/prizes/{$location.routeParams.prize_id}/status",
+    "channel": "instance",
+    "note": "Операционные данные: Изменить статус выдачи приза (status в body, обновление 29.09.26 §7.8)"
   },
   {
     "path": "ops/acts/[act_id]",
@@ -331,7 +345,7 @@
     "url": "/api/v1/crm/prizes",
     "channel": "instance",
     "adapter": {
-      "request": "users.get.request",
+      "request": "prizes.get.request",
       "response": "prizes.response"
     },
     "note": "Операционные данные: Список призов (пул)"

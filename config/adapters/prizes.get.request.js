@@ -1,7 +1,8 @@
 /**
- * Трансформирует состояние таблицы + событие в параметры API-запроса
- * @param {Object} params - Объект с полями состояния и вложенным event
- * @returns {Object} Параметры для GET-запроса к API
+ * Адаптер запроса для списков призов (ops/prizes, ops/users/[user_id]/prizes)
+ * Преобразует параметры пагинации, поиск и фильтры со страницы
+ * в плоские параметры API инстанса (§7.1, обновление 29.09.26 §1.1):
+ * page/limit + search + status + act_required (задел: owner, raffle_id).
  */
 function transform(params = {}) {
   const { event = {}, ...base } = params;
@@ -10,50 +11,64 @@ function transform(params = {}) {
   const merged = {
     first: event.first !== undefined ? event.first : base.first,
     rows: event.rows !== undefined ? event.rows : base.rows,
-    sortField: event.sortField !== undefined ? event.sortField : base.sortField,
-    sortOrder: event.sortOrder !== undefined ? event.sortOrder : base.sortOrder,
     search: event.search !== undefined ? event.search : base.search,
-    filters: base.filters,
+    status: event.status !== undefined ? event.status : base.status,
+    act_required:
+      event.act_required !== undefined ? event.act_required : base.act_required,
+    owner: event.owner !== undefined ? event.owner : base.owner,
+    raffle_id: event.raffle_id !== undefined ? event.raffle_id : base.raffle_id,
   };
 
-  // 2. Пагинация: first (индекс) → page (номер страницы)
-  const limit = merged.rows ?? 10;
-  const first = merged.first ?? 0;
-  const page = limit ? Math.floor(first / limit) : 0;
+  const first = Number(merged.first) || 0;
+  // 25 — совпадает с опцией rowsPerPageOptions [5,10,25,50] страниц списков:
+  // иначе ответ (rows=20 вне опций) не отображается в селекторе пагинации PrimeReact 10
+  const rows = Number(merged.rows) || 25;
+  const page = Math.floor(first / rows) + 1;
 
-  // 3. Сортировка: 1/-1 → 'asc'/'desc'
-  const sort = merged.sortField || null;
-  const direction = sort ? (merged.sortOrder === -1 ? "desc" : "asc") : null;
-
-  // 4. Фильтры: объект → массив
-  const filters = transformFilters(merged.filters);
-
-  // 5. Итоговый объект (спецификация API: first, limit, sort, direction, search, filters)
-  let a = {
-    first,
-    limit,
-    sort,
-    direction,
-    search: merged.search || "",
-    filters,
+  const result = {
+    page: page,
+    limit: rows,
   };
 
-  return a;
+  // Единый поиск по всем опознавательным признакам (§1.1)
+  if (merged.search) {
+    result.search = merged.search;
+  }
+
+  // Фильтр по статусу выдачи (PENDING/ACT_UPLOADED/APPROVED/REJECTED)
+  if (merged.status) {
+    result.status = merged.status;
+  }
+
+  // Требование акта: 1 — только требующие акта, 0 — только без акта (§1.1);
+  // Dropdown отдаёт строки "1"/"0", пустое значение (сброс) не отправляем
+  if (
+    merged.act_required === "1" ||
+    merged.act_required === 1 ||
+    merged.act_required === true
+  ) {
+    result.act_required = 1;
+  } else if (
+    merged.act_required === "0" ||
+    merged.act_required === 0 ||
+    merged.act_required === false
+  ) {
+    result.act_required = 0;
+  }
+
+  // Задел на фильтры §1.1, пока не выведены в UI: владелец и розыгрыш
+  if (
+    merged.owner === "1" ||
+    merged.owner === 1 ||
+    merged.owner === "0" ||
+    merged.owner === 0
+  ) {
+    result.owner = Number(merged.owner);
+  }
+  if (merged.raffle_id) {
+    result.raffle_id = merged.raffle_id;
+  }
+
+  return result;
 }
 
-/**
- * Преобразует фильтры PrimeReact → формат API
- */
-function transformFilters(prFilters) {
-  if (!Array.isArray(prFilters)) return [];
-
-  return prFilters
-    .filter(
-      (f) => f?.value !== undefined && f?.value !== null && f?.value !== "",
-    )
-    .map(({ id, value, matchMode }) => {
-      const result = { id, value };
-      if (matchMode) result.matchMode = matchMode;
-      return result;
-    });
-}
