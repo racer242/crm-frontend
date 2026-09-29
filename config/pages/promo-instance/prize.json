@@ -27,9 +27,6 @@
       "raffle_go_disabled": true
     },
     "saveResult": null,
-    "prizeControl": {
-      "status": ""
-    },
     "prizeStatuses": [
       {
         "label": "Ожидает",
@@ -68,7 +65,6 @@
             "type": "confirm",
             "params": {
               "message": "Изменить статус выдачи приза?",
-              "condition": "{$state.prizeControl.status}",
               "onConfirm": [
                 {
                   "type": "sendRequest",
@@ -77,7 +73,7 @@
                     "method": "POST",
                     "target": "state.saveResult",
                     "data": {
-                      "status": "{$state.prizeControl.status}"
+                      "status": "{$state.prizeData.status}"
                     },
                     "onSuccess": [
                       {
@@ -109,18 +105,6 @@
                 }
               ],
               "onCancel": []
-            }
-          },
-          {
-            "type": "showToast",
-            "params": {
-              "severity": "warn",
-              "summary": "Статус не выбран",
-              "message": "Выберите новый статус выдачи приза",
-              "condition": {
-                "value": "{$state.prizeControl.status}",
-                "not": true
-              }
             }
           }
         ]
@@ -530,7 +514,7 @@
                                 "componentType": "Dropdown",
                                 "props": {
                                   "options": "@state.prizeStatuses",
-                                  "value": "@state.prizeControl.status",
+                                  "value": "@state.prizeData.status",
                                   "optionLabel": "label",
                                   "optionValue": "value",
                                   "placeholder": "Выберите статус",
@@ -544,7 +528,7 @@
                                         "type": "setProperty",
                                         "params": {
                                           "source": "event.value",
-                                          "target": "state.prizeControl.status"
+                                          "target": "state.prizeData.status"
                                         }
                                       }
                                     ]
