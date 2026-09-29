@@ -36,6 +36,10 @@ function transform(response) {
     prize_id: data.prize_id || "",
     user_id: data.user_id || "",
     user_id_label: data.user_id || "—",
+    // Идентификатор для цепочки SSR-фидов (GET /ops/users/[user_id]):
+    // у приза из пула владельца нет — "-" даёт заведомо несуществующий
+    // маршрут, фид вернёт ошибку и будет пропущен движком без записи в state
+    user_feed_id: data.user_id || "-",
     title: data.title || "",
     price: data.price !== undefined && data.price !== null ? data.price : "",
     status: data.status || "",
@@ -58,5 +62,7 @@ function transform(response) {
         : "—",
     // Кнопка «Перейти к розыгрышу» неактивна, если приз выдан не розыгрышем
     raffle_go_disabled: !raffle,
+    // Кнопка «Перейти к владельцу» неактивна, если приз свободен
+    user_go_disabled: !data.user_id,
   };
 }
