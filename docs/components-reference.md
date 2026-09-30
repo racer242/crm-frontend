@@ -1300,7 +1300,7 @@ Toast-уведомление на основе `primereact/toast`.
 | ---------- | ---------------------------- | --------------- | ------------------- |
 | `checkbox` | Один Checkbox                | —               | `true/false`        |
 | `switch`   | Один InputSwitch             | —               | `true/false`        |
-| `range`    | Slider (мульти)              | `[min, max]`    | `[number, number]`  |
+| `range`    | Slider (мульти) + поля «от/до» | `[min, max]`    | `[number, number]`  |
 | `slider`   | Slider (одинарный)           | `[min, max]`    | `number`            |
 | `text`     | InputText                    | —               | `string`            |
 | `number`   | InputNumber                  | —               | `number`            |

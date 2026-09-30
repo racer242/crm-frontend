@@ -152,9 +152,33 @@ export function renderFiltersPanel({
               max={max}
               className="w-full"
             />
-            <div className="flex justify-content-between mt-2">
-              <span className="text-sm text-400">{rangeValue[0]}</span>
-              <span className="text-sm text-400">{rangeValue[1]}</span>
+            {/* Поля точного ввода «от/до»: слайдер груб на широких диапазонах
+                (тысячи значений на пиксель), вводом число ставится точно.
+                Пустой ввод откатывается на границу — фильтр всегда остаётся
+                валидной парой чисел, как и при перетаскивании слайдера. */}
+            <div className="flex gap-2 mt-2">
+              <InputNumber
+                value={rangeValue[0]}
+                onValueChange={(e) =>
+                  updateFilterValue(id, [e.value ?? min, rangeValue[1]])
+                }
+                min={min}
+                max={max}
+                placeholder="от"
+                className="w-full"
+                inputClassName="w-full"
+              />
+              <InputNumber
+                value={rangeValue[1]}
+                onValueChange={(e) =>
+                  updateFilterValue(id, [rangeValue[0], e.value ?? max])
+                }
+                min={min}
+                max={max}
+                placeholder="до"
+                className="w-full"
+                inputClassName="w-full"
+              />
             </div>
           </div>
         );
