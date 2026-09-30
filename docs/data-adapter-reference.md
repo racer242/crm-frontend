@@ -310,74 +310,106 @@ Response-адаптеры — это JS-скрипты в `config/adapters/`, к
 
 **Доступные функции:**
 
-| Функция                               | Описание                                                              |
-| ------------------------------------- | --------------------------------------------------------------------- |
-| `convertDateValue(value)`             | Преобразует ISO-дату в `DD.MM.YYYY HH:mm`                             |
-| `convertDateColumns(values, columns)` | Преобразует поля с типом колонок `datetime`/`date` в объекте значений |
+| Функция                            | Описание                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------- |
+| `formatSum(sum)`                   | Копейки → «1 234,56 ₽» (промо-инстанс; null/пусто → «—»)                        |
+| `formatRubles(value)`              | Рубли с копейками → «590,30 ₽» (канал CRM-управления; деления на 100 нет)       |
+| `getApiTimezone()`                 | Пояс сервера API: `BITRIX_API_TIMEZONE` из `.env`, по умолчанию `Europe/Moscow` |
+| `toZonedDateTime(value, timeZone)` | Date/ISO (Z/offset) → настенное время пояса в формате `YYYY-MM-DD HH:mm:ss`     |
 
-### Преобразование дат
+### Конвертация дат в пояс сервера (request-адаптеры статистики)
 
-Поля в `row.values`, соответствующие колонкам с `type: 'datetime'` или `type: 'date'` в `source.columns`, автоматически преобразуются из ISO формата в локальный формат `DD.MM.YYYY HH:mm`.
+Даты `startDate`/`endDate` в `replacements` отчётов подставляются в SQL связанными параметрами, поэтому они должны быть в поясе хранения данных сервера, а не в «универсальном» ISO-мгновении. Адаптеры `stats.execute.request.js` и `stats.export.request.js` конвертируют их через `toZonedDateTime(value, getApiTimezone())`.
 
 **Пример:**
 
-- Вход: `"2026-04-11T16:17:04+03:00"`
-- Выход: `"11.04.2026 16:17"`
+- Вход: `"2026-09-01T00:00:00.000Z"` (браузер отправил Date → JSON → ISO UTC)
+- Выход (при `BITRIX_API_TIMEZONE=Europe/Moscow`): `"2026-09-01 03:00:00"`
 
-**Как это работает:**
+**Правила:**
 
-1. Список ID колонок с `type === 'datetime'` или `type === 'date'` вычисляется **один раз** внутри `convertDateColumns`
-2. Для каждой строки преобразуются только поля, чьи ключи совпадают с ID date-колонок
-3. Это обеспечивает оптимальную производительность без повторного поиска колонок для каждой строки
+1. Пустое значение → `null` — ключ в `replacements` не включается (прежнее поведение «пустые даты не отправляются»)
+2. Невалидная дата → возвращается как есть (запрос не ломается)
+3. Невалидная таймзона в env (`Intl` бросает `RangeError`) → fallback `Europe/Moscow`
+4. Строка собирается через `formatToParts` с `hourCycle: "h23"` — полночь всегда «00», а не «24»
 
 **Использование в адаптере:**
 
 ```javascript
-const value = (source.rows || []).map((row) => ({
-  ...convertDateColumns(row.values, source.columns),
-  ...(row.id && { _rowId: row.id }),
-}));
+const start = toZonedDateTime(base.startDate, getApiTimezone());
+if (start) {
+  result.replacements.startDate = start;
+}
 ```
 
 **Реализация в `_shared.js`:**
 
 ```javascript
 /**
- * Преобразует значение даты из ISO формата в локальный формат DD.MM.YYYY HH:mm
+ * Пояс сервера API промо-инстанса для дат подстановки статистических
+ * отчётов (replacements.startDate/endDate). Настраивается переменной
+ * окружения BITRIX_API_TIMEZONE, по умолчанию — Europe/Moscow.
  */
-function convertDateValue(value) {
-  if (!value) return value;
-
-  const date = new Date(value);
-  if (isNaN(date.getTime())) return value;
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
+function getApiTimezone() {
+  try {
+    return (
+      (typeof process !== "undefined" &&
+        process.env &&
+        process.env.BITRIX_API_TIMEZONE) ||
+      "Europe/Moscow"
+    );
+  } catch (e) {
+    return "Europe/Moscow";
+  }
 }
 
 /**
- * Находит ID колонок с типом 'datetime' и преобразует соответствующие поля
+ * Конвертирует дату (Date | ISO-строка с Z/offset | timestamp) в настенное
+ * время заданного пояса в формате "YYYY-MM-DD HH:mm:ss".
+ *
+ * Пустое значение → null (адаптер не включает ключ в replacements).
+ * Невалидная дата → возвращается как есть (не ломаем запрос).
+ * Невалидный пояс → fallback на Europe/Moscow (Intl бросает RangeError).
  */
-function convertDateColumns(values, columns) {
-  const dateColumnIds = new Set(
-    (columns || [])
-      .filter((col) => col.type === "datetime")
-      .map((col) => col.id),
+function toZonedDateTime(value, timeZone) {
+  if (value === undefined || value === null || value === "") return null;
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (isNaN(date.getTime())) return value;
+
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    // h23 — чтобы полночь была "00", а не "24" (hour12: false недостаточно)
+    hourCycle: "h23",
+  };
+
+  let parts;
+  try {
+    parts = new Intl.DateTimeFormat("en-CA", {
+      ...options,
+      timeZone: timeZone || getApiTimezone(),
+    }).formatToParts(date);
+  } catch (e) {
+    parts = new Intl.DateTimeFormat("en-CA", {
+      ...options,
+      timeZone: "Europe/Moscow",
+    }).formatToParts(date);
+  }
+
+  const get = (type) => {
+    const p = parts.find((x) => x.type === type);
+    return p ? p.value : "";
+  };
+
+  return (
+    get("year") + "-" + get("month") + "-" + get("day") +
+    " " + get("hour") + ":" + get("minute") + ":" + get("second")
   );
-
-  const result = { ...values };
-  dateColumnIds.forEach((key) => {
-    if (result[key] !== undefined) {
-      result[key] = convertDateValue(result[key]);
-    }
-  });
-
-  return result;
 }
 ```
 
@@ -399,7 +431,7 @@ function transform(source) {
 
   // 2. Преобразуем строки
   const value = (source.rows || []).map((row) => ({
-    ...convertDateColumns(row.values, source.columns),
+    ...row.values,
     ...(row.id && { _rowId: row.id }),
   }));
 

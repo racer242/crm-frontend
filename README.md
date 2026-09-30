@@ -457,6 +457,7 @@ docker compose restart
 | `BITRIX_API_URL`               | (пусто)                    | URL для API 1С Битрикс (авторизация)                                                                                                 |
 | `BITRIX_INTERNAL_SECRET`       | (пусто)                    | Секретный ключ для внутренних запросов к Битрикс. Если значение содержит спецсимволы, закодируйте его в Base64 с префиксом `Base64_` |
 | `JWT_SECRET`                   | (пусто)                    | Секрет для верификации JWT-токенов. Если значение содержит спецсимволы, закодируйте его в Base64 с префиксом `Base64_`               |
+| `BITRIX_API_TIMEZONE`          | `Europe/Moscow`            | Часовой пояс сервера API: пояс для дат подстановки статистических отчётов (`replacements`)                                           |
 | `NEXT_PUBLIC_USE_SYSTEM_FONTS` | `false`                    | Пропустить загрузку Google Fonts (системные шрифты)                                                                                  |
 
 **Параметры `config/crm-config.json`:**

@@ -340,6 +340,9 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
     `║  Method:    ${(process.env.BITRIX_REQUEST_METHOD || "POST").padEnd(48)}║`,
   );
   console.log(
+    `║  API TZ:    ${(process.env.BITRIX_API_TIMEZONE || "Europe/Moscow").padEnd(48)}║`,
+  );
+  console.log(
     `║  Auth API:  ${(process.env.BITRIX_API_URL || "").replace(/^https?:\/\//, "").padEnd(48)}║`,
   );
   console.log(
