@@ -1059,13 +1059,12 @@
                                       "then": {
                                         "root": {
                                           "style": {
-                                            "background": "#0ea5e9",
                                             "borderColor": "#0ea5e9"
                                           }
                                         },
                                         "input": {
                                           "style": {
-                                            "color": "#ffffff"
+                                            "color": "#0ea5e9"
                                           }
                                         }
                                       },
@@ -1124,13 +1123,12 @@
                                       "then": {
                                         "root": {
                                           "style": {
-                                            "background": "#0ea5e9",
                                             "borderColor": "#0ea5e9"
                                           }
                                         },
                                         "input": {
                                           "style": {
-                                            "color": "#ffffff"
+                                            "color": "#0ea5e9"
                                           }
                                         }
                                       },

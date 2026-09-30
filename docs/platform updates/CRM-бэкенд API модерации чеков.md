@@ -227,7 +227,7 @@
 | `moderation_status` | string       | Новый статус модерации (§4.1) — аналогично                                     |
 | `decline_reason`    | string\|null | Причина отклонения (§4.3); `null`, если отклонения нет — панель обнуляет поле  |
 
-Поведение панели (`config/pages/crm-management/receipt.json`): кнопка **«Проверить чек»** шлёт этот запрос; `onSuccess` переносит `fns_status` / `moderation_status` / `decline_reason` из ответа в `state.receiptData` (без перезагрузки страницы), показывает info-toast «Проверка чека» с `message` и подсвечивает дропдауны панели «Модерация» info-цветом (флаг `state.autoChecked`, условный проп `pt`); панель «Причина отклонения» при `REFUSED` открывается сама (существующий calc по `moderation_status`). Подсветка сбрасывается сохранением кнопкой «Применить». `onError` — только toast, без перезагрузки.
+Поведение панели (`config/pages/crm-management/receipt.json`): кнопка **«Проверить чек»** шлёт этот запрос; `onSuccess` переносит `fns_status` / `moderation_status` / `decline_reason` из ответа в `state.receiptData` (без перезагрузки страницы), показывает info-toast «Проверка чека» с `message` и выделяет дропдауны панели «Модерация» info-рамкой и info-цветом текста (флаг `state.autoChecked`, условный проп `pt`); панель «Причина отклонения» при `REFUSED` открывается сама (существующий calc по `moderation_status`). Подсветка сбрасывается сохранением кнопкой «Применить». `onError` — только toast, без перезагрузки.
 
 **`DELETE api/receipts/{id}`** — как в легаси, без изменений.
 
