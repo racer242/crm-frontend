@@ -527,6 +527,7 @@ async function handleRequest(
       JSON.stringify(fetchOptions.headers, null, 2),
     );
     console.log("------ Body --", outgoingBody ?? "(empty)");
+    console.log("------ Query --", adaptedBody ?? "(empty)");
 
     // Forward the request to the external API
     const externalResponse = await fetch(resolvedUrl, fetchOptions);
