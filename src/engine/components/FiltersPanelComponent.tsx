@@ -157,6 +157,8 @@ export function renderFiltersPanel({
                 Пустой ввод откатывается на границу — фильтр всегда остаётся
                 валидной парой чисел, как и при перетаскивании слайдера. */}
             <div className="flex gap-2 mt-2">
+              {/* locale ru-RU: разделитель тысяч — пробел («1 549»); дефолтная
+                  en-US рисует «1,549» — запятая читается как десятичная */}
               <InputNumber
                 value={rangeValue[0]}
                 onValueChange={(e) =>
@@ -164,6 +166,7 @@ export function renderFiltersPanel({
                 }
                 min={min}
                 max={max}
+                locale="ru-RU"
                 placeholder="от"
                 className="w-full"
                 inputClassName="w-full"
@@ -175,6 +178,7 @@ export function renderFiltersPanel({
                 }
                 min={min}
                 max={max}
+                locale="ru-RU"
                 placeholder="до"
                 className="w-full"
                 inputClassName="w-full"
