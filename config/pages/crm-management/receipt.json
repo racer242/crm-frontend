@@ -57,6 +57,7 @@
     "saving": false,
     "saved": false,
     "sentSuccessfully": false,
+    "autoChecked": false,
     "participantData": {
       "id": "",
       "full_name": "",
@@ -258,6 +259,13 @@
                   }
                 },
                 {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.autoChecked",
+                    "value": false
+                  }
+                },
+                {
                   "type": "sendRequest",
                   "params": {
                     "url": "/api/mgmt/receipts/{$location.routeParams.receipt_id}",
@@ -315,15 +323,40 @@
               "data": {},
               "onSuccess": [
                 {
-                  "type": "showToast",
+                  "type": "setProperty",
                   "params": {
-                    "severity": "success",
-                    "summary": "Автомодерация",
-                    "message": "Проверка выполнена"
+                    "target": "state.receiptData.fns_status",
+                    "value": "{$state.saveResult.fns_status}"
                   }
                 },
                 {
-                  "type": "refresh"
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.receiptData.moderation_status",
+                    "value": "{$state.saveResult.moderation_status}"
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.receiptData.decline_reason",
+                    "value": "{$state.saveResult.decline_reason}"
+                  }
+                },
+                {
+                  "type": "setProperty",
+                  "params": {
+                    "target": "state.autoChecked",
+                    "value": true
+                  }
+                },
+                {
+                  "type": "showToast",
+                  "params": {
+                    "severity": "info",
+                    "summary": "Проверка чека",
+                    "message": "{$state.saveResult.message}"
+                  }
                 }
               ],
               "onError": [
@@ -334,9 +367,6 @@
                     "summary": "Ошибка",
                     "message": "Ошибка при проверке"
                   }
-                },
-                {
-                  "type": "refresh"
                 }
               ]
             }
@@ -1015,7 +1045,33 @@
                                   "optionLabel": "name",
                                   "optionValue": "id",
                                   "placeholder": "Выберите статус",
-                                  "className": "w-full"
+                                  "className": "w-full",
+                                  "pt": {
+                                    "calc": "if",
+                                    "params": {
+                                      "condition": {
+                                        "calc": "equals",
+                                        "params": {
+                                          "value": "@state.autoChecked",
+                                          "equals": true
+                                        }
+                                      },
+                                      "then": {
+                                        "root": {
+                                          "style": {
+                                            "background": "#0ea5e9",
+                                            "borderColor": "#0ea5e9"
+                                          }
+                                        },
+                                        "input": {
+                                          "style": {
+                                            "color": "#ffffff"
+                                          }
+                                        }
+                                      },
+                                      "else": {}
+                                    }
+                                  }
                                 },
                                 "events": [
                                   {
@@ -1054,7 +1110,33 @@
                                   "optionLabel": "name",
                                   "optionValue": "id",
                                   "placeholder": "Выберите причину",
-                                  "className": "w-full"
+                                  "className": "w-full",
+                                  "pt": {
+                                    "calc": "if",
+                                    "params": {
+                                      "condition": {
+                                        "calc": "equals",
+                                        "params": {
+                                          "value": "@state.autoChecked",
+                                          "equals": true
+                                        }
+                                      },
+                                      "then": {
+                                        "root": {
+                                          "style": {
+                                            "background": "#0ea5e9",
+                                            "borderColor": "#0ea5e9"
+                                          }
+                                        },
+                                        "input": {
+                                          "style": {
+                                            "color": "#ffffff"
+                                          }
+                                        }
+                                      },
+                                      "else": {}
+                                    }
+                                  }
                                 },
                                 "events": [
                                   {
@@ -1086,7 +1168,7 @@
                           "type": "component",
                           "componentType": "Button",
                           "props": {
-                            "label": "Автомодерация",
+                            "label": "Проверить чек",
                             "icon": "pi pi-search",
                             "severity": "info",
                             "outlined": true

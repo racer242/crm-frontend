@@ -205,9 +205,31 @@
 
 ---
 
-### 5.5. `POST api/receipts/{id}/check` — автомодерация, `DELETE api/receipts/{id}` — удаление
+### 5.5. `POST api/receipts/{id}/check` — проверка чека, `DELETE api/receipts/{id}` — удаление
 
-Оба — как в легаси, без изменений.
+**`POST api/receipts/{id}/check`** — запускает проверку чека в ФНС и автоматическую модерацию. Тело запроса пустое. Ответ:
+
+```json
+{
+  "success": true,
+  "message": "Чек прошёл проверку",
+  "fns_status": "correct",
+  "moderation_status": "REFUSED",
+  "decline_reason": "NO_PRODUCT"
+}
+```
+
+| Поле                | Тип          | Описание                                                                       |
+| ------------------- | ------------ | ------------------------------------------------------------------------------ |
+| `success`           | boolean      | Признак успешного выполнения проверки                                          |
+| `message`           | string       | Человекочитаемый результат — панель показывает его в toast                     |
+| `fns_status`        | string       | Новый статус ФНС (§4.2) — панель подставляет в карточку без перезагрузки       |
+| `moderation_status` | string       | Новый статус модерации (§4.1) — аналогично                                     |
+| `decline_reason`    | string\|null | Причина отклонения (§4.3); `null`, если отклонения нет — панель обнуляет поле  |
+
+Поведение панели (`config/pages/crm-management/receipt.json`): кнопка **«Проверить чек»** шлёт этот запрос; `onSuccess` переносит `fns_status` / `moderation_status` / `decline_reason` из ответа в `state.receiptData` (без перезагрузки страницы), показывает info-toast «Проверка чека» с `message` и подсвечивает дропдауны панели «Модерация» info-цветом (флаг `state.autoChecked`, условный проп `pt`); панель «Причина отклонения» при `REFUSED` открывается сама (существующий calc по `moderation_status`). Подсветка сбрасывается сохранением кнопкой «Применить». `onError` — только toast, без перезагрузки.
+
+**`DELETE api/receipts/{id}`** — как в легаси, без изменений.
 
 ---
 
@@ -221,7 +243,7 @@
 | **`GET api/receipts/{id}`**          | Поля `registration_date`, `purchase_date`, `retail_chain_id`, `retail_chain_name`, `promo_products_amount`, `total_amount`, `fiscal_data`, `moderation_status`, `comment`; справочник `retail_chains`                                                                |
 | **`GET api/receipts/{id}/products`** | Колонки `product_name`, `quantity`, `amount`, `is_promo`; фильтр `is_promo`                                                                                                                                                                                          |
 | **`PATCH api/receipts/{id}`**        | Формат ответа `{success, message, error}`                                                                                                                                                                                                                            |
-| **`POST api/receipts/{id}/check`**   | Без изменений                                                                                                                                                                                                                                                        |
+| **`POST api/receipts/{id}/check`**   | URL/метод/тело без изменений; ответ расширен: `message`, `fns_status`, `moderation_status`, `decline_reason` (§5.5)                                                                                                                                                  |
 | **`DELETE api/receipts/{id}`**       | Без изменений                                                                                                                                                                                                                                                        |
 
 ### 6.2. 🆕 Что нужно добавить
