@@ -15,29 +15,12 @@
       "columns": [],
       "totalRecords": 0,
       "rows": 10,
-      "first": 0
+      "first": 0,
+      "statuses": []
     },
     "search": "",
     "status": "",
     "act_required": "",
-    "prizeStatuses": [
-      {
-        "label": "Ожидает",
-        "value": "PENDING"
-      },
-      {
-        "label": "Акт загружен",
-        "value": "ACT_UPLOADED"
-      },
-      {
-        "label": "Одобрен",
-        "value": "APPROVED"
-      },
-      {
-        "label": "Отклонен",
-        "value": "REJECTED"
-      }
-    ],
     "actRequiredOptions": [
       {
         "label": "Требуют акта",
@@ -285,9 +268,9 @@
               "componentType": "Dropdown",
               "className": "min-w-max flex-grow-0 mb-0",
               "props": {
-                "options": "@state.prizeStatuses",
+                "options": "@state.prizes.statuses",
                 "value": "@state.status",
-                "optionLabel": "label",
+                "optionLabel": "name",
                 "optionValue": "value",
                 "placeholder": "Статус...",
                 "showClear": true,

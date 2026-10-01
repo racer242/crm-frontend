@@ -10,9 +10,9 @@ function transform(response) {
   const data = (response && response.data) || response || {};
   if (!data || typeof data !== "object") return {};
 
-  // Единый словарь статусов выдачи приза (обновление 29.09.26): PENDING,
-  // ACT_UPLOADED, APPROVED, REJECTED. API отдаёт готовый status_label —
-  // словарь остаётся фолбэком для старых ответов.
+  // Жёсткий словарь статусов выдачи приза — фолбэк для ответов без
+  // справочника (обновление 29.09.26: PENDING, ACT_UPLOADED, APPROVED,
+  // REJECTED). Первичный источник подписей — data.statuses из ответа.
   const statusLabels = {
     pending: "Ожидает",
     act_uploaded: "Акт загружен",
@@ -24,7 +24,27 @@ function transform(response) {
     act_uploaded: "info",
     approved: "success",
     rejected: "danger",
+    free: "secondary",
+    sending: "info",
+    sent: "info",
+    error: "danger",
+    received: "success",
+    download: "info",
+    data_needed: "warning",
+    processing: "info",
+    ready_for_delivery: "info",
+    need_code: "warning",
+    deleted: "danger",
   };
+  // Справочник статусов из ответа API (data.statuses, {value, name}):
+  // ключи и в оригинальном регистре (UPPERCASE), и в нижнем
+  const dictLabels = {};
+  for (const s of Array.isArray(data.statuses) ? data.statuses : []) {
+    if (s && s.value) {
+      dictLabels[s.value] = s.name;
+      dictLabels[String(s.value).toLowerCase()] = s.name;
+    }
+  }
   const statusKey = String(data.status || "").toLowerCase();
 
   // Розыгрыш, в котором приз выигран (§2.1); null — выдан не розыгрышем
@@ -44,12 +64,19 @@ function transform(response) {
     price: data.price !== undefined && data.price !== null ? data.price : "",
     status: data.status || "",
     status_label:
-      data.status_label || statusLabels[statusKey] || data.status || "",
+      data.status_label ||
+      dictLabels[data.status] ||
+      dictLabels[statusKey] ||
+      statusLabels[statusKey] ||
+      data.status ||
+      "",
     status_severity: statusSeverities[statusKey] || "secondary",
     is_active: Boolean(data.is_active),
     is_active_label: data.is_active ? "Да" : "Нет",
     act_required: Boolean(data.act_required),
     act_required_label: data.act_required ? "Да" : "Нет",
+    // Справочник статусов из ответа (data.statuses) — опции дропдауна карточки
+    statuses: Array.isArray(data.statuses) ? data.statuses : [],
     missing_data: Array.isArray(data.missing_data) ? data.missing_data : [],
     // Готовый человекочитаемый текст недостающих данных (§2.2); null — «—»
     missing_data_text: data.missing_data_text || "—",

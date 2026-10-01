@@ -26,32 +26,15 @@
       "raffle_name_label": "—",
       "raffle_status_label": "—",
       "raffle_go_disabled": true,
-      "user_go_disabled": true
+      "user_go_disabled": true,
+      "statuses": []
     },
     "prizeUser": {
       "id": "",
       "full_name": "",
       "email": ""
     },
-    "saveResult": null,
-    "prizeStatuses": [
-      {
-        "label": "Ожидает",
-        "value": "PENDING"
-      },
-      {
-        "label": "Акт загружен",
-        "value": "ACT_UPLOADED"
-      },
-      {
-        "label": "Одобрен",
-        "value": "APPROVED"
-      },
-      {
-        "label": "Отклонен",
-        "value": "REJECTED"
-      }
-    ]
+    "saveResult": null
   },
   "meta": {
     "title": "Приз — CRM Platform"
@@ -581,7 +564,7 @@
                     "componentType": "Panel",
                     "className": "w-full",
                     "props": {
-                      "header": "Управление",
+                      "header": "Статус приза",
                       "components": [
                         {
                           "id": "prizeStatusGroup",
@@ -597,9 +580,9 @@
                                 "type": "component",
                                 "componentType": "Dropdown",
                                 "props": {
-                                  "options": "@state.prizeStatuses",
+                                  "options": "@state.prizeData.statuses",
                                   "value": "@state.prizeData.status",
-                                  "optionLabel": "label",
+                                  "optionLabel": "name",
                                   "optionValue": "value",
                                   "placeholder": "Выберите статус",
                                   "className": "w-full"
