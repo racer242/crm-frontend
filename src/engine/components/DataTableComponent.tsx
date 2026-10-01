@@ -135,6 +135,19 @@ function renderCustomColumnBody(
       {bodyComponents.map((compDef) => {
         // Resolve @field / @row.* tokens in the component definition
         const resolvedDef = resolveRowBindings(compDef, rowData, fieldName);
+        // visibleRow: показывать компонент только если {#row.*}-токен разрешился
+        // в непустое значение (например, кнопка перехода к участнику — только
+        // когда у строки есть владелец). Неразрешённый токен (значение null/
+        // undefined — resolveRowBindings оставляет литерал с "{#") или пустая
+        // строка — компонент не рендерится.
+        if (
+          compDef.visibleRow !== undefined &&
+          (typeof resolvedDef.visibleRow !== "string" ||
+            resolvedDef.visibleRow === "" ||
+            resolvedDef.visibleRow.includes("{#"))
+        ) {
+          return null;
+        }
         // Ensure it has an id for React key
         const component = {
           ...resolvedDef,
