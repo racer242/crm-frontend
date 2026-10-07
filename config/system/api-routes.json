@@ -502,7 +502,7 @@
       "request": "stats.execute.request",
       "response": "stats.execute.response"
     },
-    "note": "Статистика: Выполнить отчёт (json; page/limit уходят в query — флаг query: true)"
+    "note": "Статистика: Выполнить отчёт (json; page/limit уходят в query — флаг query: true; replacements в теле — даты + подстановки из поля «Подстановки» страницы запроса)"
   },
   {
     "path": "ops/stats/reports/[report_id]/export",
@@ -513,7 +513,7 @@
     "adapter": {
       "request": "stats.export.request"
     },
-    "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим); тело — format + replacements (даты подстановки)"
+    "note": "Статистика: Выгрузка результата отчёта в xlsx (бинарный стрим); тело — format + replacements (даты и подстановки из поля «Подстановки»)"
   },
   {
     "path": "ops/settings",

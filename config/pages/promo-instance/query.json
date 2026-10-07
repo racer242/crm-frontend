@@ -22,6 +22,7 @@
       "startDate": "",
       "endDate": ""
     },
+    "replacementsText": "",
     "result": {
       "value": [],
       "totalRecords": 0,
@@ -140,7 +141,8 @@
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}",
                 "startDate": "{$state.params.startDate}",
-                "endDate": "{$state.params.endDate}"
+                "endDate": "{$state.params.endDate}",
+                "replacementsText": "{$state.replacementsText}"
               },
               "onSuccess": [
                 {
@@ -186,7 +188,8 @@
                 "first": "{$state.result.first}",
                 "rows": "{$state.result.rows}",
                 "startDate": "{$state.params.startDate}",
-                "endDate": "{$state.params.endDate}"
+                "endDate": "{$state.params.endDate}",
+                "replacementsText": "{$state.replacementsText}"
               },
               "onSuccess": [
                 {
@@ -476,6 +479,44 @@
                         }
                       ]
                     }
+                  },
+                  {
+                    "id": "replacementsGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-1",
+                    "props": {
+                      "label": "Подстановки",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "replacementsInput",
+                          "type": "component",
+                          "componentType": "InputTextarea",
+                          "props": {
+                            "value": "@state.replacementsText",
+                            "placeholder": "{\"NAME\": \"Значение\"}",
+                            "rows": 1,
+                            "autoResize": true,
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.replacementsText"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
                   }
                 ]
               }
@@ -672,7 +713,8 @@
                         "method": "POST",
                         "data": {
                           "startDate": "{$state.params.startDate}",
-                          "endDate": "{$state.params.endDate}"
+                          "endDate": "{$state.params.endDate}",
+                          "replacementsText": "{$state.replacementsText}"
                         },
                         "onError": [
                           {

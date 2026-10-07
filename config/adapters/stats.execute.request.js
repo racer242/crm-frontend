@@ -10,7 +10,29 @@
  * Значения подставляются в SQL связанными параметрами (не текстом), поэтому
  * должны быть в поясе хранения данных сервера. Пустые даты в replacements
  * не включаются; замены макросов {{startDate}}/{{endDate}} выполняет сервер API.
+ *
+ * replacementsText («Подстановки» на странице запроса, JSON-объект) добавляется
+ * в replacements поверх дат: каждый ключ становится макросом {{KEY}}. Пустое
+ * или незаданное поле игнорируется; некорректный JSON прерывает запрос.
  */
+function parseReplacements(text) {
+  if (text === undefined || text === null || String(text).trim() === "") {
+    return {};
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    throw new Error("Некорректный JSON в поле «Подстановки»");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error(
+      "Подстановки должны быть JSON-объектом {\"NAME\": \"Значение\"}",
+    );
+  }
+  return parsed;
+}
+
 function transform(params = {}) {
   const { event = {}, ...base } = params;
 
@@ -28,10 +50,15 @@ function transform(params = {}) {
     limit: Math.min(rows, 100),
   };
 
-  // Даты конвертируются в пояс сервера API; пустые → null → ключ не включается
+  // Даты конвертируются в пояс сервера API; пустые → null → ключ не включается.
+  // Подстановки из поля «Подстановки» (JSON) добавляются поверх дат — при
+  // конфликте ключей значение из JSON побеждает значение календаря.
+  const extra = parseReplacements(base.replacementsText);
+
   if (
     base.startDate !== undefined ||
-    base.endDate !== undefined
+    base.endDate !== undefined ||
+    Object.keys(extra).length > 0
   ) {
     result.replacements = {};
     const start = toZonedDateTime(base.startDate, getApiTimezone());
@@ -42,6 +69,7 @@ function transform(params = {}) {
     if (end) {
       result.replacements.endDate = end;
     }
+    Object.assign(result.replacements, extra);
   }
 
   return result;
