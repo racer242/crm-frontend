@@ -285,7 +285,10 @@
               "props": {
                 "home": { "icon": "pi pi-home", "url": "/" },
                 "model": [
-                  { "label": "Отчёты статистики", "route": "/ops/stats/reports" },
+                  {
+                    "label": "Отчёты статистики",
+                    "route": "/ops/stats/reports"
+                  },
                   { "label": "@state.reportData.title" }
                 ]
               }
@@ -385,7 +388,7 @@
     {
       "id": "formParamsSection",
       "type": "section",
-      "className": "w-full mb-5 flex flex-wrap gap-4",
+      "grid": { "cols": ["col-12 md:col-6", "col-12 md:col-6"], "padding": "" },
       "blocks": [
         {
           "id": "formParamsBlock",
@@ -492,14 +495,14 @@
           "className": "flex-grow-0",
           "wrapper": {
             "component": "Panel",
-            "props": { "header": "Настройки", "className": "w-full" }
+            "props": { "header": "Дашборд", "className": "w-full" }
           },
           "components": [
             {
               "id": "formSettingsLayout",
               "type": "component",
               "componentType": "LayoutGroup",
-              "className": "w-full flex flex-wrap gap-4 align-items-center",
+              "className": "w-full flex flex-wrap gap-4 align-items-start",
               "props": {
                 "components": [
                   {
@@ -509,12 +512,13 @@
                     "className": "flex-grow-0 mb-0",
                     "props": {
                       "label": "Показать в дашборде",
-                      "labelClassName": "font-bold text-sm",
+                      "labelClassName": "font-bold text-sm gap-2",
                       "components": [
                         {
                           "id": "dashboardSwitch",
                           "type": "component",
                           "componentType": "InputSwitch",
+                          "className": "py-2",
                           "props": {
                             "value": "@state.reportData.for_dashboard"
                           },

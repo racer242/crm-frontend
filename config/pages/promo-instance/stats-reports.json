@@ -134,7 +134,8 @@
                       "first": "{$state.stats.first}",
                       "rows": "{$state.stats.rows}",
                       "search": "{$state.search}",
-                      "is_active": "{$state.is_active}"
+                      "is_active": "{$state.is_active}",
+                      "category": "STATISTICS"
                     },
                     "format": {
                       "$ref": "../../system/list-request-format.json"
