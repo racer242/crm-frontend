@@ -112,6 +112,8 @@
 | `moderation_status`     | Статус модерации    | string            | да       |
 | `user_id`               | ID участника        | string (UUID)     | да       |
 
+Строки дополнительно несут читаемые названия статусов — `fns_status_label`, `status_label`. Адаптер списка (`mgmt.receipts.get.response`) подставляет их в колонки `fns_status` / `status` вместо кодов; сортировка и фильтры остаются по кодам.
+
 **Фильтры:**
 
 | id                      | name                         | type     | opts              |
@@ -171,6 +173,8 @@
 | `product_status` | Статус продукта | string            | да (служебный) |
 
 Значения `product_status`: `PENDING`, `CONFIRMED`, `CANCELLED`.
+
+Строки дополнительно несут `status_label` (читаемое название статуса продукта) — адаптер продукции (`mgmt.receipt-products.response`) подставляет его в колонку статуса вместо кода.
 
 **Фильтр:** `is_promo` (options: Да/Нет).
 
