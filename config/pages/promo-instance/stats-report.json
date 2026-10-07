@@ -374,84 +374,6 @@
                         ]
                       }
                     ]
-                  },
-                  {
-                    "id": "dashboardGroup",
-                    "type": "component",
-                    "componentType": "LabelledGroup",
-                    "className": "flex-grow-0 mb-0",
-                    "props": {
-                      "label": "Показать в дашборде",
-                      "labelClassName": "font-bold text-sm",
-                      "components": [
-                        {
-                          "id": "dashboardSwitch",
-                          "type": "component",
-                          "componentType": "InputSwitch",
-                          "props": {
-                            "value": "@state.reportData.for_dashboard"
-                          },
-                          "events": [
-                            {
-                              "type": "onChange",
-                              "commands": [
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "source": "event.value",
-                                    "target": "state.reportData.for_dashboard"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "id": "viewTypeGroup",
-                    "type": "component",
-                    "componentType": "LabelledGroup",
-                    "className": "flex-grow-0 mb-0",
-                    "props": {
-                      "label": "Визуализация",
-                      "labelClassName": "font-bold text-sm",
-                      "components": [
-                        {
-                          "id": "viewTypeDropdown",
-                          "type": "component",
-                          "componentType": "Dropdown",
-                          "props": {
-                            "options": [
-                              { "label": "Таблица", "value": "TABLE" },
-                              { "label": "Круговая", "value": "PIE" },
-                              { "label": "Линейная", "value": "LINE" },
-                              { "label": "Столбчатая", "value": "COLUMN" }
-                            ],
-                            "optionLabel": "label",
-                            "optionValue": "value",
-                            "value": "@state.reportData.view_type",
-                            "placeholder": "Тип визуализации",
-                            "className": "w-full"
-                          },
-                          "events": [
-                            {
-                              "type": "onChange",
-                              "commands": [
-                                {
-                                  "type": "setProperty",
-                                  "params": {
-                                    "source": "event.value",
-                                    "target": "state.reportData.view_type"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
                   }
                 ]
               }
@@ -463,12 +385,12 @@
     {
       "id": "formParamsSection",
       "type": "section",
-      "className": "w-full mb-5",
+      "className": "w-full mb-5 flex flex-wrap gap-4",
       "blocks": [
         {
           "id": "formParamsBlock",
           "type": "block",
-          "className": "w-full",
+          "className": "flex-grow-1",
           "wrapper": {
             "component": "Panel",
             "props": { "header": "Параметры", "className": "w-full" }
@@ -550,6 +472,105 @@
                                   "params": {
                                     "source": "event.value",
                                     "target": "state.params.endDate"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "formSettingsBlock",
+          "type": "block",
+          "className": "flex-grow-0",
+          "wrapper": {
+            "component": "Panel",
+            "props": { "header": "Настройки", "className": "w-full" }
+          },
+          "components": [
+            {
+              "id": "formSettingsLayout",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "w-full flex flex-wrap gap-4 align-items-center",
+              "props": {
+                "components": [
+                  {
+                    "id": "dashboardGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-0 mb-0",
+                    "props": {
+                      "label": "Показать в дашборде",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "dashboardSwitch",
+                          "type": "component",
+                          "componentType": "InputSwitch",
+                          "props": {
+                            "value": "@state.reportData.for_dashboard"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.reportData.for_dashboard"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "viewTypeGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-grow-0 mb-0",
+                    "props": {
+                      "label": "Визуализация",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "viewTypeDropdown",
+                          "type": "component",
+                          "componentType": "Dropdown",
+                          "props": {
+                            "options": [
+                              { "label": "Таблица", "value": "TABLE" },
+                              { "label": "Круговая", "value": "PIE" },
+                              { "label": "Линейная", "value": "LINE" },
+                              { "label": "Столбчатая", "value": "COLUMN" }
+                            ],
+                            "optionLabel": "label",
+                            "optionValue": "value",
+                            "value": "@state.reportData.view_type",
+                            "placeholder": "Тип визуализации",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.reportData.view_type"
                                   }
                                 }
                               ]
