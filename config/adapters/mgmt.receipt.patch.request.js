@@ -7,10 +7,11 @@
  *    тело с products[]: каждый элемент нормализуется —
  *    - gtin: строка (сопоставление по gtin, §5.4);
  *    - is_promo: строго boolean (макросы из конфига могут прийти строкой "true"/"false");
- *    - product_status (PENDING/CONFIRMED/CANCELLED): включается только непустым.
+ *    - product_status не отправляется: статус продукта вычисляется программно
+ *      (из статуса чека и is_promo, «Изменение продукта чека» §4.3) и не принимается API.
  *
  * Контракт PATCH api/receipts/{id} §5.4: products — опциональный массив,
- * сопоставление по gtin; product_status добавлен по согласованию с бэкендом.
+ * сопоставление по gtin.
  * @param {Object} data - Тело запроса из конфига (после разрешения макросов)
  * @returns {Object} Нормализованное тело запроса
  */
@@ -32,13 +33,6 @@ function transform(data) {
       item.is_promo =
         p.is_promo === true ||
         String(p.is_promo ?? "").toLowerCase() === "true";
-      if (
-        p.product_status !== undefined &&
-        p.product_status !== null &&
-        p.product_status !== ""
-      ) {
-        item.product_status = String(p.product_status);
-      }
       return item;
     });
 

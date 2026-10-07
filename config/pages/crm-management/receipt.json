@@ -37,8 +37,7 @@
     "productsEdit": {
       "gtin": "",
       "product_name": "",
-      "is_promo": false,
-      "product_status": ""
+      "is_promo": false
     },
     "savingProduct": false,
     "productSaveResult": null,
@@ -410,8 +409,7 @@
                 "products": [
                   {
                     "gtin": "{$state.productsEdit.gtin}",
-                    "is_promo": "{$state.productsEdit.is_promo}",
-                    "product_status": "{$state.productsEdit.product_status}"
+                    "is_promo": "{$state.productsEdit.is_promo}"
                   }
                 ]
               },
@@ -1441,13 +1439,6 @@
                               {
                                 "type": "setProperty",
                                 "params": {
-                                  "target": "state.productsEdit.product_status",
-                                  "value": "{#row.product_status}"
-                                }
-                              },
-                              {
-                                "type": "setProperty",
-                                "params": {
                                   "target": "state.productsEditVisible",
                                   "value": true
                                 }
@@ -1557,49 +1548,6 @@
                                 "params": {
                                   "source": "event.value",
                                   "target": "state.productsEdit.is_promo"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "productEditStatusGroup",
-                  "type": "component",
-                  "componentType": "LabelledGroup",
-                  "className": "flex flex-column gap-1 mb-2",
-                  "props": {
-                    "label": "Статус продукта",
-                    "labelClassName": "font-bold text-sm",
-                    "components": [
-                      {
-                        "id": "productEditStatusDropdown",
-                        "type": "component",
-                        "componentType": "Dropdown",
-                        "props": {
-                          "options": [
-                            { "label": "Ожидает проверки", "value": "PENDING" },
-                            { "label": "Подтверждён", "value": "CONFIRMED" },
-                            { "label": "Отменён", "value": "CANCELLED" }
-                          ],
-                          "optionLabel": "label",
-                          "optionValue": "value",
-                          "value": "@state.productsEdit.product_status",
-                          "placeholder": "Выберите статус",
-                          "className": "w-full"
-                        },
-                        "events": [
-                          {
-                            "type": "onChange",
-                            "commands": [
-                              {
-                                "type": "setProperty",
-                                "params": {
-                                  "source": "event.value",
-                                  "target": "state.productsEdit.product_status"
                                 }
                               }
                             ]
