@@ -5,9 +5,6 @@
   "state": {
     "loading": false,
     "initialized": true,
-    "saving": false,
-    "saved": false,
-    "sentSuccessfully": false,
     "saveResult": null,
     "receiptData": {
       "id": "",
@@ -37,29 +34,7 @@
       "value": [],
       "columns": [],
       "totalRecords": 0
-    },
-    "receiptStatuses": [
-      {
-        "label": "На проверке",
-        "value": "CHECKING"
-      },
-      {
-        "label": "Принят",
-        "value": "ACCEPTED"
-      },
-      {
-        "label": "Отклонён",
-        "value": "REFUSED"
-      },
-      {
-        "label": "Приостановлен",
-        "value": "SUSPENDED"
-      },
-      {
-        "label": "Требуется фото",
-        "value": "NEED_PHOTO"
-      }
-    ]
+    }
   },
   "meta": {
     "title": "Чек — CRM Platform"
@@ -149,94 +124,6 @@
               "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
               "method": "GET",
               "target": "state.receiptData"
-            }
-          }
-        ]
-      }
-    },
-    "saveReceipt": {
-      "type": "sequence",
-      "params": {
-        "commands": [
-          {
-            "type": "setProperty",
-            "params": {
-              "target": "state.saving",
-              "value": true
-            }
-          },
-          {
-            "type": "setProperty",
-            "params": {
-              "target": "state.saveResult",
-              "value": null
-            }
-          },
-          {
-            "type": "sendRequest",
-            "params": {
-              "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
-              "method": "PATCH",
-              "target": "state.saveResult",
-              "data": {
-                "status": "{$state.receiptData.status}",
-                "decline_reason": "{$state.receiptData.decline_reason}"
-              },
-              "onSuccess": [
-                {
-                  "type": "setProperty",
-                  "params": {
-                    "target": "state.saving",
-                    "value": false
-                  }
-                },
-                {
-                  "type": "setProperty",
-                  "params": {
-                    "target": "state.saved",
-                    "value": true
-                  }
-                },
-                {
-                  "type": "setProperty",
-                  "params": {
-                    "target": "state.sentSuccessfully",
-                    "value": true
-                  }
-                },
-                {
-                  "type": "sendRequest",
-                  "params": {
-                    "url": "/api/ops/receipts/{$location.routeParams.receipt_id}",
-                    "method": "GET",
-                    "target": "state.receiptData"
-                  }
-                }
-              ],
-              "onError": [
-                {
-                  "type": "setProperty",
-                  "params": {
-                    "target": "state.saving",
-                    "value": false
-                  }
-                },
-                {
-                  "type": "setProperty",
-                  "params": {
-                    "target": "state.sentSuccessfully",
-                    "value": false
-                  }
-                },
-                {
-                  "type": "showToast",
-                  "params": {
-                    "severity": "error",
-                    "summary": "Ошибка",
-                    "message": "Не удалось сохранить данные чека"
-                  }
-                }
-              ]
             }
           }
         ]
@@ -780,74 +667,6 @@
                       "header": "Модерация",
                       "components": [
                         {
-                          "id": "statusGroup",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "className": "flex flex-column gap-1 mb-2",
-                          "props": {
-                            "label": "Статус",
-                            "labelClassName": "font-bold text-sm",
-                            "components": [
-                              {
-                                "id": "statusDropdown",
-                                "type": "component",
-                                "componentType": "Dropdown",
-                                "props": {
-                                  "options": "@state.receiptStatuses",
-                                  "value": "@state.receiptData.status",
-                                  "optionLabel": "label",
-                                  "optionValue": "value",
-                                  "placeholder": "Выберите статус",
-                                  "className": "w-full"
-                                },
-                                "events": [
-                                  {
-                                    "type": "onChange",
-                                    "commands": [
-                                      {
-                                        "type": "setProperty",
-                                        "params": {
-                                          "source": "event.value",
-                                          "target": "state.receiptData.status"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "id": "btnApply",
-                          "type": "component",
-                          "componentType": "Button",
-                          "props": {
-                            "label": "Применить",
-                            "icon": "pi pi-check",
-                            "severity": "success",
-                            "disabled": "@state.saving",
-                            "outlined": true
-                          },
-                          "events": [
-                            {
-                              "type": "onClick",
-                              "commands": [
-                                "saveReceipt",
-                                {
-                                  "type": "showToast",
-                                  "params": {
-                                    "severity": "success",
-                                    "summary": "Успешно",
-                                    "message": "Данные чека сохранены",
-                                    "condition": "{$state.sentSuccessfully}"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
                           "id": "btnFindInMgmt",
                           "type": "component",
                           "componentType": "Button",
@@ -866,6 +685,31 @@
                                   "type": "navigate",
                                   "params": {
                                     "url": "/mgmt/receipts?search={$location.routeParams.receipt_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "btnFindUserReceipts",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Найти все чеки участника",
+                            "icon": "pi pi-external-link",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/mgmt/receipts?search={$state.receiptData.user_id}"
                                   }
                                 }
                               ]
