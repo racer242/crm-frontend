@@ -442,7 +442,10 @@
     "method": "POST",
     "url": "receipts/{$location.routeParams.receipt_id}/check",
     "channel": "management",
-    "note": "Модерация чеков: Автомодерация (проверка чека)"
+    "adapter": {
+      "response": "mgmt.receipt.check.response"
+    },
+    "note": "Модерация чеков: Автомодерация (проверка чека); response-адаптер выводит moderation_status из decline_reason (ACCEPTED/REFUSED)"
   },
   {
     "path": "ops/stats/reports",

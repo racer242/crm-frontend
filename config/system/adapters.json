@@ -235,6 +235,10 @@
     "type": "js",
     "script": "./config/adapters/mgmt.receipt.patch.request.js"
   },
+  "mgmt.receipt.check.response": {
+    "type": "js",
+    "script": "./config/adapters/mgmt.receipt.check.response.js"
+  },
   "mgmt.receipt-products.get.request": {
     "type": "js",
     "script": "./config/adapters/mgmt.receipt-products.get.request.js"

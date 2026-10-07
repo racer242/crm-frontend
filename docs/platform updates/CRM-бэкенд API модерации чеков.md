@@ -224,10 +224,10 @@
 | `success`           | boolean      | Признак успешного выполнения проверки                                          |
 | `message`           | string       | Человекочитаемый результат — панель показывает его в toast                     |
 | `fns_status`        | string       | Новый статус ФНС (§4.2) — панель подставляет в карточку без перезагрузки       |
-| `moderation_status` | string       | Новый статус модерации (§4.1) — аналогично                                     |
-| `decline_reason`    | string\|null | Причина отклонения (§4.3); `null`, если отклонения нет — панель обнуляет поле  |
+| `moderation_status` | string       | Текущий статус модерации чека (§4.1) — сама проверка его не меняет, результата проверки в поле нет                                     |
+| `decline_reason`    | string\|null | **Результат проверки**: `null` — чек принят; заполнен — чек отклонён, содержит причину (§4.3)  |
 
-Поведение панели (`config/pages/crm-management/receipt.json`): кнопка **«Проверить чек»** шлёт этот запрос; `onSuccess` переносит `fns_status` / `moderation_status` / `decline_reason` из ответа в `state.receiptData` (без перезагрузки страницы), показывает info-toast «Проверка чека» с `message` и выделяет дропдауны панели «Модерация» info-рамкой и info-цветом текста (флаг `state.autoChecked`, условный проп `pt`); панель «Причина отклонения» при `REFUSED` открывается сама (существующий calc по `moderation_status`). Подсветка сбрасывается сохранением кнопкой «Применить». `onError` — только toast, без перезагрузки.
+Поведение панели (`config/pages/crm-management/receipt.json`): кнопка **«Проверить чек»** шлёт этот запрос; response-адаптер `mgmt.receipt.check.response` подменяет `moderation_status` ответа на итог, выведенный из `decline_reason` (`ACCEPTED` при `null`, иначе `REFUSED`), остальные поля проходят как есть; `onSuccess` шортката `autoModerate` переносит `fns_status` / `moderation_status` / `decline_reason` из ответа в `state.receiptData` (без перезагрузки страницы), показывает info-toast «Проверка чека» с `message` и выделяет дропдауны панели «Модерация» info-рамкой и info-цветом текста (флаг `state.autoChecked`, условный проп `pt`); панель «Причина отклонения» при `REFUSED` открывается сама (существующий calc по `moderation_status`). Подсветка сбрасывается сохранением кнопкой «Применить». `onError` — только toast, без перезагрузки.
 
 **`DELETE api/receipts/{id}`** — как в легаси, без изменений.
 
@@ -243,7 +243,7 @@
 | **`GET api/receipts/{id}`**          | Поля `registration_date`, `purchase_date`, `retail_chain_id`, `retail_chain_name`, `promo_products_amount`, `total_amount`, `fiscal_data`, `moderation_status`, `comment`; справочник `retail_chains`                                                                |
 | **`GET api/receipts/{id}/products`** | Колонки `product_name`, `quantity`, `amount`, `is_promo`; фильтр `is_promo`                                                                                                                                                                                          |
 | **`PATCH api/receipts/{id}`**        | Формат ответа `{success, message, error}`                                                                                                                                                                                                                            |
-| **`POST api/receipts/{id}/check`**   | URL/метод/тело без изменений; ответ расширен: `message`, `fns_status`, `moderation_status`, `decline_reason` (§5.5)                                                                                                                                                  |
+| **`POST api/receipts/{id}/check`**   | URL/метод/тело без изменений; ответ расширен: `message`, `fns_status`, `moderation_status` (текущий статус, не результат), `decline_reason` — итог проверки; итоговый статус CRM выводит адаптером из `decline_reason` (§5.5)                                                                                                                                                  |
 | **`DELETE api/receipts/{id}`**       | Без изменений                                                                                                                                                                                                                                                        |
 
 ### 6.2. 🆕 Что нужно добавить
