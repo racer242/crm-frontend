@@ -11,6 +11,12 @@
       "label": "Управление отчетами",
       "icon": "pi pi-file-edit",
       "route": "/ops/stats/reports"
+    },
+    {
+      "id": "queries",
+      "label": "Запросы",
+      "icon": "pi pi-database",
+      "route": "/ops/queries"
     }
   ]
 }

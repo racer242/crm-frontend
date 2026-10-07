@@ -14,6 +14,22 @@ function transform(params = {}) {
     is_active: params.is_active === true || params.is_active === "true",
   };
 
+  // for_dashboard (boolean): включается в тело только если пришёл —
+  // отсутствие поля значит «не менять»
+  if (params.for_dashboard !== undefined) {
+    body.for_dashboard =
+      params.for_dashboard === true || params.for_dashboard === "true";
+  }
+
+  // view_type (TABLE/PIE/LINE/COLUMN): включается только непустым
+  if (
+    params.view_type !== undefined &&
+    params.view_type !== null &&
+    params.view_type !== ""
+  ) {
+    body.view_type = String(params.view_type);
+  }
+
   if (params.fieldsText !== undefined) {
     let fields;
     const text = String(params.fieldsText || "").trim();

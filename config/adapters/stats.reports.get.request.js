@@ -34,5 +34,15 @@ function transform(params = {}) {
     result.is_active = base.is_active === true || base.is_active === "true";
   }
 
+  // Категория использования (VIEW / STATISTICS): страницы передают её
+  // в данных запроса; пустое значение не отправляется
+  if (
+    base.category !== undefined &&
+    base.category !== null &&
+    base.category !== ""
+  ) {
+    result.category = base.category;
+  }
+
   return result;
 }

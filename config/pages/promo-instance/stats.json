@@ -48,7 +48,8 @@
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
         "search": "{$location.params.search}",
-        "is_active": "true"
+        "is_active": "true",
+        "category": "STATISTICS"
       },
       "method": "GET",
       "target": "state.reports"
@@ -88,7 +89,8 @@
                 "first": "{$state.reports.first}",
                 "rows": "{$state.reports.rows}",
                 "search": "{$state.search}",
-                "is_active": "true"
+                "is_active": "true",
+                "category": "STATISTICS"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"

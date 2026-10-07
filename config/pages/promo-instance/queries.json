@@ -1,7 +1,7 @@
 {
-  "id": "stats-reports",
+  "id": "queries",
   "type": "page",
-  "route": "/ops/stats/reports",
+  "route": "/ops/queries",
   "state": {
     "loading": false,
     "initialized": true,
@@ -28,7 +28,7 @@
     }
   },
   "meta": {
-    "title": "Отчёты статистики — CRM Platform"
+    "title": "Запросы — CRM Platform"
   },
   "dataFeed": [
     {
@@ -38,7 +38,7 @@
         "rows": "{$location.params.rows}",
         "search": "{$location.params.search}",
         "is_active": "{$location.params.is_active}",
-        "category": "STATISTICS"
+        "category": "VIEW"
       },
       "method": "GET",
       "target": "state.stats"
@@ -71,7 +71,7 @@
                 "rows": "{$state.stats.rows}",
                 "search": "{$state.search}",
                 "is_active": "{$state.is_active}",
-                "category": "STATISTICS"
+                "category": "VIEW"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -110,11 +110,11 @@
               "method": "POST",
               "target": "state.createResult",
               "data": {
-                "title": "Новый отчёт",
+                "title": "Новый запрос",
                 "sql": "",
                 "fields": [],
                 "is_active": false,
-                "category": "STATISTICS"
+                "category": "VIEW"
               },
               "onSuccess": [
                 {
@@ -166,7 +166,7 @@
                   "params": {
                     "severity": "error",
                     "summary": "Ошибка",
-                    "message": "Не удалось создать отчёт"
+                    "message": "Не удалось создать запрос"
                   }
                 }
               ]
@@ -191,7 +191,7 @@
               "type": "component",
               "componentType": "Menubar",
               "props": {
-                "activeItemId": "reports",
+                "activeItemId": "queries",
                 "pt": {
                   "menu": {
                     "className": "gap-1"
@@ -219,7 +219,7 @@
               "componentType": "Text",
               "className": "w-full",
               "props": {
-                "value": "Отчёты статистики",
+                "value": "Запросы",
                 "level": 1
               }
             },
@@ -327,7 +327,7 @@
               "componentType": "Button",
               "className": "flex-grow-0 min-w-max",
               "props": {
-                "label": "Создать отчёт",
+                "label": "Создать запрос",
                 "icon": "pi pi-plus",
                 "severity": "success",
                 "size": "small",
@@ -406,7 +406,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/stats/{#row.id}"
+                                  "url": "/ops/queries/{#row.id}"
                                 }
                               }
                             ]
@@ -430,7 +430,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/stats/{$event.data.id}"
+                        "url": "/ops/queries/{$event.data.id}"
                       }
                     }
                   ]

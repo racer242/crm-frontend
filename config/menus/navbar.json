@@ -40,6 +40,11 @@
       "route": "/ops/stats"
     },
     {
+      "label": "Запросы",
+      "icon": "pi pi-database",
+      "route": "/ops/queries"
+    },
+    {
       "header": "CRM-управление"
     },
     {
