@@ -275,6 +275,18 @@
     "type": "js",
     "script": "./config/adapters/stats.export.request.js"
   },
+  "stats.users.report.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.report.response.js"
+  },
+  "stats.users.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.execute.request.js"
+  },
+  "stats.users.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.execute.response.js"
+  },
   "settings.campaign.response": {
     "type": "js",
     "script": "./config/adapters/settings.campaign.response.js"

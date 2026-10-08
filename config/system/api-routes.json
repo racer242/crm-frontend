@@ -521,5 +521,27 @@
     "url": "/api/v1/crm/settings",
     "channel": "instance",
     "note": "Настройки инстанса (§3.6.1, только просмотр); параметр group задают вызывающие — например, /api/ops/settings?group=campaign"
+  },
+  {
+    "path": "ops/users-v2/report/[report_id]",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.users.report.response"
+    },
+    "note": "Участники v2 (эксперимент): Метаданные отчёта статистики — id/title + колонки из fields[] + фильтры; SQL отчёта наружу не отдаётся"
+  },
+  {
+    "path": "ops/users-v2/report/[report_id]/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.users.execute.request",
+      "response": "stats.users.execute.response"
+    },
+    "note": "Участники v2 (эксперимент): Выполнение отчёта-списка (page/limit/sort/direction/search/filters; replacements — все макросы пустой строкой; query: true — весь вывод request-адаптера уходит в query)"
   }
 ]
