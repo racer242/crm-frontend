@@ -373,6 +373,33 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "id": "btnCopyId",
+                    "type": "component",
+                    "componentType": "Button",
+                    "className": "flex-grow-0",
+                    "props": {
+                      "label": "@state.reportData.id",
+                      "icon": "pi pi-copy",
+                      "severity": "secondary",
+                      "outlined": true
+                    },
+                    "events": [
+                      {
+                        "type": "onClick",
+                        "commands": [
+                          {
+                            "type": "copyToClipboard",
+                            "params": {
+                              "value": "{$state.reportData.id}",
+                              "message": "ID запроса скопирован: {$state.reportData.id}",
+                              "severity": "success"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
