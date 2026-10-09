@@ -29,10 +29,10 @@
  *   - moderation_status / fns_status — options boolean array aligned with opts
  *     → "AND r.status IN ('ACCEPTED', 'REFUSED', …)"; nothing selected AND
  *     everything selected → "" (spec §1.3 — restricting to all is meaningless);
- *   - retail_chain — options → LIKE patterns over the raw r.store_name (the
- *     retail_chain column is a CASE expression, not WHERE-able): Магнит /
- *     Пятёрочка (both spellings) / OTHER = NOT LIKE all of them; several
- *     picked chains are OR-ed;
+ *   - retail_chain — NO UI filter («Торговая сеть» removed from the page by
+ *     decision 09.10.26): the key RETAIL_CHAIN_FILTER is still always sent
+ *     (the macro exists in the report SQL — a missing key gives 422) and its
+ *     value is always "";
  *   - registration_date / purchase_date — [from, to] instants → wall time of
  *     the API timezone → "AND r.created_at >= '…'" / "AND r.purchase_at <= '…'";
  *   - promo_products_amount — [min, max] → "AND promo_products_amount BETWEEN
@@ -76,15 +76,6 @@ const MODERATION_STATUS_VALUES = [
   "NEED_PHOTO",
 ];
 const FNS_STATUS_VALUES = ["no_check", "wait", "wrong", "correct"];
-// retail_chain: spec §5 mapping code → SQL condition over r.store_name (§6)
-const RETAIL_CHAIN_CODES = ["OTHER", "MAGNIT", "PYATEROCHKA"];
-const RETAIL_CHAIN_CONDITIONS = {
-  OTHER:
-    "(r.store_name NOT LIKE '%Магнит%' AND r.store_name NOT LIKE '%Пятёрочка%' AND r.store_name NOT LIKE '%Пятерочка%')",
-  MAGNIT: "r.store_name LIKE '%Магнит%'",
-  PYATEROCHKA:
-    "(r.store_name LIKE '%Пятёрочка%' OR r.store_name LIKE '%Пятерочка%')",
-};
 // period filters: filter id → SQL column (spec §5)
 const PERIOD_COLUMNS = {
   registration_date: "r.created_at",
@@ -131,9 +122,6 @@ function transform(params = {}) {
     filterValue(filters, "fns_status"),
     FNS_STATUS_VALUES,
     "r.fns_status",
-  );
-  replacements.RETAIL_CHAIN_FILTER = retailChainFragment(
-    filterValue(filters, "retail_chain"),
   );
   replacements.REGISTRATION_DATE_FROM_FILTER = periodFragment(
     filters,
@@ -200,22 +188,6 @@ function optionsToIn(value, dbValues, column) {
     .filter((v) => typeof v === "string" && v !== "");
   if (picked.length === 0 || picked.length === dbValues.length) return "";
   return "AND " + column + " IN (" + picked.map(sqlString).join(", ") + ")";
-}
-
-// retail_chain: boolean array aligned with opts («Другие», «Магнит»,
-// «Пятёрочка») → store-name LIKE conditions over the raw r.store_name;
-// nothing/everything selected → "" (same rule as the other options filters)
-function retailChainFragment(value) {
-  if (!Array.isArray(value)) return "";
-  const picked = value
-    .map((on, index) => (on ? RETAIL_CHAIN_CODES[index] : null))
-    .filter((code) => code && RETAIL_CHAIN_CONDITIONS[code]);
-  if (picked.length === 0 || picked.length === RETAIL_CHAIN_CODES.length) {
-    return "";
-  }
-  return (
-    "AND (" + picked.map((code) => RETAIL_CHAIN_CONDITIONS[code]).join(" OR ") + ")"
-  );
 }
 
 // period: filter id → [from, to] → "AND {column} >= '…'" / "<= '…'" — the wall

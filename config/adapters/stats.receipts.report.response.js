@@ -39,13 +39,6 @@ const RECEIPTS_FILTERS = [
     value: null,
   },
   {
-    id: "retail_chain",
-    name: "Торговая сеть",
-    type: "options",
-    opts: ["Другие", "Магнит", "Пятёрочка"],
-    value: null,
-  },
-  {
     id: "registration_date",
     name: "Период регистрации",
     type: "period",
@@ -60,11 +53,13 @@ const RECEIPTS_FILTERS = [
     value: null,
   },
   {
-    // range with opts: slider + «От»/«До» inputs over the promo sum, rubles
+    // range без opts: no slider, free «От»/«До» inputs (empty = bound not
+    // set); both empty → no restriction (the users-page «Баланс баллов»
+    // pattern; the spec's slider bounds [0, 10000] dropped 09.10.26)
     id: "promo_products_amount",
     name: "Сумма акционных продуктов, ₽",
     type: "range",
-    opts: [0, 10000],
+    opts: null,
     value: null,
   },
   {
