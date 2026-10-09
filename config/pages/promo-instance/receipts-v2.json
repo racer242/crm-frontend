@@ -1,0 +1,420 @@
+{
+  "id": "receipts-v2",
+  "type": "page",
+  "route": "/ops/receipts-v2",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "filtersVisible": false,
+    "receiptsList": {
+      "value": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    },
+    "receiptsQuery": {
+      "sortField": "",
+      "sortOrder": 1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
+    }
+  },
+  "meta": {
+    "title": "Просмотр чеков (v2) — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/receipts-v2/report/01a116ba-8a8a-7537-8155-a26708a8cf36",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/receipts-v2/query/receipts/execute",
+      "method": "POST",
+      "target": "state.receiptsList",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      }
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.receiptsQuery.search"
+    }
+  ],
+  "shortcuts": {
+    "requestReceipts": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/receipts-v2/query/receipts/execute",
+              "method": "POST",
+              "target": "state.receiptsList",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.receiptsList.first}",
+                "rows": "{$state.receiptsList.rows}",
+                "sortField": "{$state.receiptsQuery.sortField}",
+                "sortOrder": "{$state.receiptsQuery.sortOrder}",
+                "search": "{$state.receiptsQuery.search}",
+                "filters": "{$state.report.filters}"
+              },
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.receiptsList.first}",
+                "rows": "{$state.receiptsList.rows}",
+                "sortField": "{$state.receiptsQuery.sortField}",
+                "sortOrder": "{$state.receiptsQuery.sortOrder}",
+                "search": "{$state.receiptsQuery.search}",
+                "filters": "{$state.report.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": {
+                    "props": [
+                      "value"
+                    ]
+                  }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": {
+                    "props": [
+                      "name",
+                      "type",
+                      "opts"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "receiptsHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "receiptsTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "receiptsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "Просмотр чеков (v2)",
+                "level": 1
+              }
+            },
+            {
+              "id": "receiptsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "receiptsSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "receiptsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.receiptsQuery.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.receiptsQuery.search"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "receiptsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "receiptsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "receiptsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "receiptsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiptsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "receiptsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "receiptsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.receiptsList.value",
+                "columns": "@state.report.columns",
+                "totalRecords": "@state.receiptsList.totalRecords",
+                "rows": "@state.receiptsList.rows",
+                "first": "@state.receiptsList.first",
+                "sortField": "@state.receiptsQuery.sortField",
+                "sortOrder": "@state.receiptsQuery.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
+                "customColumns": [
+                  {
+                    "field": "user",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-user",
+                          "link": true,
+                          "size": "small"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.user_id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestReceipts"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.receiptsQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.receiptsQuery.sortOrder"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/receipts/{$event.data.receipt_id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -32,6 +32,9 @@
       "$ref": "./pages/promo-instance/users.json"
     },
     {
+      "$ref": "./pages/promo-instance/receipts-v2.json"
+    },
+    {
       "$ref": "./pages/promo-instance/user.json"
     },
     {

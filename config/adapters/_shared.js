@@ -165,3 +165,30 @@ const USERS_V2_SORTABLE_COLUMNS = [
 function isUsersV2Sortable(column) {
   return USERS_V2_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * receipts-v2 («Просмотр чеков», эксперимент): алиасы колонок, которые
+ * умеет сортировать SQL отчёта — сортировочная карта §4 спеки
+ * .prompts/new_req_receipts.md (null = не сортируется), единый белый список
+ * для двух адаптеров:
+ *  - stats.receipts.execute.request.js: ORDER_BY принимает только алиас из
+ *    списка (чужое значение → дефолт registration_date + DESC);
+ *  - stats.receipts.report.response.js: колонки вне списка получают
+ *    sortable: false — DataTable не предлагает сортировку, которую SQL
+ *    не применит (full_name — вычисляемое выражение CONCAT_WS(...),
+ *    promo_products_count / promo_products_amount — агрегаты подзапроса).
+ */
+const RECEIPTS_V2_SORTABLE_COLUMNS = [
+  "registration_date",
+  "purchase_date",
+  "participant_code",
+  "email",
+  "total_amount",
+  "retail_chain",
+  "fns_status",
+  "moderation_status",
+];
+
+function isReceiptsV2Sortable(column) {
+  return RECEIPTS_V2_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
