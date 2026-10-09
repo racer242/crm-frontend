@@ -1,6 +1,7 @@
 /**
- * Response adapter for executing the stats report for the "Participants (v2)" page
- * (POST ops/users-v2/report/[report_id]/execute, format json).
+ * Response adapter for executing the stats query for the "Participants (v2)" page
+ * (POST ops/users-v2/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
+ * format json; the page's query is addressed by the manual query_id "users").
  *
  * Supports two formats:
  *  - current (§6.1 "Supplement. Statistics system"): {items, pagination};

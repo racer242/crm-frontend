@@ -11,6 +11,7 @@
     "saveResult": null,
     "reportData": {
       "id": "",
+      "query_id": "",
       "title": "",
       "sql": "",
       "is_active": false,
@@ -73,6 +74,7 @@
                 "title": "{$state.reportData.title}",
                 "sql": "{$state.reportData.sql}",
                 "is_active": "{$state.reportData.is_active}",
+                "query_id": "{$state.reportData.query_id}",
                 "fieldsText": "{$state.reportData.fieldsText}"
               },
               "onSuccess": [
@@ -318,7 +320,7 @@
                     "id": "titleGroup",
                     "type": "component",
                     "componentType": "LabelledGroup",
-                    "className": "flex-grow-1",
+                    "className": "flex-1",
                     "props": {
                       "label": "Название",
                       "labelClassName": "font-bold text-sm",
@@ -351,6 +353,42 @@
                     }
                   },
                   {
+                    "id": "queryIdGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "flex-1",
+                    "props": {
+                      "label": "ID запроса",
+                      "labelClassName": "font-bold text-sm",
+                      "components": [
+                        {
+                          "id": "queryIdInput",
+                          "type": "component",
+                          "componentType": "InputText",
+                          "props": {
+                            "value": "@state.reportData.query_id",
+                            "placeholder": "Например: users",
+                            "className": "w-full"
+                          },
+                          "events": [
+                            {
+                              "type": "onChange",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "source": "event.value",
+                                    "target": "state.reportData.query_id"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
                     "id": "activeGroup",
                     "type": "component",
                     "componentType": "Checkbox",
@@ -368,33 +406,6 @@
                             "params": {
                               "source": "event.value",
                               "target": "state.reportData.is_active"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "id": "btnCopyId",
-                    "type": "component",
-                    "componentType": "Button",
-                    "className": "flex-grow-0",
-                    "props": {
-                      "label": "@state.reportData.id",
-                      "icon": "pi pi-copy",
-                      "severity": "secondary",
-                      "outlined": true
-                    },
-                    "events": [
-                      {
-                        "type": "onClick",
-                        "commands": [
-                          {
-                            "type": "copyToClipboard",
-                            "params": {
-                              "value": "{$state.reportData.id}",
-                              "message": "ID запроса скопирован: {$state.reportData.id}",
-                              "severity": "success"
                             }
                           }
                         ]

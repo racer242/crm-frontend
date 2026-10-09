@@ -30,6 +30,16 @@ function transform(params = {}) {
     body.view_type = String(params.view_type);
   }
 
+  // query_id (ручной идентификатор запроса, POST /stats/query/{query_id}/execute):
+  // включается в тело только непустым (после trim) — пустое поле при сохранении
+  // не затирает значение, уже заданное на сервере
+  if (params.query_id !== undefined && params.query_id !== null) {
+    const queryId = String(params.query_id).trim();
+    if (queryId !== "") {
+      body.query_id = queryId;
+    }
+  }
+
   if (params.fieldsText !== undefined) {
     let fields;
     const text = String(params.fieldsText || "").trim();

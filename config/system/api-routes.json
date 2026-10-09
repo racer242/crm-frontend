@@ -533,15 +533,15 @@
     "note": "Участники v2 (эксперимент): Метаданные отчёта статистики — id/title + колонки из fields[] + фильтры (с лейблами, захардкожены в адаптере); SQL отчёта наружу не отдаётся"
   },
   {
-    "path": "ops/users-v2/report/[report_id]/execute",
+    "path": "ops/users-v2/query/[query_id]/execute",
     "method": "POST",
-    "url": "/api/v1/crm/stats/reports/{$location.routeParams.report_id}/execute",
+    "url": "/api/v1/crm/stats/query/{$location.routeParams.query_id}/execute",
     "channel": "instance",
     "query": true,
     "adapter": {
       "request": "stats.users.execute.request",
       "response": "stats.users.execute.response"
     },
-    "note": "Участники v2 (эксперимент): Выполнение отчёта-списка — контракт execute: только page/limit и replacements (query: true — весь вывод request-адаптера уходит в query). Макросы SQL — фрагменты условий: адаптер собирает их на фронте и всегда передаёт все 9 ключей (пустая строка = критерий не задан, отсутствие ключа = 422); значения подставляются в текст SQL как есть, без кавычек (§10.1 «Дополнение. Система статистики»)"
+    "note": "Участники v2 (эксперимент): Выполнение запроса-списка по ручному идентификатору — POST /api/v1/crm/stats/query/{query_id}/execute, полный аналог report/execute с выбором запроса по query_id (странице соответствует query_id = users, задаётся в поле «ID запроса» на странице «Запрос»). Контракт execute тот же: только page/limit и replacements (query: true — весь вывод request-адаптера уходит в query). Макросы SQL — фрагменты условий: адаптер собирает их на фронте и всегда передаёт все 9 ключей (пустая строка = критерий не задан, отсутствие ключа = 422); значения подставляются в текст SQL как есть, без кавычек (§10.1 «Дополнение. Система статистики»)"
   }
 ]

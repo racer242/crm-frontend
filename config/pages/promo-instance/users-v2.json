@@ -34,7 +34,7 @@
       "target": "state.report"
     },
     {
-      "url": "/api/ops/users-v2/report/01a116ba-7fc2-74ba-9b0a-4b06ed7f7c79/execute",
+      "url": "/api/ops/users-v2/query/users/execute",
       "method": "POST",
       "target": "state.users",
       "data": {
@@ -61,7 +61,7 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users-v2/report/01a116ba-7fc2-74ba-9b0a-4b06ed7f7c79/execute",
+              "url": "/api/ops/users-v2/query/users/execute",
               "method": "POST",
               "target": "state.users",
               "data": {

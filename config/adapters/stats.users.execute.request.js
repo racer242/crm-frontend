@@ -1,6 +1,7 @@
 /**
- * Request adapter for executing the stats report for the "Participants (v2)" page
- * (POST ops/users-v2/report/[report_id]/execute, format json).
+ * Request adapter for executing the stats query for the "Participants (v2)" page
+ * (POST ops/users-v2/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
+ * format json; the page's query is addressed by the manual query_id "users").
  *
  * The report SQL uses FRAGMENT macros: every {{…_FILTER}} stands for a whole SQL
  * condition ("AND u.status IN (…)"), {{ORDER_BY}}/{{ORDER_DIR}} — a column alias
