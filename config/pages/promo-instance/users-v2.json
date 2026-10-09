@@ -8,13 +8,13 @@
     "filtersVisible": false,
     "users": {
       "value": [],
-      "columns": [],
       "totalRecords": 0,
       "rows": 10,
-      "first": 0,
+      "first": 0
+    },
+    "usersQuery": {
       "sortField": "",
       "sortOrder": 1,
-      "filters": [],
       "search": ""
     },
     "report": {
@@ -50,7 +50,7 @@
   "dataInit": [
     {
       "source": "{$location.params.search}",
-      "target": "state.users.search"
+      "target": "state.usersQuery.search"
     }
   ],
   "shortcuts": {
@@ -68,9 +68,9 @@
                 "event": "{$event}",
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "sortField": "{$state.users.sortField}",
-                "sortOrder": "{$state.users.sortOrder}",
-                "search": "{$state.users.search}",
+                "sortField": "{$state.usersQuery.sortField}",
+                "sortOrder": "{$state.usersQuery.sortOrder}",
+                "search": "{$state.usersQuery.search}",
                 "filters": "{$state.report.filters}"
               },
               "format": {
@@ -84,9 +84,9 @@
               "values": {
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "sortField": "{$state.users.sortField}",
-                "sortOrder": "{$state.users.sortOrder}",
-                "search": "{$state.users.search}",
+                "sortField": "{$state.usersQuery.sortField}",
+                "sortOrder": "{$state.usersQuery.sortOrder}",
+                "search": "{$state.usersQuery.search}",
                 "filters": "{$state.report.filters}"
               },
               "format": [
@@ -187,7 +187,7 @@
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.users.search"
+                "value": "@state.usersQuery.search"
               },
               "events": [
                 {
@@ -197,7 +197,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.users.search"
+                        "target": "state.usersQuery.search"
                       }
                     },
                     "requestUsers"
@@ -329,8 +329,8 @@
                 "totalRecords": "@state.users.totalRecords",
                 "rows": "@state.users.rows",
                 "first": "@state.users.first",
-                "sortField": "@state.users.sortField",
-                "sortOrder": "@state.users.sortOrder",
+                "sortField": "@state.usersQuery.sortField",
+                "sortOrder": "@state.usersQuery.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -369,6 +369,23 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "field": "mailing",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "className": "pointer-events-none -m-2",
+                        "visibleRow": "{#row.mailing_icon}",
+                        "props": {
+                          "icon": "{#row.mailing_icon}",
+                          "severity": "{#row.mailing_severity}",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        }
+                      }
+                    ]
                   }
                 ]
               },
@@ -382,6 +399,20 @@
                 {
                   "type": "onSort",
                   "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.usersQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.usersQuery.sortOrder"
+                      }
+                    },
                     "requestUsers"
                   ]
                 },
