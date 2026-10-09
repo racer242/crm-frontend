@@ -99,12 +99,14 @@ export function renderActiveFiltersBar({
           const rangeValue = Array.isArray(value) ? value : [];
           const begin = rangeValue[0];
           const end = rangeValue[1];
+          // Свободный диапазон (range без opts) хранит незаданную сторону как
+          // null — показываем только заполненные границы
           let label: string;
-          if (begin !== undefined && end !== undefined) {
+          if (begin != null && end != null) {
             label = `${name}: ${begin} – ${end}`;
-          } else if (begin !== undefined) {
+          } else if (begin != null) {
             label = `${name}: от ${begin}`;
-          } else if (end !== undefined) {
+          } else if (end != null) {
             label = `${name}: до ${end}`;
           } else {
             label = `${name}: ?`;

@@ -6,11 +6,16 @@
  *
  * Период (startDate/endDate) конвертируется в настенное время пояса сервера
  * API (env BITRIX_API_TIMEZONE, по умолчанию Europe/Moscow) и уходит в
- * replacements в формате "YYYY-MM-DD HH:mm:ss":
- * { format: "xlsx", replacements: { "startDate": "...", "endDate": "..." } }.
- * Значения подставляются в SQL связанными параметрами (не текстом), поэтому
- * должны быть в поясе хранения данных сервера. Пустые даты в replacements
- * не включаются. Замены макросов {{startDate}}/{{endDate}} выполняет сервер API.
+ * replacements строковыми литералами SQL — в одинарных кавычках
+ * ("'YYYY-MM-DD HH:mm:ss'"):
+ * { format: "xlsx", replacements: { "startDate": "'2026-10-08 00:00:00'", ... } }.
+ * Сервер подставляет значения в текст SQL как есть и кавычки сам не
+ * добавляет (обновление 08.10.26), поэтому кавычки ставит фронтенд
+ * (sqlString из _shared.js); значения должны быть в поясе хранения данных
+ * сервера. Пустые даты в replacements не включаются. Замены макросов
+ * {{startDate}}/{{endDate}} выполняет сервер API. Пары из поля
+ * «Подстановки» подставляются как введены — строковые значения указываются
+ * в кавычках пользователем.
  *
  * replacementsText («Подстановки» на странице запроса, JSON-объект) добавляется
  * в replacements поверх дат: каждый ключ становится макросом {{KEY}}. Пустое
@@ -46,10 +51,10 @@ function transform(params = {}) {
     const start = toZonedDateTime(params.startDate, getApiTimezone());
     const end = toZonedDateTime(params.endDate, getApiTimezone());
     if (start) {
-      result.replacements.startDate = start;
+      result.replacements.startDate = sqlString(start);
     }
     if (end) {
-      result.replacements.endDate = end;
+      result.replacements.endDate = sqlString(end);
     }
     Object.assign(result.replacements, extra);
   }

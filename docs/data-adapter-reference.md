@@ -316,10 +316,11 @@ Response-адаптеры — это JS-скрипты в `config/adapters/`, к
 | `formatRubles(value)`              | Рубли с копейками → «590,30 ₽» (канал CRM-управления; деления на 100 нет)       |
 | `getApiTimezone()`                 | Пояс сервера API: `BITRIX_API_TIMEZONE` из `.env`, по умолчанию `Europe/Moscow` |
 | `toZonedDateTime(value, timeZone)` | Date/ISO (Z/offset) → настенное время пояса в формате `YYYY-MM-DD HH:mm:ss`     |
+| `sqlString(value)`                 | Значение → одинарные кавычки для подстановки в SQL текстом (апострофы удваиваются) |
 
 ### Конвертация дат в пояс сервера (request-адаптеры статистики)
 
-Даты `startDate`/`endDate` в `replacements` отчётов подставляются в SQL связанными параметрами, поэтому они должны быть в поясе хранения данных сервера, а не в «универсальном» ISO-мгновении. Адаптеры `stats.execute.request.js` и `stats.export.request.js` конвертируют их через `toZonedDateTime(value, getApiTimezone())`.
+Даты `startDate`/`endDate` в `replacements` отчётов подставляются в текст SQL как есть (сервер кавычки не добавляет — обновление 08.10.26), поэтому они должны быть в поясе хранения данных сервера, а не в «универсальном» ISO-мгновении, и уходят закавыченными. Адаптеры `stats.execute.request.js` и `stats.export.request.js` конвертируют их через `toZonedDateTime(value, getApiTimezone())` и оборачивают в кавычки `sqlString(...)`.
 
 **Пример:**
 
@@ -332,13 +333,14 @@ Response-адаптеры — это JS-скрипты в `config/adapters/`, к
 2. Невалидная дата → возвращается как есть (запрос не ломается)
 3. Невалидная таймзона в env (`Intl` бросает `RangeError`) → fallback `Europe/Moscow`
 4. Строка собирается через `formatToParts` с `hourCycle: "h23"` — полночь всегда «00», а не «24»
+5. Готовая строка оборачивается в одинарные кавычки (`sqlString`) — сервер подставляет значения в SQL текстом и кавычки сам не добавляет; `{{now}}` в SQL отчёта тоже пишется в кавычках (`'{{now}}'`)
 
 **Использование в адаптере:**
 
 ```javascript
 const start = toZonedDateTime(base.startDate, getApiTimezone());
 if (start) {
-  result.replacements.startDate = start;
+  result.replacements.startDate = sqlString(start);
 }
 ```
 
@@ -410,6 +412,15 @@ function toZonedDateTime(value, timeZone) {
     get("year") + "-" + get("month") + "-" + get("day") +
     " " + get("hour") + ":" + get("minute") + ":" + get("second")
   );
+}
+
+/**
+ * Оборачивает значение в одинарные кавычки для подстановки в SQL текстом.
+ * Сервер подставляет значения макросов (replacements) в SQL как есть и
+ * кавычки сам не добавляет (обновление 08.10.26). Апострофы удваиваются.
+ */
+function sqlString(value) {
+  return "'" + String(value).replace(/'/g, "''") + "'";
 }
 ```
 

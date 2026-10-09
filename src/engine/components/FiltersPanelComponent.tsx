@@ -135,27 +135,37 @@ export function renderFiltersPanel({
         );
 
       case "range": {
-        const min = Array.isArray(opts) ? (opts[0] ?? 0) : 0;
-        const max = Array.isArray(opts) ? (opts[1] ?? 100) : 100;
-        const rangeValue: [number, number] =
+        // С opts [min, max] — слайдер + ограниченные поля «от/до» (пустой
+        // ввод откатывается на границу). Без opts — свободный числовой
+        // диапазон: без слайдера и без границ, пустое поле = сторона не
+        // задана (null); оба пустых — фильтр без ограничений.
+        const bounded = Array.isArray(opts) && opts.length >= 2;
+        const min = bounded ? (opts[0] ?? 0) : null;
+        const max = bounded ? (opts[1] ?? 100) : null;
+        const rangeValue: [number | null, number | null] =
           Array.isArray(value) && value.length === 2
-            ? [Number(value[0]), Number(value[1])]
+            ? [value[0] ?? null, value[1] ?? null]
             : [min, max];
         return (
           <div key={id} className="mb-3 px-1">
             <label className="block mb-3 text-200 font-medium">{name}</label>
-            <Slider
-              value={rangeValue}
-              onChange={(e) => updateFilterValue(id, e.value)}
-              range
-              min={min}
-              max={max}
-              className="w-full"
-            />
-            {/* Поля точного ввода «от/до»: слайдер груб на широких диапазонах
-                (тысячи значений на пиксель), вводом число ставится точно.
-                Пустой ввод откатывается на границу — фильтр всегда остаётся
-                валидной парой чисел, как и при перетаскивании слайдера. */}
+            {bounded && (
+              <Slider
+                value={[
+                  Number(rangeValue[0] ?? min),
+                  Number(rangeValue[1] ?? max),
+                ]}
+                onChange={(e) => updateFilterValue(id, e.value)}
+                range
+                min={min ?? 0}
+                max={max ?? 100}
+                className="w-full"
+              />
+            )}
+            {/* Поля точного ввода «от/до»: со слайдером — двусторонняя связь
+                (перетащил — поля обновились, ввёл число — бегунок перескочил),
+                пустой ввод откатывается на границу. Без opts (свободный
+                диапазон) — без границ, пустой ввод оставляет сторону null. */}
             <div className="flex gap-2 mt-2">
               {/* locale ru-RU: разделитель тысяч — пробел («1 549»); дефолтная
                   en-US рисует «1,549» — запятая читается как десятичная */}
@@ -164,8 +174,8 @@ export function renderFiltersPanel({
                 onValueChange={(e) =>
                   updateFilterValue(id, [e.value ?? min, rangeValue[1]])
                 }
-                min={min}
-                max={max}
+                min={min ?? undefined}
+                max={max ?? undefined}
                 locale="ru-RU"
                 placeholder="от"
                 className="w-full"
@@ -176,8 +186,8 @@ export function renderFiltersPanel({
                 onValueChange={(e) =>
                   updateFilterValue(id, [rangeValue[0], e.value ?? max])
                 }
-                min={min}
-                max={max}
+                min={min ?? undefined}
+                max={max ?? undefined}
                 locale="ru-RU"
                 placeholder="до"
                 className="w-full"

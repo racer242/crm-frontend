@@ -5,11 +5,16 @@
  *
  * Период (startDate/endDate) конвертируется в настенное время пояса сервера
  * API (env BITRIX_API_TIMEZONE, по умолчанию Europe/Moscow) и уходит в
- * replacements в формате "YYYY-MM-DD HH:mm:ss":
- * { replacements: { "startDate": "...", "endDate": "..." } }.
- * Значения подставляются в SQL связанными параметрами (не текстом), поэтому
- * должны быть в поясе хранения данных сервера. Пустые даты в replacements
- * не включаются; замены макросов {{startDate}}/{{endDate}} выполняет сервер API.
+ * replacements строковыми литералами SQL — в одинарных кавычках
+ * ("'YYYY-MM-DD HH:mm:ss'"):
+ * { replacements: { "startDate": "'2026-10-08 00:00:00'", ... } }.
+ * Сервер подставляет значения в текст SQL как есть и кавычки сам не
+ * добавляет (обновление 08.10.26), поэтому кавычки ставит фронтенд
+ * (sqlString из _shared.js); значения должны быть в поясе хранения данных
+ * сервера. Пустые даты в replacements не включаются; замены макросов
+ * {{startDate}}/{{endDate}} выполняет сервер API. Пары из поля
+ * «Подстановки» подставляются как введены — строковые значения указываются
+ * в кавычках пользователем.
  *
  * replacementsText («Подстановки» на странице запроса, JSON-объект) добавляется
  * в replacements поверх дат: каждый ключ становится макросом {{KEY}}. Пустое
@@ -50,9 +55,11 @@ function transform(params = {}) {
     limit: Math.min(rows, 100),
   };
 
-  // Даты конвертируются в пояс сервера API; пустые → null → ключ не включается.
-  // Подстановки из поля «Подстановки» (JSON) добавляются поверх дат — при
-  // конфликте ключей значение из JSON побеждает значение календаря.
+  // Даты конвертируются в пояс сервера API и отправляются закавыченными
+  // (сервер подставляет значения в SQL текстом, кавычки не добавляет);
+  // пустые → null → ключ не включается. Подстановки из поля «Подстановки»
+  // (JSON) добавляются поверх дат — при конфликте ключей значение из JSON
+  // побеждает значение календаря.
   const extra = parseReplacements(base.replacementsText);
 
   if (
@@ -64,10 +71,10 @@ function transform(params = {}) {
     const start = toZonedDateTime(base.startDate, getApiTimezone());
     const end = toZonedDateTime(base.endDate, getApiTimezone());
     if (start) {
-      result.replacements.startDate = start;
+      result.replacements.startDate = sqlString(start);
     }
     if (end) {
-      result.replacements.endDate = end;
+      result.replacements.endDate = sqlString(end);
     }
     Object.assign(result.replacements, extra);
   }
