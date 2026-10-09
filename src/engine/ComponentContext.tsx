@@ -3,6 +3,7 @@
 import React, { createContext, useContext } from "react";
 import { App, Command } from "@/types";
 import { StateManager, ElementIndex } from "@/core";
+import { CampFeatures } from "@/utils/campFeatures";
 
 export interface ComponentContextValue {
   pageId: string;
@@ -28,6 +29,15 @@ export const ComponentContext = createContext<ComponentContextValue>({
 export const useComponentContext = (): ComponentContextValue => {
   return useContext(ComponentContext);
 };
+
+/**
+ * UI-фичи текущей кампании (SSR → config.currentCampFeatures).
+ * Пустая карта, если фичи не переданы: все гейты считаются включёнными.
+ */
+export function useCampFeatures(): CampFeatures {
+  const { appConfig } = useComponentContext();
+  return appConfig?.currentCampFeatures || {};
+}
 
 export interface ComponentProviderProps {
   pageId: string;

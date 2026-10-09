@@ -3,6 +3,8 @@
 import React from "react";
 import { Section } from "@/types";
 import { BlockRenderer } from "./BlockRenderer";
+import { useCampFeatures } from "./ComponentContext";
+import { matchesFeatureGate } from "@/utils/campFeatures";
 
 interface SectionRendererProps {
   section: Section;
@@ -10,6 +12,12 @@ interface SectionRendererProps {
 
 export function SectionRenderer({ section }: SectionRendererProps) {
   const { className, visibility, grid } = section;
+  const campFeatures = useCampFeatures();
+
+  // Фича-гейт кампании: элемент без включённой фичи не рендерится вовсе
+  if (!matchesFeatureGate(campFeatures, section.feature)) {
+    return null;
+  }
 
   if (visibility && visibility.defaultVisible === false) {
     return null;

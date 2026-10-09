@@ -8,14 +8,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ComponentRendererProps } from "./types";
 import { classNames } from "primereact/utils";
+import { useCampFeatures } from "../ComponentContext";
+import {
+  CampFeatures,
+  matchesFeatureGate,
+} from "@/utils/campFeatures";
 
 function processMenuItems(
   items: any[],
   router: any,
   handleEvent: (type: string, value: any) => void,
   addLink: boolean,
+  features: CampFeatures,
 ): any[] {
-  return items.map((item: any) => {
+  const result: any[] = [];
+  for (const item of items) {
+    // Фича-гейт кампании: пункт без включённой фичи исключается из модели
+    if (!matchesFeatureGate(features, item.feature)) continue;
+
     const processed: any = {
       ...item,
       template:
@@ -41,16 +51,21 @@ function processMenuItems(
 
     // Recursively process submenu items
     if (item.items && Array.isArray(item.items)) {
-      processed.items = processMenuItems(
+      const children = processMenuItems(
         item.items,
         router,
         handleEvent,
         addLink,
+        features,
       );
+      // Группа, в которой не уцелело ни одного пункта, скрывается целиком
+      if (children.length === 0) continue;
+      processed.items = children;
     }
 
-    return processed;
-  });
+    result.push(processed);
+  }
+  return result;
 }
 
 export function renderMenubar({
@@ -60,6 +75,7 @@ export function renderMenubar({
   handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
+  const campFeatures = useCampFeatures();
 
   const { activeItemId, activeSubitemId, ...restProps } = props as any;
 
@@ -68,6 +84,7 @@ export function renderMenubar({
     router,
     handleEvent,
     true,
+    campFeatures,
   );
 
   if (activeItemId) {
@@ -109,6 +126,7 @@ export function renderBreadcrumb({
   handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
+  const campFeatures = useCampFeatures();
 
   const { model, ...restProps } = props;
 
@@ -117,6 +135,7 @@ export function renderBreadcrumb({
     router,
     handleEvent,
     true,
+    campFeatures,
   );
 
   return (
@@ -136,12 +155,14 @@ export function renderSteps({
   handleEvent,
 }: ComponentRendererProps) {
   const router = useRouter();
+  const campFeatures = useCampFeatures();
 
   const stepsModel = processMenuItems(
     props.model || [],
     router,
     handleEvent,
     false,
+    campFeatures,
   );
 
   return (

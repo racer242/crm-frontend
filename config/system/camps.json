@@ -5,7 +5,16 @@
     "base_api_url": "https://dev.ssd26.srv08.ru/api/v2/7384",
     "crm_api_url": "https://dev.mn26.srv08.ru",
     "crm_key_id": "crm-next",
-    "crm_signature": "7acc1674eda5ca3923f62295b8b3bb004c186ccd0ba2cce391d008b20d9d6219"
+    "crm_signature": "7acc1674eda5ca3923f62295b8b3bb004c186ccd0ba2cce391d008b20d9d6219",
+    "features": {
+      "user_docs": true,
+      "receipts": true,
+      "products": true,
+      "prizes": true,
+      "points": true,
+      "messages": true,
+      "raffles": true
+    }
   },
   {
     "id": 2,
@@ -13,6 +22,15 @@
     "base_api_url": "https://dev.ssd26.srv08.ru/api/v2/7384",
     "crm_api_url": "https://www.jdecoffee-bts.ru",
     "crm_key_id": "crm-prod",
-    "crm_signature": "d3c3bc1f0e6947d6597eb3a6bd63690e64d2a3ccae94f32158fb96b9a348402e"
+    "crm_signature": "d3c3bc1f0e6947d6597eb3a6bd63690e64d2a3ccae94f32158fb96b9a348402e",
+    "features": {
+      "user_docs": true,
+      "receipts": true,
+      "products": true,
+      "prizes": true,
+      "points": true,
+      "messages": true,
+      "raffles": true
+    }
   }
 ]

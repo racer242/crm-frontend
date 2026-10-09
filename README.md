@@ -465,7 +465,7 @@ docker compose restart
 | Раздел               | Описание                                          |
 | -------------------- | ------------------------------------------------- |
 | `title`              | Заголовок приложения                              |
-| `navbar`             | Пункты навигации (label, icon, route, header, separator) |
+| `navbar`             | Пункты навигации (label, icon, route, feature, header, separator) |
 | `userMenu`           | Меню пользователя (профиль, выйти)                |
 | `pages`              | Массив страниц с секциями, блоками и компонентами |
 | `adapters`           | Адаптеры данных (replace, js)                     |
@@ -475,7 +475,15 @@ docker compose restart
 | `config.timeout`     | Таймаут запросов в мс                             |
 | `config.features`    | Флаги функциональности                            |
 | `config.apiRoutes`   | Маршруты API (path → url) с поддержкой макросов   |
-| `config.camps`       | Список кампаний (id, name) для мульти-кампаний    |
+| `config.camps`       | Список кампаний (id, name, URLs, подписи) с UI-фичами (`features`) |
+
+**Фичи кампании** — карта `features` в записи `config/system/camps.json`
+управляет видимостью UI: пунктов меню и любых элементов страниц (секция,
+блок, компонент с полем `feature`). Отсутствующий ключ = включена; контроль
+визуальный, маршруты не блокируются. Реестр: `user_docs`, `receipts`,
+`products`, `prizes`, `points`, `messages`, `raffles` (в текущих кампаниях
+все включены). Подробно — в `docs/config-reference.md` (раздел
+«Фичи кампании»).
 
 → Полное описание: [docs/config-reference.md](docs/config-reference.md)
 

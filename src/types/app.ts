@@ -23,9 +23,17 @@ export interface NavItem {
   icon?: string;
   route?: string;
   /**
+   * Фича-гейт кампании: пункт меню скрывается, если фича не включена
+   * в `features` текущей кампании (config/system/camps.json).
+   * Строка — одна фича; массив — «хотя бы одна включена».
+   * Отсутствует → пункт виден всегда.
+   */
+  feature?: string | string[];
+  /**
    * Подзаголовок раздела: если задан, пункт рендерится как заголовок —
    * визуально выделен (Divider PrimeReact) и не выполняет переход.
-   * Приоритет над `route` и `separator`.
+   * Приоритет над `route` и `separator`. Заголовок схлопывается,
+   * если все пункты его секции скрыты фича-гейтом.
    */
   header?: string;
   separator?: boolean;
@@ -49,6 +57,11 @@ export interface App extends BaseElement {
   config: AppConfig;
   /** API router configurations: maps short route names to external API URLs (server-side only, not exposed to client) */
   apiRoutes?: ApiRouteConfig[];
+  /**
+   * UI-фичи ТЕКУЩЕЙ кампании (из CampItem.features, SSR → клиент).
+   * Управляют видимостью меню и элементов через фича-гейт `feature`.
+   */
+  currentCampFeatures?: Record<string, boolean>;
 }
 
 /** Пункт меню пользователя */
@@ -124,6 +137,13 @@ export interface CampItem {
   crm_key_id?: string;
   /** Секрет HMAC-подписи (серверный, строго конфиденциально) */
   crm_signature?: string;
+  /**
+   * UI-фичи кампании (config/system/camps.json): ключ → включена?
+   * Отсутствующий ключ = включена; скрытие элементов — явным false.
+   * Клиенту передаются только фичи ТЕКУЩЕЙ кампании (App.currentCampFeatures),
+   * фичи остальных кампаний остаются на сервере.
+   */
+  features?: Record<string, boolean>;
 }
 
 /** Флаги функциональности */

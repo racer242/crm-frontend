@@ -55,17 +55,21 @@ import {
   renderImage,
   renderRadioButtonGroup,
 } from "./components";
+import { useCampFeatures } from "./ComponentContext";
+import { matchesFeatureGate } from "@/utils/campFeatures";
 
 export function ComponentRenderer({ component }: { component: Component }) {
   const t = useTranslations("component");
   const { componentType, className, style } = component;
+  const campFeatures = useCampFeatures();
 
   const { resolvedProps, handleEvent, isVisible } = useComponentBindings({
     component,
   });
 
-  // Реактивная видимость: config-level visible (boolean | binding) → falsy не рендерится
-  if (!isVisible) {
+  // Фича-гейт кампании + реактивная видимость (visible):
+  // оба условия должны выполняться — иначе элемент не рендерится
+  if (!matchesFeatureGate(campFeatures, component.feature) || !isVisible) {
     return null;
   }
 

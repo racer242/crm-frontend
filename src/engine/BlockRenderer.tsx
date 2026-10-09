@@ -3,6 +3,8 @@
 import React from "react";
 import { Block } from "@/types";
 import { ComponentRenderer } from "./ComponentRenderer";
+import { useCampFeatures } from "./ComponentContext";
+import { matchesFeatureGate } from "@/utils/campFeatures";
 import { Card } from "primereact/card";
 import { Panel } from "primereact/panel";
 import { Fieldset } from "primereact/fieldset";
@@ -14,6 +16,12 @@ interface BlockRendererProps {
 
 export function BlockRenderer({ block }: BlockRendererProps) {
   const { wrapper, components, style, className, grid } = block;
+  const campFeatures = useCampFeatures();
+
+  // Фича-гейт кампании: элемент без включённой фичи не рендерится вовсе
+  if (!matchesFeatureGate(campFeatures, block.feature)) {
+    return null;
+  }
 
   // Дефолтный класс: для grid-раскладки — "grid", иначе — "flex flex-column gap-2"
   const containerClassName = grid

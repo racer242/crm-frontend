@@ -21,6 +21,7 @@ import { PathResolver } from "@/core/PathResolver";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { ComponentProvider } from "./ComponentContext";
 import { FileUpload } from "primereact/fileupload";
+import { filterNavItems } from "@/utils/campFeatures";
 
 export function AppEngine({
   config,
@@ -291,7 +292,10 @@ export function AppEngine({
     );
   }
 
-  const navItems: NavItem[] = config.navbar?.items || [];
+  const navItems: NavItem[] = filterNavItems(
+    config.navbar?.items || [],
+    config.currentCampFeatures,
+  );
   const title = config.title || t("defaultTitle");
 
   // Campaign data from config (passed via SSR)

@@ -178,6 +178,9 @@ export default async function Page({
     camps: clientCamps,
     currentCampName: currentCamp?.name || "",
     currentCampId: currentCamp?.id || 0,
+    // UI-фичи только ТЕКУЩЕЙ кампании: управляют видимостью меню/элементов
+    // (фильтрация в движке). Фичи остальных кампаний и секреты остаются на сервере.
+    currentCampFeatures: currentCamp?.features || {},
   };
 
   return (

@@ -12,27 +12,32 @@
     {
       "label": "Чеки",
       "icon": "pi pi-receipt",
-      "route": "/ops/receipts"
+      "route": "/ops/receipts",
+      "feature": "receipts"
     },
     {
       "label": "Призы",
       "icon": "pi pi-gift",
-      "route": "/ops/prizes"
+      "route": "/ops/prizes",
+      "feature": "prizes"
     },
     {
       "label": "Акты",
       "icon": "pi pi-verified",
-      "route": "/ops/acts"
+      "route": "/ops/acts",
+      "feature": "user_docs"
     },
     {
       "label": "Розыгрыши",
       "icon": "pi pi-trophy",
-      "route": "/ops/raffles"
+      "route": "/ops/raffles",
+      "feature": "raffles"
     },
     {
       "label": "Сообщения",
       "icon": "pi pi-comment",
-      "route": "/ops/messages"
+      "route": "/ops/messages",
+      "feature": "messages"
     },
     {
       "label": "Статистика",
@@ -45,7 +50,8 @@
     {
       "label": "Модерация чеков",
       "icon": "pi pi-check-square",
-      "route": "/mgmt/receipts"
+      "route": "/mgmt/receipts",
+      "feature": "receipts"
     }
   ]
 }

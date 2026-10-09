@@ -15,6 +15,14 @@ export interface BaseElement {
   state?: Record<string, any>;
   params?: Record<string, any>;
   meta?: ElementMeta;
+  /**
+   * Фича-гейт кампании: элемент рендерится, только если указанная фича
+   * включена в `features` текущей кампании (config/system/camps.json).
+   * Строка — одна фича; массив — «хотя бы одна включена».
+   * Отсутствует → элемент виден всегда. Контроль визуальный:
+   * маршруты не блокируются.
+   */
+  feature?: string | string[];
 }
 
 /** Метаданные элемента */

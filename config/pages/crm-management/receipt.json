@@ -983,6 +983,7 @@
                   {
                     "id": "moderationPanel",
                     "type": "component",
+                    "feature": "receipts",
                     "componentType": "Panel",
                     "className": "w-full",
                     "props": {

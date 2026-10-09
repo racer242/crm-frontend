@@ -575,6 +575,7 @@
                   {
                     "id": "moderationPanel",
                     "type": "component",
+                    "feature": "receipts",
                     "componentType": "Panel",
                     "props": {
                       "header": "Модерация",
