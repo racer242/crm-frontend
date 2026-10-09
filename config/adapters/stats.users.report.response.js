@@ -5,6 +5,10 @@
  * Returns ONLY safe data:
  *  - id, title of the report;
  *  - columns — display columns from fields[] ({field, header, sortable, dataType});
+ *    sortable is true only for columns the report SQL can ORDER BY (the shared
+ *    USERS_V2_SORTABLE_COLUMNS whitelist in _shared.js, the same list the request
+ *    adapter applies) — non-sortable columns (e.g. the computed full_name) render
+ *    without sort in the DataTable;
  *  - filters — filter definitions for FiltersPanel (hardcoded per §2 of the spec
  *    .prompts/new_req_users.md, while the server doesn't return them itself per §3.4;
  *    when `filters` appears in the response — the server ones are used). Filter
@@ -73,7 +77,11 @@ function transform(source) {
       .map((f) => ({
         field: f.name,
         header: f.title || f.name,
-        sortable: f.sortable !== false,
+        // Sorting is offered only for columns the report SQL can ORDER BY
+        // (shared USERS_V2_SORTABLE_COLUMNS whitelist in _shared.js — the
+        // same list the request adapter applies); an explicit server-side
+        // sortable:false is respected too
+        sortable: f.sortable !== false && isUsersV2Sortable(f.name),
         dataType:
           f.type === "date" || f.type === "datetime" ? "date" : undefined,
       })),

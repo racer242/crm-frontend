@@ -46,18 +46,10 @@ const MACRO_KEYS = [
   "ORDER_DIR",
 ];
 
-// Sortable column aliases (spec §1.2; full_name is a computed expression — not sortable)
-const SORTABLE_ALIASES = [
-  "user_id",
-  "participant_code",
-  "email",
-  "status",
-  "participant_status",
-  "balance",
-  "total_earned",
-  "mailing",
-  "created_at",
-];
+// Sortable column aliases live in _shared.js (USERS_V2_SORTABLE_COLUMNS /
+// isUsersV2Sortable) — the same whitelist drives the sortable flags of the
+// table columns in stats.users.report.response.js, so the UI never offers
+// sorting the SQL cannot apply (full_name is a computed expression — not sortable).
 const DEFAULT_ORDER_BY = "created_at";
 const DEFAULT_ORDER_DIR = "DESC";
 
@@ -141,7 +133,7 @@ function transform(params = {}) {
   replacements.SEARCH_FILTER = searchFragment(merged.search);
 
   // 4. Sorting: whitelisted alias + direction; no sort → default created_at DESC
-  const sortColumn = SORTABLE_ALIASES.indexOf(merged.sortField) >= 0 ? merged.sortField : "";
+  const sortColumn = isUsersV2Sortable(merged.sortField) ? merged.sortField : "";
   replacements.ORDER_BY = sortColumn || DEFAULT_ORDER_BY;
   replacements.ORDER_DIR = sortColumn
     ? Number(merged.sortOrder) === -1

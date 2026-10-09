@@ -140,3 +140,28 @@ function toZonedDateTime(value, timeZone) {
 function sqlString(value) {
   return "'" + String(value).replace(/'/g, "''") + "'";
 }
+
+/**
+ * users-v2 (экспериментальный список участников): алиасы колонок, которые
+ * умеет сортировать SQL отчёта — единый белый список для двух адаптеров:
+ *  - stats.users.execute.request.js: ORDER_BY принимает только алиас из
+ *    списка (чужое значение → дефолт created_at + DESC);
+ *  - stats.users.report.response.js: колонки вне списка получают
+ *    sortable: false — DataTable не предлагает сортировку, которую SQL
+ *    не применит (например full_name — вычисляемое выражение CONCAT(...),
+ *    participant_code — исключён по решению).
+ */
+const USERS_V2_SORTABLE_COLUMNS = [
+  "user_id",
+  "email",
+  "status",
+  "participant_status",
+  "balance",
+  "total_earned",
+  "mailing",
+  "created_at",
+];
+
+function isUsersV2Sortable(column) {
+  return USERS_V2_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
