@@ -128,9 +128,6 @@
       "$ref": "./pages/promo-instance/query.json"
     },
     {
-      "$ref": "./pages/promo-instance/users-v2.json"
-    },
-    {
       "$ref": "./pages/crm-management/receipts.json"
     },
     {

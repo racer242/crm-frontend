@@ -1,23 +1,27 @@
 {
-  "id": "opsUsersPage",
+  "id": "users",
   "type": "page",
   "route": "/ops/users",
   "state": {
     "loading": false,
     "initialized": true,
-    "search": "",
-    "status": "",
-    "statuses": [
-      { "label": "Активен", "value": "active" },
-      { "label": "Заблокирован", "value": "blocked" },
-      { "label": "Удален", "value": "deleted" }
-    ],
+    "filtersVisible": false,
     "users": {
       "value": [],
-      "columns": [],
-      "totalRecords": 10,
+      "totalRecords": 0,
       "rows": 10,
       "first": 0
+    },
+    "usersQuery": {
+      "sortField": "",
+      "sortOrder": 1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
     }
   },
   "meta": {
@@ -25,83 +29,53 @@
   },
   "dataFeed": [
     {
-      "url": "/api/ops/users",
+      "url": "/api/ops/users-v2/report/01a116ba-7fc2-74ba-9b0a-4b06ed7f7c79",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/users-v2/query/users/execute",
+      "method": "POST",
+      "target": "state.users",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
-        "search": "{$location.params.search}"
-      },
-      "method": "GET",
-      "target": "state.users"
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      }
     }
   ],
-
   "dataInit": [
     {
       "source": "{$location.params.search}",
-      "target": "state.search"
-    },
-    {
-      "source": "{$location.params.status}",
-      "target": "state.status"
+      "target": "state.usersQuery.search"
     }
   ],
-
   "shortcuts": {
     "requestUsers": {
       "type": "sequence",
       "params": {
         "commands": [
           {
-            "type": "log",
-            "params": {
-              "message": {
-                "event": "{$event}",
-                "data": "{$state.users}",
-                "toSend": {
-                  "event": "{$event}",
-                  "first": "{$state.users.first}",
-                  "rows": "{$state.users.rows}",
-                  "search": "{$state.search}",
-                  "status": "{$state.status}"
-                }
-              }
-            }
-          },
-          {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users",
-              "method": "GET",
+              "url": "/api/ops/users-v2/query/users/execute",
+              "method": "POST",
               "target": "state.users",
               "data": {
                 "event": "{$event}",
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}"
+                "sortField": "{$state.usersQuery.sortField}",
+                "sortOrder": "{$state.usersQuery.sortOrder}",
+                "search": "{$state.usersQuery.search}",
+                "filters": "{$state.report.filters}"
               },
-              "format": { "$ref": "../../system/list-request-format.json" },
-              "onSuccess": [
-                {
-                  "type": "log",
-                  "params": {
-                    "message": {
-                      "success": "{$event}"
-                    }
-                  }
-                }
-              ],
-              "onError": [
-                {
-                  "type": "log",
-                  "params": {
-                    "message": {
-                      "error": "{$event}"
-                    }
-                  }
-                }
-              ]
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
             }
           },
           {
@@ -110,9 +84,33 @@
               "values": {
                 "first": "{$state.users.first}",
                 "rows": "{$state.users.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}"
-              }
+                "sortField": "{$state.usersQuery.sortField}",
+                "sortOrder": "{$state.usersQuery.sortOrder}",
+                "search": "{$state.usersQuery.search}",
+                "filters": "{$state.report.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": {
+                    "props": [
+                      "value"
+                    ]
+                  }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": {
+                    "props": [
+                      "name",
+                      "type",
+                      "opts"
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]
@@ -135,7 +133,7 @@
               "componentType": "Text",
               "className": "w-full",
               "props": {
-                "value": "Участники",
+                "value": "Список участников",
                 "level": 1
               }
             },
@@ -151,7 +149,9 @@
                 "size": "small",
                 "aria-label": "Обновить",
                 "tooltip": "Обновить",
-                "tooltipOptions": { "position": "left" }
+                "tooltipOptions": {
+                  "position": "left"
+                }
               },
               "events": [
                 {
@@ -175,19 +175,19 @@
       "className": "flex flex-column gap-3 mb-3",
       "blocks": [
         {
-          "id": "searchBlock",
+          "id": "usersSearchBlock",
           "type": "block",
           "className": "w-full flex gap-3",
           "components": [
             {
-              "id": "searchInput",
+              "id": "usersSearchInput",
               "type": "component",
               "className": "w-full p-inputtext-sm mb-0",
               "componentType": "InputTextWithThrottle",
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.search"
+                "value": "@state.usersQuery.search"
               },
               "events": [
                 {
@@ -197,7 +197,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.search"
+                        "target": "state.usersQuery.search"
                       }
                     },
                     "requestUsers"
@@ -206,18 +206,46 @@
               ]
             },
             {
-              "id": "statusFilter",
+              "id": "usersToggleFilters",
               "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
               "props": {
-                "options": "@state.statuses",
-                "value": "@state.status",
-                "optionLabel": "label",
-                "optionValue": "value",
-                "placeholder": "Статус...",
-                "showClear": true,
-                "inline": "yes"
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "usersActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "usersActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
               },
               "events": [
                 {
@@ -227,10 +255,53 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.status"
+                        "target": "state.report.filters"
                       }
                     },
                     "requestUsers"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "usersFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestUsers"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
                   ]
                 }
               ]
@@ -254,32 +325,34 @@
               "componentType": "DataTable",
               "props": {
                 "value": "@state.users.value",
-                "columns": "@state.users.columns",
+                "columns": "@state.report.columns",
                 "totalRecords": "@state.users.totalRecords",
                 "rows": "@state.users.rows",
                 "first": "@state.users.first",
+                "sortField": "@state.usersQuery.sortField",
+                "sortOrder": "@state.usersQuery.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
                 "stripedRows": true,
                 "selectionMode": "single",
-                "rowsPerPageOptions": [5, 10, 25, 50],
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
                 "customColumns": [
                   {
-                    "field": "email",
+                    "field": "user",
+                    "order": -1,
                     "body": [
                       {
-                        "id": "sendButton",
                         "componentType": "Button",
                         "props": {
-                          "icon": "pi pi-envelope",
-                          "label": "{#field}",
+                          "icon": "pi pi-user",
                           "link": true,
-                          "size": "small",
-                          "pt": {
-                            "label": { "className": "font-normal" },
-                            "root": { "className": "p-1" }
-                          }
+                          "size": "small"
                         },
                         "events": [
                           {
@@ -288,7 +361,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "mailto:{#field}"
+                                  "url": "/ops/users/{#row.user_id}"
                                 }
                               }
                             ]
@@ -298,30 +371,19 @@
                     ]
                   },
                   {
-                    "field": "button",
-                    "order": -1,
+                    "field": "mailing",
                     "body": [
                       {
                         "componentType": "Button",
+                        "className": "pointer-events-none -m-2",
+                        "visibleRow": "{#row.mailing_icon}",
                         "props": {
-                          "icon": "pi pi-arrow-right",
-                          "link": true,
-                          "size": "small",
-                          "pt": { "label": { "className": "font-normal" } }
-                        },
-                        "events": [
-                          {
-                            "type": "onClick",
-                            "commands": [
-                              {
-                                "type": "navigate",
-                                "params": {
-                                  "url": "/ops/users/{#row.id}"
-                                }
-                              }
-                            ]
-                          }
-                        ]
+                          "icon": "{#row.mailing_icon}",
+                          "severity": "{#row.mailing_severity}",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        }
                       }
                     ]
                   }
@@ -330,25 +392,37 @@
               "events": [
                 {
                   "type": "onPage",
-                  "commands": ["requestUsers"]
+                  "commands": [
+                    "requestUsers"
+                  ]
                 },
                 {
                   "type": "onSort",
-                  "commands": ["requestUsers"]
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.usersQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.usersQuery.sortOrder"
+                      }
+                    },
+                    "requestUsers"
+                  ]
                 },
                 {
                   "type": "onRowClick",
                   "commands": [
                     {
-                      "type": "log",
-                      "params": {
-                        "message": "{$event}"
-                      }
-                    },
-                    {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/users/{$event.data.id}"
+                        "url": "/ops/users/{$event.data.user_id}"
                       }
                     }
                   ]
