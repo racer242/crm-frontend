@@ -33,29 +33,37 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     return <div className={containerClassName} style={style}></div>;
   }
 
+  // Фича-гейт: скрытые компоненты исключаются ДО раскладки — иначе
+  // grid-обёртка <div className={colClass}> осталась бы и занимала ячейку.
+  // Колонки назначаются по фактическому составу: ряд сжимается без дыр.
+  const visibleComponents = components.filter(
+    (c) => c !== null && c !== undefined && matchesFeatureGate(campFeatures, c.feature),
+  );
+
+  // Все компоненты скрыты — блок не занимает место в grid родителя
+  if (visibleComponents.length === 0) {
+    return null;
+  }
+
   const content = grid ? (
     <div className={containerClassName} style={style}>
-      {components
-        .filter((c) => c !== null && c !== undefined)
-        .map((component, index) => {
-          const colClass = grid.cols[index] || "";
-          const wrapperClasses = [colClass, grid.padding]
-            .filter(Boolean)
-            .join(" ");
-          return (
-            <div key={component.id} className={wrapperClasses}>
-              <ComponentRenderer component={component} />
-            </div>
-          );
-        })}
+      {visibleComponents.map((component, index) => {
+        const colClass = grid.cols[index] || "";
+        const wrapperClasses = [colClass, grid.padding]
+          .filter(Boolean)
+          .join(" ");
+        return (
+          <div key={component.id} className={wrapperClasses}>
+            <ComponentRenderer component={component} />
+          </div>
+        );
+      })}
     </div>
   ) : (
     <div className={containerClassName} style={style}>
-      {components
-        .filter((c) => c !== null && c !== undefined)
-        .map((component) => (
-          <ComponentRenderer key={component.id} component={component} />
-        ))}
+      {visibleComponents.map((component) => (
+        <ComponentRenderer key={component.id} component={component} />
+      ))}
     </div>
   );
 

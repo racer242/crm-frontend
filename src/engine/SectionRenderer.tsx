@@ -25,6 +25,18 @@ export function SectionRenderer({ section }: SectionRendererProps) {
 
   const blocks = section.blocks || [];
 
+  // Фича-гейт: скрытые блоки исключаются ДО раскладки — иначе grid-обёртка
+  // <div className={colClass}> осталась бы и занимала ячейку. Колонки —
+  // по фактическому составу: ряд сжимается без дыр.
+  const visibleBlocks = blocks.filter(
+    (b) => b !== null && b !== undefined && matchesFeatureGate(campFeatures, b.feature),
+  );
+
+  // Все блоки скрыты — секция не оставляет пустого места
+  if (blocks.length > 0 && visibleBlocks.length === 0) {
+    return null;
+  }
+
   // Если указана grid-раскладка — оборачиваем блоки в div-ы с col-классами
   if (grid) {
     const sectionClasses = [className || "mb-5", "grid"]
@@ -33,7 +45,7 @@ export function SectionRenderer({ section }: SectionRendererProps) {
 
     return (
       <section className={sectionClasses}>
-        {blocks.map((block, index) => {
+        {visibleBlocks.map((block, index) => {
           const colClass = grid.cols[index] || "";
           const wrapperClasses = [colClass, grid.padding]
             .filter(Boolean)
@@ -50,7 +62,7 @@ export function SectionRenderer({ section }: SectionRendererProps) {
 
   return (
     <section className={`${className || "flex mb-5"}`}>
-      {blocks.map((block) => {
+      {visibleBlocks.map((block) => {
         return <BlockRenderer key={block.id} block={block} />;
       })}
     </section>

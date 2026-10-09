@@ -157,6 +157,7 @@
             {
               "id": "allReceiptsCount",
               "type": "component",
+              "feature": "receipts",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
@@ -183,6 +184,7 @@
             {
               "id": "activityReceipts",
               "type": "component",
+              "feature": "receipts",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
@@ -209,6 +211,7 @@
             {
               "id": "activityProducts",
               "type": "component",
+              "feature": "products",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
