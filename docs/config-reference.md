@@ -460,6 +460,67 @@ UI-компонент PrimeReact.
 | `replace` | Словарная замена имён свойств и их значений     |
 | `js`      | JS-скрипт для произвольной трансформации данных |
 
+### dataInit
+
+Серверная инициализация state значениями из URL/конфига. Выполняется в
+`src/app/[[...slug]]/page.tsx`, результаты доставляются клиенту в
+`initialDataFeed` и применяются движком (StateManager при создании,
+re-apply-эффект AppEngine после `router.refresh()`):
+
+```json
+"dataInit": [
+  { "source": "{$location.params.search}", "target": "state.page.search" },
+  {
+    "source": "{$location.params.sortOrder}",
+    "target": "state.page.sortOrder",
+    "parse": "json"
+  },
+  {
+    "source": "{$location.params.filters}",
+    "target": "state.report.filters",
+    "parse": "json",
+    "priority": "feed",
+    "method": "merge"
+  }
+]
+```
+
+| Параметр   | Тип                     | По умолчанию | Описание                                                              |
+| ---------- | ----------------------- | ------------ | --------------------------------------------------------------------- |
+| `source`   | `string`                | —            | Строка с макросами (`{$location.params.search}`)                      |
+| `value`    | `any`                   | —            | Статическое значение (если `source` не задан)                         |
+| `target`   | `string`                | —            | Куда записать (`state.page.search`)                                   |
+| `parse`    | `"json"`                | —            | Распарсить вычисленную строку как JSON (не-JSON остаётся строкой)     |
+| `priority` | `"initial"` / `"feed"`  | `"initial"`  | Фаза применения: до серверных фидов / после них                       |
+| `method`   | `"rewrite"` / `"merge"` | `"rewrite"`  | Перезаписать значение / слить с текущим                               |
+
+Правила:
+
+- `parse: "json"` нужен потому, что URL-параметры на сервере — сырые строки
+  (`getServerLocation` их не парсит): `"{$location.params.sortOrder}"` даёт
+  `"-1"`, а пропсу таблицы нужно число. Не-JSON значение (обычный поиск
+  `05`) остаётся строкой — глобальный JSON-парс сломал бы числоподобные
+  запросы;
+- значение `undefined` (макрос не разрешился — параметра нет в URL) **не
+  записывается**: дефолт из конфига страницы сохраняется;
+- фазы применения: init-записи без `priority: "feed"` → dataFeed →
+  init-записи с `priority: "feed"`. `priority: "feed"` — для значений,
+  которые должны накладываться на state, заполненный фидами;
+- `method: "merge"` — слияние через `mergeById` (`src/utils/initialResult.ts`):
+  объекты — рекурсивно по ключам оверлея; массивы — join по полю `id` (записи
+  оверлея накладываются на записи базы с тем же `id`, непарные записи оверлея
+  отбрасываются, порядок базы сохраняется; пустая база поглощает оверлей);
+  прочие значения — перезапись. Типовой кейс — фильтры из URL
+  (`[{"id":…, "value":…}]`) поверх метаданных отчёта
+  (`state.report.filters`: `[{id, name, type, opts, value}]`), которые
+  metadata-адаптер пишет целиком; merge по `id` гарантирует, что протухший id
+  из старой ссылки не создаст чип без имени. No-op merge (значения совпали)
+  запись не инициирует;
+- восстановление UI-состояния списка из URL
+  (`?search=…&sortField=…&sortOrder=…&filters=…`): `search`/`sortField` —
+  без опций, `sortOrder` — `parse: "json"`, `filters` — `parse: "json"` +
+  `priority: "feed"` + `method: "merge"`.
+
 ---
 
 ## 8. Общие типы

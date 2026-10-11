@@ -51,6 +51,22 @@
     {
       "source": "{$location.params.search}",
       "target": "state.usersQuery.search"
+    },
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.usersQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.usersQuery.sortOrder",
+      "parse": "json"
+    },
+    {
+      "source": "{$location.params.filters}",
+      "target": "state.report.filters",
+      "parse": "json",
+      "priority": "feed",
+      "method": "merge"
     }
   ],
   "shortcuts": {

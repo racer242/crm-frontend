@@ -174,6 +174,17 @@ export function renderDataTable({
   const { columns, customColumns, emptyMessage, ...restProps } = props;
   const rawValue = props.value as unknown[] | undefined;
 
+  // sortOrder может приходить строкой из URL ("-1" через dataInit) —
+  // PrimeReact ждёт число 1/0/-1. Нормализуем, иначе индикатор сортировки
+  // в шапке не восстанавливается при открытии страницы по ссылке (§10.4).
+  const rawSortOrder = props.sortOrder as string | number | null | undefined;
+  const normalizedSortOrder =
+    rawSortOrder === null || rawSortOrder === undefined || rawSortOrder === ""
+      ? undefined
+      : Number.isFinite(Number(rawSortOrder))
+        ? (Number(rawSortOrder) as 1 | 0 | -1)
+        : undefined;
+
   // Автоколонки: если колонки не заданы (например, у SQL-отчёта пустой fields —
   // «все доступные поля»), строим их из ключей первой строки данных.
   // header = имя поля; ISO-значения помечаем dataType:"date" (клиентский формат).
@@ -220,6 +231,7 @@ export function renderDataTable({
     <DataTable
       {...restProps}
       {...paginatorDefaults}
+      sortOrder={normalizedSortOrder}
       value={props.value || []}
       emptyMessage={emptyMessage || t("emptyMessage")}
       className={`w-full ${className || ""}`}

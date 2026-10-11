@@ -102,13 +102,43 @@ export interface DataFeedResult {
   error?: string | ApiError;
   /** Target address where data should be stored */
   target: string;
+  /**
+   * Способ применения значения к состоянию. Пробрасывается из dataInit
+   * (записи с priority:"feed"); у обычных фидов не задан (= перезапись).
+   */
+  method?: DataInitApplyMethod;
 }
+
+/** Способ применения initial-значения к текущему состоянию */
+export type DataInitApplyMethod = "rewrite" | "merge";
+
+/** Фаза применения dataInit относительно серверных фидов */
+export type DataInitPriority = "initial" | "feed";
 
 /** Конфигурация для серверной инициализации state */
 export interface DataInitConfig {
   source?: string; // Строка с макросами (например, "{$location.params.search}")
   value?: any;     // Статическое значение
   target: string;  // Куда записать (например, "state.search")
+  /**
+   * "json" — распарсить вычисленное значение как JSON, если это строка.
+   * Нужен потому, что URL-параметры на сервере — сырые строки
+   * (getServerLocation их не парсит). Не-JSON (обычный поиск "05") остаётся
+   * строкой — глобальный JSON-парс сломал бы числоподобные запросы.
+   */
+  parse?: "json";
+  /**
+   * Фаза применения. "initial" (по умолчанию) — до серверных фидов;
+   * "feed" — после фидов: значение накладывается на state, заполненный
+   * фидами (например, merge фильтров из URL в metadata state.report.filters).
+   */
+  priority?: DataInitPriority;
+  /**
+   * "rewrite" (по умолчанию) — перезаписать значение;
+   * "merge" — слить с текущим (mergeById: объекты — по ключам, массивы —
+   * join по полю id, непарные записи оверлея игнорируются).
+   */
+  method?: DataInitApplyMethod;
 }
 
 /**

@@ -16,6 +16,7 @@ import {
   resolveElementStateMacros,
 } from "@/core/DataFeedServerService";
 import { executeDataInit } from "@/core/DataInitServerService";
+import { partitionInitialResults } from "@/utils/initialResult";
 import { getAccessTokenServer } from "@/utils/getAccessToken";
 import { ApiError } from "@/utils/parseApiError";
 
@@ -123,19 +124,34 @@ export default async function Page({
   const accessToken = await getAccessTokenServer();
 
   // Execute server-side data init
+  // Партиция очереди initial-записей: записи без priority:"feed" применяются
+  // ДО фидов, записи с priority:"feed" — ПОСЛЕ фидов (накладываются на state,
+  // заполненный фидами: merge фильтров из URL в metadata state.report.filters,
+  // который metadata-адаптер пишет целиком и затёр бы обычный dataInit).
   let initResults: DataFeedResult[] = [];
+  let postFeedInitResults: DataFeedResult[] = [];
   if (clonedPageConfig && clonedPageConfig.dataInit) {
-    const rawInitResults = executeDataInit(
-      clonedPageConfig.dataInit,
-      null as any,
-      serverSources,
+    const { preFeed, postFeed } = partitionInitialResults(
+      executeDataInit(
+        clonedPageConfig.dataInit,
+        null as any,
+        serverSources,
+      ),
     );
     // Map DataInitResult to DataFeedResult format for compatibility
-    initResults = rawInitResults.map(r => ({
+    initResults = preFeed.map((r) => ({
       success: r.success,
       target: r.target,
       data: r.data,
-      error: r.error
+      error: r.error,
+      method: r.method,
+    }));
+    postFeedInitResults = postFeed.map((r) => ({
+      success: r.success,
+      target: r.target,
+      data: r.data,
+      error: r.error,
+      method: r.method,
     }));
   }
 
@@ -158,9 +174,14 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
-  // Combine data init results and data feed results
-  // dataFeed results will overwrite dataInit results if they have the same target
-  const initialDataFeed = [...initResults, ...successResults];
+  // Combine data init results, data feed results and post-feed init results.
+  // dataFeed results overwrite plain dataInit results with the same target;
+  // post-feed dataInit entries (priority:"feed") apply last — on top of feeds.
+  const initialDataFeed = [
+    ...initResults,
+    ...successResults,
+    ...postFeedInitResults,
+  ];
 
   // Filter camps for client: strip server-only fields (base_api_url, crm_*), pass only id + name
   const clientCamps: { id: number; name: string; current: boolean }[] =

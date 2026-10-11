@@ -62,6 +62,22 @@
     {
       "source": "{$location.params.search}",
       "target": "state.receiptsQuery.search"
+    },
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.receiptsQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.receiptsQuery.sortOrder",
+      "parse": "json"
+    },
+    {
+      "source": "{$location.params.filters}",
+      "target": "state.report.filters",
+      "parse": "json",
+      "priority": "feed",
+      "method": "merge"
     }
   ],
   "shortcuts": {

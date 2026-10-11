@@ -11,6 +11,7 @@
 import { BaseElement, ElementPath, App, DataFeedResult } from "@/types";
 import { PathResolver } from "./PathResolver";
 import { ElementIndex } from "./ElementIndex";
+import { applyInitialResult } from "@/utils/initialResult";
 
 /** Callback для уведомлений об изменениях */
 export type StateChangeListener = (
@@ -46,13 +47,23 @@ export class StateManager {
           if (!targetId) continue;
 
           if (statePath) {
-            // Specific path: set field (e.g., "state.loadedText" → set state.loadedText)
-            this.setStateField(targetId, statePath, result.data);
+            // Specific path: set field (e.g., "state.loadedText" → set state.loadedText).
+            // method "merge" (из dataInit) — слить с текущим значением
+            // (массивы — join по id) вместо перезаписи
+            const current = this.getStateField(targetId, statePath);
+            this.setStateField(
+              targetId,
+              statePath,
+              applyInitialResult(current, result.data, result.method),
+            );
           } else {
             // No path: merge data into existing state (e.g., "state" → merge {loadedText: "..."})
             const element = this.getElement(targetId);
             if (element && typeof result.data === "object") {
-              this.mergeState(targetId, result.data);
+              this.mergeState(
+                targetId,
+                applyInitialResult(element.state, result.data, result.method),
+              );
             } else {
               this.setStateField(targetId, statePath, result.data);
             }

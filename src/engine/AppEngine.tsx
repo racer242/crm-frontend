@@ -18,6 +18,7 @@ import { Toast } from "primereact/toast";
 import { useDataFeedErrors } from "./hooks/useDataFeedErrors";
 import { ApiError } from "@/utils/parseApiError";
 import { PathResolver } from "@/core/PathResolver";
+import { applyInitialResult } from "@/utils/initialResult";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { ComponentProvider } from "./ComponentContext";
 import { FileUpload } from "primereact/fileupload";
@@ -111,13 +112,21 @@ export function AppEngine({
       const currentValue = statePath
         ? stateManager.getStateField(targetId, statePath)
         : stateManager.getState(targetId);
+      // Учитываем способ применения: для merge сравниваем с РЕЗУЛЬТАТОМ
+      // слияния — оверлей, не меняющий состояние (например, значения URL
+      // совпали с дефолтами метаданных), не должен вызывать запись
+      const nextValue = applyInitialResult(
+        currentValue,
+        result.data,
+        result.method,
+      );
       if (
         JSON.stringify(currentValue ?? null) ===
-        JSON.stringify(result.data ?? null)
+        JSON.stringify(nextValue ?? null)
       ) {
-        continue; // данные совпадают с состоянием — перезапись не нужна
+        continue; // после применения состояние не меняется — запись не нужна
       }
-      pending.push({ targetId, statePath: statePath || null, data: result.data });
+      pending.push({ targetId, statePath: statePath || null, data: nextValue });
     }
 
     for (const item of pending) {
