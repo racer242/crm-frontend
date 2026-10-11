@@ -1,6 +1,7 @@
 /**
- * Response adapter for GET ops/receipts-v2/query/[query_id] (→ /api/v1/crm/stats/query/{query_id})
- * — metadata of the «Просмотр чеков» query for the experimental "Receipts (v2)" page
+ * Response adapter for GET ops/receipts/query/[query_id] (→ /api/v1/crm/stats/query/{query_id})
+ * — metadata of the «Просмотр чеков» query for the "Receipts" page (main page
+ * «Чеки» since 09.10.26 — promoted from the receipts-v2 experiment)
  * (the page's query_id is "receipts"; since 09.10.26 this replaced the GET by
  * report UUID; spec .prompts/new_req_receipts.md).
  *
@@ -9,7 +10,7 @@
  *  - columns — display columns from fields[] ({field, header, sortable, dataType});
  *    the internal receipt_id/user_id (spec §3 — "для внутренних нужд") are
  *    dropped from the display set; sortable is true only for columns the report
- *    SQL can ORDER BY (the shared RECEIPTS_V2_SORTABLE_COLUMNS whitelist in
+ *    SQL can ORDER BY (the shared RECEIPTS_SORTABLE_COLUMNS whitelist in
  *    _shared.js — the spec §4 sort map, the same list the request adapter
  *    applies); an explicit server-side sortable:false is respected too;
  *  - filters — filter definitions for FiltersPanel (hardcoded per §5 of the
@@ -91,10 +92,10 @@ function transform(source) {
         field: f.name,
         header: f.title || f.name,
         // Sorting is offered only for columns the report SQL can ORDER BY
-        // (shared RECEIPTS_V2_SORTABLE_COLUMNS whitelist in _shared.js — the
+        // (shared RECEIPTS_SORTABLE_COLUMNS whitelist in _shared.js — the
         // spec §4 sort map); an explicit server-side sortable:false is
         // respected too
-        sortable: f.sortable !== false && isReceiptsV2Sortable(f.name),
+        sortable: f.sortable !== false && isReceiptsSortable(f.name),
         dataType:
           f.type === "date" || f.type === "datetime" ? "date" : undefined,
       })),

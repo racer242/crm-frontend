@@ -167,7 +167,8 @@ function isUsersV2Sortable(column) {
 }
 
 /**
- * receipts-v2 («Просмотр чеков», эксперимент): алиасы колонок, которые
+ * receipts («Просмотр чеков» — основная страница «Чеки», с 09.10.26 переведена
+ * из эксперимента receipts-v2): алиасы колонок, которые
  * умеет сортировать SQL отчёта — сортировочная карта §4 спеки
  * .prompts/new_req_receipts.md (null = не сортируется), единый белый список
  * для двух адаптеров:
@@ -178,7 +179,7 @@ function isUsersV2Sortable(column) {
  *    не применит (full_name — вычисляемое выражение CONCAT_WS(...),
  *    promo_products_count / promo_products_amount — агрегаты подзапроса).
  */
-const RECEIPTS_V2_SORTABLE_COLUMNS = [
+const RECEIPTS_SORTABLE_COLUMNS = [
   "registration_date",
   "purchase_date",
   "participant_code",
@@ -189,6 +190,6 @@ const RECEIPTS_V2_SORTABLE_COLUMNS = [
   "moderation_status",
 ];
 
-function isReceiptsV2Sortable(column) {
-  return RECEIPTS_V2_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+function isReceiptsSortable(column) {
+  return RECEIPTS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }

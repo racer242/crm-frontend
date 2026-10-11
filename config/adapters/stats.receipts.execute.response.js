@@ -1,6 +1,6 @@
 /**
- * Response adapter for executing the stats query for the "Receipts (v2)" page
- * (POST ops/receipts-v2/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
+ * Response adapter for executing the stats query for the "Receipts" page
+ * (POST ops/receipts/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
  * format json; the page's query is addressed by the manual query_id "receipts",
  * spec .prompts/new_req_receipts.md — отчёт «Просмотр чеков»).
  *

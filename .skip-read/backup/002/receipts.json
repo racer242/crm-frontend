@@ -1,56 +1,94 @@
 {
-  "id": "receipts-v2",
+  "id": "receipts",
   "type": "page",
-  "route": "/ops/receipts-v2",
+  "route": "/ops/receipts",
   "state": {
     "loading": false,
     "initialized": true,
-    "filtersVisible": false,
-    "receiptsList": {
+    "search": "",
+    "status": "",
+    "fns_status": "",
+    "moderationStatuses": [
+      {
+        "label": "На проверке",
+        "value": "CHECKING"
+      },
+      {
+        "label": "Принят",
+        "value": "ACCEPTED"
+      },
+      {
+        "label": "Отклонён",
+        "value": "REFUSED"
+      },
+      {
+        "label": "Отложен",
+        "value": "SUSPENDED"
+      },
+      {
+        "label": "Требуется загрузка фото",
+        "value": "NEED_PHOTO"
+      },
+      {
+        "label": "Ручная загрузка",
+        "value": "HAND_LOAD"
+      }
+    ],
+    "fnsStatuses": [
+      {
+        "label": "Не проверен",
+        "value": "no_check"
+      },
+      {
+        "label": "Ожидает ФНС",
+        "value": "wait"
+      },
+      {
+        "label": "Не найден в ФНС",
+        "value": "wrong"
+      },
+      {
+        "label": "Чек корректный",
+        "value": "correct"
+      }
+    ],
+    "receipts": {
       "value": [],
+      "columns": [],
       "totalRecords": 0,
       "rows": 10,
       "first": 0
-    },
-    "receiptsQuery": {
-      "sortField": "",
-      "sortOrder": 1,
-      "search": ""
-    },
-    "report": {
-      "id": "",
-      "title": "",
-      "columns": [],
-      "filters": []
     }
   },
   "meta": {
-    "title": "Просмотр чеков (v2) — CRM Platform"
+    "title": "Чеки — CRM Platform"
   },
   "dataFeed": [
     {
-      "url": "/api/ops/receipts-v2/query/receipts",
-      "method": "GET",
-      "target": "state.report"
-    },
-    {
-      "url": "/api/ops/receipts-v2/query/receipts/execute",
-      "method": "POST",
-      "target": "state.receiptsList",
+      "url": "/api/ops/receipts",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
-        "sortField": "{$location.params.sortField}",
-        "sortOrder": "{$location.params.sortOrder}",
         "search": "{$location.params.search}",
-        "filters": "{$location.params.filters}"
-      }
+        "status": "{$location.params.status}",
+        "fns_status": "{$location.params.fns_status}"
+      },
+      "method": "GET",
+      "target": "state.receipts"
     }
   ],
   "dataInit": [
     {
       "source": "{$location.params.search}",
-      "target": "state.receiptsQuery.search"
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.status}",
+      "target": "state.status"
+    },
+    {
+      "source": "{$location.params.fns_status}",
+      "target": "state.fns_status"
     }
   ],
   "shortcuts": {
@@ -61,17 +99,16 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/receipts-v2/query/receipts/execute",
-              "method": "POST",
-              "target": "state.receiptsList",
+              "url": "/api/ops/receipts",
+              "method": "GET",
+              "target": "state.receipts",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.receiptsList.first}",
-                "rows": "{$state.receiptsList.rows}",
-                "sortField": "{$state.receiptsQuery.sortField}",
-                "sortOrder": "{$state.receiptsQuery.sortOrder}",
-                "search": "{$state.receiptsQuery.search}",
-                "filters": "{$state.report.filters}"
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "fns_status": "{$state.fns_status}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -82,35 +119,12 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.receiptsList.first}",
-                "rows": "{$state.receiptsList.rows}",
-                "sortField": "{$state.receiptsQuery.sortField}",
-                "sortOrder": "{$state.receiptsQuery.sortOrder}",
-                "search": "{$state.receiptsQuery.search}",
-                "filters": "{$state.report.filters}"
-              },
-              "format": [
-                {
-                  "prop": "filters",
-                  "type": "PopIfHasNullProps",
-                  "params": {
-                    "props": [
-                      "value"
-                    ]
-                  }
-                },
-                {
-                  "prop": "filters",
-                  "type": "RemoveProps",
-                  "params": {
-                    "props": [
-                      "name",
-                      "type",
-                      "opts"
-                    ]
-                  }
-                }
-              ]
+                "first": "{$state.receipts.first}",
+                "rows": "{$state.receipts.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "fns_status": "{$state.fns_status}"
+              }
             }
           }
         ]
@@ -133,7 +147,7 @@
               "componentType": "Text",
               "className": "w-full",
               "props": {
-                "value": "Просмотр чеков (v2)",
+                "value": "Чеки",
                 "level": 1
               }
             },
@@ -187,7 +201,7 @@
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.receiptsQuery.search"
+                "value": "@state.search"
               },
               "events": [
                 {
@@ -197,7 +211,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.receiptsQuery.search"
+                        "target": "state.search"
                       }
                     },
                     "requestReceipts"
@@ -206,46 +220,18 @@
               ]
             },
             {
-              "id": "receiptsToggleFilters",
+              "id": "receiptsStatusFilter",
               "type": "component",
-              "componentType": "Button",
-              "className": "min-w-max flex-grow-0 px-3",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
               "props": {
-                "icon": "pi pi-filter",
-                "severity": "primary",
-                "outlined": true,
-                "size": "small",
-                "label": "Фильтры"
-              },
-              "events": [
-                {
-                  "type": "onClick",
-                  "commands": [
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "receiptsActiveFilterBlock",
-          "type": "block",
-          "wrapper": {
-            "className": "w-full"
-          },
-          "components": [
-            {
-              "id": "receiptsActiveFilterChips",
-              "type": "component",
-              "componentType": "ActiveFiltersBar",
-              "props": {
-                "value": "@state.report.filters"
+                "options": "@state.moderationStatuses",
+                "value": "@state.status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус модерации...",
+                "showClear": true,
+                "inline": "yes"
               },
               "events": [
                 {
@@ -255,7 +241,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.report.filters"
+                        "target": "state.status"
                       }
                     },
                     "requestReceipts"
@@ -264,14 +250,18 @@
               ]
             },
             {
-              "id": "receiptsFilterDrawer",
+              "id": "receiptsFnsStatusFilter",
               "type": "component",
-              "componentType": "FiltersPanel",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
               "props": {
-                "value": "@state.report.filters",
-                "visible": "@state.filtersVisible",
-                "position": "right",
-                "header": "Фильтры"
+                "options": "@state.fnsStatuses",
+                "value": "@state.fns_status",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Статус ФНС...",
+                "showClear": true,
+                "inline": "yes"
               },
               "events": [
                 {
@@ -281,27 +271,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.report.filters"
-                      }
-                    },
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
+                        "target": "state.fns_status"
                       }
                     },
                     "requestReceipts"
-                  ]
-                },
-                {
-                  "type": "onHide",
-                  "commands": [
-                    {
-                      "type": "toggleProperty",
-                      "params": {
-                        "target": "state.filtersVisible"
-                      }
-                    }
                   ]
                 }
               ]
@@ -324,13 +297,11 @@
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.receiptsList.value",
-                "columns": "@state.report.columns",
-                "totalRecords": "@state.receiptsList.totalRecords",
-                "rows": "@state.receiptsList.rows",
-                "first": "@state.receiptsList.first",
-                "sortField": "@state.receiptsQuery.sortField",
-                "sortOrder": "@state.receiptsQuery.sortOrder",
+                "value": "@state.receipts.value",
+                "columns": "@state.receipts.columns",
+                "totalRecords": "@state.receipts.totalRecords",
+                "rows": "@state.receipts.rows",
+                "first": "@state.receipts.first",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -371,7 +342,7 @@
                     ]
                   },
                   {
-                    "field": "nav",
+                    "field": "button",
                     "order": -1,
                     "body": [
                       {
@@ -379,7 +350,12 @@
                         "props": {
                           "icon": "pi pi-arrow-right",
                           "link": true,
-                          "size": "small"
+                          "size": "small",
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
                         },
                         "events": [
                           {
@@ -388,7 +364,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/receipts/{#row.receipt_id}"
+                                  "url": "/ops/receipts/{#row.id}"
                                 }
                               }
                             ]
@@ -409,20 +385,6 @@
                 {
                   "type": "onSort",
                   "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.sortField",
-                        "target": "state.receiptsQuery.sortField"
-                      }
-                    },
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.sortOrder",
-                        "target": "state.receiptsQuery.sortOrder"
-                      }
-                    },
                     "requestReceipts"
                   ]
                 },
@@ -432,7 +394,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/receipts/{$event.data.receipt_id}"
+                        "url": "/ops/receipts/{$event.data.id}"
                       }
                     }
                   ]

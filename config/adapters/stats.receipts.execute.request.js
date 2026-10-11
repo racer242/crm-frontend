@@ -1,6 +1,6 @@
 /**
- * Request adapter for executing the stats query for the "Receipts (v2)" page
- * (POST ops/receipts-v2/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
+ * Request adapter for executing the stats query for the "Receipts" page
+ * (POST ops/receipts/query/[query_id]/execute → /api/v1/crm/stats/query/{query_id}/execute,
  * format json; the page's query is addressed by the manual query_id "receipts",
  * spec .prompts/new_req_receipts.md — отчёт «Просмотр чеков»).
  *
@@ -22,7 +22,7 @@
  *    same as startDate/endDate of «Запросов»; the report SQL compares the
  *    DATETIME columns directly (no CONVERT_TZ around the macros);
  *  - the engine sends sortField/sortOrder (1/-1), not sort/direction;
- *    the alias must be in the shared whitelist (isReceiptsV2Sortable),
+ *    the alias must be in the shared whitelist (isReceiptsSortable),
  *    otherwise — the default "registration_date" + "DESC" (spec §1.2).
  *
  * Mappings (spec §1.3/§5/§6, implemented on the frontend):
@@ -61,8 +61,8 @@ const MACRO_KEYS = [
   "ORDER_DIR",
 ];
 
-// Sortable column aliases live in _shared.js (RECEIPTS_V2_SORTABLE_COLUMNS /
-// isReceiptsV2Sortable) — the same whitelist drives the sortable flags of the
+// Sortable column aliases live in _shared.js (RECEIPTS_SORTABLE_COLUMNS /
+// isReceiptsSortable) — the same whitelist drives the sortable flags of the
 // table columns in stats.receipts.report.response.js (spec §4 sort map).
 const DEFAULT_ORDER_BY = "registration_date";
 const DEFAULT_ORDER_DIR = "DESC";
@@ -157,7 +157,7 @@ function transform(params = {}) {
   replacements.SEARCH_FILTER = searchFragment(merged.search);
 
   // 4. Sorting: whitelisted alias + direction; no sort → default registration_date DESC
-  const sortColumn = isReceiptsV2Sortable(merged.sortField) ? merged.sortField : "";
+  const sortColumn = isReceiptsSortable(merged.sortField) ? merged.sortField : "";
   replacements.ORDER_BY = sortColumn || DEFAULT_ORDER_BY;
   replacements.ORDER_DIR = sortColumn
     ? Number(merged.sortOrder) === -1
