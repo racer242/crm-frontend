@@ -29,7 +29,7 @@
   },
   "dataFeed": [
     {
-      "url": "/api/ops/receipts-v2/report/01a116ba-8a8a-7537-8155-a26708a8cf36",
+      "url": "/api/ops/receipts-v2/query/receipts",
       "method": "GET",
       "target": "state.report"
     },

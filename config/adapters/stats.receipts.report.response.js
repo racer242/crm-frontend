@@ -1,7 +1,8 @@
 /**
- * Response adapter for GET ops/receipts-v2/report/[report_id] — metadata of the
- * stats report «Просмотр чеков» for the experimental "Receipts (v2)" page
- * (spec .prompts/new_req_receipts.md, page query_id = "receipts").
+ * Response adapter for GET ops/receipts-v2/query/[query_id] (→ /api/v1/crm/stats/query/{query_id})
+ * — metadata of the «Просмотр чеков» query for the experimental "Receipts (v2)" page
+ * (the page's query_id is "receipts"; since 09.10.26 this replaced the GET by
+ * report UUID; spec .prompts/new_req_receipts.md).
  *
  * Returns ONLY safe data:
  *  - id, title of the report;

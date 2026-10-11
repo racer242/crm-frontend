@@ -1,6 +1,8 @@
 /**
- * Response adapter for GET ops/users-v2/report/[report_id] — metadata of the stats report
- * for the experimental "Participants (v2)" page.
+ * Response adapter for GET ops/users-v2/query/[query_id] (→ /api/v1/crm/stats/query/{query_id})
+ * — metadata of the users query for the experimental "Participants (v2)" page
+ * (the page's query_id is "users"; since 09.10.26 this replaced the GET by
+ * report UUID).
  *
  * Returns ONLY safe data:
  *  - id, title of the report;
