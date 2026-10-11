@@ -5,64 +5,28 @@
   "state": {
     "loading": false,
     "initialized": true,
+    "filtersVisible": false,
     "userData": {
       "id": "",
       "full_name": "",
       "email": ""
     },
-    "search": "",
-    "status": "",
-    "fns_status": "",
-    "moderationStatuses": [
-      {
-        "label": "На проверке",
-        "value": "CHECKING"
-      },
-      {
-        "label": "Принят",
-        "value": "ACCEPTED"
-      },
-      {
-        "label": "Отклонён",
-        "value": "REFUSED"
-      },
-      {
-        "label": "Отложен",
-        "value": "SUSPENDED"
-      },
-      {
-        "label": "Требуется загрузка фото",
-        "value": "NEED_PHOTO"
-      },
-      {
-        "label": "Ручная загрузка",
-        "value": "HAND_LOAD"
-      }
-    ],
-    "fnsStatuses": [
-      {
-        "label": "Не проверен",
-        "value": "no_check"
-      },
-      {
-        "label": "Ожидает ФНС",
-        "value": "wait"
-      },
-      {
-        "label": "Не найден в ФНС",
-        "value": "wrong"
-      },
-      {
-        "label": "Чек корректный",
-        "value": "correct"
-      }
-    ],
-    "receipts": {
+    "receiptsList": {
       "value": [],
-      "columns": [],
       "totalRecords": 0,
       "rows": 10,
       "first": 0
+    },
+    "receiptsQuery": {
+      "sortField": "",
+      "sortOrder": 1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
     }
   },
   "meta": {
@@ -75,50 +39,51 @@
       "target": "state.userData"
     },
     {
-      "url": "/api/ops/users/{$location.routeParams.user_id}/receipts",
+      "url": "/api/ops/receipts/query/receipts",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/receipts/query/receipts/execute",
+      "method": "POST",
+      "target": "state.receiptsList",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
         "search": "{$location.params.search}",
-        "status": "{$location.params.status}",
-        "fns_status": "{$location.params.fns_status}"
-      },
-      "method": "GET",
-      "target": "state.receipts"
+        "filters": "{$location.params.filters}",
+        "user_id": "{$location.routeParams.user_id}"
+      }
     }
   ],
   "dataInit": [
     {
       "source": "{$location.params.search}",
-      "target": "state.search"
-    },
-    {
-      "source": "{$location.params.status}",
-      "target": "state.status"
-    },
-    {
-      "source": "{$location.params.fns_status}",
-      "target": "state.fns_status"
+      "target": "state.receiptsQuery.search"
     }
   ],
   "shortcuts": {
-    "requestUserReceipts": {
+    "requestReceipts": {
       "type": "sequence",
       "params": {
         "commands": [
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/users/{$location.routeParams.user_id}/receipts",
-              "method": "GET",
-              "target": "state.receipts",
+              "url": "/api/ops/receipts/query/receipts/execute",
+              "method": "POST",
+              "target": "state.receiptsList",
               "data": {
                 "event": "{$event}",
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}",
-                "fns_status": "{$state.fns_status}"
+                "first": "{$state.receiptsList.first}",
+                "rows": "{$state.receiptsList.rows}",
+                "sortField": "{$state.receiptsQuery.sortField}",
+                "sortOrder": "{$state.receiptsQuery.sortOrder}",
+                "search": "{$state.receiptsQuery.search}",
+                "filters": "{$state.report.filters}",
+                "user_id": "{$location.routeParams.user_id}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -129,12 +94,35 @@
             "type": "mergeUrlParams",
             "params": {
               "values": {
-                "first": "{$state.receipts.first}",
-                "rows": "{$state.receipts.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}",
-                "fns_status": "{$state.fns_status}"
-              }
+                "first": "{$state.receiptsList.first}",
+                "rows": "{$state.receiptsList.rows}",
+                "sortField": "{$state.receiptsQuery.sortField}",
+                "sortOrder": "{$state.receiptsQuery.sortOrder}",
+                "search": "{$state.receiptsQuery.search}",
+                "filters": "{$state.report.filters}"
+              },
+              "format": [
+                {
+                  "prop": "filters",
+                  "type": "PopIfHasNullProps",
+                  "params": {
+                    "props": [
+                      "value"
+                    ]
+                  }
+                },
+                {
+                  "prop": "filters",
+                  "type": "RemoveProps",
+                  "params": {
+                    "props": [
+                      "name",
+                      "type",
+                      "opts"
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]
@@ -277,7 +265,7 @@
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.search"
+                "value": "@state.receiptsQuery.search"
               },
               "events": [
                 {
@@ -287,70 +275,10 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.search"
+                        "target": "state.receiptsQuery.search"
                       }
                     },
-                    "requestUserReceipts"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "userReceiptsStatusFilter",
-              "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
-              "props": {
-                "options": "@state.moderationStatuses",
-                "value": "@state.status",
-                "optionLabel": "label",
-                "optionValue": "value",
-                "placeholder": "Статус модерации...",
-                "showClear": true,
-                "inline": "yes"
-              },
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.status"
-                      }
-                    },
-                    "requestUserReceipts"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "userReceiptsFnsStatusFilter",
-              "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
-              "props": {
-                "options": "@state.fnsStatuses",
-                "value": "@state.fns_status",
-                "optionLabel": "label",
-                "optionValue": "value",
-                "placeholder": "Статус ФНС...",
-                "showClear": true,
-                "inline": "yes"
-              },
-              "events": [
-                {
-                  "type": "onChange",
-                  "commands": [
-                    {
-                      "type": "setProperty",
-                      "params": {
-                        "source": "event.value",
-                        "target": "state.fns_status"
-                      }
-                    },
-                    "requestUserReceipts"
+                    "requestReceipts"
                   ]
                 }
               ]
@@ -380,6 +308,107 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "userReceiptsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "userReceiptsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "userReceiptsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "userReceiptsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestReceipts"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -399,11 +428,13 @@
               "type": "component",
               "componentType": "DataTable",
               "props": {
-                "value": "@state.receipts.value",
-                "columns": "@state.receipts.columns",
-                "totalRecords": "@state.receipts.totalRecords",
-                "rows": "@state.receipts.rows",
-                "first": "@state.receipts.first",
+                "value": "@state.receiptsList.value",
+                "columns": "@state.report.columns",
+                "totalRecords": "@state.receiptsList.totalRecords",
+                "rows": "@state.receiptsList.rows",
+                "first": "@state.receiptsList.first",
+                "sortField": "@state.receiptsQuery.sortField",
+                "sortOrder": "@state.receiptsQuery.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -417,7 +448,7 @@
                 ],
                 "customColumns": [
                   {
-                    "field": "button",
+                    "field": "nav",
                     "order": -1,
                     "body": [
                       {
@@ -425,12 +456,7 @@
                         "props": {
                           "icon": "pi pi-arrow-right",
                           "link": true,
-                          "size": "small",
-                          "pt": {
-                            "label": {
-                              "className": "font-normal"
-                            }
-                          }
+                          "size": "small"
                         },
                         "events": [
                           {
@@ -439,7 +465,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/users/{$location.routeParams.user_id}/receipts/{#row.id}"
+                                  "url": "/ops/users/{$location.routeParams.user_id}/receipts/{#row.receipt_id}"
                                 }
                               }
                             ]
@@ -454,13 +480,27 @@
                 {
                   "type": "onPage",
                   "commands": [
-                    "requestUserReceipts"
+                    "requestReceipts"
                   ]
                 },
                 {
                   "type": "onSort",
                   "commands": [
-                    "requestUserReceipts"
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.receiptsQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.receiptsQuery.sortOrder"
+                      }
+                    },
+                    "requestReceipts"
                   ]
                 },
                 {
@@ -469,7 +509,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/users/{$location.routeParams.user_id}/receipts/{$event.data.id}"
+                        "url": "/ops/users/{$location.routeParams.user_id}/receipts/{$event.data.receipt_id}"
                       }
                     }
                   ]

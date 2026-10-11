@@ -40,6 +40,9 @@
  *     numbers); the column lives in the outer subquery alias — unqualified;
  *   - has_promo_products — checkbox true/false/null →
  *     "AND promo_products_count > 0" / "= 0" / "";
+ *   - user_id — the route param of the «Чеки участника» page →
+ *     "AND u.id = '…'" (sqlString: apostrophes doubled); absent or empty on
+ *     the main «Чеки» page → "" (no per-user restriction there);
  *   - search — "AND (r.fn LIKE '%иван%' OR …)" over fn/fp/fd, participant_code,
  *     first_name, last_name, email with % _ \ escaped and single quotes doubled.
  *
@@ -57,6 +60,7 @@ const MACRO_KEYS = [
   "SEARCH_FILTER",
   "PROMO_AMOUNT_FILTER",
   "HAS_PROMO_FILTER",
+  "USER_ID_FILTER",
   "ORDER_BY",
   "ORDER_DIR",
 ];
@@ -154,6 +158,7 @@ function transform(params = {}) {
   replacements.HAS_PROMO_FILTER = hasPromoFragment(
     filterValue(filters, "has_promo_products"),
   );
+  replacements.USER_ID_FILTER = userIdFragment(merged.user_id);
   replacements.SEARCH_FILTER = searchFragment(merged.search);
 
   // 4. Sorting: whitelisted alias + direction; no sort → default registration_date DESC
@@ -219,6 +224,15 @@ function hasPromoFragment(value) {
   if (value === true) return "AND promo_products_count > 0";
   if (value === false) return "AND promo_products_count = 0";
   return "";
+}
+
+// user_id: the route param of the «Чеки участника» page → "AND u.id = '…'";
+// empty/absent (the main «Чеки» page) → "" (filter unused). The value is an
+// internal id, but it is still quoted through sqlString (apostrophes doubled)
+function userIdFragment(value) {
+  const id = String(value || "").trim();
+  if (!id) return "";
+  return "AND u.id = " + sqlString(id);
 }
 
 function numberOrNull(value) {
