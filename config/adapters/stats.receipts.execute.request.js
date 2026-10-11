@@ -41,8 +41,10 @@
  *   - has_promo_products — checkbox true/false/null →
  *     "AND promo_products_count > 0" / "= 0" / "";
  *   - user_id — the route param of the «Чеки участника» page →
- *     "AND u.id = '…'" (sqlString: apostrophes doubled); absent or empty on
- *     the main «Чеки» page → "" (no per-user restriction there);
+ *     "AND r.user_id = UUID_TO_BIN('…')" — the receipts table stores the user
+ *     as BINARY(16), the page passes the dashed UUID string and UUID_TO_BIN
+ *     converts it (value quoted through sqlString: apostrophes doubled);
+ *     absent or empty on the main «Чеки» page → "" (no per-user restriction);
  *   - search — "AND (r.fn LIKE '%иван%' OR …)" over fn/fp/fd, participant_code,
  *     first_name, last_name, email with % _ \ escaped and single quotes doubled.
  *
@@ -226,13 +228,15 @@ function hasPromoFragment(value) {
   return "";
 }
 
-// user_id: the route param of the «Чеки участника» page → "AND u.id = '…'";
-// empty/absent (the main «Чеки» page) → "" (filter unused). The value is an
-// internal id, but it is still quoted through sqlString (apostrophes doubled)
+// user_id: the route param of the «Чеки участника» page →
+// "AND r.user_id = UUID_TO_BIN('…')" — the receipts table stores the user as
+// BINARY(16), the page passes the dashed UUID string and UUID_TO_BIN converts
+// it; empty/absent (the main «Чеки» page) → "" (filter unused). The value is
+// still quoted through sqlString (apostrophes doubled)
 function userIdFragment(value) {
   const id = String(value || "").trim();
   if (!id) return "";
-  return "AND u.id = " + sqlString(id);
+  return "AND r.user_id = UUID_TO_BIN(" + sqlString(id) + ")";
 }
 
 function numberOrNull(value) {
