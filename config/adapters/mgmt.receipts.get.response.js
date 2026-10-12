@@ -37,6 +37,46 @@ function hasText(value) {
   return value !== undefined && value !== null && value !== "";
 }
 
+/**
+ * Нормализация фильтров, приходящих с сервера: range-фильтр, чьё значение
+ * покрывает весь opts-диапазон (предвыбор «от min до max»), фактически
+ * не выбран — значение сбрасывается в undefined, чтобы фильтр не уходил
+ * в запросы (PROMO_AMOUNT_FILTER «BETWEEN 0 AND max») и не показывался
+ * чипом. Та же семантика на клиенте — isFilterActive
+ * (src/engine/components/filtersUtils.ts). Частичные диапазоны («от null»,
+ * «до max», поддиапазон) и фильтры без opts не затрагиваются.
+ * @param {Array} filters - Фильтры из ответа API (FilterItem[])
+ * @returns {Array} Те же фильтры с нормализованными range-значениями
+ */
+function normalizeFilters(filters) {
+  if (!Array.isArray(filters)) return filters;
+  return filters.map((f) => {
+    if (
+      f?.type === "range" &&
+      Array.isArray(f.opts) &&
+      f.opts.length >= 2 &&
+      Array.isArray(f.value) &&
+      f.value.length === 2 &&
+      f.value[0] != null &&
+      f.value[1] != null
+    ) {
+      const min = Number(f.opts[0]);
+      const max = Number(f.opts[1]);
+      const from = Number(f.value[0]);
+      const to = Number(f.value[1]);
+      const numeric =
+        !Number.isNaN(min) &&
+        !Number.isNaN(max) &&
+        !Number.isNaN(from) &&
+        !Number.isNaN(to);
+      if (numeric && from <= min && to >= max) {
+        return { ...f, value: undefined };
+      }
+    }
+    return f;
+  });
+}
+
 function transform(source) {
   // 1. Преобразуем колонки: id→field, title→header, оставляем sortable
   //    UUID-поля (§5.1 ТЗ: receipt_id, user_id) помечаем dataType:"uuid" —
@@ -80,11 +120,12 @@ function transform(source) {
   // 3. Преобразуем направление сортировки: asc→1, desc→-1
   const sortOrder = source.meta?.direction === "desc" ? -1 : 1;
 
-  // 4. Формируем итоговый объект
+  // 4. Формируем итоговый объект (filters: range-предвыбор «весь диапазон»
+  //    с сервера нормализуется в value: undefined — см. normalizeFilters)
   return {
     value,
     columns,
-    filters: source.filters,
+    filters: normalizeFilters(source.filters),
     totalRecords: source.meta?.total_count ?? value.length,
     rows: source.meta?.limit ?? value.length,
     first: source.meta?.first ?? 0,

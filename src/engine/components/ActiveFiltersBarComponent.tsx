@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from "react";
 import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
 import { FilterItem, FilterModel } from "@/types";
+import { isFilterActive } from "./filtersUtils";
 import { ComponentRendererProps } from "./types";
 
 /**
@@ -26,21 +27,11 @@ export function renderActiveFiltersBar({
 }: ComponentRendererProps) {
   const { value: filters = [] } = props;
 
-  // Фильтруем только те, у которых есть активное значение
+  // Фильтруем только фактически выбранные — единая семантика isFilterActive:
+  // range, чьё значение покрывает весь opts-диапазон (предвыбор с сервера
+  // или слайдер на полных границах), активным не считается
   const activeFilters = useMemo(() => {
-    return filters.filter((f: FilterItem) => {
-      if (f.type === "checkbox" || f.type === "switch") return !!f.value;
-      if (f.type === "options") {
-        return Array.isArray(f.value) && f.value.some(Boolean);
-      }
-      if (f.type === "period" || f.type === "range") {
-        // Хотя бы одно значение не null/undefined
-        return (
-          Array.isArray(f.value) && (f.value[0] != null || f.value[1] != null)
-        );
-      }
-      return f.value !== undefined && f.value !== null && f.value !== "";
-    });
+    return filters.filter((f: FilterItem) => isFilterActive(f));
   }, [filters]);
 
   // Сформировать массив чипов для отображения

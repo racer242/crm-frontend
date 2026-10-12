@@ -18,6 +18,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
 import { Divider } from "primereact/divider";
 import { FilterItem, FilterModel } from "@/types";
+import { isFilterActive } from "./filtersUtils";
 import { ComponentRendererProps } from "./types";
 
 /**
@@ -89,15 +90,30 @@ export function renderFiltersPanel({
     [],
   );
 
-  // Применить фильтры
-  const handleApply = useCallback(() => {
-    handleEvent("onChange", { value: localFilters });
-  }, [localFilters, handleEvent]);
+  // Фактически применяемая модель: не выбранные фильтры (пустые значения,
+  // а также range, чьё значение покрывает весь opts-диапазон — предвыбор
+  // с сервера или слайдер, возвращённый на полные границы) нормализуются
+  // в value: undefined — они не участвуют в запросах и не показываются чипами
+  const normalizeModel = useCallback(
+    (filters: FilterModel): FilterModel =>
+      filters.map((f) => (isFilterActive(f) ? f : { ...f, value: undefined })),
+    [],
+  );
 
-  // Очистить фильтры
+  // Применить фильтры. После применения панель считается «чистой»:
+  // «Применить» снова активируется только следующей правкой
+  const handleApply = useCallback(() => {
+    const normalized = normalizeModel(localFilters);
+    setOriginalFilters(normalized);
+    handleEvent("onChange", { value: normalized });
+  }, [localFilters, normalizeModel, handleEvent]);
+
+  // Очистить фильтры (кнопка всегда активна). Очистка сразу применяется —
+  // панель считается «чистой»
   const handleClear = useCallback(() => {
     const emptyFilters = localFilters.map((f) => ({ ...f, value: undefined }));
     setLocalFilters(emptyFilters);
+    setOriginalFilters(emptyFilters);
     handleEvent("onChange", { value: emptyFilters });
   }, [localFilters, handleEvent]);
 
@@ -384,10 +400,15 @@ export function renderFiltersPanel({
     }
   };
 
-  // Проверяем, были ли изменения в фильтрах по сравнению с исходным состоянием
+  // «Применить» активна, только если её нажатие реально изменит модель:
+  // сравниваются нормализованные модели — например, слайдер, возвращённый
+  // на весь opts-диапазон (это «не выбирали»), активной её не делает
   const hasChanges = useMemo(() => {
-    return JSON.stringify(localFilters) !== JSON.stringify(originalFilters);
-  }, [localFilters, originalFilters]);
+    return (
+      JSON.stringify(normalizeModel(localFilters)) !==
+      JSON.stringify(normalizeModel(originalFilters))
+    );
+  }, [localFilters, originalFilters, normalizeModel]);
 
   // Sidebar header content (appears at top of drawer)
   const sidebarHeader = (
@@ -445,7 +466,6 @@ export function renderFiltersPanel({
               className="flex-1"
               severity="danger"
               outlined
-              disabled={!hasChanges}
             />
           </div>
         </div>
