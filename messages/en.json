@@ -15,7 +15,7 @@
     "goHome": "Home"
   },
   "app": {
-    "defaultTitle": "CRM Platform",
+    "defaultTitle": "Mage Platform",
     "pageNotFound": "Page not found: {route}",
     "confirmation": "Confirmation",
     "dataFeedError": "Data Feed Error",

@@ -15,7 +15,7 @@
     "goHome": "На главную"
   },
   "app": {
-    "defaultTitle": "CRM Платформа",
+    "defaultTitle": "Mage Platform",
     "pageNotFound": "Страница не найдена: {route}",
     "confirmation": "Подтверждение",
     "dataFeedError": "Ошибка загрузки данных",
