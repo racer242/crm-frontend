@@ -16,7 +16,7 @@ import {
   resolveElementStateMacros,
 } from "@/core/DataFeedServerService";
 import { executeDataInit } from "@/core/DataInitServerService";
-import { partitionInitialResults } from "@/utils/initialResult";
+import { buildInitialDataFeed } from "@/utils/initialResult";
 import { getAccessTokenServer } from "@/utils/getAccessToken";
 import { ApiError } from "@/utils/parseApiError";
 
@@ -123,37 +123,14 @@ export default async function Page({
   // Get user's access_token for authenticated API requests
   const accessToken = await getAccessTokenServer();
 
-  // Execute server-side data init
-  // Партиция очереди initial-записей: записи без priority:"feed" применяются
-  // ДО фидов, записи с priority:"feed" — ПОСЛЕ фидов (накладываются на state,
-  // заполненный фидами: merge фильтров из URL в metadata state.report.filters,
-  // который metadata-адаптер пишет целиком и затёр бы обычный dataInit).
-  let initResults: DataFeedResult[] = [];
-  let postFeedInitResults: DataFeedResult[] = [];
-  if (clonedPageConfig && clonedPageConfig.dataInit) {
-    const { preFeed, postFeed } = partitionInitialResults(
-      executeDataInit(
-        clonedPageConfig.dataInit,
-        null as any,
-        serverSources,
-      ),
-    );
-    // Map DataInitResult to DataFeedResult format for compatibility
-    initResults = preFeed.map((r) => ({
-      success: r.success,
-      target: r.target,
-      data: r.data,
-      error: r.error,
-      method: r.method,
-    }));
-    postFeedInitResults = postFeed.map((r) => ({
-      success: r.success,
-      target: r.target,
-      data: r.data,
-      error: r.error,
-      method: r.method,
-    }));
-  }
+  // Server-side data init: collect initial values from URL params/config
+  // macros. Правила parse/priority/method исполняются ЗДЕСЬ, на сервере —
+  // клиент получает очередь initialDataFeed, полностью готовую к применению.
+  const initDataResults = executeDataInit(
+    clonedPageConfig?.dataInit,
+    null as any,
+    serverSources,
+  );
 
   if (clonedPageConfig && clonedPageConfig.dataFeed) {
     const pageId = clonedPageConfig.id || "";
@@ -174,14 +151,15 @@ export default async function Page({
     successResults = results.filter((r) => r.success);
   }
 
-  // Combine data init results, data feed results and post-feed init results.
-  // dataFeed results overwrite plain dataInit results with the same target;
-  // post-feed dataInit entries (priority:"feed") apply last — on top of feeds.
-  const initialDataFeed = [
-    ...initResults,
-    ...successResults,
-    ...postFeedInitResults,
-  ];
+  // Умный мердж правил dataInit на сервере: merge-записи вливаются в те
+  // результаты фидов, на которые указывают (чипы = metadata filters + URL),
+  // priority определяет фазу очереди. В AppEngine уходят только чистые
+  // записи на перезапись — без method/priority.
+  const initialDataFeed = buildInitialDataFeed(
+    initDataResults,
+    successResults,
+    clonedPageConfig?.state,
+  );
 
   // Filter camps for client: strip server-only fields (base_api_url, crm_*), pass only id + name
   const clientCamps: { id: number; name: string; current: boolean }[] =

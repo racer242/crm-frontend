@@ -1,19 +1,29 @@
 /**
- * Утилиты применения серверных initial-результатов (dataInit / dataFeed)
- * к текущему значению состояния элемента.
+ * Серверная сборка initialDataFeed (используется в page.tsx).
  *
- * Используются в двух местах (общий хелпер — чтобы поведение совпадало):
- * - StateManager (конструктор) — первичное применение initialDataFeed;
- * - AppEngine (re-apply эффект) — повторное применение после router.refresh().
+ * Вся подготовка начальных данных происходит на сервере: значения dataInit
+ * (с уже применённым parse) накладываются на результаты серверных фидов
+ * согласно правилам priority/method из конфига, и в AppEngine уходит
+ * «полностью готовая» очередь — записи только на перезапись, без серверных
+ * маркеров method/priority. Клиент (StateManager/AppEngine) применяет её
+ * как обычный фид и про серверную логику инициализации не знает.
  *
- * method: "rewrite" (по умолчанию) — оверлей перезаписывает значение;
- *         "merge" — оверлей сливается с текущим значением через mergeById:
- *         объекты — рекурсивно по ключам, массивы — join по полю `id`,
- *         непарные записи оверлея игнорируются (протухший id из URL не создаст
- *         чип фильтра без имени/опций).
+ * Правила dataInit:
+ * - без method/priority — запись применяется ДО фидов;
+ * - priority: "feed" — ПОСЛЕ фидов, перезаписью поверх их результата;
+ * - method: "merge" — умный мердж: оверлей накладывается через mergeById
+ *   на значение, которое фид записывает в базовый путь target'а записи
+ *   ("state.report.filters" → результат фида с target "state.report",
+ *   поле "filters"); сама запись из очереди исчезает. Если фида нет
+ *   (не описан или упал) — мердж с дефолтом состояния страницы
+ *   (pageState), иначе оверлей остаётся как есть (запись после фидов).
+ *
+ * mergeById: объекты — рекурсивно по ключам оверлея; массивы — join по
+ * полю `id`, непарные записи оверлея отбрасываются (протухший id из URL
+ * не создаст чип фильтра без имени/опций), порядок базы сохраняется.
  */
 
-import { DataInitApplyMethod } from "@/types";
+import { DataFeedResult, DataInitApplyMethod, DataInitPriority } from "@/types";
 
 /** Plain object: обычный объект, не массив и не null */
 export function isPlainObject(value: unknown): value is Record<string, any> {
@@ -72,38 +82,99 @@ export function mergeById(base: any, overlay: any): any {
   return overlay;
 }
 
-/**
- * Применение initial-результата к текущему значению состояния.
- * Возвращает ИТОГОВОЕ значение для записи (для merge — результат слияния),
- * поэтому сравнение «до/после» через JSON.stringify корректно определяет no-op.
- */
-export function applyInitialResult(
-  current: any,
-  data: any,
-  method?: DataInitApplyMethod,
-): any {
-  const container = (v: any) => isPlainObject(v) || Array.isArray(v);
-  if (method === "merge" && container(current) && container(data)) {
-    return mergeById(current, data);
+/** Запись результата dataInit (структурно совпадает с DataInitResult из DataInitServerService) */
+export interface InitialResultEntry {
+  success: boolean;
+  target: string;
+  data?: any;
+  error?: string;
+  /** Способ применения: "merge" — умный мердж в результат фида */
+  method?: DataInitApplyMethod;
+  /** Фаза применения: "feed" — после серверных фидов */
+  priority?: DataInitPriority;
+}
+
+/** Значение по пути внутри объекта состояния ("report.filters" → obj.report.filters) */
+function getValueByPath(obj: any, path: string): any {
+  let current = obj;
+  for (const part of path.split(".")) {
+    if (!isPlainObject(current) || !(part in current)) return undefined;
+    current = current[part];
   }
-  return data;
+  return current;
 }
 
 /**
- * Партиция очереди initial-результатов по фазе применения:
- * - preFeed — записи без priority:"feed" (применяются ДО серверных фидов);
- * - postFeed — записи с priority:"feed" (применяются ПОСЛЕ фидов, поверх
- *   state, заполненного фидами: merge фильтров из URL в metadata
- *   state.report.filters, который metadata-адаптер пишет целиком).
+ * Серверная сборка итоговой очереди initialDataFeed (вызывается из page.tsx).
+ *
+ * @param initResults результаты executeDataInit (parse уже применён)
+ * @param feedResults успешные результаты executeServerDataFeeds
+ * @param pageState дефолтное состояние страницы из конфига — база для
+ *   merge-записей, чей фид не найден или упал
+ * @returns очередь: [dataInit до фидов] → фиды (с влитыми merge-значениями)
+ *   → [dataInit после фидов]; все записи — чистая перезапись.
  */
-export function partitionInitialResults<T extends { priority?: string }>(
-  results: T[],
-): { preFeed: T[]; postFeed: T[] } {
-  const preFeed: T[] = [];
-  const postFeed: T[] = [];
-  for (const result of results) {
-    if (result.priority === "feed") postFeed.push(result);
-    else preFeed.push(result);
+export function buildInitialDataFeed(
+  initResults: InitialResultEntry[],
+  feedResults: DataFeedResult[],
+  pageState?: Record<string, any>,
+): DataFeedResult[] {
+  const preFeed: DataFeedResult[] = [];
+  const postFeed: DataFeedResult[] = [];
+  // Рабочие копии записей фидов: merge-правила дополняют их data,
+  // исходные результаты не мутируются
+  const feeds: DataFeedResult[] = feedResults.map((result) => ({ ...result }));
+
+  for (const init of initResults) {
+    // Ошибочные dataInit-записи в очередь не попадают: клиент всё равно
+    // пропускал их (!success), а писать undefined в state нельзя
+    if (!init.success) continue;
+
+    const entry: DataFeedResult = {
+      success: init.success,
+      target: init.target,
+      data: init.data,
+      error: init.error,
+    };
+
+    if (init.method === "merge") {
+      // "state.report.filters" → база "state.report", поле "filters"
+      const dot = init.target.lastIndexOf(".");
+      const baseTarget = dot > 0 ? init.target.slice(0, dot) : "";
+      const relPath = dot > 0 ? init.target.slice(dot + 1) : "";
+      const feedResult =
+        baseTarget && relPath
+          ? feeds.find((r) => r.success && r.target === baseTarget)
+          : undefined;
+
+      if (feedResult && isPlainObject(feedResult.data)) {
+        // Оверлей вливается в результат фида — отдельная запись не нужна
+        feedResult.data = {
+          ...feedResult.data,
+          [relPath]: mergeById(feedResult.data[relPath], init.data),
+        };
+        continue;
+      }
+
+      // Фида нет: мердж с дефолтом состояния страницы — то же, что делал
+      // клиент, сливая оверлей с текущим state (например, state.report
+      // из конфига страницы, если metadata-фид упал)
+      const statePath = init.target.startsWith("state.")
+        ? init.target.slice("state.".length)
+        : "";
+      if (relPath && statePath && isPlainObject(pageState)) {
+        entry.data = mergeById(
+          getValueByPath(pageState, statePath),
+          init.data,
+        );
+      }
+      postFeed.push(entry);
+      continue;
+    }
+
+    if (init.priority === "feed") postFeed.push(entry);
+    else preFeed.push(entry);
   }
-  return { preFeed, postFeed };
+
+  return [...preFeed, ...feeds, ...postFeed];
 }

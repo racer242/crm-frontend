@@ -102,11 +102,6 @@ export interface DataFeedResult {
   error?: string | ApiError;
   /** Target address where data should be stored */
   target: string;
-  /**
-   * Способ применения значения к состоянию. Пробрасывается из dataInit
-   * (записи с priority:"feed"); у обычных фидов не задан (= перезапись).
-   */
-  method?: DataInitApplyMethod;
 }
 
 /** Способ применения initial-значения к текущему состоянию */
