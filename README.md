@@ -227,9 +227,12 @@ URL — дефолт не затирается). Данные таблицы п�
 Кнопки Back/Forward браузера также восстанавливают состояние списков:
 URL-команды (`setUrlParams`/`mergeUrlParams`/…) пишут адрес через
 `window.history.pushState` — без навигации (сервер не перезапускается),
-поэтому AppEngine на `popstate` вызывает `router.refresh()` — Next
-перезапускает SSR страницы по URL записи истории, и re-apply-эффект
-применяет свежий `initialDataFeed` (обновление 12.10.26).
+поэтому клиентский компонент `HistorySync` (уровень root layout) на
+`popstate` вызывает `router.refresh()` — Next перезапускает SSR страницы
+по URL записи истории, и re-apply-эффект применяет свежий
+`initialDataFeed` (обновление 12.10.26; listener живёт вне AppEngine —
+при Back через границу страниц тот remount-ится и терял бы отложенный
+refresh).
 
 → Полное описание: [docs/data-feed-reference.md](docs/data-feed-reference.md)
 

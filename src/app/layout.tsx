@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
 import { PrimeReactProvider } from "primereact/api";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
+import { HistorySync } from "@/engine/HistorySync";
 import { AuthProvider } from "@/auth/AuthContext";
 import { getServerUser } from "@/auth/getServerUser";
 
@@ -76,6 +77,8 @@ export default async function RootLayout({
         />
 
         <GlobalPreloader />
+        {/* Back/Forward: пересборка SSR-данных под URL записи истории */}
+        <HistorySync />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <PrimeReactProvider value={primeReactConfig}>
             <AuthProvider initialUser={user}>{children}</AuthProvider>

@@ -168,29 +168,10 @@ export function AppEngine({
     }
   }, [route, stateManager, router]);
 
-  // Browser Back/Forward: URL-команды (setUrlParams/mergeUrlParams/...) меняют
-  // адрес через window.history.pushState — это НЕ навигация для Next.js:
-  // сервер (page.tsx) не перезапускается, initialDataFeed не перестраивается,
-  // а re-apply эффект выше не срабатывает (его зависимости не меняются) —
-  // URL откатывается, а состояние страницы (чипы, таблица, поиск) остаётся.
-  // Форсируем пересчёт тем же механизмом, что у «Обновить»/navigate:
-  // router.refresh() перезапускает SSR страницы по URL записи истории,
-  // свежий initialDataFeed применяется re-apply эффектом (сравнение
-  // по содержимому отсекает no-op перезаписи). setTimeout(0) — даём Next
-  // завершить собственную обработку popstate (синхронизацию router state
-  // с URL), чтобы refresh перестроил фид уже по восстановленному адресу.
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    const onPopState = () => {
-      if (timer !== null) clearTimeout(timer);
-      timer = setTimeout(() => router.refresh(), 0);
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => {
-      window.removeEventListener("popstate", onPopState);
-      if (timer !== null) clearTimeout(timer);
-    };
-  }, [router]);
+  // Back/Forward браузера обрабатывает HistorySync на уровне root layout —
+  // listener здесь не живёт: при Back через границу страниц этот компонент
+  // размонтируется, cleanup отменял бы отложенный router.refresh() до его
+  // срабатывания (см. src/engine/HistorySync.tsx).
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
