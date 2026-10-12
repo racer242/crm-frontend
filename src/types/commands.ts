@@ -37,7 +37,10 @@ export type CommandType =
   | "removeUrlParam"
   | "refresh"
   | "downloadFile"
-  | "copyToClipboard";
+  | "copyToClipboard"
+  | "setToLocalStorage"
+  | "getFromLocalStorage"
+  | "removeFromLocalStorage";
 
 /** Триггер выполнения команды */
 export interface CommandTrigger {

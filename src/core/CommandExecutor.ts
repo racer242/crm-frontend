@@ -23,6 +23,9 @@
  * - setPathParam: изменяет один path-параметр { index: 1, value: "val2" }
  * - removePathParam: удаляет path-параметр { index: 0 }
  * - downloadFile: скачивание файла через API { url, method?, data?, filename?, onError? }
+ * - setToLocalStorage: сохраняет значение в localStorage { key, value }
+ * - getFromLocalStorage: читает значение из localStorage в state { key, target } (ключа нет — target не трогается)
+ * - removeFromLocalStorage: удаляет ключ из localStorage { key }
  */
 
 import { StateManager } from "./StateManager";
@@ -621,6 +624,112 @@ export class CommandExecutor {
     } else {
       console.log(`[Toast ${severity}] ${message}`);
     }
+  }
+
+  // ========== LOCAL STORAGE ==========
+  /**
+   * setToLocalStorage: сохранить значение в localStorage браузера
+   * params: { key, value }
+   * key/value резолвятся макросами ({$state.*}, {$location.*}, {$cookie.*});
+   * объекты/массивы сериализуются в JSON (getFromLocalStorage и макрос
+   * {$localStorage.*} распарсят их обратно при чтении). Только клиент.
+   */
+  async executeSetToLocalStorage(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawKey = params.key;
+    if (rawKey === undefined || rawKey === null || rawKey === "") {
+      console.warn("setToLocalStorage: missing key");
+      return;
+    }
+    const key = this.macroEngine.apply(rawKey, 0, extraSources);
+    if (key === undefined || key === null || key === "") {
+      console.warn("setToLocalStorage: unresolved key");
+      return;
+    }
+
+    const rawValue = params.value;
+    let value: any =
+      rawValue !== undefined
+        ? this.macroEngine.apply(rawValue, 0, extraSources)
+        : undefined;
+    if (value === undefined || value === null) value = "";
+    const stored =
+      typeof value === "object" ? JSON.stringify(value) : String(value);
+    localStorage.setItem(String(key), stored);
+  }
+
+  /**
+   * getFromLocalStorage: прочитать значение из localStorage в state
+   * params: { key, target }
+   * Если ключа в localStorage нет — state НЕ трогается (target остаётся
+   * в исходном значении: удобно для флага «есть сохранение»).
+   * JSON-строки парсятся так же, как макрос {$localStorage.*}.
+   */
+  async executeGetFromLocalStorage(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawKey = params.key;
+    if (rawKey === undefined || rawKey === null || rawKey === "") {
+      console.warn("getFromLocalStorage: missing key");
+      return;
+    }
+    const key = this.macroEngine.apply(rawKey, 0, extraSources);
+    if (key === undefined || key === null || key === "") {
+      console.warn("getFromLocalStorage: unresolved key");
+      return;
+    }
+
+    const raw = localStorage.getItem(String(key));
+    if (raw === null) return; // сохранения нет — target не трогаем
+
+    let value: any = raw;
+    try {
+      value = JSON.parse(raw);
+    } catch {
+      // не JSON — оставляем строку как есть
+    }
+
+    const { target } = params;
+    if (!target) {
+      console.warn("getFromLocalStorage: missing target");
+      return;
+    }
+    const { elementPath, fieldPath } = this.parseTargetPath(target);
+    if (fieldPath) {
+      this.context.stateManager.setStateField(elementPath, fieldPath, value);
+    } else {
+      this.context.stateManager.setState(elementPath, value);
+    }
+  }
+
+  /**
+   * removeFromLocalStorage: удалить ключ из localStorage
+   * params: { key }
+   */
+  async executeRemoveFromLocalStorage(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    const rawKey = params.key;
+    if (rawKey === undefined || rawKey === null || rawKey === "") {
+      console.warn("removeFromLocalStorage: missing key");
+      return;
+    }
+    const key = this.macroEngine.apply(rawKey, 0, extraSources);
+    if (key === undefined || key === null || key === "") {
+      console.warn("removeFromLocalStorage: unresolved key");
+      return;
+    }
+    localStorage.removeItem(String(key));
   }
 
   // ========== NAVIGATE ==========
@@ -1301,6 +1410,18 @@ export class CommandExecutor {
 
       case "refresh":
         await this.executeRefresh(params, extraSources);
+        break;
+
+      case "setToLocalStorage":
+        await this.executeSetToLocalStorage(params, extraSources);
+        break;
+
+      case "getFromLocalStorage":
+        await this.executeGetFromLocalStorage(params, extraSources);
+        break;
+
+      case "removeFromLocalStorage":
+        await this.executeRemoveFromLocalStorage(params, extraSources);
         break;
 
       default:

@@ -405,9 +405,39 @@ UI-компонент PrimeReact.
 | `mergeUrlParams` | Обновляет/добавляет URL параметры (сохраняет существующие)       |
 | `setUrlParam`    | Изменяет один URL параметр                                       |
 | `removeUrlParam` | Удаляет URL параметр                                             |
+| `setToLocalStorage` | Сохраняет значение в localStorage браузера (key/value с макросами) |
+| `getFromLocalStorage` | Читает значение из localStorage в state (target); ключа нет — target не трогается |
+| `removeFromLocalStorage` | Удаляет ключ из localStorage                           |
 | `refresh`        | Обновление страницы (mode: `"refresh"`, `"replace"`, `"reload"`) |
 
 > Примечание: режим `"refresh"` (по умолчанию) шлёт `router.refresh()` — Next.js перезапускает SSR-dataFeed страницы, и AppEngine повторно применяет свежие результаты фида в client state (сравнение по содержимому фида), поэтому содержимое страницы действительно обновляется. Несохранённые клиентские правки state сбрасываются на данные сервера — это ожидаемое поведение кнопки «Обновить». Для обновления отдельного блока данных без участия SSR используйте вложенный `sendRequest` GET в `onSuccess` (см. шорткат `saveReceipt` карточек чека). В dev-режиме это работает при отключённом `experimental.serverComponentsHmrCache` в `next.config.ts`: при включённом (по умолчанию) флаге Next кэширует ответы `fetch` SSR-фидов между HMR-обновлениями и `router.refresh()` возвращает прежние данные (кэш очищается только навигацией или полной перезагрузкой страницы).
+
+### Сохранение состояния страницы в localStorage (обновление 12.10.26)
+
+Кнопки «Сохранить» / «Загрузить» рядом с «Обновить» на страницах списков
+(`users` / `receipts` / `user-receipts`) — целиком конфигурация на трёх
+командах выше:
+
+1. В `state` страницы — `pageStateKey: ""` и `savedQuery: ""`.
+2. `events.onLoad` страницы (исполняются на клиенте): `setProperty` собирает
+   ключ `pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}`
+   — скоуп «маршрут + кемп + пользователь»; на динамическом роуте
+   user-receipts `pathname` содержит `user_id`, поэтому сохранение привязано
+   к конкретной карточке. Затем `getFromLocalStorage`
+   (`key: "{$state.pageStateKey}"`, `target: "state.savedQuery"`) — если
+   сохранения нет, `target` не трогается и кнопка «Загрузить» скрыта.
+3. Кнопка «Сохранить» (`pi pi-save`): `setToLocalStorage`
+   (`key: "{$state.pageStateKey}"`, `value: "{$location.search}"`) +
+   `setProperty state.savedQuery` + тост «Состояние сохранено».
+4. Кнопка «Загрузить» (`pi pi-history`, `visible: "@state.savedQuery"`):
+   `navigate "{$location.pathname}{$state.savedQuery}"` — soft-навигация без
+   перезагрузки: SSR пересчитывает dataInit/фиды из сохранённой query-строки
+   (поиск, сортировка, чипы фильтров, таблица — § dataInit), затем тост
+   «Состояние восстановлено».
+
+Обе команды работают только на клиенте (`typeof window`). Объекты/массивы
+`setToLocalStorage` сериализует в JSON, `getFromLocalStorage` парсит их
+обратно (как макрос `{$localStorage.*}`).
 
 ### Источники данных (source)
 

@@ -152,6 +152,7 @@ App (приложение)
 | `sequence` / `delay`                                                     | Последовательность / пауза                |
 | `log`                                                                    | Логирование                               |
 | `setUrlParams` / `setUrlParam` / `removeUrlParam`                        | Управление URL параметрами                |
+| `setToLocalStorage` / `getFromLocalStorage` / `removeFromLocalStorage`   | localStorage браузера (key/value/target)  |
 | `refresh`                                                                | Обновление страницы                       |
 
 **Источники данных:** `event.value`, `event.field`, `elementId.state.field`, `state.field`
@@ -212,6 +213,16 @@ URL — дефолт не затирается). Данные таблицы п�
 теми же значениями: request-адаптеры списков (`stats.*.execute.request`)
 принимают `filters` и массивом, и JSON-строкой URL-параметра. Подробности —
 `docs/config-reference.md` (§ dataInit).
+
+Сохранение состояния страницы: на users/receipts/user-receipts рядом с
+«Обновить» стоят кнопки «Сохранить состояние» и «Загрузить сохранённое»
+(видна при `@state.savedQuery`). Query-строка URL кладётся в localStorage
+командами `setToLocalStorage`/`getFromLocalStorage` с ключом
+`pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}`;
+«Загрузить» выполняет `navigate` на сохранённую query — SSR восстанавливает
+поиск/сортировку/чипы/таблицу через dataInit+фиды без полной перезагрузки
+(тост «Состояние восстановлено»). См. `docs/config-reference.md`
+(§ CommandType, § «Сохранение состояния страницы в localStorage»).
 
 → Полное описание: [docs/data-feed-reference.md](docs/data-feed-reference.md)
 
