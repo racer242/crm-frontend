@@ -114,7 +114,25 @@ function transform(params = {}) {
   const page = Math.floor(first / limit) + 1;
 
   // 3. Filters → fragment macros (every key always present; "" = unused)
-  const filters = Array.isArray(merged.filters) ? merged.filters : [];
+  // Filters come from state ({id, value} after the list format) or back from
+  // the URL: the SSR dataFeed resolves {$location.params.filters} into a raw
+  // JSON string (getServerLocation keeps params as strings; the route parses
+  // only the top level of the POST body), so a JSON-array string is parsed
+  // here — same hardening as stats.users.execute.request.js
+  let filters = merged.filters;
+  if (
+    !Array.isArray(filters) &&
+    typeof filters === "string" &&
+    filters.charAt(0) === "["
+  ) {
+    try {
+      const parsed = JSON.parse(filters);
+      filters = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      filters = [];
+    }
+  }
+  if (!Array.isArray(filters)) filters = [];
   const replacements = {};
   MACRO_KEYS.forEach((key) => {
     replacements[key] = "";

@@ -208,8 +208,10 @@ UI-состояния списков при открытии страницы п
 строкой), `priority: "feed"` (применить после фидов, поверх фидового state) и
 `method: "merge"` (умный мердж с результатом фида, на который указывает
 target: объекты — по ключам, массивы — join по полю `id`; параметра нет в
-URL — дефолт не затирается). Подробности — `docs/config-reference.md`
-(§ dataInit).
+URL — дефолт не затирается). Данные таблицы при SSR-обновлении фильтруются
+теми же значениями: request-адаптеры списков (`stats.*.execute.request`)
+принимают `filters` и массивом, и JSON-строкой URL-параметра. Подробности —
+`docs/config-reference.md` (§ dataInit).
 
 → Полное описание: [docs/data-feed-reference.md](docs/data-feed-reference.md)
 
