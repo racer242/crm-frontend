@@ -16,7 +16,9 @@
       "sortOrder": 1,
       "filters": [],
       "search": ""
-    }
+    },
+    "pageStateKey": "",
+    "savedQuery": ""
   },
   "meta": {
     "title": "Модерация чеков — CRM Platform"
@@ -40,6 +42,27 @@
     {
       "source": "{$location.params.search}",
       "target": "state.receipts.search"
+    }
+  ],
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "setProperty",
+          "params": {
+            "target": "state.pageStateKey",
+            "value": "pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}"
+          }
+        },
+        {
+          "type": "getFromLocalStorage",
+          "params": {
+            "key": "{$state.pageStateKey}",
+            "target": "state.savedQuery"
+          }
+        }
+      ]
     }
   ],
   "shortcuts": {
@@ -135,6 +158,99 @@
                     {
                       "type": "refresh",
                       "params": {}
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mgmtReceiptsSaveStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-save",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Сохранить состояние",
+                "tooltip": "Сохранить состояние",
+                "tooltipOptions": { "position": "left" }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setToLocalStorage",
+                            "params": {
+                              "key": "{$state.pageStateKey}",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "target": "state.savedQuery",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние сохранено",
+                              "severity": "success"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mgmtReceiptsLoadStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "visible": "@state.savedQuery",
+              "props": {
+                "icon": "pi pi-history",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Загрузить сохранённое состояние",
+                "tooltip": "Загрузить сохранённое",
+                "tooltipOptions": { "position": "left" }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "navigate",
+                            "params": {
+                              "url": "{$location.pathname}{$state.savedQuery}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние восстановлено",
+                              "severity": "info"
+                            }
+                          }
+                        ]
+                      }
                     }
                   ]
                 }

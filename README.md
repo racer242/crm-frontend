@@ -210,11 +210,13 @@ UI-состояния списков при открытии страницы п
 `method: "merge"` (умный мердж с результатом фида, на который указывает
 target: объекты — по ключам, массивы — join по полю `id`; параметра нет в
 URL — дефолт не затирается). Данные таблицы при SSR-обновлении фильтруются
-теми же значениями: request-адаптеры списков (`stats.*.execute.request`)
+теми же значениями: request-адаптеры списков (`stats.*.execute.request`,
+`mgmt.receipts.get.request`)
 принимают `filters` и массивом, и JSON-строкой URL-параметра. Подробности —
 `docs/config-reference.md` (§ dataInit).
 
-Сохранение состояния страницы: на users/receipts/user-receipts рядом с
+Сохранение состояния страницы: на users/receipts/user-receipts и модерации
+чеков рядом с
 «Обновить» стоят кнопки «Сохранить состояние» и «Загрузить сохранённое»
 (видна при `@state.savedQuery`). Query-строка URL кладётся в localStorage
 командами `setToLocalStorage`/`getFromLocalStorage` с ключом

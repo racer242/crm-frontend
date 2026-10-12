@@ -417,7 +417,8 @@ UI-компонент PrimeReact.
 ### Сохранение состояния страницы в localStorage (обновление 12.10.26)
 
 Кнопки «Сохранить» / «Загрузить» рядом с «Обновить» на страницах списков
-(`users` / `receipts` / `user-receipts`) — целиком конфигурация на трёх
+(`users` / `receipts` / `user-receipts` / модерация чеков
+`crm-management/receipts.json`) — целиком конфигурация на трёх
 командах выше:
 
 1. В `state` страницы — `pageStateKey: ""` и `savedQuery: ""`.

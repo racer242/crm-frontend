@@ -45,9 +45,27 @@ function transform(params = {}) {
  * Преобразует фильтры PrimeReact → формат API
  */
 function transformFilters(prFilters) {
-  if (!Array.isArray(prFilters)) return [];
+  // The URL: the SSR dataFeed resolves {$location.params.filters} into a raw
+  // JSON string (getServerLocation keeps params as strings), so a JSON-array
+  // string is parsed here — same hardening as stats.receipts.execute /
+  // stats.users.execute request adapters; the client path (array from state)
+  // and "everything deselected" ([]) are untouched
+  let filters = prFilters;
+  if (
+    !Array.isArray(filters) &&
+    typeof filters === "string" &&
+    filters.charAt(0) === "["
+  ) {
+    try {
+      const parsed = JSON.parse(filters);
+      filters = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      filters = [];
+    }
+  }
+  if (!Array.isArray(filters)) return [];
 
-  return prFilters
+  return filters
     .filter(
       (f) => f?.value !== undefined && f?.value !== null && f?.value !== "",
     )
