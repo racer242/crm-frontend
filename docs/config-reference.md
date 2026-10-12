@@ -405,6 +405,7 @@ UI-компонент PrimeReact.
 | `mergeUrlParams` | Обновляет/добавляет URL параметры (сохраняет существующие)       |
 | `setUrlParam`    | Изменяет один URL параметр                                       |
 | `removeUrlParam` | Удаляет URL параметр                                             |
+| `setUrlQuery`    | Заменяет всю query-строку URL (данные перезагружает refresh)     |
 | `setToLocalStorage` | Сохраняет значение в localStorage браузера (key/value с макросами) |
 | `getFromLocalStorage` | Читает значение из localStorage в state (target); ключа нет — target не трогается |
 | `removeFromLocalStorage` | Удаляет ключ из localStorage                           |
@@ -412,14 +413,18 @@ UI-компонент PrimeReact.
 
 > Примечание: режим `"refresh"` (по умолчанию) шлёт `router.refresh()` — Next.js перезапускает SSR-dataFeed страницы, и AppEngine повторно применяет свежие результаты фида в client state (сравнение по содержимому фида), поэтому содержимое страницы действительно обновляется. Несохранённые клиентские правки state сбрасываются на данные сервера — это ожидаемое поведение кнопки «Обновить». Для обновления отдельного блока данных без участия SSR используйте вложенный `sendRequest` GET в `onSuccess` (см. шорткат `saveReceipt` карточек чека). В dev-режиме это работает при отключённом `experimental.serverComponentsHmrCache` в `next.config.ts`: при включённом (по умолчанию) флаге Next кэширует ответы `fetch` SSR-фидов между HMR-обновлениями и `router.refresh()` возвращает прежние данные (кэш очищается только навигацией или полной перезагрузкой страницы).
 
-> Примечание (обновление 12.10.26): URL-команды (`setUrlParams` / `mergeUrlParams` / `setUrlParam` / `removeUrlParam` и path-варианты) меняют адрес через `window.history.pushState` — «немая» подмена записи истории без навигации: сервер не перезапускается, состояние страницы обновляют клиентские команды. Обратное восстановление по кнопкам браузера Back/Forward обеспечивает клиентский компонент `HistorySync` уровня root layout (`src/engine/HistorySync.tsx`): на `popstate` он вызывает `router.refresh()` — Next перезапускает SSR страницы по URL записи истории, и свежий `initialDataFeed` применяется re-apply-эффектом (сравнение по содержимому отсекает no-op перезаписи). Listener обязан жить вне AppEngine: Next патчит `pushState` и прикрепляет к записи своё дерево (`__NA`), поэтому Back на такую запись восстанавливает дерево из клиентского кэша роутера с `initialDataFeed`, собранным для прежнего URL, а popstate при переходе через границу страниц обрабатывает ещё смонтированный старый AppEngine — его cleanup при размонтировании отменял бы отложенный refresh, и новый инстанс вешал listener уже после события.
+> Примечание (обновление 12.10.26): URL-команды (`setUrlParams` / `mergeUrlParams` / `setUrlParam` / `removeUrlParam` и path-варианты) меняют адрес через `window.history.pushState` — «немая» подмена записи истории без навигации: сервер не перезапускается, состояние страницы обновляют клиентские команды. Обратное восстановление по кнопкам браузера Back/Forward обеспечивает клиентский компонент `HistorySync` уровня root layout (`src/engine/HistorySync.tsx`): на `popstate` он вызывает `router.refresh()` — Next перезапускает SSR страницы по URL записи истории, и свежий `initialDataFeed` применяется re-apply-эффектом (сравнение по содержимому отсекает no-op перезаписи). Listener обязан жить вне AppEngine: Next патчит `pushState` и прикрепляет к записи своё дерево (`__NA`), поэтому Back на такую запись восстанавливает дерево из клиентского кэша роутера с `initialDataFeed`, собранным для прежнего URL, а popstate при переходе через границу страниц обрабатывает ещё смонтированный старый AppEngine — его cleanup при размонтировании отменял бы отложенный refresh, и новый инстанс вешал listener уже после события. Команда `setUrlQuery`
+(обновление 12.10.26) заменяет query-строку целиком тем же pushState-механизмом
+— данные под новую query перезагружает следующая команда `refresh`. Макрос
+`{$query}` читает полную query-строку (алиас `{$location.search}`),
+`{$query.<имя>}` — отдельный параметр (алиас `{$location.query.<имя>}`).
 
 ### Сохранение состояния страницы в localStorage (обновление 12.10.26)
 
 Кнопки «Сохранить» / «Загрузить» рядом с «Обновить» на страницах списков
 (`users` / `receipts` / `user-receipts` / модерация чеков
-`crm-management/receipts.json`) — целиком конфигурация на трёх
-командах выше:
+`crm-management/receipts.json`) — целиком конфигурация поверх команд движка
+(localStorage + URL/refresh):
 
 1. В `state` страницы — `pageStateKey: ""` и `savedQuery: ""`.
 2. `events.onLoad` страницы (исполняются на клиенте): `setProperty` собирает
@@ -433,10 +438,16 @@ UI-компонент PrimeReact.
    (`key: "{$state.pageStateKey}"`, `value: "{$location.search}"`) +
    `setProperty state.savedQuery` + тост «Состояние сохранено».
 4. Кнопка «Загрузить» (`pi pi-history`, `visible: "@state.savedQuery"`):
-   `navigate "{$location.pathname}{$state.savedQuery}"` — soft-навигация без
-   перезагрузки: SSR пересчитывает dataInit/фиды из сохранённой query-строки
-   (поиск, сортировка, чипы фильтров, таблица — § dataInit), затем тост
-   «Состояние восстановлено».
+   sequence `setUrlQuery` (`query: "{$state.savedQuery}"` — синхронная подмена
+   query через pushState) → `refresh` (безусловный `router.refresh()`) → тост
+   «Состояние восстановлено». SSR всегда пересчитывает dataInit/фиды из
+   сохранённой query-строки (поиск, сортировка, чипы фильтров, таблица —
+   § dataInit); повторные нажатия идемпотентны, pushState создаёт запись
+   истории (Back возвращает к состоянию до загрузки). Раньше кнопка делала
+   `navigate` (soft-навигация), но повторное «Загрузить» не обновляло список:
+   сохранённый URL уже был в клиентском Router Cache и/или совпадал с
+   каноническим URL роутера — Next отдавал кэшированное дерево без серверного
+   пересчёта; `refresh` от кэша не зависит.
 
 Обе команды работают только на клиенте (`typeof window`). Объекты/массивы
 `setToLocalStorage` сериализует в JSON, `getFromLocalStorage` парсит их

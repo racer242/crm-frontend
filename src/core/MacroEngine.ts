@@ -165,6 +165,19 @@ function resolveSingleMacro(macroContent: string, sources: MacroSources): any {
       return getNestedValue(sources.config, fullPath);
     }
 
+    // === Query (query-строка URL) ===
+    case "query": {
+      if (!sources.location) return undefined;
+      // {$query} — полная query-строка с ведущим "?" (алиас {$location.search});
+      // {$query.<name>} — значение отдельного параметра
+      // (алиас {$location.query.<name>})
+      if (parts[0]) {
+        const params = new URLSearchParams(sources.location.search);
+        return params.get(parts[0]) ?? undefined;
+      }
+      return sources.location.search;
+    }
+
     // === Location ===
     case "location": {
       if (!sources.location) return undefined;

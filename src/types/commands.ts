@@ -35,6 +35,7 @@ export type CommandType =
   | "mergeUrlParams"
   | "setUrlParam"
   | "removeUrlParam"
+  | "setUrlQuery"
   | "refresh"
   | "downloadFile"
   | "copyToClipboard"

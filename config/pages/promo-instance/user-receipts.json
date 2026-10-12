@@ -360,10 +360,14 @@
                       "params": {
                         "commands": [
                           {
-                            "type": "navigate",
+                            "type": "setUrlQuery",
                             "params": {
-                              "url": "{$location.pathname}{$state.savedQuery}"
+                              "query": "{$state.savedQuery}"
                             }
+                          },
+                          {
+                            "type": "refresh",
+                            "params": {}
                           },
                           {
                             "type": "showToast",

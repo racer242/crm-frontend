@@ -18,6 +18,7 @@
  * - mergeUrlParams: обновляет/добавляет URL параметры { values: { key: value } }
  * - setUrlParam: изменяет один URL параметр { name: "key", value: "value" }
  * - removeUrlParam: удаляет URL параметр { name: "key" }
+ * - setUrlQuery: заменяет всю query-строку URL { query: "?a=1&b=2" }
  * - setPathParams: заменяет все path-параметры { values: ["val1", "val2"] }
  * - mergePathParams: обновляет отдельные path-параметры { values: { "2": "val2", "4": "val4", "5": null } }
  * - setPathParam: изменяет один path-параметр { index: 1, value: "val2" }
@@ -957,6 +958,38 @@ export class CommandExecutor {
     window.history.pushState({}, "", newUrl);
   }
 
+  // ========== SET URL QUERY ==========
+  /**
+   * setUrlQuery: заменяет всю query-строку URL целиком.
+   * Как и остальные URL-команды, пишет историю через window.history.pushState
+   * («немая» подмена адреса без навигации — сервер не перезапускается):
+   * данные под новую query перезагружает следующая команда refresh.
+   * params: { query: "?first=0&rows=10" } — с ведущим "?" или без;
+   * пустая строка — URL без query.
+   */
+  async executeSetUrlQuery(
+    params: Record<string, any>,
+    extraSources: any,
+  ): Promise<void> {
+    if (typeof window === "undefined") return;
+
+    let query = this.macroEngine.apply(params.query ?? "", 0, extraSources) as
+      | string
+      | null
+      | undefined;
+    query = this.applyFormatToValue(query, "query", params);
+    const normalized = (query == null ? "" : String(query)).trim();
+    const cleanQuery = normalized.startsWith("?")
+      ? normalized.slice(1)
+      : normalized;
+
+    const newUrl = cleanQuery
+      ? `${window.location.pathname}?${cleanQuery}`
+      : window.location.pathname;
+
+    window.history.pushState({}, "", newUrl);
+  }
+
   // ========== HELPERS FOR PATH PARAMS ==========
   /**
    * Получить текущий pathname с применёнными pathParams
@@ -1382,6 +1415,10 @@ export class CommandExecutor {
 
       case "removeUrlParam":
         await this.executeRemoveUrlParam(params, extraSources);
+        break;
+
+      case "setUrlQuery":
+        await this.executeSetUrlQuery(params, extraSources);
         break;
 
       case "setPathParams":

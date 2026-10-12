@@ -221,9 +221,10 @@ URL — дефолт не затирается). Данные таблицы п�
 (видна при `@state.savedQuery`). Query-строка URL кладётся в localStorage
 командами `setToLocalStorage`/`getFromLocalStorage` с ключом
 `pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}`;
-«Загрузить» выполняет `navigate` на сохранённую query — SSR восстанавливает
-поиск/сортировку/чипы/таблицу через dataInit+фиды без полной перезагрузки
-(тост «Состояние восстановлено»). См. `docs/config-reference.md`
+«Загрузить» синхронно подменяет query командой `setUrlQuery` и вызывает
+`refresh` — безусловный SSR-пересчёт: восстановление поиска/сортировки/
+чипов/таблицы через dataInit+фиды срабатывает сразу, при любом повторном
+нажатии (тост «Состояние восстановлено»). См. `docs/config-reference.md`
 (§ CommandType, § «Сохранение состояния страницы в localStorage»).
 
 Кнопки Back/Forward браузера также восстанавливают состояние списков:
