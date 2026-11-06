@@ -1,8 +1,8 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { BaseElement, LocaleConfig } from "@/types";
-import { setServerConfig } from "./DataFeedServerService";
+import { BaseElement, LocaleConfig, CampItem } from "@/types";
+import { applyConfigDelta } from "./configMerge";
 
 /**
  * CRM Configuration Loader
@@ -40,7 +40,15 @@ export interface AppInitResult {
   config: CrmConfig;
 }
 
-let cachedConfig: CrmConfig | null = null;
+/**
+ * Реестр конфигураций кампаний: camp_id → CrmConfig.
+ * Строится один раз при старте (initApp); далее только чтение — запросы
+ * АДРЕСУЮТ конфиг своей кампании (getConfigForCamp), а не «переключают»
+ * единственный глобальный конфиг. Гонки между кампаниями исключены.
+ */
+let configRegistry: Map<number, CrmConfig> | null = null;
+/** Конфиг первой кампании (fallback при отсутствии/неизвестности camp_id) */
+let defaultConfig: CrmConfig | null = null;
 let initPromise: Promise<AppInitResult> | null = null;
 let isInitialized = false;
 
@@ -107,8 +115,8 @@ function getChildren(element: BaseElement): BaseElement[] {
  */
 export async function initApp(): Promise<AppInitResult> {
   // Return immediately if already initialized
-  if (cachedConfig) {
-    return { config: cachedConfig };
+  if (configRegistry) {
+    return { config: defaultConfig! };
   }
 
   // Prevent parallel loading during concurrent requests
@@ -128,18 +136,27 @@ export async function initApp(): Promise<AppInitResult> {
         absolutePath,
       )) as CrmConfig;
 
-      cachedConfig = resolvedConfig;
+      // Per-campaign config registry: campaign WITHOUT config_patch shares the
+      // reference object (no clone), campaign WITH config_patch gets a patched
+      // clone. Configs are addressed per request via getConfigForCamp() —
+      // no global switching, race-free by construction.
+      const { registry, patchedCamps } = await buildCampConfigs(
+        resolvedConfig,
+        absolutePath,
+      );
+      configRegistry = registry;
 
-      // Notify DataFeedServerService of the config
-      setServerConfig(cachedConfig);
+      // Default config = first camp's config (fallback without camp_id cookie)
+      const camps: CampItem[] = (resolvedConfig as any).camps || [];
+      defaultConfig = (camps[0] && registry.get(camps[0].id)) || resolvedConfig;
 
       // Print banner only once per process lifetime
       if (!isInitialized) {
-        printStartupBanner(resolvedConfig, configPath);
+        printStartupBanner(resolvedConfig, configPath, patchedCamps);
         isInitialized = true;
       }
 
-      return { config: cachedConfig };
+      return { config: defaultConfig };
     } catch (error) {
       initPromise = null;
 
@@ -159,21 +176,81 @@ export async function initApp(): Promise<AppInitResult> {
 }
 
 /**
- * Get already loaded config (synchronous access)
+ * Build the per-campaign config registry from camps.json.
+ * Campaign without config_patch → shares the reference config object;
+ * campaign with config_patch (inline delta, path to a JSON patch file or
+ * { file: "..." }) → structuredClone of the reference with the delta applied.
  */
-export function getConfig(): CrmConfig {
-  if (!cachedConfig) {
-    throw new Error("Configuration not loaded. Call loadConfig() first.");
+async function buildCampConfigs(
+  reference: CrmConfig,
+  referencePath: string,
+): Promise<{ registry: Map<number, CrmConfig>; patchedCamps: string[] }> {
+  const registry = new Map<number, CrmConfig>();
+  const patchedCamps: string[] = [];
+  const camps: CampItem[] = (reference as any).camps || [];
+
+  for (const camp of camps) {
+    const delta = await resolveConfigDelta(camp, referencePath);
+    if (!delta) {
+      registry.set(camp.id, reference);
+      continue;
+    }
+    const campConfig = structuredClone(reference);
+    applyConfigDelta(campConfig, delta);
+    registry.set(camp.id, campConfig);
+    patchedCamps.push(String(camp.id));
   }
 
-  return cachedConfig;
+  return { registry, patchedCamps };
 }
 
 /**
- * Clear config cache
+ * Extract the campaign's config delta: inline config_patch object, a string
+ * path (relative to the config directory) or { file: "..." }. Returns null
+ * when the campaign has no delta. A failed patch file read fails startup
+ * (fail fast) — silently serving the unpatched reference would be a bug.
  */
-export function clearConfigCache(): void {
-  cachedConfig = null;
+async function resolveConfigDelta(
+  camp: CampItem,
+  referencePath: string,
+): Promise<any | null> {
+  const patch = (camp as any).config_patch;
+  if (patch === undefined || patch === null) return null;
+
+  let patchPath: string | null = null;
+  if (typeof patch === "string") {
+    patchPath = patch;
+  } else if (
+    typeof patch === "object" &&
+    !Array.isArray(patch) &&
+    typeof patch.file === "string"
+  ) {
+    patchPath = patch.file;
+  }
+
+  if (patchPath) {
+    const absolutePatchPath = path.isAbsolute(patchPath)
+      ? patchPath
+      : path.resolve(path.dirname(referencePath), patchPath);
+    const raw = await fs.readFile(absolutePatchPath, "utf-8");
+    return JSON.parse(raw);
+  }
+
+  return patch;
+}
+
+/**
+ * Address the config of a specific campaign in the registry (O(1) lookup).
+ * Missing/unknown id → first camp's config (same fallback as page.tsx).
+ * Throws when initApp() has not completed yet.
+ */
+export function getConfigForCamp(campId?: number | string | null): CrmConfig {
+  if (!configRegistry || !defaultConfig) {
+    throw new Error("Configuration not loaded. Call initApp() first.");
+  }
+  const id = campId === null || campId === undefined ? NaN : Number(campId);
+  const config = Number.isFinite(id) ? configRegistry.get(id) : undefined;
+  return config || defaultConfig;
 }
 
 /**
@@ -229,16 +306,22 @@ export function matchRoute(
 /**
  * Find a page configuration by route with support for [id]-style patterns.
  * First tries exact match, then pattern matching across all pages.
+ * Searched in the passed campaign config; without it — in the default
+ * (first campaign) config of the registry.
  */
-export function findPageByRoute(route: string | null): PageRouteMatch | null {
-  if (!cachedConfig || route === null) {
+export function findPageByRoute(
+  route: string | null,
+  config?: CrmConfig,
+): PageRouteMatch | null {
+  const cfg = config || defaultConfig;
+  if (!cfg || route === null) {
     return null;
   }
 
   const normalizedRoute = route === "" ? "/" : route;
 
   // 1. Try exact match first (fast path)
-  const exactMatch = cachedConfig.pages?.find(
+  const exactMatch = cfg.pages?.find(
     (p: any) => p.route === normalizedRoute,
   );
   if (exactMatch) {
@@ -258,7 +341,7 @@ export function findPageByRoute(route: string | null): PageRouteMatch | null {
     staticSegments: number;
   } | null = null;
 
-  for (const page of cachedConfig.pages || []) {
+  for (const page of cfg.pages || []) {
     if (!page.route) continue;
     const result = matchRoute(normalizedRoute, page.route);
     if (!result.matched) continue;
@@ -300,22 +383,29 @@ export function findPageByRoute(route: string | null): PageRouteMatch | null {
 
 /**
  * Get page configuration by exact route match (exact match only, no pattern support)
- * Kept for backward compatibility and index page resolution
+ * Kept for index page resolution. Searched in the passed campaign config;
+ * without it — in the default (first campaign) config of the registry.
  */
-export function getPageConfigByRoute(route: string | null): any | null {
-  if (!cachedConfig) {
+export function getPageConfigByRoute(
+  route: string | null,
+  config?: CrmConfig,
+): any | null {
+  const cfg = config || defaultConfig;
+  if (!cfg) {
     return null;
   }
   const normalizedRoute = route === "" ? "/" : route;
-  return (
-    cachedConfig.pages?.find((p: any) => p.route === normalizedRoute) || null
-  );
+  return cfg.pages?.find((p: any) => p.route === normalizedRoute) || null;
 }
 
 /**
  * Print startup banner with configuration info
  */
-function printStartupBanner(config: CrmConfig, configPath: string): void {
+function printStartupBanner(
+  config: CrmConfig,
+  configPath: string,
+  patchedCamps: string[] = [],
+): void {
   console.log("");
   console.log(
     "╔═════════════════════════════════════════════════════════════╗",
@@ -350,7 +440,10 @@ function printStartupBanner(config: CrmConfig, configPath: string): void {
   );
   const camps = (config as any)?.camps;
   const campCount = Array.isArray(camps) ? camps.length : 0;
-  console.log(`║  Camps:     ${String(campCount).padEnd(48)}║`);
+  const campsLine = patchedCamps.length
+    ? `${campCount} (patched: ${patchedCamps.join(", ")})`
+    : String(campCount);
+  console.log(`║  Camps:     ${campsLine.padEnd(48)}║`);
   console.log(
     "╚═════════════════════════════════════════════════════════════╝",
   );

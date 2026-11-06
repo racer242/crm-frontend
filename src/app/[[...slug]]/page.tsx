@@ -2,6 +2,7 @@ import { App, CampItem, DataFeedResult, MacroSources } from "@/types";
 import { AppEngine } from "@/engine";
 import {
   initApp,
+  getConfigForCamp,
   getPageConfigByRoute,
   findPageByRoute,
   PageIndex,
@@ -27,8 +28,9 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Initialize CRM App Singleton (loads config once per application lifetime)
-  const { config } = await initApp();
+  // Initialize CRM App Singleton: loads the reference config and builds the
+  // per-campaign config registry once per application lifetime
+  await initApp();
 
   // Resolve the route from params with fallback matching
   const resolvedParams = await params;
@@ -38,13 +40,32 @@ export default async function Page({
   let routeParams: Record<string, string> = {};
   let pageConfig: any = null;
 
+  // Read cookies early: camp_id selects the campaign config for this request
+  const cookieStore = await cookies();
+  const cookieMap: Record<string, string> = {};
+  cookieStore.getAll().forEach((c) => {
+    cookieMap[c.name] = c.value;
+  });
+
+  // Determine the current campaign (fallback: first camp) and ADDRESS its
+  // config in the registry — no global switching, race-free by construction:
+  // every request works with its own local reference.
+  const allCamps: CampItem[] = (getConfigForCamp(null) as any)?.camps || [];
+  const campIdCookie = cookieMap["camp_id"];
+  const currentCampId = campIdCookie
+    ? Number(campIdCookie)
+    : allCamps[0]?.id || 0;
+  const currentCamp =
+    allCamps.find((c: CampItem) => c.id === currentCampId) || allCamps[0];
+  const config = getConfigForCamp(currentCampId);
+
   // If accessing "/" and indexPageId is configured, redirect to that page
   if (slug.length === 0 && config.config?.indexPageId) {
     const indexPage = config.pages?.find(
       (p: any) => p.id === config.config.indexPageId,
     );
     if (indexPage && indexPage.route) {
-      pageConfig = getPageConfigByRoute(indexPage.route);
+      pageConfig = getPageConfigByRoute(indexPage.route, config);
       if (pageConfig) {
         route = indexPage.route;
       }
@@ -57,7 +78,7 @@ export default async function Page({
     for (let i = slug.length; i >= 0; i--) {
       const testRoute: string | null =
         i > 0 ? "/" + slug.slice(0, i).join("/") : null;
-      const match = findPageByRoute(testRoute);
+      const match = findPageByRoute(testRoute, config);
       if (match) {
         pageConfig = match.pageConfig;
         route = match.route;
@@ -88,13 +109,6 @@ export default async function Page({
     routeParams,
   );
 
-  // Read all cookies on server for macro resolution
-  const cookieStore = await cookies();
-  const cookieMap: Record<string, string> = {};
-  cookieStore.getAll().forEach((c) => {
-    cookieMap[c.name] = c.value;
-  });
-
   // Create shared server sources for macros
   const serverSources: MacroSources = {
     config: config.config,
@@ -110,15 +124,6 @@ export default async function Page({
   let dataFeedErrors: ApiError[] = [];
   let successResults: DataFeedResult[] = [];
   let initialPageId: string | null = null;
-
-  // Determine current campaign
-  const allCamps: CampItem[] = (config as any)?.camps || [];
-  const campIdCookie = cookieMap["camp_id"];
-  const currentCampId = campIdCookie
-    ? Number(campIdCookie)
-    : allCamps[0]?.id || 0;
-  const currentCamp =
-    allCamps.find((c: CampItem) => c.id === currentCampId) || allCamps[0];
 
   // Get user's access_token for authenticated API requests
   const accessToken = await getAccessTokenServer();
@@ -141,6 +146,7 @@ export default async function Page({
       serverSources,
       accessToken,
       currentCamp?.base_api_url,
+      config,
     );
 
     // Separate errors from successful results

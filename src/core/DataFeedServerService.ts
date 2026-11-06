@@ -20,18 +20,12 @@ import { applyAdapter } from "./DataAdapterEngine";
 import { PathResolver } from "./PathResolver";
 import type { StateManager } from "./StateManager";
 
-let cachedConfig: any = null;
-
-/**
- * Set the cached config reference (called from initApp)
- */
-export function setServerConfig(config: any): void {
-  cachedConfig = config;
-}
-
 /**
  * Execute server-side data feeds for a page
  * Returns array of results with any errors
+ *
+ * @param campConfig конфиг кампании (адаптеры, apiRoutes) — передаётся явно
+ *   запросом (getConfigForCamp); модульного глобального конфига больше нет
  */
 export async function executeServerDataFeeds(
   pageId: string,
@@ -39,6 +33,7 @@ export async function executeServerDataFeeds(
   serverSources: MacroSources,
   authToken?: string,
   campApiUrl?: string,
+  campConfig?: any,
 ): Promise<DataFeedResult[]> {
   const dataFeeds: DataFeedConfig[] | undefined = pageConfig?.dataFeed;
 
@@ -46,8 +41,8 @@ export async function executeServerDataFeeds(
     return [];
   }
 
-  // Get API routes config
-  const apiRoutes: ApiRouteConfig[] | undefined = cachedConfig?.apiRoutes;
+  // Get API routes config (from the campaign's config)
+  const apiRoutes: ApiRouteConfig[] | undefined = campConfig?.apiRoutes;
 
   const results: DataFeedResult[] = [];
 
@@ -114,7 +109,7 @@ export async function executeServerDataFeeds(
         : undefined;
 
       // Apply request adapter if specified
-      data = await applyRequestAdapter(feed.adapter, data);
+      data = await applyRequestAdapter(feed.adapter, data, campConfig);
 
       // Resolve the URL macros from api-routes config, but keep the internal /api/ path
       let internalPath = url; // например, /api/ops/users
@@ -217,7 +212,7 @@ export async function executeServerDataFeeds(
               : (feed.adapter as DataFeedAdapter)?.response;
 
           if (adapterName) {
-            const adapter = cachedConfig?.adapters?.[adapterName];
+            const adapter = campConfig?.adapters?.[adapterName];
             if (!adapter) {
               results.push({
                 success: false,
@@ -305,6 +300,7 @@ function getChildren(element: any): any[] {
 async function applyRequestAdapter(
   adapter: string | DataFeedAdapter | undefined,
   data: Record<string, any> | undefined,
+  campConfig?: any,
 ): Promise<Record<string, any> | undefined> {
   if (!adapter || !data) return data;
 
@@ -313,7 +309,7 @@ async function applyRequestAdapter(
 
   if (!adapterName) return data;
 
-  const adapterConfig = cachedConfig?.adapters?.[adapterName];
+  const adapterConfig = campConfig?.adapters?.[adapterName];
   if (!adapterConfig) return data;
 
   return applyAdapter(data, adapterConfig);

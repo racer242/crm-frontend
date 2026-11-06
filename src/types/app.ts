@@ -144,6 +144,17 @@ export interface CampItem {
    * фичи остальных кампаний остаются на сервере.
    */
   features?: Record<string, boolean>;
+
+  /**
+   * Дельта конфигурации кампании (серверное поле, в клиент не передаётся).
+   * Формы: инлайн-объект дельты; строка — путь к JSON-файлу дельты
+   * (относительно каталога config/, напр. "camps/21/patch.json");
+   * { file: "camps/21/patch.json" }. Накладывается на клон эталонного конфига
+   * при старте (src/core/configMerge.ts → applyConfigDelta): объекты — слияние
+   * вглубь, массивы — матчинг по id/route/path/key/name/field, удаление поля —
+   * null, удаление элемента массива — need_to_remove: true.
+   */
+  config_patch?: Record<string, any> | string | { file: string };
 }
 
 /** Флаги функциональности */

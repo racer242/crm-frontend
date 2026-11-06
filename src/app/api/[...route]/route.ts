@@ -20,7 +20,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { initApp, getConfig } from "@/core/config";
+import { initApp, getConfigForCamp } from "@/core/config";
 import {
   ApiRouteConfig,
   DataFeedMethod,
@@ -271,8 +271,12 @@ async function handleRequest(
     const routeSegments = resolvedParams.route;
     const routeName = routeSegments.join("/");
 
-    // Load the app config to get apiRoutes
-    const { config } = await initApp();
+    // Load configs once per process, then ADDRESS the current campaign's
+    // config in the registry by the camp_id cookie — no global switching:
+    // the local reference cannot be swapped between awaits of this request.
+    await initApp();
+    const campCookie = request.cookies.get("camp_id")?.value;
+    const config = getConfigForCamp(campCookie);
     const apiRoutes = config.apiRoutes;
 
     // Find the route configuration (with pattern matching and route params)
