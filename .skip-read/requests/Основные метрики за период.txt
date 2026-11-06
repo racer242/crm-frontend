@@ -1,0 +1,58 @@
+Основные метрики за период
+
+-- Базовые счётчики промо-акции за период {{startDate}} — {{endDate}} (даты с точностью до времени).
+-- Чеки фильтруются по дате покупки (created_at), регистрации — по дате создания.
+-- «На проверке» = все статусы без финального решения: CHECKING, SUSPENDED, NEED_PHOTO.
+WITH receipt_stats AS (
+    SELECT
+        COUNT(*) AS total,
+        COALESCE(SUM(CASE WHEN status = 'ACCEPTED' THEN 1 ELSE 0 END), 0) AS accepted,
+        COALESCE(SUM(CASE WHEN status NOT IN ('ACCEPTED', 'REFUSED') THEN 1 ELSE 0 END), 0) AS checking,
+        COALESCE(SUM(CASE WHEN status = 'REFUSED' THEN 1 ELSE 0 END), 0) AS refused
+    FROM receipt
+    WHERE created_at >= {{startDate}}
+      AND created_at <= {{endDate}}
+)
+SELECT t.name, t.value
+FROM (
+    SELECT 1 AS ord,
+           'Количество регистраций участников' AS name,
+           CAST(COUNT(*) AS UNSIGNED) AS value
+    FROM `user`
+    WHERE created_at >= {{startDate}}
+      AND created_at <= {{endDate}}
+
+    UNION ALL
+
+    SELECT 2, 'Количество зарегистрированных чеков', CAST(rs.total AS UNSIGNED)
+    FROM receipt_stats rs
+
+    UNION ALL
+
+    SELECT 3, 'Количество принятых чеков', CAST(rs.accepted AS UNSIGNED)
+    FROM receipt_stats rs
+
+    UNION ALL
+
+    SELECT 4, 'Количество чеков на проверке', CAST(rs.checking AS UNSIGNED)
+    FROM receipt_stats rs
+
+    UNION ALL
+
+    SELECT 5, 'Количество отклонённых чеков', CAST(rs.refused AS UNSIGNED)
+    FROM receipt_stats rs
+) AS t
+ORDER BY t.ord;
+
+[
+  {
+    "name": "name",
+    "type": "string",
+    "title": "Метрика"
+  },
+  {
+    "name": "value",
+    "type": "number",
+    "title": "Значение"
+  }
+]

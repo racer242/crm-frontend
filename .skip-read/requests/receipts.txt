@@ -1,0 +1,92 @@
+receipts
+
+SELECT * FROM (
+    SELECT
+        BIN_TO_UUID(r.id)                          AS receipt_id,
+        r.created_at                               AS registration_date,
+        r.purchase_at                              AS purchase_date,
+        u.participant_code,
+        TRIM(CONCAT_WS(' ', u.first_name, u.last_name)) AS full_name,
+        u.email,
+        COALESCE(ri_agg.promo_count, 0)            AS promo_products_count,
+        ROUND(COALESCE(ri_agg.promo_sum, 0) / 100, 2) AS promo_products_amount,
+        r.fns_status,
+        r.status                                   AS moderation_status,
+        BIN_TO_UUID(r.user_id)                     AS user_id,
+        r.fn,
+        r.fp,
+        r.fd
+    FROM receipt r
+    JOIN `user` u ON u.id = r.user_id
+    LEFT JOIN (
+        SELECT 
+            receipt_id, 
+            SUM(quantity) AS promo_count,
+            SUM(price * quantity) AS promo_sum
+        FROM receipt_item
+        WHERE accepted = 1
+        GROUP BY receipt_id
+    ) ri_agg ON ri_agg.receipt_id = r.id
+    WHERE 1=1
+      {{MODERATION_STATUS_FILTER}}
+      {{FNS_STATUS_FILTER}}
+      {{RETAIL_CHAIN_FILTER}}
+      {{REGISTRATION_DATE_FROM_FILTER}}
+      {{REGISTRATION_DATE_TO_FILTER}}
+      {{PURCHASE_DATE_FROM_FILTER}}
+      {{PURCHASE_DATE_TO_FILTER}}
+      {{USER_ID_FILTER}}
+      {{SEARCH_FILTER}}
+) t
+WHERE 1=1
+  {{PROMO_AMOUNT_FILTER}}
+  {{HAS_PROMO_FILTER}}
+ORDER BY {{ORDER_BY}} {{ORDER_DIR}}
+
+[
+{
+"name": "registration_date",
+"type": "date",
+"title": "Дата регистрации"
+},
+{
+"name": "fns_status",
+"type": "string",
+"title": "Статус ФНС"
+},
+{
+"name": "moderation_status",
+"type": "string",
+"title": "Статус модерации"
+},
+{
+"name": "participant_code",
+"type": "string",
+"title": "Код участника"
+},
+{
+"name": "full_name",
+"type": "string",
+"title": "Имя и фамилия"
+},
+{
+"name": "email",
+"type": "string",
+"title": "Email"
+},
+{
+"name": "purchase_date",
+"type": "date",
+"title": "Дата покупки"
+},
+{
+"name": "promo_products_count",
+"type": "number",
+"title": "Акционных продуктов"
+},
+{
+"name": "promo_products_amount",
+"type": "number",
+"title": "Сумма акционных"
+}
+]

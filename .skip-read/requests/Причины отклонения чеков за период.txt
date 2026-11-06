@@ -1,0 +1,38 @@
+Причины отклонения чеков за период
+
+-- Причины отклонения чеков за период {{startDate}} — {{endDate}}.
+-- Период фильтруется по дате покупки (created_at).
+-- LEFT JOIN: включаем чеки, у которых refuse_reason не найден в справочнике.
+SELECT
+    COALESCE(r.refuse_reason, '—')          AS reason_code,
+    CASE
+        WHEN r.refuse_reason IS NULL THEN 'Причина не указана'
+        WHEN dr.name IS NULL         THEN 'Причина не найдена в справочнике'
+        ELSE dr.name
+    END                                     AS reason,
+    COUNT(*)                                AS receipts_count
+FROM receipt r
+LEFT JOIN decline_reason dr ON dr.code = r.refuse_reason
+WHERE r.status = 'REFUSED'
+  AND r.created_at >= {{startDate}}
+  AND r.created_at <= {{endDate}}
+GROUP BY r.refuse_reason, dr.name
+ORDER BY receipts_count DESC;
+
+[
+  {
+    "name": "reason_code",
+    "type": "string",
+    "title": "Код причины"
+  },
+  {
+    "name": "reason",
+    "type": "string",
+    "title": "Причина отклонения"
+  },
+  {
+    "name": "receipts_count",
+    "type": "number",
+    "title": "Кол-во чеков"
+  }
+]

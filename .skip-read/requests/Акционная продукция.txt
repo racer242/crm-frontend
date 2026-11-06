@@ -1,0 +1,41 @@
+Акционная продукция
+
+-- Список акционной продукции по принятым чекам за период {{startDate}} — {{endDate}}.
+-- Период — по дате регистрации чека (receipt.created_at).
+-- Группировка по названию товара.
+SELECT
+    ri.name                                        AS product_name,
+    SUM(ri.quantity)                               AS total_qty,
+    COUNT(DISTINCT ri.receipt_id)                  AS receipts_count,
+    ROUND(SUM(ri.price * ri.quantity) / 100, 2)    AS total_sum_rub
+FROM receipt_item ri
+JOIN receipt r ON r.id = ri.receipt_id
+WHERE r.status = 'ACCEPTED'
+  AND ri.accepted = 1
+  AND r.created_at >= {{startDate}}
+  AND r.created_at <= {{endDate}}
+GROUP BY ri.name
+ORDER BY total_qty DESC;
+
+[
+  {
+    "name": "product_name",
+    "type": "string",
+    "title": "Название продукта"
+  },
+  {
+    "name": "total_qty",
+    "type": "number",
+    "title": "Кол-во штук"
+  },
+  {
+    "name": "receipts_count",
+    "type": "number",
+    "title": "Кол-во чеков с продуктом"
+  },
+  {
+    "name": "total_sum_rub",
+    "type": "money",
+    "title": "Сумма покупок, ₽"
+  }
+]

@@ -1,0 +1,87 @@
+Календарь акции
+
+-- Разбивка по дням: регистрации участников и чеки по статусам.
+-- Период: {{startDate}} — {{endDate}} (включительно, с точностью до времени).
+-- Колонка дня — строка в формате ДД.ММ.ГГГГ, без времени.
+WITH user_daily AS (
+    SELECT DATE(created_at) AS day,
+           COUNT(*) AS registrations
+    FROM `user`
+    WHERE created_at >= {{startDate}}
+      AND created_at <= {{endDate}}
+    GROUP BY DATE(created_at)
+),
+receipt_daily AS (
+    SELECT DATE(created_at) AS day,
+           COUNT(*) AS receipts_uploaded,
+           SUM(status = 'ACCEPTED') AS receipts_accepted,
+           SUM(status = 'REFUSED') AS receipts_refused,
+           SUM(status NOT IN ('ACCEPTED', 'REFUSED')) AS receipts_processing
+    FROM receipt
+    WHERE created_at >= {{startDate}}
+      AND created_at <= {{endDate}}
+    GROUP BY DATE(created_at)
+),
+days AS (
+    SELECT day FROM user_daily
+    UNION
+    SELECT day FROM receipt_daily
+)
+SELECT
+    DATE_FORMAT(days.day, '%d.%m.%Y') AS day,
+    CASE WEEKDAY(days.day)
+        WHEN 0 THEN 'Понедельник'
+        WHEN 1 THEN 'Вторник'
+        WHEN 2 THEN 'Среда'
+        WHEN 3 THEN 'Четверг'
+        WHEN 4 THEN 'Пятница'
+        WHEN 5 THEN 'Суббота'
+        WHEN 6 THEN 'Воскресенье'
+    END AS weekday,
+    COALESCE(u.registrations, 0)       AS registrations,
+    COALESCE(r.receipts_uploaded, 0)   AS receipts_uploaded,
+    COALESCE(r.receipts_accepted, 0)   AS receipts_accepted,
+    COALESCE(r.receipts_refused, 0)    AS receipts_refused,
+    COALESCE(r.receipts_processing, 0) AS receipts_processing
+FROM days
+LEFT JOIN user_daily u    ON u.day = days.day
+LEFT JOIN receipt_daily r ON r.day = days.day
+ORDER BY days.day;
+
+[
+  {
+    "name": "day",
+    "type": "date",
+    "title": "Дата"
+  },
+  {
+    "name": "weekday",
+    "type": "string",
+    "title": "День недели"
+  },
+  {
+    "name": "registrations",
+    "type": "number",
+    "title": "Регистрации участников"
+  },
+  {
+    "name": "receipts_uploaded",
+    "type": "number",
+    "title": "Чеков загружено"
+  },
+  {
+    "name": "receipts_accepted",
+    "type": "number",
+    "title": "Чеков принято"
+  },
+  {
+    "name": "receipts_refused",
+    "type": "number",
+    "title": "Чеков отклонено"
+  },
+  {
+    "name": "receipts_processing",
+    "type": "number",
+    "title": "Чеков в обработке"
+  }
+]

@@ -1,0 +1,59 @@
+География чеков
+
+-- География чеков за период {{startDate}} — {{endDate}}.
+-- Город извлекается из адреса торговой точки (receipt.store_name).
+-- Период фильтруется по дате покупки (purchase_at).
+WITH addr AS (
+    SELECT
+        CASE
+            WHEN r.store_name LIKE '%,Россия,%'
+                THEN SUBSTRING(r.store_name, LOCATE(',Россия,', r.store_name) + 8)
+        END AS tail
+    FROM receipt r
+    WHERE r.created_at >= {{startDate}}
+      AND r.created_at <= {{endDate}}
+),
+parsed AS (
+    SELECT
+        TRIM(SUBSTRING_INDEX(tail, ',', 1))                             AS region,
+        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tail, ',', 2), ',', -1))   AS district,
+        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tail, ',', 4), ',', -1))   AS locality
+    FROM addr
+),
+city AS (
+    SELECT
+        CASE
+            -- Федеральный город: субъект и есть город
+            WHEN region LIKE '%Москва%' AND region NOT LIKE '%область%'
+                THEN 'Москва'
+            WHEN region LIKE '%Санкт-Петербург%'
+                THEN 'Санкт-Петербург'
+            -- Обычный случай: отрезаем завершающее сокращение (г, с, п, пгт, ...)
+            WHEN locality <> '' AND locality NOT LIKE '%мкр%'
+                THEN REGEXP_REPLACE(locality,
+                     '\\s+(пгт\\.?|ст-ца\\.?|рп\\.?|дп\\.?|город\\.?|г\\.?|с\\.?|п\\.?|д\\.?|х\\.?|аул\\.?)$', '')
+            -- Мусор в поле НП («15-й мкр»): город из городского округа
+            WHEN district LIKE '%г.о.%'
+                THEN REGEXP_REPLACE(district, '^город\\s+|\\s+г\\.о\\.$', '')
+        END AS city
+    FROM parsed
+)
+SELECT
+    COALESCE(NULLIF(TRIM(city), ''), '(не определён)') AS city,
+    COUNT(*) AS receipts_count
+FROM city
+GROUP BY city
+ORDER BY receipts_count DESC, city;
+
+[
+  {
+    "name": "city",
+    "type": "string",
+    "title": "Город"
+  },
+  {
+    "name": "receipts_count",
+    "type": "number",
+    "title": "Кол-во чеков"
+  }
+]

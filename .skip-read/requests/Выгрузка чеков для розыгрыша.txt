@@ -1,0 +1,56 @@
+Выгрузка чеков для розыгрыша
+
+-- Список принятых чеков с данными участников за период {{startDate}} — {{endDate}}.
+-- Период фильтруется по дате регистрации (created_at); в выдаче — дата загрузки (created_at).
+SELECT
+    BIN_TO_UUID(r.id)     AS receipt_id,
+    r.created_at          AS uploaded_at,
+    u.participant_code,
+    u.email,
+    u.phone,
+    BIN_TO_UUID(u.id)     AS user_id,
+    ROUND(r.sum / 100, 2) AS sum_rub
+FROM receipt r
+JOIN `user` u ON u.id = r.user_id
+WHERE r.status = 'ACCEPTED'
+  AND r.created_at >= {{startDate}}
+  AND r.created_at <= {{endDate}}
+ORDER BY r.sum ASC;
+
+[
+  {
+    "name": "receipt_id",
+    "type": "string",
+    "title": "ID чека"
+  },
+  {
+    "name": "uploaded_at",
+    "type": "datetime",
+    "title": "Дата загрузки чека"
+  },
+  {
+    "name": "participant_code",
+    "type": "string",
+    "title": "Код участника"
+  },
+  {
+    "name": "email",
+    "type": "string",
+    "title": "EMAIL участника"
+  },
+  {
+    "name": "phone",
+    "type": "string",
+    "title": "Телефон участника"
+  },
+  {
+    "name": "user_id",
+    "type": "string",
+    "title": "ID участника"
+  },
+  {
+    "name": "sum_rub",
+    "type": "money",
+    "title": "Сумма чека, ₽"
+  }
+]

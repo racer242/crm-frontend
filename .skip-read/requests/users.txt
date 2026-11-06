@@ -1,5 +1,4 @@
 users
-users
 
 SELECT
 BIN_TO_UUID(u.id) AS user_id,
