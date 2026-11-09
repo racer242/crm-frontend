@@ -521,8 +521,10 @@ docker compose restart
 визуальный, маршруты не блокируются. Скрытые гейтом элементы исключаются из
 DOM/SSR и не оставляют пустых ячеек в grid-раскладке — ряд сжимается.
 Реестр: `user_docs`, `receipts`,
-`products`, `prizes`, `points`, `messages`, `raffles` (в текущих кампаниях
-все включены). Подробно — в `docs/config-reference.md` (раздел
+`products`, `prizes`, `points`, `messages`, `raffles` (в кампании
+`avito_to_the_top` выключены `user_docs`, `receipts`, `products`, `prizes`,
+`messages` — гейтуются пункты меню, счётчики карточки участника, панель
+модерации чеков). Подробно — в `docs/config-reference.md` (раздел
 «Фичи кампании»).
 
 **Конфигурации кампаний** — при старте строится реестр конфигов в памяти

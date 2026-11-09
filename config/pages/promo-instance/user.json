@@ -238,6 +238,7 @@
             {
               "id": "feedbackMessages",
               "type": "component",
+              "feature": "messages",
               "componentType": "StatCard",
               "className": "h-full p-1",
               "props": {
@@ -536,6 +537,7 @@
                   {
                     "id": "activityPrizes",
                     "type": "component",
+                    "feature": "prizes",
                     "componentType": "StatCard",
                     "className": "h-full",
                     "style": {
