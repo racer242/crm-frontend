@@ -41,6 +41,15 @@ function runAdapter(scriptPath, data) {
   return fn(data);
 }
 
+// В собранном конфиге не должно остаться литералов $ref (напр. format из патча)
+function hasRefKey(value) {
+  if (Array.isArray(value)) return value.some(hasRefKey);
+  if (value && typeof value === "object") {
+    return Object.entries(value).some(([k, v]) => k === "$ref" || hasRefKey(v));
+  }
+  return false;
+}
+
 async function main() {
   // 2) Эталон + реестр кампаний (репликация buildCampConfigs)
   const refParserModule = await import("@apidevtools/json-schema-ref-parser");
@@ -56,7 +65,11 @@ async function main() {
       continue;
     }
     const patchPath = path.resolve("config", camp.config_patch);
-    const delta = JSON.parse(fs.readFileSync(patchPath, "utf-8"));
+    // $refs внутри патча резолвятся относительно файла патча (паритет с движком:
+    // resolveConfigDelta → $RefParser.dereference), иначе "$ref"-литералы
+    // остались бы в дельте и заменили разрешённые значения эталона (format!)
+    const patchParser = new $RefParser();
+    const delta = await patchParser.dereference(patchPath);
     const campConfig = structuredClone(reference);
     applyConfigDelta(campConfig, delta);
     registry.set(key, campConfig);
@@ -109,6 +122,12 @@ async function main() {
   const avitoMerge = avitoShortcut[1].params;
   check("shortcuts: mergeUrlParams has category/league", avitoMerge.values.category === "{$state.usersQuery.category}" && avitoMerge.values.league === "{$state.usersQuery.league}");
   check("shortcuts: mergeUrlParams format rules kept", Array.isArray(avitoMerge.format) && avitoMerge.format.length === 2);
+
+  // format из патча ($ref) должен быть разрешён в массив правил, как в эталоне
+  const refShortcut = refUsers.shortcuts.requestUsers.params.commands;
+  check("shortcuts: sendRequest format $ref resolved (array of rules)", Array.isArray(avitoSend.format) && avitoSend.format.length === 5 && avitoSend.format.every((r) => typeof r.prop === "string"));
+  check("shortcuts: sendRequest format equals reference-resolved rules", JSON.stringify(avitoSend.format) === JSON.stringify(refShortcut[0].params.format));
+  check("no $ref leftovers in composed avito config", !hasRefKey(avito));
 
   const searchBlock = avitoUsers.sections
     .find((s) => s.id === "usersFilters")
@@ -235,6 +254,7 @@ async function main() {
   check("initApp: code slug 'avito_to_the_top' → same config", configModule.getConfigForCamp("avito_to_the_top") === cfg31);
   check("initApp: unpatched '21' shares the reference with default", configModule.getConfigForCamp("21") === cfgDefault && configModule.getConfigForCamp(21) === cfgDefault);
   check("initApp: unknown camp → default", configModule.getConfigForCamp("999") === cfgDefault);
+  check("initApp: avito sendRequest format resolved (array, no $ref)", Array.isArray(cfg31.pages.find((p) => p.id === "users").shortcuts.requestUsers.params.commands[0].params.format) && !hasRefKey(cfg31));
   fs.rmSync("tmp-config-build", { recursive: true, force: true });
 
   console.log(`\n${pass} passed, ${fail} failed`);

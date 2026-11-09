@@ -147,9 +147,16 @@ export class CommandExecutor {
       return value;
     }
 
-    const formatRules: FormatRule[] = Array.isArray(params.format)
+    // Non-array format (a single rule object) is wrapped; malformed entries
+    // (e.g. an unresolved "$ref" literal from a config mistake) are dropped
+    // instead of crashing every request built with this format
+    const formatRules: FormatRule[] = (Array.isArray(params.format)
       ? params.format
-      : [params.format];
+      : [params.format]
+    ).filter(
+      (r): r is FormatRule =>
+        !!r && typeof r === "object" && typeof r.prop === "string",
+    );
 
     // Filter rules that match this name (either "name" or "name.subpath")
     let matchingRules = formatRules.filter(

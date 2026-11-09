@@ -240,8 +240,14 @@ async function resolveConfigDelta(
     const absolutePatchPath = path.isAbsolute(patchPath)
       ? patchPath
       : path.resolve(path.dirname(referencePath), patchPath);
-    const raw = await fs.readFile(absolutePatchPath, "utf-8");
-    return JSON.parse(raw);
+    // $refs inside the patch file resolve relative to the patch file itself
+    // (e.g. "../../system/list-request-format.json" from
+    // config/camps/<code>/) — the same mechanism as the reference config
+    // load. A raw JSON.parse would leave "$ref" literals in the delta; an
+    // object like { "$ref": … } would then REPLACE an already-resolved
+    // reference array (e.g. sendRequest format rules) and break the command.
+    const parser = new $RefParser();
+    return await parser.dereference(absolutePatchPath);
   }
 
   return patch;
