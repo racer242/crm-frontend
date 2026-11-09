@@ -1,0 +1,230 @@
+{
+  "id": "user",
+  "state": {
+    "userRating": {
+      "avito_id": "",
+      "telegram_id": "",
+      "category_name": "",
+      "league_name": "",
+      "place": "",
+      "better_than_percent": "",
+      "better_than_percent_label": ""
+    },
+    "taskReport": {
+      "columns": []
+    },
+    "tasks": {
+      "value": [],
+      "totalRecords": 0,
+      "first": 0,
+      "rows": 10
+    },
+    "tasksQuery": {
+      "sortField": "",
+      "sortOrder": -1
+    }
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users-v2/rating/execute",
+      "method": "POST",
+      "target": "state.userRating",
+      "data": {
+        "user_id": "{$location.routeParams.user_id}"
+      }
+    },
+    {
+      "url": "/api/ops/users-v2/tasks",
+      "method": "GET",
+      "target": "state.taskReport"
+    },
+    {
+      "url": "/api/ops/users-v2/tasks/execute",
+      "method": "POST",
+      "target": "state.tasks",
+      "data": {
+        "user_id": "{$location.routeParams.user_id}",
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}"
+      }
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.tasksQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.tasksQuery.sortOrder",
+      "parse": "json"
+    }
+  ],
+  "shortcuts": {
+    "requestTasks": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/users-v2/tasks/execute",
+              "method": "POST",
+              "target": "state.tasks",
+              "data": {
+                "event": "{$event}",
+                "user_id": "{$location.routeParams.user_id}",
+                "first": "{$state.tasks.first}",
+                "rows": "{$state.tasks.rows}",
+                "sortField": "{$state.tasksQuery.sortField}",
+                "sortOrder": "{$state.tasksQuery.sortOrder}"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.tasks.first}",
+                "rows": "{$state.tasks.rows}",
+                "sortField": "{$state.tasksQuery.sortField}",
+                "sortOrder": "{$state.tasksQuery.sortOrder}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "mainLayout",
+      "blocks": [
+        {
+          "id": "rightColumnBlock",
+          "components": [
+            {
+              "id": "detailsTable",
+              "props": {
+                "value": [
+                  {
+                    "label": "ID",
+                    "value": "@state.userData.id"
+                  },
+                  {
+                    "label": "Код",
+                    "value": "@state.userData.participant_code"
+                  },
+                  {
+                    "label": "Полное имя",
+                    "value": "@state.userData.complete_name"
+                  },
+                  {
+                    "label": "Дата регистрации",
+                    "value": "@state.userData.created_at",
+                    "dataType": "date"
+                  },
+                  {
+                    "label": "Согласие на рассылку",
+                    "value": "@state.userData.mailing"
+                  },
+                  {
+                    "label": "Avito ID",
+                    "value": "@state.userRating.avito_id"
+                  },
+                  {
+                    "label": "Telegram ID",
+                    "value": "@state.userRating.telegram_id"
+                  },
+                  {
+                    "label": "Категория",
+                    "value": "@state.userRating.category_name"
+                  },
+                  {
+                    "label": "Лига",
+                    "value": "@state.userRating.league_name"
+                  },
+                  {
+                    "label": "Место в рейтинге",
+                    "value": "@state.userRating.place"
+                  },
+                  {
+                    "label": "Результат лучше, чем у",
+                    "value": "@state.userRating.better_than_percent_label"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "userTasksSection",
+      "type": "section",
+      "className": "mb-5",
+      "blocks": [
+        {
+          "id": "userTasksBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Задания"
+            }
+          },
+          "className": "w-full",
+          "components": [
+            {
+              "id": "userTasksTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.tasks.value",
+                "columns": "@state.taskReport.columns",
+                "totalRecords": "@state.tasks.totalRecords",
+                "rows": "@state.tasks.rows",
+                "first": "@state.tasks.first",
+                "sortField": "@state.tasksQuery.sortField",
+                "sortOrder": "@state.tasksQuery.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [5, 10, 25, 50]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": ["requestTasks"]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.tasksQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.tasksQuery.sortOrder"
+                      }
+                    },
+                    "requestTasks"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -695,6 +695,37 @@ merge-записи вливаются в результаты фидов (`build
 значение эталона (например, массив правил `format` — и каждый `sendRequest`
 падал бы в `applyFormatToValue`).
 
+#### $ref-разделение патча
+
+Когда дельта кампании растёт, файл патча можно разложить на части —
+`patch.json` превращается в «шим» из включений, `$RefParser` разворачивает их
+по месту ещё до наложения дельты, итоговая дельта не меняется:
+
+```json
+{
+  "adapters": { "$ref": "./adapters.json" },
+  "apiRoutes": { "$ref": "./api-routes.json" },
+  "pages": { "$ref": "./pages.json" }
+}
+```
+
+Правила:
+
+- `$ref` на **объект** внутри объекта — включение по месту ключа:
+  `adapters.json` содержит объект записей реестра, ключи вливаются как будто
+  они написаны в самом патче;
+- `$ref` на **массив** внутри ключа — включение массива целиком
+  (`api-routes.json` — массив дельт маршрутов);
+- список страниц удобно собирать массивом элементов-ссылок — `pages.json`:
+  `[ { "$ref": "./pages/users-list.json" }, { "$ref": "./pages/user-card.json" } ]`;
+  `$ref` на **объект внутри массива** инлайнится как элемент (вложенности не
+  возникает), а `$ref` на **массив внутри массива** использовать не надо —
+  получится вложенный массив вместо элементов;
+- пути `$ref` резолвятся относительно содержащего файла: в
+  `pages/users-list.json` путь к общему формату — уже
+  `../../../system/list-request-format.json` (три уровня вверх), не
+  `../../system/…`, как из папки кампании.
+
 Семантика наложения дельты (`src/core/configMerge.ts → applyConfigDelta`):
 
 | Дельта                                        | Действие                                                                                                                                 |
@@ -716,40 +747,39 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 одного клона; стартовый баннер показывает состав (ключи реестра — коды):
 `Camps: 4 (patched: avito_to_the_top)` — при наличии patched-кампаний.
 
-#### Пример — дельта кампании Авито 2026 (`config/camps/avito_to_the_top/patch.json`)
+#### Пример — дельта кампании Авито 2026 (`config/camps/avito_to_the_top/`)
 
-Кампания получает свою копию страницы «Участники» целиком конфигурацией:
-дельта переключает скрипты адаптеров, дополняет страницу и удаляет колонку.
+Кампания получает свои копии страницы «Участники» и карточки участника целиком
+конфигурацией: дельта переключает скрипты адаптеров, дополняет страницу списка
+и добавляет карточке блок рейтинга и таблицу «Задания». Патч разбит на файлы
+через `$ref`-шим — `patch.json` содержит только включения (см. подраздел
+«$ref-разделение патча» выше):
 
 ```json
 {
-  "adapters": {
-    "stats.users.execute.request": {
-      "type": "js",
-      "script": "./config/adapters/stats.users.execute.request.avito.js"
-    },
-    "stats.users.report.response": {
-      "type": "js",
-      "script": "./config/adapters/stats.users.report.response.avito.js"
-    },
-    "dictionaries.response.avito": {
-      "type": "js",
-      "script": "./config/adapters/dictionaries.response.avito.js"
-    }
-  },
-  "apiRoutes": [
-    { "path": "ops/dictionaries/[name]", "need_to_remove": true },
-    { "path": "ops/dictionaries/dict_categories", "method": "GET",
-      "url": "/api/v1/crm/dictionaries/dict_categories", "channel": "instance",
-      "adapter": { "response": "dictionaries.response.avito" } },
-    { "path": "ops/dictionaries/dict_leagues", "method": "GET",
-      "url": "/api/v1/crm/dictionaries/dict_leagues", "channel": "instance",
-      "adapter": { "response": "dictionaries.response.avito" } },
-    { "path": "ops/dictionaries/[name]", …полная копия эталонной записи — в конец массива… }
-  ],
-  "pages": [
-    {
-      "id": "users",
+  "adapters": { "$ref": "./adapters.json" },
+  "apiRoutes": { "$ref": "./api-routes.json" },
+  "pages": { "$ref": "./pages.json" }
+}
+```
+
+- `adapters.json` — объект записей реестра: замена `script` эталонных
+  адаптеров users + новые адаптеры (`dictionaries.response.avito`, рейтинг и
+  задания карточки — 6 записей);
+- `api-routes.json` — массив дельт маршрутов: статические справочники
+  `dict_categories`/`dict_leagues` + перенос общего `ops/dictionaries/[name]`
+  в конец, маршрут рейтинга `ops/users-v2/rating/execute` (запрос
+  `user-avito`) и задачи карточки `ops/users-v2/tasks` /
+  `ops/users-v2/tasks/execute` (запрос `user-avito-tasks`; response-адаптер —
+  общий `stats.users.execute.response`);
+- `pages.json` — массив ссылок на файлы страниц: `[ { "$ref":
+  "./pages/users-list.json" }, { "$ref": "./pages/user-card.json" } ]`.
+
+Дельта страницы «Участники» (`pages/users-list.json`):
+
+```json
+{
+  "id": "users",
       "state": { "usersQuery": { "category": "", "league": "" },
                  "avitoCategories": { "options": [] },
                  "avitoLeagues": { "options": [] } },
@@ -775,7 +805,53 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
         { "id": "usersTableSection", "blocks": [ { "id": "usersTableBlock", "components": [
             { "id": "usersTable", "props": { "customColumns": [ { "field": "mailing", "need_to_remove": true } ] } } ] } ] }
       ]
-    }
+}
+```
+
+Дельта карточки участника (`pages/user-card.json`) — блок рейтинга в
+«Профиле» и таблица «Задания» под основной раскладкой:
+
+```json
+{
+  "id": "user",
+  "state": {
+    "userRating": { "avito_id": "", "telegram_id": "", "category_name": "",
+                    "league_name": "", "place": "", "better_than_percent": "",
+                    "better_than_percent_label": "" },
+    "taskReport": { "columns": [] },
+    "tasks": { "value": [], "totalRecords": 0, "first": 0, "rows": 10 },
+    "tasksQuery": { "sortField": "", "sortOrder": -1 }
+  },
+  "dataFeed": [
+    { "url": "/api/ops/users-v2/rating/execute", "method": "POST", "target": "state.userRating",
+      "data": { "user_id": "{$location.routeParams.user_id}" } },
+    { "url": "/api/ops/users-v2/tasks", "method": "GET", "target": "state.taskReport" },
+    { "url": "/api/ops/users-v2/tasks/execute", "method": "POST", "target": "state.tasks",
+      "data": { "user_id": "{$location.routeParams.user_id}",
+                "first": "{$location.params.first}", "rows": "{$location.params.rows}",
+                "sortField": "{$location.params.sortField}", "sortOrder": "{$location.params.sortOrder}" } }
+  ],
+  "dataInit": [ …восстановление сортировки из URL: sortField + sortOrder (parse: json)… ],
+  "shortcuts": { "requestTasks": { …sendRequest (execute; event + user_id + first/rows/sortField/sortOrder) +
+                                     mergeUrlParams (те же 4 значения без формата)… } },
+  "sections": [
+    { "id": "mainLayout", "blocks": [ { "id": "rightColumnBlock", "components": [
+        { "id": "detailsTable", "props": { "value": [ …5 эталонных строк дословно (props.value —
+            неиндексируемый массив, заменяется целиком) + 6 новых: Avito ID, Telegram ID,
+            Категория, Лига, Место в рейтинге, «Результат лучше, чем у» →
+            @state.userRating.better_than_percent_label… ] } } ] } ] },
+    { "id": "userTasksSection", "type": "section", "blocks": [ { "id": "userTasksBlock",
+      "wrapper": { "component": "Panel", "props": { "header": "Задания" } },
+      "components": [
+        { "id": "userTasksTable", "type": "component", "componentType": "DataTable",
+          "props": { "value": "@state.tasks.value", "columns": "@state.taskReport.columns",
+                     "totalRecords": "@state.tasks.totalRecords", "rows": "@state.tasks.rows",
+                     "first": "@state.tasks.first", "sortField": "@state.tasksQuery.sortField",
+                     "sortOrder": "@state.tasksQuery.sortOrder", "paginator": true, "lazy": true,
+                     "rowsPerPageOptions": [5, 10, 25, 50] },
+          "events": [ { "type": "onPage", "commands": ["requestTasks"] },
+                      { "type": "onSort", "commands": [ …setProperty sortField/sortOrder в tasksQuery,
+                        "requestTasks"… ] } ] } ] } ] }
   ]
 }
 ```
@@ -803,6 +879,20 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 `need_to_remove` по `id` + полная копия компонента последним элементом
 `components` (движок дельт умеет только update по идентификатору и append
 в конец).
+
+Карточка участника (`pages/user-card.json`) добавляется теми же средствами:
+страница матчится по `id: "user"` — state вливается вглубь, три фида
+добавляются в конец `dataFeed` по адресу, `dataInit`/`shortcuts` у эталонной
+страницы отсутствуют — добавляются целиком, новая секция `userTasksSection`
+добавляется в конец `sections` (ниже основной раскладки), а
+`detailsTable.props.value` — неиндексируемый массив строк — заменяется
+целиком (5 эталонных строк дословно + 6 новых); строка «Согласие на
+рассылку» остаётся без изменений. Новые маршруты
+`ops/users-v2/rating/execute`, `ops/users-v2/tasks`,
+`ops/users-v2/tasks/execute` не пересекаются матрингом с generic-паттернами
+`ops/users-v2/query/[query_id]` (другая длина пути / литеральный сегмент
+`rating`/`tasks` ≠ `query`), поэтому просто добавляются в конец
+`api-routes.json` без перестановки существующих.
 
 ---
 

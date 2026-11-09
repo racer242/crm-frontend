@@ -1,0 +1,4 @@
+[
+  { "$ref": "./pages/users-list.json" },
+  { "$ref": "./pages/user-card.json" }
+]

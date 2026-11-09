@@ -1,0 +1,70 @@
+[
+  {
+    "path": "ops/dictionaries/[name]",
+    "need_to_remove": true
+  },
+  {
+    "path": "ops/dictionaries/dict_categories",
+    "method": "GET",
+    "url": "/api/v1/crm/dictionaries/dict_categories",
+    "channel": "instance",
+    "adapter": {
+      "response": "dictionaries.response.avito"
+    },
+    "note": "Авито: справочник категорий для фильтра «Категория» — статический путь (матчится раньше общего ops/dictionaries/[name], перенесённого в конец) + адаптер с пунктом «Не назначено» (AVITO_UNASSIGNED_CODE)"
+  },
+  {
+    "path": "ops/dictionaries/dict_leagues",
+    "method": "GET",
+    "url": "/api/v1/crm/dictionaries/dict_leagues",
+    "channel": "instance",
+    "adapter": {
+      "response": "dictionaries.response.avito"
+    },
+    "note": "Авито: справочник лиг для фильтра «Лига» — статический путь (матчится раньше общего ops/dictionaries/[name], перенесённого в конец) + адаптер с пунктом «Не назначено» (AVITO_UNASSIGNED_CODE)"
+  },
+  {
+    "path": "ops/dictionaries/[name]",
+    "method": "GET",
+    "url": "/api/v1/crm/dictionaries/{$location.routeParams.name}",
+    "channel": "instance",
+    "adapter": {
+      "response": "dictionaries.response"
+    },
+    "note": "Операционные данные: Записи справочника (§3.6.3; feedback_topics для фильтра сообщений). Авито: перенесён в конец — роутер берёт первый совпавший маршрут, статические dict_categories/dict_leagues должны быть раньше"
+  },
+  {
+    "path": "ops/users-v2/rating/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/user-avito/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.users.rating.execute.request",
+      "response": "stats.users.rating.execute.response"
+    },
+    "note": "Авито: рейтинг участника — запрос user-avito (.prompts/user-page-sql1-update.md): avito_id/telegram_id, категория/лига из справочников, место среди активных участников той же категории+лиги и better_than_percent; пути ops/users-v2/rating/... не пересекаются с паттернами ops/users-v2/query/[query_id] (другая длина/литерал сегмента)"
+  },
+  {
+    "path": "ops/users-v2/tasks",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/query/user-avito-tasks",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.users.tasks.report.response"
+    },
+    "note": "Авито: метаданные запроса заданий участника — user-avito-tasks (.prompts/user-page-sql2.md), колонки таблицы «Задания» карточки участника"
+  },
+  {
+    "path": "ops/users-v2/tasks/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/user-avito-tasks/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.users.tasks.execute.request",
+      "response": "stats.users.execute.response"
+    },
+    "note": "Авито: выполнение запроса заданий участника — user-avito-tasks: USER_ID + ORDER_BY/ORDER_DIR (маппинг сортировки §sql2, дефолт assigned_at DESC); response — общий stats.users.execute.response (mapRow для строк задач — passthrough)"
+  }
+]

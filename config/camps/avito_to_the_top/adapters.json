@@ -1,0 +1,30 @@
+{
+  "stats.users.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.execute.request.avito.js"
+  },
+  "stats.users.report.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.report.response.avito.js"
+  },
+  "dictionaries.response.avito": {
+    "type": "js",
+    "script": "./config/adapters/dictionaries.response.avito.js"
+  },
+  "stats.users.rating.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.rating.execute.request.avito.js"
+  },
+  "stats.users.rating.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.rating.execute.response.avito.js"
+  },
+  "stats.users.tasks.report.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.tasks.report.response.avito.js"
+  },
+  "stats.users.tasks.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.tasks.execute.request.avito.js"
+  }
+}

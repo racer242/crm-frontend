@@ -233,3 +233,30 @@ function isUsersAvitoSortable(column) {
  * и переживает URL-синхронизацию (?category=__none__).
  */
 const AVITO_UNASSIGNED_CODE = "__none__";
+
+/**
+ * users для кампании avito_to_the_top, запрос «Задания участника» (query_id
+ * user-avito-tasks, .prompts/user-page-sql2.md): алиасы колонок, которые
+ * умеет сортировать SQL запроса (маппинг сортировки из дока), единый белый
+ * список для двух адаптеров:
+ *  - stats.users.tasks.execute.request.avito.js: ORDER_BY принимает только
+ *    алиас из списка (чужое значение → дефолт assigned_at + DESC);
+ *  - stats.users.tasks.report.response.avito.js: колонки метаданных получают
+ *    sortable по этому же списку — DataTable не предлагает сортировку,
+ *    которую SQL не применит.
+ */
+const USERS_AVITO_TASKS_SORTABLE_COLUMNS = [
+  "task_id",
+  "task_code",
+  "status",
+  "display_status",
+  "accrued_at",
+  "avito_id",
+  "telegram_id",
+  "assigned_at",
+  "updated_at",
+];
+
+function isUsersAvitoTasksSortable(column) {
+  return USERS_AVITO_TASKS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
