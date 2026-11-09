@@ -3,10 +3,12 @@
  *
  * 1) Эталон собирается через $RefParser (как initApp), реестр кампаний
  *    реплицирует buildCampConfigs (ключ — code, патч из camps.json);
- * 2) структурные проверки наложенной дельты (адаптеры, фиды, шорткат,
- *    dropdown-ы, customColumns; другие кампании/страницы не задеты);
+ * 2) структурные проверки наложенной дельты (адаптеры, apiRoutes справочников,
+ *    фиды, шорткат, порядок блока поиска, customColumns; другие
+ *    кампании/страницы не задеты);
  * 3) исполнение авито-адаптеров через new Function с _shared.js (как
- *    DataAdapterEngine): 11 макросов, поиск по bu.*, IN-фрагменты, сортировка;
+ *    DataAdapterEngine): 11 макросов, поиск по bu.*, IN-фрагменты и
+ *    «Не назначено» (сентинел), словарный адаптер, сортировка;
  * 4) регресс эталонного request-адаптера.
  */
 const { execSync } = require("child_process");
@@ -87,6 +89,19 @@ async function main() {
   check("execute.request type kept", avito.adapters["stats.users.execute.request"].type === "js");
   check("report.response script swapped", avito.adapters["stats.users.report.response"].script === "./config/adapters/stats.users.report.response.avito.js");
   check("reference adapters untouched", reference.adapters["stats.users.execute.request"].script.indexOf("avito") === -1);
+  check("dictionary adapter registered (avito)", avito.adapters["dictionaries.response.avito"] !== undefined && avito.adapters["dictionaries.response.avito"].script === "./config/adapters/dictionaries.response.avito.js");
+  check("reference has no avito dictionary adapter", reference.adapters["dictionaries.response.avito"] === undefined);
+
+  // apiRoutes: статические маршруты справочников раньше общего [name]
+  // (роутер берёт первый совпавший маршрут по порядку массива)
+  const avitoRoutes = avito.apiRoutes;
+  const catRouteIdx = avitoRoutes.findIndex((r) => r.path === "ops/dictionaries/dict_categories");
+  const leagueRouteIdx = avitoRoutes.findIndex((r) => r.path === "ops/dictionaries/dict_leagues");
+  const wildcardIdx = avitoRoutes.findIndex((r) => r.path === "ops/dictionaries/[name]");
+  check("apiRoutes: static dict routes present and before the wildcard", catRouteIdx !== -1 && leagueRouteIdx !== -1 && wildcardIdx !== -1 && catRouteIdx < wildcardIdx && leagueRouteIdx < wildcardIdx);
+  check("apiRoutes: static dict routes use the avito dictionary adapter", avitoRoutes[catRouteIdx].adapter.response === "dictionaries.response.avito" && avitoRoutes[leagueRouteIdx].adapter.response === "dictionaries.response.avito");
+  check("apiRoutes: wildcard kept with the reference dictionary adapter", avitoRoutes[wildcardIdx].adapter.response === "dictionaries.response" && avitoRoutes[wildcardIdx].url === "/api/v1/crm/dictionaries/{$location.routeParams.name}");
+  check("apiRoutes: no static dict routes in the reference", reference.apiRoutes.findIndex((r) => r.path === "ops/dictionaries/dict_categories") === -1 && reference.apiRoutes.findIndex((r) => r.path === "ops/dictionaries/dict_leagues") === -1);
 
   // 4) Страница users: структура патча
   const avitoUsers = avito.pages.find((p) => p.id === "users");
@@ -133,7 +148,9 @@ async function main() {
     .find((s) => s.id === "usersFilters")
     .blocks.find((b) => b.id === "usersSearchBlock");
   const compIds = searchBlock.components.map((c) => c.id);
-  check("search block: dropdowns appended, base intact", compIds.indexOf("usersCategoryFilter") !== -1 && compIds.indexOf("usersLeagueFilter") !== -1 && compIds.indexOf("usersSearchInput") !== -1 && compIds.indexOf("usersToggleFilters") !== -1);
+  check("search block: search → category → league → filters button", compIds.length === 4 && compIds[0] === "usersSearchInput" && compIds[1] === "usersCategoryFilter" && compIds[2] === "usersLeagueFilter" && compIds[3] === "usersToggleFilters");
+  const toggleButton = searchBlock.components.find((c) => c.id === "usersToggleFilters");
+  check("search block: filters button intact after reorder", toggleButton.componentType === "Button" && toggleButton.props.label === "Фильтры" && toggleButton.events[0].commands[0].params.target === "state.filtersVisible");
   const catDropdown = searchBlock.components.find((c) => c.id === "usersCategoryFilter");
   check("category dropdown bindings", catDropdown.props.options === "@state.avitoCategories.options" && catDropdown.props.value === "@state.usersQuery.category" && catDropdown.props.showClear === true);
   const leagueDropdown = searchBlock.components.find((c) => c.id === "usersLeagueFilter");
@@ -157,11 +174,34 @@ async function main() {
   check("request: search over standard fields + bot fields", ["u.id", "u.participant_code", "u.first_name", "u.last_name", "u.email", "u.phone", "bu.avito_id", "bu.telegram_id"].every((c) => search.indexOf(c + " LIKE") !== -1));
   check("request: search input sanitized (quote doubled, % escaped)", search.indexOf("иван'100") === -1 && search.indexOf("\\%") !== -1 && search.indexOf("''") !== -1);
 
+  // Словарный адаптер Авито: «Не назначено» первым пунктом списка
+  const dictCat = runAdapter("config/adapters/dictionaries.response.avito.js", {
+    status: "ok",
+    data: {
+      items: [
+        { code: "sport", name: "Спорт", is_active: true },
+        { code: "old", name: "Старая", is_active: false },
+      ],
+      pagination: { total_items: 2 },
+    },
+  });
+  const UNASSIGNED = dictCat.options[0].value;
+  check("dict avito: unassigned is the first option", dictCat.options[0].label === "Не назначено" && UNASSIGNED === "__none__");
+  check("dict avito: items follow with inactive suffix", dictCat.options[1].value === "sport" && dictCat.options[2].label === "Старая (неактивна)");
+  check("dict avito: totalRecords from pagination (sentinel not counted)", dictCat.totalRecords === 2);
+  const dictEmpty = runAdapter("config/adapters/dictionaries.response.avito.js", { status: "ok", data: { items: [] } });
+  check("dict avito: empty dict still offers unassigned", dictEmpty.options.length === 1 && dictEmpty.options[0].label === "Не назначено");
+  check("dict reference: no unassigned option", runAdapter("config/adapters/dictionaries.response.js", { status: "ok", data: { items: [] } }).options.length === 0);
+
   const codes = runAdapter("config/adapters/stats.users.execute.request.avito.js", { category: "sport", league: ["gold", "silver"] }).replacements;
-  check("request: single category wrapped into IN", codes.CATEGORY_FILTER === "AND bu.category_code IN ('sport')");
-  check("request: league array → IN list", codes.LEAGUE_FILTER === "AND bu.league_code IN ('gold', 'silver')");
+  check("request: single category wrapped into IN", codes.CATEGORY_FILTER === "AND (bu.category_code IN ('sport'))");
+  check("request: league array → IN list", codes.LEAGUE_FILTER === "AND (bu.league_code IN ('gold', 'silver'))");
   const quoted = runAdapter("config/adapters/stats.users.execute.request.avito.js", { category: "o'brien" }).replacements.CATEGORY_FILTER;
-  check("request: category quote escaped in IN", quoted === "AND bu.category_code IN ('o''brien')");
+  check("request: category quote escaped in IN", quoted === "AND (bu.category_code IN ('o''brien'))");
+  const unassignedReq = runAdapter("config/adapters/stats.users.execute.request.avito.js", { category: UNASSIGNED }).replacements.CATEGORY_FILTER;
+  check("request: unassigned sentinel → IS NULL OR empty string", unassignedReq === "AND (bu.category_code IS NULL OR bu.category_code = '')");
+  const mixed = runAdapter("config/adapters/stats.users.execute.request.avito.js", { league: ["gold", UNASSIGNED, ""] }).replacements.LEAGUE_FILTER;
+  check("request: unassigned + codes in one OR-group", mixed === "AND (bu.league_code IN ('gold') OR bu.league_code IS NULL OR bu.league_code = '')");
 
   const filtered = runAdapter("config/adapters/stats.users.execute.request.avito.js", {
     filters: [
@@ -255,6 +295,7 @@ async function main() {
   check("initApp: unpatched '21' shares the reference with default", configModule.getConfigForCamp("21") === cfgDefault && configModule.getConfigForCamp(21) === cfgDefault);
   check("initApp: unknown camp → default", configModule.getConfigForCamp("999") === cfgDefault);
   check("initApp: avito sendRequest format resolved (array, no $ref)", Array.isArray(cfg31.pages.find((p) => p.id === "users").shortcuts.requestUsers.params.commands[0].params.format) && !hasRefKey(cfg31));
+  check("initApp: avito apiRoutes put static dict routes before the wildcard", cfg31.apiRoutes.findIndex((r) => r.path === "ops/dictionaries/dict_categories") < cfg31.apiRoutes.findIndex((r) => r.path === "ops/dictionaries/[name]"));
   fs.rmSync("tmp-config-build", { recursive: true, force: true });
 
   console.log(`\n${pass} passed, ${fail} failed`);

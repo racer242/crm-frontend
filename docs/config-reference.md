@@ -731,8 +731,22 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
     "stats.users.report.response": {
       "type": "js",
       "script": "./config/adapters/stats.users.report.response.avito.js"
+    },
+    "dictionaries.response.avito": {
+      "type": "js",
+      "script": "./config/adapters/dictionaries.response.avito.js"
     }
   },
+  "apiRoutes": [
+    { "path": "ops/dictionaries/[name]", "need_to_remove": true },
+    { "path": "ops/dictionaries/dict_categories", "method": "GET",
+      "url": "/api/v1/crm/dictionaries/dict_categories", "channel": "instance",
+      "adapter": { "response": "dictionaries.response.avito" } },
+    { "path": "ops/dictionaries/dict_leagues", "method": "GET",
+      "url": "/api/v1/crm/dictionaries/dict_leagues", "channel": "instance",
+      "adapter": { "response": "dictionaries.response.avito" } },
+    { "path": "ops/dictionaries/[name]", …полная копия эталонной записи — в конец массива… }
+  ],
   "pages": [
     {
       "id": "users",
@@ -749,13 +763,15 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
       "shortcuts": { "requestUsers": { …commands целиком: эталонные 2 команды + category/league… } },
       "sections": [
         { "id": "usersFilters", "blocks": [ { "id": "usersSearchBlock", "components": [
+            { "id": "usersToggleFilters", "need_to_remove": true },
             { "id": "usersCategoryFilter", "type": "component", "componentType": "Dropdown",
               "props": { "options": "@state.avitoCategories.options", "value": "@state.usersQuery.category",
                          "placeholder": "Категория...", "showClear": true, "inline": "yes" },
               "events": [ { "type": "onChange", "commands": [
                 { "type": "setProperty", "params": { "source": "event.value", "target": "state.usersQuery.category" } },
                 "requestUsers" ] } ] },
-            { "id": "usersLeagueFilter", …аналогично по league… } ] } ] },
+            { "id": "usersLeagueFilter", …аналогично по league… },
+            { "id": "usersToggleFilters", …полная копия из эталона: кнопка «Фильтры» уезжает в конец… } ] } ] },
         { "id": "usersTableSection", "blocks": [ { "id": "usersTableBlock", "components": [
             { "id": "usersTable", "props": { "customColumns": [ { "field": "mailing", "need_to_remove": true } ] } } ] } ] }
       ]
@@ -774,7 +790,19 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 «Категория»/«Лига» — по паттерну страницы сообщений (`ops/dictionaries/[name]`);
 колонка «Рассылка» удаляется из таблицы `need_to_remove` по `field` (колонка
 метаданных фильтруется авито-адаптером ответа), динамические колонки
-`category_name`/`league_name` приходят сами из `fields[]`.
+`category_name`/`league_name` приходят сами из `fields[]`. Справочники
+«Категория»/«Лига» кампании идут через статические api-маршруты
+`ops/dictionaries/dict_categories`/`dict_leagues` с адаптером
+`dictionaries.response.avito` (эталонный transform + первым пунктом
+«Не назначено» с сентинелом `AVITO_UNASSIGNED_CODE` из `_shared.js`; в
+запросе участников сентинел превращается в `col IS NULL OR col = ''`):
+роутер берёт первый совпавший маршрут, поэтому общий
+`ops/dictionaries/[name]` переносится в конец дельтой (`need_to_remove` +
+полная копия записи) — остальные справочники пункт не получают. Перестановка
+кнопки «Фильтры» в конец блока поиска делается тем же приёмом:
+`need_to_remove` по `id` + полная копия компонента последним элементом
+`components` (движок дельт умеет только update по идентификатору и append
+в конец).
 
 ---
 

@@ -221,3 +221,15 @@ const USERS_AVITO_SORTABLE_COLUMNS = [
 function isUsersAvitoSortable(column) {
   return USERS_AVITO_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * users для кампании avito_to_the_top: сентинел-код пункта «Не назначено» в
+ * dropdown-фильтрах «Категория»/«Лига». Пункт в options добавляет
+ * dictionaries.response.avito.js (статические api-маршруты dict_categories /
+ * dict_leagues кампании в config/camps/avito_to_the_top/patch.json),
+ * SQL-фрагмент собирает stats.users.execute.request.avito.js: выбор пункта →
+ * AND (col IS NULL OR col = '') — участники без назначенного значения.
+ * Значение выбрано так, чтобы не совпасть с реальными кодами справочников,
+ * и переживает URL-синхронизацию (?category=__none__).
+ */
+const AVITO_UNASSIGNED_CODE = "__none__";

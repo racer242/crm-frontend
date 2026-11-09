@@ -41,7 +41,10 @@
  *     % _ \ escaped and single quotes doubled;
  *   - category / league — request params of the «Категория»/«Лига» dropdowns
  *     (dictionary code, or an array of codes for a future MultiSelect) →
- *     IN fragments;
+ *     an OR-group of an IN fragment and the unassigned condition; the
+ *     AVITO_UNASSIGNED_CODE sentinel («Не назначено», added to the options by
+ *     dictionaries.response.avito.js) selects participants with no value
+ *     assigned: (col IS NULL OR col = '');
  *   - sortField (whitelist) + sortOrder (1/-1) → {{ORDER_BY}}/{{ORDER_DIR}};
  *     no sort → the default "created_at" + "DESC".
  *
@@ -199,20 +202,38 @@ function optionsToIn(value, dbValues, column) {
 }
 
 // codes: «Категория»/«Лига» dropdown value — a dictionary code (string) or an
-// array of codes → "AND bu.category_code IN ('CAT1', 'CAT2')"; empty → ""
+// array of codes → "AND (bu.category_code IN ('CAT1', 'CAT2'))"; empty → ""
 // (IN is used per the server spec .prompts/avito_req.md, so a single value is
-// wrapped into a one-element list)
+// wrapped into a one-element list). The AVITO_UNASSIGNED_CODE sentinel
+// («Не назначено», added to the options by dictionaries.response.avito.js)
+// selects participants with no category/league assigned — the column is NULL
+// or an empty string; combined with regular codes everything goes into one
+// OR-group.
 function codesFragment(value, column) {
   const raw = Array.isArray(value) ? value : [value];
-  const codes = raw
-    .map((code) =>
+  const codes = [];
+  let unassigned = false;
+  raw.forEach((code) => {
+    const str =
       typeof code === "string" || typeof code === "number"
         ? String(code).trim()
-        : "",
-    )
-    .filter((code) => code !== "");
-  if (codes.length === 0) return "";
-  return "AND " + column + " IN (" + codes.map(sqlString).join(", ") + ")";
+        : "";
+    if (str === "") return;
+    if (str === AVITO_UNASSIGNED_CODE) {
+      unassigned = true;
+      return;
+    }
+    codes.push(sqlString(str));
+  });
+  const parts = [];
+  if (codes.length > 0) {
+    parts.push(column + " IN (" + codes.join(", ") + ")");
+  }
+  if (unassigned) {
+    parts.push(column + " IS NULL OR " + column + " = ''");
+  }
+  if (parts.length === 0) return "";
+  return "AND (" + parts.join(" OR ") + ")";
 }
 
 // period: [from, to] → "AND u.created_at >= '…'" / "<= '…'" in the API timezone
