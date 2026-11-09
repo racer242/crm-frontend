@@ -41,12 +41,13 @@ export interface AppInitResult {
 }
 
 /**
- * Реестр конфигураций кампаний: camp_id → CrmConfig.
+ * Реестр конфигураций кампаний: code кампании → CrmConfig (ключ — слаг code
+ * из camps.json; для записей без code — String(id)).
  * Строится один раз при старте (initApp); далее только чтение — запросы
  * АДРЕСУЮТ конфиг своей кампании (getConfigForCamp), а не «переключают»
  * единственный глобальный конфиг. Гонки между кампаниями исключены.
  */
-let configRegistry: Map<number, CrmConfig> | null = null;
+let configRegistry: Map<string, CrmConfig> | null = null;
 /** Конфиг первой кампании (fallback при отсутствии/неизвестности camp_id) */
 let defaultConfig: CrmConfig | null = null;
 let initPromise: Promise<AppInitResult> | null = null;
@@ -148,7 +149,8 @@ export async function initApp(): Promise<AppInitResult> {
 
       // Default config = first camp's config (fallback without camp_id cookie)
       const camps: CampItem[] = (resolvedConfig as any).camps || [];
-      defaultConfig = (camps[0] && registry.get(camps[0].id)) || resolvedConfig;
+      defaultConfig =
+        (camps[0] && registry.get(campRegistryKey(camps[0]))) || resolvedConfig;
 
       // Print banner only once per process lifetime
       if (!isInitialized) {
@@ -180,25 +182,31 @@ export async function initApp(): Promise<AppInitResult> {
  * Campaign without config_patch → shares the reference config object;
  * campaign with config_patch (inline delta, path to a JSON patch file or
  * { file: "..." }) → structuredClone of the reference with the delta applied.
+ * Registry key: campaign code slug (camps.json → code), String(id) fallback.
  */
+function campRegistryKey(camp: CampItem): string {
+  return camp.code || String(camp.id);
+}
+
 async function buildCampConfigs(
   reference: CrmConfig,
   referencePath: string,
-): Promise<{ registry: Map<number, CrmConfig>; patchedCamps: string[] }> {
-  const registry = new Map<number, CrmConfig>();
+): Promise<{ registry: Map<string, CrmConfig>; patchedCamps: string[] }> {
+  const registry = new Map<string, CrmConfig>();
   const patchedCamps: string[] = [];
   const camps: CampItem[] = (reference as any).camps || [];
 
   for (const camp of camps) {
+    const key = campRegistryKey(camp);
     const delta = await resolveConfigDelta(camp, referencePath);
     if (!delta) {
-      registry.set(camp.id, reference);
+      registry.set(key, reference);
       continue;
     }
     const campConfig = structuredClone(reference);
     applyConfigDelta(campConfig, delta);
-    registry.set(camp.id, campConfig);
-    patchedCamps.push(String(camp.id));
+    registry.set(key, campConfig);
+    patchedCamps.push(key);
   }
 
   return { registry, patchedCamps };
@@ -241,16 +249,35 @@ async function resolveConfigDelta(
 
 /**
  * Address the config of a specific campaign in the registry (O(1) lookup).
- * Missing/unknown id → first camp's config (same fallback as page.tsx).
+ * A numeric value or numeric string (the camp_id cookie arrives as a string)
+ * resolves through the camps list: id → code → registry; any other string is
+ * a direct address by the campaign code slug.
+ * Missing/unknown → first camp's config (same fallback as page.tsx).
  * Throws when initApp() has not completed yet.
  */
-export function getConfigForCamp(campId?: number | string | null): CrmConfig {
+export function getConfigForCamp(
+  campIdOrCode?: number | string | null,
+): CrmConfig {
   if (!configRegistry || !defaultConfig) {
     throw new Error("Configuration not loaded. Call initApp() first.");
   }
-  const id = campId === null || campId === undefined ? NaN : Number(campId);
-  const config = Number.isFinite(id) ? configRegistry.get(id) : undefined;
-  return config || defaultConfig;
+  if (
+    campIdOrCode === null ||
+    campIdOrCode === undefined ||
+    campIdOrCode === ""
+  ) {
+    return defaultConfig;
+  }
+  // Numeric value or numeric string → camp id: resolve through the camps
+  // list (id → code → registry); other strings → direct code slug address
+  const asId = Number(campIdOrCode);
+  if (Number.isFinite(asId)) {
+    const camps: CampItem[] = (defaultConfig as any).camps || [];
+    const camp = camps.find((c: CampItem) => c.id === asId);
+    const byCode = camp ? configRegistry.get(campRegistryKey(camp)) : undefined;
+    return byCode || configRegistry.get(String(asId)) || defaultConfig;
+  }
+  return configRegistry.get(String(campIdOrCode)) || defaultConfig;
 }
 
 /**

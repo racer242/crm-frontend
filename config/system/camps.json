@@ -53,6 +53,8 @@
   {
     "id": 31,
     "name": "Авито 2026",
+    "code": "avito_to_the_top",
+    "config_patch": "camps/avito_to_the_top/patch.json",
     "base_api_url": "https://dev.ssd26.srv08.ru/api/v2/9016",
     "crm_api_url": "https://avito-prod.botpromo.ru",
     "crm_key_id": "crm-next",

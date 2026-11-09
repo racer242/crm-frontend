@@ -129,6 +129,8 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 export interface CampItem {
   id: number;
   name: string;
+  /** Уникальный код кампании (слаг): ключ реестра конфигураций и папки патча config/camps/<code>/ */
+  code?: string;
   /** Базовый URL управляющего бэкенда (серверный) */
   base_api_url?: string;
   /** URL API промо-инстанса (серверный, не передаётся клиенту) */

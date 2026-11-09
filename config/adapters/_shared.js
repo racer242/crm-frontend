@@ -193,3 +193,31 @@ const RECEIPTS_SORTABLE_COLUMNS = [
 function isReceiptsSortable(column) {
   return RECEIPTS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * users для кампании avito_to_the_top (config_patch → авито-версии адаптеров
+ * stats.users.execute.request.avito.js / stats.users.report.response.avito.js):
+ * алиасы колонок, которые умеет сортировать SQL отчёта кампании (маппинг
+ * .prompts/avito_req.md — avito_id/telegram_id из bot_users, category_name/
+ * league_name сортируются по алиасу выдачи). Единый белый список для двух
+ * авито-адаптеров; эталонный список сохранён целиком (колонки, отсутствующие
+ * в метаданных кампании, просто не показываются).
+ */
+const USERS_AVITO_SORTABLE_COLUMNS = [
+  "user_id",
+  "email",
+  "status",
+  "participant_status",
+  "balance",
+  "total_earned",
+  "mailing",
+  "created_at",
+  "avito_id",
+  "telegram_id",
+  "category_name",
+  "league_name",
+];
+
+function isUsersAvitoSortable(column) {
+  return USERS_AVITO_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
