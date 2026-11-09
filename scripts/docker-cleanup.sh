@@ -4,21 +4,34 @@ set -euo pipefail
 # ============================================================
 # CRM Frontend — Docker cache cleanup
 #
-# Repeated `docker compose build` (deploys) grow the builder cache
-# to many gigabytes — this script reclaims that space.
+# Cleans the docker host SELECTED BY THE MODE:
+#   default   — the LOCAL machine (the build cache grows here:
+#               images are built locally before every deploy);
+#   --remote  — the DEPLOY SERVER (nothing is built there, but every
+#               `docker load` leaves the previous image dangling —
+#               `docker image prune` reclaims that space).
 #
 # Usage:
-#   scripts/docker-cleanup.sh               # SAFE: build cache + dangling images only
-#   scripts/docker-cleanup.sh --deep        # + docker system prune: stopped containers,
-#                                           # unused networks, unused images (NOT volumes)
-#   scripts/docker-cleanup.sh --volumes     # implies --deep + volumes (DESTRUCTIVE:
-#                                           # deletes named volumes of ALL projects —
-#                                           # databases included); asks confirmation
-#   scripts/docker-cleanup.sh --yes         # skip the confirmation prompt
-#   scripts/docker-cleanup.sh --dry-run     # show what would be done, change nothing
+#   scripts/docker-cleanup.sh                # LOCAL, SAFE: build cache + dangling images only
+#   scripts/docker-cleanup.sh --remote       # SERVER, SAFE: dangling images (no build cache there)
+#   … --deep                                 # + docker system prune: stopped containers,
+#                                            # unused networks, unused images (NOT volumes)
+#   … --volumes                              # implies --deep + volumes (DESTRUCTIVE:
+#                                            # deletes named volumes of ALL projects —
+#                                            # databases included); asks confirmation
+#   … --yes                                  # skip the confirmation prompt
+#   … --dry-run                              # show the plan; nothing is deleted
+#                                            # (docker system df is read-only and still runs)
 #
-#   Flags combine, e.g.: scripts/docker-cleanup.sh --deep --yes
+#   Flags combine, e.g.: scripts/docker-cleanup.sh --remote --deep --yes
 # ============================================================
+
+# ---------------------------------------------------------------
+# CONSTANTS — remote mode (same server as the deploy scripts)
+# ---------------------------------------------------------------
+REMOTE_USER="crm_admin"
+REMOTE_HOST="94.198.217.127"
+REMOTE_PORT="22"
 
 # ---------------------------------------------------------------
 # COLORS for output
@@ -38,10 +51,11 @@ fail()  { echo -e "${RED}[FAIL]${NC}  $*"; exit 1; }
 # MAIN
 # ---------------------------------------------------------------
 main() {
-  local deep=0 volumes=0 yes=0 dry_run=0
+  local remote=0 deep=0 volumes=0 yes=0 dry_run=0
   local a
   for a in "$@"; do
     case "$a" in
+      --remote)  remote=1 ;;
       --deep)    deep=1 ;;
       --volumes) volumes=1; deep=1 ;;
       --yes|-y)  yes=1 ;;
@@ -54,7 +68,25 @@ main() {
     esac
   done
 
-  command -v docker >/dev/null 2>&1 || fail "Docker is not installed or not in PATH."
+  # docker is needed on the host being cleaned; ssh only in remote mode
+  if [[ $remote -eq 1 ]]; then
+    command -v ssh >/dev/null 2>&1 || fail "ssh is not available."
+  else
+    command -v docker >/dev/null 2>&1 || fail "Docker is not installed or not in PATH."
+  fi
+
+  # Run a docker command on the selected host. The command strings are built
+  # below from flags only (no user input) — safe to interpolate.
+  run_docker() {
+    if [[ $remote -eq 1 ]]; then
+      ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "sudo $1"
+    else
+      eval "$1"
+    fi
+  }
+
+  local where="local machine"
+  if [[ $remote -eq 1 ]]; then where="deploy server $REMOTE_HOST"; fi
 
   local mode="safe"
   if [[ $deep -eq 1 ]]; then
@@ -66,25 +98,31 @@ main() {
   echo ""
   echo -e "${CYAN}============================================${NC}"
   echo -e "${CYAN}  CRM Frontend — Docker cache cleanup${NC}"
+  echo -e "${CYAN}  host: $where${NC}"
   echo -e "${CYAN}  mode: $mode${NC}"
   echo -e "${CYAN}============================================${NC}"
   echo ""
 
   info "Docker disk usage (before):"
-  docker system df
+  run_docker "docker system df"
   echo ""
 
   # Build the command list. `system prune` covers the build cache and dangling
-  # images as well — no need to run them separately in deep mode.
+  # images as well — no need to run them separately in deep mode. The server
+  # has no build cache (images arrive via `docker load`, not `build`), so the
+  # remote safe mode skips `builder prune` — `image prune` removes the
+  # dangling images left behind by re-loaded deploys.
   local commands=()
   if [[ $deep -eq 1 ]]; then
     local deep_cmd="docker system prune -f"
     if [[ $volumes -eq 1 ]]; then deep_cmd+=" --volumes"; fi
     commands+=("$deep_cmd")
+  elif [[ $remote -eq 1 ]]; then
+    commands+=("docker image prune -f")
   else
-    # SAFE default: the builder cache (the main consumer after repeated
-    # builds) + dangling (untagged) images. Containers, networks, named
-    # volumes and tagged images of any project are NOT touched.
+    # SAFE default, local: the builder cache (the main consumer after
+    # repeated builds) + dangling (untagged) images. Containers, networks,
+    # named volumes and tagged images of any project are NOT touched.
     commands+=("docker builder prune -f" "docker image prune -f")
   fi
 
@@ -99,19 +137,25 @@ main() {
   if [[ $dry_run -eq 1 ]]; then
     info "Dry run — the following commands would be executed:"
     local c
-    for c in "${commands[@]}"; do echo "  \$ $c"; done
+    for c in "${commands[@]}"; do
+      if [[ $remote -eq 1 ]]; then
+        echo "  \$ ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \"sudo $c\""
+      else
+        echo "  \$ $c"
+      fi
+    done
     ok "Nothing was deleted (dry run)."
     exit 0
   fi
 
   for c in "${commands[@]}"; do
     info "Running: $c"
-    eval "$c" || fail "Command failed: $c"
+    run_docker "$c" || fail "Command failed: $c"
     echo ""
   done
 
   info "Docker disk usage (after):"
-  docker system df
+  run_docker "docker system df"
   ok "Cleanup finished."
 }
 
