@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Anchor to the repository root: every relative path below (compose file,
+# .env.production, config/, messages/) is resolved against it, so the script
+# can be started from any working directory — bash scripts/deploy-remote.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
 # ============================================================
 # Remote deploy script for CRM Frontend — CentOS 7 / Bitrix
 # ============================================================

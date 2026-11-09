@@ -2,19 +2,26 @@
 set -euo pipefail
 
 # ============================================================
-# CRM Frontend — Remote Docker Logs (docker logs -f)
-# Usage:
-#   ./remote-docker-logs.sh                 # follow logs of the CRM container
-#   ./remote-docker-logs.sh --tail 200      # extra args are passed to docker logs
-#   ./remote-docker-logs.sh --since 10m
-#   CONTAINER=my-name ./remote-docker-logs.sh
+# CRM Frontend — Docker container logs (docker logs -f)
+#
+# Usage (from anywhere, paths are anchored to the repo root):
+#   scripts/docker-logs.sh                     # follow logs of the LOCAL CRM container
+#   scripts/docker-logs.sh --remote            # follow logs on the deploy server (ssh + sudo)
+#   scripts/docker-logs.sh --tail 200          # extra args are passed to docker logs
+#   scripts/docker-logs.sh --remote --since 10m
+#   CONTAINER=my-name scripts/docker-logs.sh
 # Exit with Ctrl+C.
 # ============================================================
 
 # ---------------------------------------------------------------
-# CONSTANTS — edit these as needed
+# CONSTANTS — edit these as needed (remote mode uses the same
+# server as the deploy scripts)
 # ---------------------------------------------------------------
-# Container name candidates, tried in order.
+REMOTE_USER="crm_admin"
+REMOTE_HOST="94.198.217.127"
+REMOTE_PORT="22"
+
+# Local container name candidates, tried in order.
 # NOTE: "crm-frontend-crm-frontend" is the IMAGE name (compose default
 # <project>-<service>); the CONTAINER itself is named "crm-frontend"
 # (docker-compose.yml: container_name). Both are accepted here.
@@ -45,6 +52,42 @@ main() {
   echo -e "${CYAN}  CRM Frontend — Container Logs (follow)${NC}"
   echo -e "${CYAN}============================================${NC}"
   echo ""
+
+  # Split args: --remote is our flag, the rest go to docker logs.
+  # Only shell-safe characters are allowed in pass-through args (they are
+  # interpolated into the remote ssh command string).
+  local use_remote=0
+  local pass_args=()
+  local a
+  for a in "$@"; do
+    case "$a" in
+      --remote) use_remote=1 ;;
+      -h|--help)
+        sed -n '4,/^# ============================================================$/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        exit 0
+        ;;
+      *)
+        [[ "$a" =~ ^[A-Za-z0-9=._:%/-]+$ ]] \
+          || fail "Unsafe argument for pass-through: $a\\n  Allowed: letters, digits and =._:%/- (e.g. --tail 200, --since 10m)"
+        pass_args+=("$a")
+        ;;
+    esac
+  done
+
+  command -v ssh >/dev/null 2>&1 || fail "ssh is not available."
+
+  if [[ "$use_remote" -eq 1 ]]; then
+    # Logs of the container running on the deploy server (docker-compose.yml
+    # sets container_name: crm-frontend there; CONTAINER env overrides)
+    local remote_container="${CONTAINER:-crm-frontend}"
+    local remote_cmd="sudo docker logs -f $remote_container"
+    for a in "${pass_args[@]:-}"; do
+      [[ -n "$a" ]] && remote_cmd+=" $a"
+    done
+    info "Following logs on $REMOTE_USER@$REMOTE_HOST:$REMOTE_PORT (Ctrl+C to stop)"
+    echo ""
+    exec ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "$remote_cmd"
+  fi
 
   command -v docker >/dev/null 2>&1 || fail "Docker is not installed or not in PATH."
 
@@ -89,7 +132,11 @@ main() {
 
   info "Following logs of container: $container   (Ctrl+C to stop)"
   echo ""
-  exec docker logs -f "$container" "$@"
+  if [[ ${#pass_args[@]} -gt 0 ]]; then
+    exec docker logs -f "$container" "${pass_args[@]}"
+  else
+    exec docker logs -f "$container"
+  fi
 }
 
 main "$@"

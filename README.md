@@ -431,8 +431,8 @@ docker compose down           # Остановить
 - **Внутренний порт контейнера:** 3000
 - **Внутренний порт Docker (localhost):** 3030 (только для nginx)
 - **nginx config:** `.skip-read/deploy/CentOS7/nginx-crm.conf` (одноразовая настройка, архивирована)
-- **deploy script:** `deploy-remote.sh` (в корне репозитория)
-- **reconfigure script (update config only):** `deploy-remote-configure.sh` (в корне репозитория)
+- **deploy script:** `scripts/deploy-remote.sh`
+- **reconfigure script (update config only):** `scripts/deploy-remote-configure.sh`
 
 **Настройка nginx на сервере (выполняется один раз):**
 
@@ -469,11 +469,12 @@ sudo firewall-cmd --reload
 docker compose restart
 ```
 
-**Удалённый деплой (скрипты в корне репозитория):**
+**Удалённый деплой и обслуживание Docker (скрипты в папке `scripts/`):**
 
-- `deploy-remote.sh` — сборка образа локально, отправка на сервер (образ + compose + `.env.production` + `config/` + `messages/`), `docker load` и `docker compose up -d --force-recreate`.
-- `deploy-remote-configure.sh` — только конфигурация (compose, `.env.production`, `config/`, `messages/`) и `docker compose up -d --force-recreate`.
-- `remote-docker-logs.sh` — просмотр логов контейнера приложения (`docker logs -f`). Имя контейнера определяется автоматически: кандидаты `crm-frontend` (так задаёт `container_name` в `docker-compose.yml`) и `crm-frontend-crm-frontend` (совпадает с именем образа compose), иначе — единственный подходящий по маске `crm-frontend*`. Дополнительные аргументы передаются в `docker logs` (`./remote-docker-logs.sh --tail 200`, `--since 10m`), имя можно переопределить: `CONTAINER=<имя> ./remote-docker-logs.sh`. Выход — Ctrl+C.
+- `scripts/deploy-remote.sh` — сборка образа локально, отправка на сервер (образ + compose + `.env.production` + `config/` + `messages/`), `docker load` и `docker compose up -d --force-recreate`.
+- `scripts/deploy-remote-configure.sh` — только конфигурация (compose, `.env.production`, `config/`, `messages/`) и `docker compose up -d --force-recreate`.
+- `scripts/docker-logs.sh` — логи контейнера приложения. По умолчанию — локальный docker (`docker logs -f`); имя контейнера определяется автоматически: кандидаты `crm-frontend` (так задаёт `container_name` в `docker-compose.yml`) и `crm-frontend-crm-frontend` (совпадает с именем образа compose), иначе — единственный подходящий по маске `crm-frontend*`. С флагом `--remote` — логи контейнера на сервере деплоя (ssh + `sudo docker logs -f crm-frontend`, те же константы сервера, что у деплой-скриптов). Дополнительные аргументы передаются в `docker logs` (`scripts/docker-logs.sh --tail 200`, `--since 10m`; в remote-режиме принимаются только аргументы из «безопасных» символов), имя контейнера переопределяется через `CONTAINER=<имя>`. Выход — Ctrl+C.
+- `scripts/docker-cleanup.sh` — очистка кэша Docker (после повторных сборок build-cache вырастает до десятков ГБ). По умолчанию безопасно: `docker builder prune` + dangling-образы — контейнеры, сети, тома и тегированные образы не трогаются; `--deep` — плюс `docker system prune` (остановленные контейнеры, неиспользуемые сети и образы; тома — нет); `--volumes` — плюс тома (ОПАСНО: именованные тома ВСЕХ проектов, включая БД, запрашивает подтверждение); `--yes` — без подтверждения; `--dry-run` — только показать план. Показывает `docker system df` до и после.
 
 Оба скрипта перед копированием **удаляют на сервере** `config/` и `messages/` — устаревшие файлы (переименованные/удалённые страницы, адаптеры) не накапливаются. `--force-recreate` обязателен: `up -d` без него не пересоздаёт контейнер при изменении только смонтированных файлов, и приложение продолжало бы работать со старым конфигом.
 
