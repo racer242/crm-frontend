@@ -65,7 +65,7 @@
       "products": false,
       "prizes": false,
       "points": true,
-      "messages": true,
+      "messages": false,
       "raffles": true
     }
   }

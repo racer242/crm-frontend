@@ -7,7 +7,7 @@
  *
  * Campaign specifics (SQL and sorting map of the avito instance —
  * .prompts/avito_req.md):
- *   - searchable columns: the standard registry set (ID участника u.user_id,
+ *   - searchable columns: the standard registry set (ID участника u.id,
  *     код u.participant_code, имя/фамилия, email, телефон) PLUS the bot
  *     fields bu.avito_id / bu.telegram_id from the bot_users join
  *     (update 09.11.26 — per the customer request; originally bot fields only);
@@ -78,13 +78,13 @@ const STATUS_VALUES = ["active", "blocked", "deleted"];
 const PARTICIPANT_STATUS_VALUES = ["ANKET_REQUIRED", "PARTICIPANT"];
 
 // Searchable columns of the avito users registry (update 09.11.26, customer
-// request): the standard registry fields — ID участника, код, имя, фамилия,
-// email, телефон (u.user_id was not searchable even in the reference — LIKE
-// over the numeric PK is intentional) — PLUS the bot fields from the
-// bot_users join (.prompts/avito_req.md). One fragment, OR-joined: a hit in
-// any column matches the row.
+// request): the standard registry fields — ID участника (u.id — the users PK;
+// NOT u.user_id: the campaign SQL exposes it as u.id), код, имя, фамилия,
+// email, телефон — PLUS the bot fields from the bot_users join
+// (.prompts/avito_req.md). One fragment, OR-joined: a hit in any column
+// matches the row.
 const SEARCH_COLUMNS = [
-  "u.user_id",
+  "u.id",
   "u.participant_code",
   "u.first_name",
   "u.last_name",
