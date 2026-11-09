@@ -154,7 +154,7 @@ async function main() {
   check("request: default pagination", avitoReq.page === 1 && avitoReq.limit === 10);
 
   const search = runAdapter("config/adapters/stats.users.execute.request.avito.js", { search: "иван'100%" }).replacements.SEARCH_FILTER;
-  check("request: search over bu.avito_id / bu.telegram_id", search.indexOf("bu.avito_id LIKE") !== -1 && search.indexOf("bu.telegram_id LIKE") !== -1);
+  check("request: search over standard fields + bot fields", ["u.user_id", "u.participant_code", "u.first_name", "u.last_name", "u.email", "u.phone", "bu.avito_id", "bu.telegram_id"].every((c) => search.indexOf(c + " LIKE") !== -1));
   check("request: search input sanitized (quote doubled, % escaped)", search.indexOf("иван'100") === -1 && search.indexOf("\\%") !== -1 && search.indexOf("''") !== -1);
 
   const codes = runAdapter("config/adapters/stats.users.execute.request.avito.js", { category: "sport", league: ["gold", "silver"] }).replacements;

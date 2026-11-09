@@ -7,8 +7,10 @@
  *
  * Campaign specifics (SQL and sorting map of the avito instance —
  * .prompts/avito_req.md):
- *   - searchable columns are bu.avito_id and bu.telegram_id ONLY (the bot_users
- *     join), instead of the reference u.email/participant_code/names/phone;
+ *   - searchable columns: the standard registry set (ID участника u.user_id,
+ *     код u.participant_code, имя/фамилия, email, телефон) PLUS the bot
+ *     fields bu.avito_id / bu.telegram_id from the bot_users join
+ *     (update 09.11.26 — per the customer request; originally bot fields only);
  *   - two extra report macros: {{CATEGORY_FILTER}} / {{LEAGUE_FILTER}} —
  *     "AND bu.category_code IN ('…')" / "AND bu.league_code IN ('…')" over the
  *     dictionary codes (values of the «Категория»/«Лига» dropdowns; IN is used
@@ -34,8 +36,9 @@
  *   - registration_date — [from, to] instants → wall time of the API server
  *     timezone → "AND u.created_at >= '…'" / "<= '…'" (no CONVERT_TZ);
  *   - balance — [min, max] → BETWEEN / >= / <=;
- *   - search — "AND (bu.avito_id LIKE '%…%' OR bu.telegram_id LIKE '%…%')"
- *     with % _ \ escaped and single quotes doubled;
+ *   - search — "AND (u.user_id LIKE '%…%' OR … OR bu.telegram_id LIKE '%…%')"
+ *     over SEARCH_COLUMNS (standard registry fields + the bot fields) with
+ *     % _ \ escaped and single quotes doubled;
  *   - category / league — request params of the «Категория»/«Лига» dropdowns
  *     (dictionary code, or an array of codes for a future MultiSelect) →
  *     IN fragments;
@@ -74,9 +77,22 @@ const DEFAULT_ORDER_DIR = "DESC";
 const STATUS_VALUES = ["active", "blocked", "deleted"];
 const PARTICIPANT_STATUS_VALUES = ["ANKET_REQUIRED", "PARTICIPANT"];
 
-// Searchable columns of the avito users registry (.prompts/avito_req.md):
-// the bot fields only, from the bot_users join
-const SEARCH_COLUMNS = ["bu.avito_id", "bu.telegram_id"];
+// Searchable columns of the avito users registry (update 09.11.26, customer
+// request): the standard registry fields — ID участника, код, имя, фамилия,
+// email, телефон (u.user_id was not searchable even in the reference — LIKE
+// over the numeric PK is intentional) — PLUS the bot fields from the
+// bot_users join (.prompts/avito_req.md). One fragment, OR-joined: a hit in
+// any column matches the row.
+const SEARCH_COLUMNS = [
+  "u.user_id",
+  "u.participant_code",
+  "u.first_name",
+  "u.last_name",
+  "u.email",
+  "u.phone",
+  "bu.avito_id",
+  "bu.telegram_id",
+];
 
 function transform(params = {}) {
   const { event = {}, ...base } = params;

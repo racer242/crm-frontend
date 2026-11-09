@@ -761,7 +761,8 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 ```
 
 Механика примера: адаптеры переключаются заменой `script` в записи реестра
-`adapters` (копии с суффиксом `.avito.js` — поиск по `bu.avito_id`/`bu.telegram_id`,
+`adapters` (копии с суффиксом `.avito.js` — поиск по стандартным полям
+реестра + `bu.avito_id`/`bu.telegram_id`,
 макросы `{{CATEGORY_FILTER}}`/`{{LEAGUE_FILTER}}`, `MAILING_FILTER` всегда пуст,
 белый список сортировки `USERS_AVITO_SORTABLE_COLUMNS` в `_shared.js`); два
 словарных фида добавляются в конец `dataFeed` (матч по `url`), execute-фид
