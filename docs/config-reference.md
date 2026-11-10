@@ -765,13 +765,13 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 
 - `adapters.json` — объект записей реестра: замена `script` эталонных
   адаптеров users + новые адаптеры (`dictionaries.response.avito`, рейтинг и
-  задания карточки — 6 записей);
+  задания карточки с отдельным response — 7 записей);
 - `api-routes.json` — массив дельт маршрутов: статические справочники
   `dict_categories`/`dict_leagues` + перенос общего `ops/dictionaries/[name]`
   в конец, маршрут рейтинга `ops/users-v2/rating/execute` (запрос
   `user-avito`) и задачи карточки `ops/users-v2/tasks` /
-  `ops/users-v2/tasks/execute` (запрос `user-avito-tasks`; response-адаптер —
-  общий `stats.users.execute.response`);
+  `ops/users-v2/tasks/execute` (запрос `user-avito-tasks`; response —
+  авито-копия общего адаптера с маппингом `is_continuous` → «Да»/«Нет»);
 - `pages.json` — массив ссылок на файлы страниц: `[ { "$ref":
   "./pages/users-list.json" }, { "$ref": "./pages/user-card.json" } ]`.
 
@@ -820,7 +820,8 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
                     "better_than_percent_label": "" },
     "taskReport": { "columns": [] },
     "tasks": { "value": [], "totalRecords": 0, "first": 0, "rows": 10 },
-    "tasksQuery": { "sortField": "", "sortOrder": -1 }
+    "tasksQuery": { "sortField": "", "sortOrder": -1 },
+    "tasksDialog": {}, "tasksDialogVisible": false
   },
   "dataFeed": [
     { "url": "/api/ops/users-v2/rating/execute", "method": "POST", "target": "state.userRating",
@@ -848,10 +849,26 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
                      "totalRecords": "@state.tasks.totalRecords", "rows": "@state.tasks.rows",
                      "first": "@state.tasks.first", "sortField": "@state.tasksQuery.sortField",
                      "sortOrder": "@state.tasksQuery.sortOrder", "paginator": true, "lazy": true,
-                     "rowsPerPageOptions": [5, 10, 25, 50] },
+                     "selectionMode": "single", "rowsPerPageOptions": [5, 10, 25, 50],
+                     "customColumns": [ { "field": "taskDetails", "header": "", "body": [
+                       { "componentType": "Button", "props": { "icon": "pi pi-external-link", … },
+                         "events": [ { "type": "onClick", "commands": [ …tasksDialogVisible ← true…
+                         ] } ] } ] } ] },
           "events": [ { "type": "onPage", "commands": ["requestTasks"] },
                       { "type": "onSort", "commands": [ …setProperty sortField/sortOrder в tasksQuery,
-                        "requestTasks"… ] } ] } ] } ] }
+                        "requestTasks"… ] },
+                      { "type": "onRowClick", "commands": [ …tasksDialog ← event.data,
+                        tasksDialogVisible ← true… ] } ] } ] } ] },
+    { "id": "taskDialogSection", "type": "section", "blocks": [ { "id": "taskDialogBlock",
+      "components": [
+        { "id": "taskDialog", "type": "component", "componentType": "Dialog",
+          "props": { "header": "@state.tasksDialog.task_code", "visible": "@state.tasksDialogVisible",
+                     "modal": true, "closable": true, "components": [
+            …заголовки трёх блоков Text + 14 LabelledGroup (Идентификация: task_id/task_code;
+            Справочная информация: title/description/league_code/segment/start_date/finish_date/
+            is_continuous; Состояние: display_status/status/assigned_at/accrued_at/updated_at —
+            datetime-поля с dataType "date" форматирует DateCell; кнопка «Закрыть»)… ] },
+          "events": [ { "type": "onHide", "commands": [ …tasksDialogVisible ← false… ] } ] } ] } ] }
   ]
 }
 ```
@@ -893,6 +910,20 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 `ops/users-v2/query/[query_id]` (другая длина пути / литеральный сегмент
 `rating`/`tasks` ≠ `query`), поэтому просто добавляются в конец
 `api-routes.json` без перестановки существующих.
+
+Таблица «Задания» показывает 9 из 16 полей запроса — колонки строит
+адаптер метаданных (`stats.users.tasks.report.response.avito.js`) в
+фиксированном порядке задачи с её заголовками (независимо от порядка
+`fields[]` сервера; отсутствующее поле просто пропускается — деградация до
+обновления SQL бэкенда). Попап открывается и кликом по строке
+(`onRowClick`: `state.tasksDialog ← event.data` + флаг видимости — паттерн
+попапа журнала событий), и кнопкой-иконкой в последнем столбце
+(`customColumns` с новым `field` добавляется в конец колонок; клик по кнопке
+всплывает в обработчик строки — `ButtonComponent` не останавливает
+пропагацию). Лейбл `is_continuous` («Да»/«Нет») готовит execute-response
+адаптер задач (`stats.users.tasks.execute.response.avito.js` — авито-копия
+общего `stats.users.execute.response` с mapRow); datetime-поля в попапе
+форматируются `Text`'ом с `dataType: "date"` (DateCell).
 
 ---
 

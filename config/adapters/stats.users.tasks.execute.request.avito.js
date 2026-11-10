@@ -3,20 +3,21 @@
  * avito_to_the_top campaign (POST ops/users-v2/tasks/execute →
  * /api/v1/crm/stats/query/user-avito-tasks/execute, format json; the query
  * is addressed by the manual query_id "user-avito-tasks",
- * SQL: .prompts/user-page-sql2.md).
+ * SQL: .prompts/user-page-sql2_1.md).
  *
  * The report SQL uses macros: the server substitutes the replacement values
  * into the SQL text and validates that every macro of the report has a
  * passed value — a macro without a key gives 422. All 3 keys are always
  * present in replacements; unused — an empty string:
- *   - USER_ID — UUID of the card participant (bot_users.user_id) →
+ *   - USER_ID — UUID of the card participant (bot_tasks.user_id) →
  *     UUID_TO_BIN({{USER_ID}}) in the query SQL; the page passes it as
  *     data.user_id ({$location.routeParams.user_id}), quoted via sqlString;
  *   - ORDER_BY — a value from the sorting mapping of the doc (bt.id,
- *     bt.task_code, …, display_status — by the SELECT alias: MySQL ORDER BY
+ *     tc.title, …, display_status — by the SELECT alias: MySQL ORDER BY
  *     can reference aliases); an alias outside the whitelist (shared
- *     USERS_AVITO_TASKS_SORTABLE_COLUMNS in _shared.js) → the default
- *     "assigned_at" (new tasks on top);
+ *     USERS_AVITO_TASKS_SORTABLE_COLUMNS in _shared.js; description is not
+ *     sortable — null in the doc mapping) → the default "assigned_at"
+ *     (new tasks on top);
  *   - ORDER_DIR — "ASC" at sortOrder 1, "DESC" at -1; no sort → "DESC".
  *
  * The tasks table is lazy (standard pagination + sorting), so first/rows
@@ -37,6 +38,12 @@ const DEFAULT_ORDER_DIR = "DESC";
 const ORDER_MAP = {
   task_id: "bt.id",
   task_code: "bt.task_code",
+  title: "tc.title",
+  start_date: "tc.start_date",
+  finish_date: "tc.finish_date",
+  is_continuous: "tc.is_continuous",
+  league_code: "tc.league_code",
+  segment: "tc.segment",
   status: "bt.status",
   display_status: "display_status",
   accrued_at: "bt.accrued_at",

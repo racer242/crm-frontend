@@ -23,6 +23,10 @@
     "type": "js",
     "script": "./config/adapters/stats.users.tasks.report.response.avito.js"
   },
+  "stats.users.tasks.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.users.tasks.execute.response.avito.js"
+  },
   "stats.users.tasks.execute.request": {
     "type": "js",
     "script": "./config/adapters/stats.users.tasks.execute.request.avito.js"

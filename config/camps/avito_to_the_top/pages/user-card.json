@@ -22,7 +22,9 @@
     "tasksQuery": {
       "sortField": "",
       "sortOrder": -1
-    }
+    },
+    "tasksDialog": {},
+    "tasksDialogVisible": false
   },
   "dataFeed": [
     {
@@ -193,7 +195,40 @@
                 "lazy": true,
                 "size": "normal",
                 "stripedRows": true,
-                "rowsPerPageOptions": [5, 10, 25, 50]
+                "selectionMode": "single",
+                "rowsPerPageOptions": [5, 10, 25, 50],
+                "customColumns": [
+                  {
+                    "field": "taskDetails",
+                    "header": "",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-external-link",
+                          "severity": "secondary",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.tasksDialogVisible",
+                                  "value": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               "events": [
                 {
@@ -218,6 +253,450 @@
                       }
                     },
                     "requestTasks"
+                  ]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.data",
+                        "target": "state.tasksDialog"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.tasksDialogVisible",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taskDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "taskDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "taskDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "@state.tasksDialog.task_code",
+                "visible": "@state.tasksDialogVisible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": {
+                  "width": "560px"
+                },
+                "containerClassName": "flex flex-column gap-1",
+                "components": [
+                  {
+                    "id": "taskDialogIdentityTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Идентификация"
+                    }
+                  },
+                  {
+                    "id": "taskDialogTaskIdGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "ID задания",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogTaskId",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 text-xs text-500",
+                          "props": {
+                            "value": "@state.tasksDialog.task_id"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogTaskCodeGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Код задания",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogTaskCode",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.task_code"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogDivider1",
+                    "type": "component",
+                    "componentType": "Divider",
+                    "className": "my-1",
+                    "props": {
+                      "type": "solid"
+                    }
+                  },
+                  {
+                    "id": "taskDialogReferenceTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Справочная информация"
+                    }
+                  },
+                  {
+                    "id": "taskDialogTitleGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Название",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogTitle",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.title"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogDescriptionGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Описание",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogDescription",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 white-space-pre-wrap",
+                          "props": {
+                            "value": "@state.tasksDialog.description"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogLeagueGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Код лиги",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogLeague",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.league_code"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogSegmentGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Сегмент",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogSegment",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.segment"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogStartDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата старта",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogStartDate",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.start_date",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogFinishDateGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата окончания",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogFinishDate",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.finish_date",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogIsContinuousGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Длительное задание",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogIsContinuous",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.is_continuous"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogDivider2",
+                    "type": "component",
+                    "componentType": "Divider",
+                    "className": "my-1",
+                    "props": {
+                      "type": "solid"
+                    }
+                  },
+                  {
+                    "id": "taskDialogStatusTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Состояние"
+                    }
+                  },
+                  {
+                    "id": "taskDialogDisplayStatusGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Статус",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogDisplayStatus",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.display_status"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogStatusGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Статус (идентификатор)",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogStatus",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 text-xs text-500",
+                          "props": {
+                            "value": "@state.tasksDialog.status"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogAssignedAtGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата назначения",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogAssignedAt",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.assigned_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogAccruedAtGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата начисления баллов",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogAccruedAt",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.accrued_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogUpdatedAtGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата обновления",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "taskDialogUpdatedAt",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.tasksDialog.updated_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "taskDialogActions",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex gap-2 justify-content-end",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "taskDialogCloseButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Закрыть",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.tasksDialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.tasksDialogVisible",
+                        "value": false
+                      }
+                    }
                   ]
                 }
               ]

@@ -63,8 +63,8 @@
     "query": true,
     "adapter": {
       "request": "stats.users.tasks.execute.request",
-      "response": "stats.users.execute.response"
+      "response": "stats.users.tasks.execute.response"
     },
-    "note": "Авито: выполнение запроса заданий участника — user-avito-tasks: USER_ID + ORDER_BY/ORDER_DIR (маппинг сортировки §sql2, дефолт assigned_at DESC); response — общий stats.users.execute.response (mapRow для строк задач — passthrough)"
+    "note": "Авито: выполнение запроса заданий участника — user-avito-tasks (.prompts/user-page-sql2_1.md): USER_ID + ORDER_BY/ORDER_DIR (маппинг сортировки дока, дефолт assigned_at DESC); response — авито-копия stats.users.execute.response с маппингом is_continuous → «Да»/«Нет» (строки задач идут и в таблицу, и в попап деталей)"
   }
 ]

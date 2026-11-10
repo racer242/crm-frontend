@@ -141,18 +141,38 @@ async function main() {
   check("detailsTable: mailing row kept", rows.some((r) => r.label === "Согласие на рассылку" && r.value === "@state.userData.mailing"));
   check("detailsTable: new rows bound to userRating", rows[5].label === "Avito ID" && rows[5].value === "@state.userRating.avito_id" && rows[6].label === "Telegram ID" && rows[7].label === "Категория" && rows[7].value === "@state.userRating.category_name" && rows[8].label === "Лига" && rows[9].label === "Место в рейтинге" && rows[9].value === "@state.userRating.place" && rows[10].label === "Результат лучше, чем у" && rows[10].value === "@state.userRating.better_than_percent_label");
 
-  // Секция «Задания» — последняя секция страницы, ниже основной
+  // Секция «Задания» — ниже основной раскладки, попап деталей — последней
   const sectionIds = avitoUser.sections.map((s) => s.id);
-  check("tasks section appended last (below the main layout)", sectionIds[sectionIds.length - 1] === "userTasksSection" && sectionIds.indexOf("mainLayout") === sectionIds.length - 2);
-  check("reference sections unchanged", refUser.sections.length === avitoUser.sections.length - 1 && refUser.sections.every((s) => sectionIds.indexOf(s.id) !== -1));
+  check("tasks section below the main layout", sectionIds[sectionIds.length - 2] === "userTasksSection" && sectionIds.indexOf("mainLayout") === sectionIds.length - 3);
+  check("reference sections unchanged", refUser.sections.length === avitoUser.sections.length - 2 && refUser.sections.every((s) => sectionIds.indexOf(s.id) !== -1));
   const tasksSection = avitoUser.sections.find((s) => s.id === "userTasksSection");
   const table = tasksSection.blocks.find((b) => b.id === "userTasksBlock").components.find((c) => c.id === "userTasksTable");
   check("tasks table: Panel wrapper «Задания»", tasksSection.blocks[0].wrapper.component === "Panel" && tasksSection.blocks[0].wrapper.props.header === "Задания");
-  check("tasks table: standard paginator + lazy", table.props.paginator === true && table.props.lazy === true && JSON.stringify(table.props.rowsPerPageOptions) === JSON.stringify([5, 10, 25, 50]) && table.props.rows === "@state.tasks.rows" && table.props.first === "@state.tasks.first");
+  check("tasks table: standard paginator + lazy + row select", table.props.paginator === true && table.props.lazy === true && table.props.selectionMode === "single" && JSON.stringify(table.props.rowsPerPageOptions) === JSON.stringify([5, 10, 25, 50]) && table.props.rows === "@state.tasks.rows" && table.props.first === "@state.tasks.first");
   check("tasks table: columns/totalRecords bindings", table.props.columns === "@state.taskReport.columns" && table.props.totalRecords === "@state.tasks.totalRecords" && table.props.value === "@state.tasks.value");
   const onPage = table.events.find((e) => e.type === "onPage");
   const onSort = table.events.find((e) => e.type === "onSort");
+  const onRowClick = table.events.find((e) => e.type === "onRowClick");
   check("tasks table: onPage/onSort → requestTasks", onPage.commands[0] === "requestTasks" && onSort.commands.length === 3 && onSort.commands[0].params.target === "state.tasksQuery.sortField" && onSort.commands[1].params.target === "state.tasksQuery.sortOrder" && onSort.commands[2] === "requestTasks");
+  check("tasks table: onRowClick fills the dialog and opens it", onRowClick.commands.length === 2 && onRowClick.commands[0].params.source === "event.data" && onRowClick.commands[0].params.target === "state.tasksDialog" && onRowClick.commands[1].params.target === "state.tasksDialogVisible" && onRowClick.commands[1].params.value === true);
+  const detailsCol = (table.props.customColumns || []).find((c) => c.field === "taskDetails");
+  const detailsBtn = detailsCol && detailsCol.body[0];
+  check("tasks table: details icon column (appended last, no header)", detailsCol !== undefined && detailsCol.header === "" && detailsBtn !== undefined && detailsBtn.componentType === "Button" && detailsBtn.props.icon === "pi pi-external-link" && detailsBtn.events[0].type === "onClick" && detailsBtn.events[0].commands[0].params.target === "state.tasksDialogVisible" && detailsBtn.events[0].commands[0].params.value === true);
+
+  // Попап деталей задания (по образцу eventDialogSection страницы журнала)
+  const dialogSection = avitoUser.sections.find((s) => s.id === "taskDialogSection");
+  const dialog = dialogSection.blocks[0].components.find((c) => c.id === "taskDialog");
+  check("task dialog state defaults", JSON.stringify(avitoUser.state.tasksDialog) === "{}" && avitoUser.state.tasksDialogVisible === false);
+  check("task dialog: visible/modal/closable + onHide closes", dialog.props.visible === "@state.tasksDialogVisible" && dialog.props.modal === true && dialog.props.closable === true && dialog.events[0].type === "onHide" && dialog.events[0].commands[0].params.target === "state.tasksDialogVisible" && dialog.events[0].commands[0].params.value === false);
+  const dialogComponents = dialog.props.components;
+  const blockTitles = dialogComponents.filter((c) => c.componentType === "Text" && c.className === "m-0 text-sm font-semibold").map((c) => c.props.value);
+  check("task dialog: 3 blocks (identification/reference/status)", JSON.stringify(blockTitles) === JSON.stringify(["Идентификация", "Справочная информация", "Состояние"]));
+  const dialogBindings = dialogComponents.filter((c) => c.componentType === "LabelledGroup").map((g) => g.props.components[0].props);
+  const dialogTexts = dialogComponents.filter((c) => c.componentType === "LabelledGroup").map((g) => g.props.components[0]);
+  check("task dialog: 14 fields bound to tasksDialog (2+7+5)", dialogBindings.length === 14 && dialogBindings.every((p) => p.value.indexOf("@state.tasksDialog.") === 0));
+  check("task dialog: 5 datetimes formatted via dataType date", dialogBindings.filter((p) => p.dataType === "date").length === 5 && ["start_date", "finish_date", "assigned_at", "accrued_at", "updated_at"].every((f) => dialogBindings.find((p) => p.value === "@state.tasksDialog." + f).dataType === "date"));
+  check("task dialog: is_continuous bound, description multiline (className on the component)", dialogTexts.find((t) => t.props.value === "@state.tasksDialog.is_continuous") !== undefined && dialogTexts.find((t) => t.props.value === "@state.tasksDialog.description").className === "m-0 white-space-pre-wrap");
+  check("task dialog: close button + header = task_code", dialogComponents.some((c) => c.componentType === "LayoutGroup" && c.props.components[0].props.label === "Закрыть") && dialog.props.header === "@state.tasksDialog.task_code");
 
   // apiRoutes: 3 новых маршрута + матринг (новые пути не перекрыты более
   // ранними маршрутами, сами себя матчат)
@@ -173,12 +193,12 @@ async function main() {
   const tasksGetRoute = avitoRoutes.find((r) => r.path === "ops/users-v2/tasks");
   check("tasks GET route: user-avito-tasks + report adapter", tasksGetRoute.url === "/api/v1/crm/stats/query/user-avito-tasks" && tasksGetRoute.adapter.response === "stats.users.tasks.report.response");
   const tasksPostRoute = avitoRoutes.find((r) => r.path === "ops/users-v2/tasks/execute");
-  check("tasks POST route: user-avito-tasks + request adapter + shared response", tasksPostRoute.url === "/api/v1/crm/stats/query/user-avito-tasks/execute" && tasksPostRoute.query === true && tasksPostRoute.adapter.request === "stats.users.tasks.execute.request" && tasksPostRoute.adapter.response === "stats.users.execute.response");
+  check("tasks POST route: user-avito-tasks + avito request/response adapters", tasksPostRoute.url === "/api/v1/crm/stats/query/user-avito-tasks/execute" && tasksPostRoute.query === true && tasksPostRoute.adapter.request === "stats.users.tasks.execute.request" && tasksPostRoute.adapter.response === "stats.users.tasks.execute.response");
   check("reference apiRoutes untouched (no card routes)", reference.apiRoutes.every((r) => r.path.indexOf("users-v2/rating") === -1 && r.path.indexOf("users-v2/tasks") === -1 && String(r.url || "").indexOf("user-avito") === -1));
 
-  // Реестр адаптеров: 4 новых ключа только у Авито
-  check("adapters registered (4 card keys)", ["stats.users.rating.execute.request", "stats.users.rating.execute.response", "stats.users.tasks.report.response", "stats.users.tasks.execute.request"].every((k) => avito.adapters[k] !== undefined && avito.adapters[k].script.indexOf("avito.js") !== -1));
-  check("reference adapters untouched (no card keys)", ["stats.users.rating.execute.request", "stats.users.rating.execute.response", "stats.users.tasks.report.response", "stats.users.tasks.execute.request"].every((k) => reference.adapters[k] === undefined));
+  // Реестр адаптеров: 5 новых ключей только у Авито
+  check("adapters registered (5 card keys)", ["stats.users.rating.execute.request", "stats.users.rating.execute.response", "stats.users.tasks.report.response", "stats.users.tasks.execute.request", "stats.users.tasks.execute.response"].every((k) => avito.adapters[k] !== undefined && avito.adapters[k].script.indexOf("avito.js") !== -1));
+  check("reference adapters untouched (no card keys)", ["stats.users.rating.execute.request", "stats.users.rating.execute.response", "stats.users.tasks.report.response", "stats.users.tasks.execute.request", "stats.users.tasks.execute.response"].every((k) => reference.adapters[k] === undefined));
 
   // 3) Исполнение адаптеров карточки
 
@@ -213,23 +233,38 @@ async function main() {
   const ratingRowsContract = runAdapter("config/adapters/stats.users.rating.execute.response.avito.js", { status: "ok", data: { rows: [{ values: { place: 2, better_than_percent: 50 } }] } });
   check("rating response: future rows/values contract", ratingRowsContract.place === "2" && ratingRowsContract.better_than_percent_label === "50% участников");
 
-  // tasks report response: columns из fields[]
-  const tasksMeta = runAdapter("config/adapters/stats.users.tasks.report.response.avito.js", {
-    status: "ok",
-    data: {
-      id: "user-avito-tasks",
-      title: "Задания участника",
-      fields: [
-        { name: "task_id", type: "string", title: "ID задания" },
-        { name: "accrued_at", type: "datetime", title: "Дата начисления баллов" },
-        { name: "evil_column", type: "string", title: "Вне whitelist" },
-      ],
-    },
-  });
-  check("tasks metadata: columns mapped", tasksMeta.columns.length === 3 && tasksMeta.columns[0].field === "task_id" && tasksMeta.columns[0].header === "ID задания" && tasksMeta.id === "user-avito-tasks");
-  check("tasks metadata: sortable by whitelist", tasksMeta.columns[0].sortable === true && tasksMeta.columns[2].sortable === false);
-  check("tasks metadata: datetime → dataType date", tasksMeta.columns[1].dataType === "date");
+  // tasks report response: из 16 полей sql2_1 — 9 табличных колонок в
+  // фиксированном порядке задачи (.prompts/avito_tasks.md), остальные — в
+  // попапе из данных строки
+  const sql21Fields = [
+    { name: "task_id", type: "string", title: "ID задания", sortable: true },
+    { name: "task_code", type: "string", title: "Код задания", sortable: true },
+    { name: "title", type: "string", title: "Название", sortable: true },
+    { name: "description", type: "string", title: "Описание", sortable: false },
+    { name: "start_date", type: "datetime", title: "Дата старта", sortable: true },
+    { name: "finish_date", type: "datetime", title: "Дата окончания", sortable: true },
+    { name: "is_continuous", type: "boolean", title: "Длительное задание", sortable: true },
+    { name: "league_code", type: "string", title: "Код лиги", sortable: true },
+    { name: "segment", type: "string", title: "Сегмент", sortable: true },
+    { name: "status", type: "string", title: "Статус (системный)", sortable: true },
+    { name: "display_status", type: "string", title: "Статус (отображение)", sortable: true },
+    { name: "accrued_at", type: "datetime", title: "Дата начисления баллов", sortable: true },
+    { name: "avito_id", type: "string", title: "Avito ID", sortable: true },
+    { name: "telegram_id", type: "number", title: "Telegram ID", sortable: true },
+    { name: "assigned_at", type: "datetime", title: "Дата назначения", sortable: true },
+    { name: "updated_at", type: "datetime", title: "Дата обновления", sortable: true },
+  ];
+  const tasksMeta = runAdapter("config/adapters/stats.users.tasks.report.response.avito.js", { status: "ok", data: { id: "user-avito-tasks", title: "Задания участника", fields: sql21Fields } });
+  const metaFields = tasksMeta.columns.map((c) => c.field);
+  check("tasks metadata: 9 table columns in the fixed task order", JSON.stringify(metaFields) === JSON.stringify(["task_code", "title", "display_status", "start_date", "finish_date", "is_continuous", "assigned_at", "accrued_at", "updated_at"]));
+  check("tasks metadata: titles from the task (not server ones)", tasksMeta.columns.find((c) => c.field === "display_status").header === "Статус" && tasksMeta.columns.find((c) => c.field === "task_code").header === "Код задания" && tasksMeta.id === "user-avito-tasks");
+  check("tasks metadata: popup-only fields filtered out", metaFields.indexOf("description") === -1 && metaFields.indexOf("task_id") === -1 && metaFields.indexOf("league_code") === -1 && metaFields.indexOf("segment") === -1 && metaFields.indexOf("status") === -1 && metaFields.indexOf("avito_id") === -1);
+  check("tasks metadata: sortable per whitelist", tasksMeta.columns.every((c) => c.sortable === true));
+  check("tasks metadata: datetimes → dataType date", tasksMeta.columns.filter((c) => c.dataType === "date").length === 5);
   check("tasks metadata: no filters (empty fallback)", tasksMeta.filters.length === 0);
+  // Деградация: бэкенд ещё на старом SQL (без полей календаря) — 5 колонок
+  const tasksMetaOld = runAdapter("config/adapters/stats.users.tasks.report.response.avito.js", { status: "ok", data: { fields: [sql21Fields[0], { name: "task_code", type: "string" }, { name: "display_status", type: "string" }, { name: "accrued_at", type: "datetime" }, { name: "assigned_at", type: "datetime" }, { name: "updated_at", type: "datetime" }] } });
+  check("tasks metadata: old backend → 5 columns (graceful degradation)", tasksMetaOld.columns.length === 5 && tasksMetaOld.columns.every((c) => c.field !== "title" && c.field !== "start_date"));
   const tasksMetaEmpty = runAdapter("config/adapters/stats.users.tasks.report.response.avito.js", { status: "ok", data: { fields: [] } });
   check("tasks metadata: empty fields → empty columns", tasksMetaEmpty.columns.length === 0);
 
@@ -238,16 +273,39 @@ async function main() {
   check("tasks request: 3 macros, default assigned_at DESC", Object.keys(tasksReqEmpty.replacements).length === 3 && tasksReqEmpty.replacements.USER_ID === "" && tasksReqEmpty.replacements.ORDER_BY === "assigned_at" && tasksReqEmpty.replacements.ORDER_DIR === "DESC");
   const tasksReqSort = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { user_id: "uuid'x", sortField: "task_id", sortOrder: 1 });
   check("tasks request: mapping alias → SQL, USER_ID escaped", tasksReqSort.replacements.ORDER_BY === "bt.id" && tasksReqSort.replacements.ORDER_DIR === "ASC" && tasksReqSort.replacements.USER_ID === "'uuid''x'");
+  const tasksReqTitle = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { sortField: "title", sortOrder: 1 });
+  check("tasks request: calendar fields mapped (tc.title/tc.is_continuous)", tasksReqTitle.replacements.ORDER_BY === "tc.title" && runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { sortField: "is_continuous", sortOrder: 1 }).replacements.ORDER_BY === "tc.is_continuous");
   const tasksReqAlias = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { sortField: "display_status", sortOrder: -1 });
   check("tasks request: display_status sorted by alias", tasksReqAlias.replacements.ORDER_BY === "display_status" && tasksReqAlias.replacements.ORDER_DIR === "DESC");
   const tasksReqUnknown = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { sortField: "evil; DROP", sortOrder: 1 });
   check("tasks request: non-whitelisted alias → default", tasksReqUnknown.replacements.ORDER_BY === "assigned_at" && tasksReqUnknown.replacements.ORDER_DIR === "DESC");
+  const tasksReqDesc = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { sortField: "description", sortOrder: 1 });
+  check("tasks request: description not sortable → default", tasksReqDesc.replacements.ORDER_BY === "assigned_at" && tasksReqDesc.replacements.ORDER_DIR === "DESC");
   const tasksReqPage = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { first: 20, rows: 10 });
   check("tasks request: first/rows → page", tasksReqPage.page === 3 && tasksReqPage.limit === 10);
   const tasksReqCap = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { rows: 200 });
   check("tasks request: limit capped at 100", tasksReqCap.limit === 100);
   const tasksReqEvent = runAdapter("config/adapters/stats.users.tasks.execute.request.avito.js", { first: 0, rows: 10, event: { sortField: "task_code", sortOrder: 1 } });
   check("tasks request: event overrides base sort", tasksReqEvent.replacements.ORDER_BY === "bt.task_code" && tasksReqEvent.replacements.ORDER_DIR === "ASC");
+
+  // tasks execute response: конверт + is_continuous → «Да»/«Нет» (строки
+  // задач идут и в таблицу, и в попап деталей)
+  const tasksResp = runAdapter("config/adapters/stats.users.tasks.execute.response.avito.js", {
+    status: "ok",
+    data: {
+      items: [
+        { task_code: "Cargo_S_5_W1", is_continuous: 1, assigned_at: "2026-11-02T00:00:00" },
+        { task_code: "Cargo_ML_big_5_W3", is_continuous: 0 },
+        { task_code: "ORPHAN", is_continuous: null },
+      ],
+      pagination: { page: 2, limit: 10, total_items: 37 },
+    },
+  });
+  check("tasks response: envelope → value/totalRecords/first", tasksResp.value.length === 3 && tasksResp.totalRecords === 37 && tasksResp.first === 10 && tasksResp.rows === 10);
+  check("tasks response: is_continuous → Да/Нет/empty (NULL — вне календаря)", tasksResp.value[0].is_continuous === "Да" && tasksResp.value[1].is_continuous === "Нет" && tasksResp.value[2].is_continuous === "");
+  const tasksRespBool = runAdapter("config/adapters/stats.users.tasks.execute.response.avito.js", { status: "ok", data: { rows: [{ values: { is_continuous: true } }], meta: { total_count: 1, first: 0, limit: 10 } } });
+  check("tasks response: future contract + boolean → Да", tasksRespBool.value[0].is_continuous === "Да" && tasksRespBool.totalRecords === 1);
+  check("tasks response: rest of the row untouched (popup binds raw fields)", tasksResp.value[0].task_code === "Cargo_S_5_W1" && tasksResp.value[0].assigned_at === "2026-11-02T00:00:00" && tasksResp.value[2].task_code === "ORPHAN");
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

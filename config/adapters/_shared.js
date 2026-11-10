@@ -236,9 +236,10 @@ const AVITO_UNASSIGNED_CODE = "__none__";
 
 /**
  * users для кампании avito_to_the_top, запрос «Задания участника» (query_id
- * user-avito-tasks, .prompts/user-page-sql2.md): алиасы колонок, которые
- * умеет сортировать SQL запроса (маппинг сортировки из дока), единый белый
- * список для двух адаптеров:
+ * user-avito-tasks, .prompts/user-page-sql2_1.md): алиасы колонок, которые
+ * умеет сортировать SQL запроса (маппинг сортировки из дока — 16 алиасов,
+ * description → null: длинный текст без индекса не сортируется), единый
+ * белый список для двух адаптеров:
  *  - stats.users.tasks.execute.request.avito.js: ORDER_BY принимает только
  *    алиас из списка (чужое значение → дефолт assigned_at + DESC);
  *  - stats.users.tasks.report.response.avito.js: колонки метаданных получают
@@ -248,6 +249,12 @@ const AVITO_UNASSIGNED_CODE = "__none__";
 const USERS_AVITO_TASKS_SORTABLE_COLUMNS = [
   "task_id",
   "task_code",
+  "title",
+  "start_date",
+  "finish_date",
+  "is_continuous",
+  "league_code",
+  "segment",
   "status",
   "display_status",
   "accrued_at",
