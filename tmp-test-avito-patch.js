@@ -192,6 +192,30 @@ async function main() {
   const dictEmpty = runAdapter("config/adapters/dictionaries.response.avito.js", { status: "ok", data: { items: [] } });
   check("dict avito: empty dict still offers unassigned", dictEmpty.options.length === 1 && dictEmpty.options[0].label === "Не назначено");
   check("dict reference: no unassigned option", runAdapter("config/adapters/dictionaries.response.js", { status: "ok", data: { items: [] } }).options.length === 0);
+  check("dict categories: no pair items without ML pairs", dictCat.options.every((o) => String(o.value).indexOf("pair:") !== 0));
+
+  // Обобщённые пункты пар лиг «*ML / *ML_big» (общая агрегация рейтинга — 11.11.26)
+  const dictLeagues = runAdapter("config/adapters/dictionaries.response.avito.js", {
+    status: "ok",
+    data: {
+      items: [
+        { code: "Cargo_ML", name: "Cargo_ML", is_active: true },
+        { code: "Cargo_ML_big", name: "Cargo_ML_big", is_active: true },
+        { code: "Cargo_S_5_W1", name: "Cargo_S_5_W1", is_active: true },
+        { code: "Evacuation_ML", name: "Evacuation_ML", is_active: false },
+        { code: "Evacuation_ML_big", name: "Evacuation_ML_big", is_active: true },
+        { code: "Passenger_ML", name: "Passenger_ML", is_active: true },
+        { code: "Passenger_ML_big", name: "Passenger_ML_big", is_active: true },
+        { code: "Old_ML", name: "Old_ML", is_active: false },
+      ],
+    },
+  });
+  const leagueValues = dictLeagues.options.map((o) => o.value);
+  check("dict leagues: 3 ML pairs generalized (pair: pseudo-codes injected)", leagueValues.filter((v) => v.indexOf("pair:") === 0).length === 3 && leagueValues.indexOf("pair:Cargo_ML") !== -1 && leagueValues.indexOf("pair:Evacuation_ML") !== -1 && leagueValues.indexOf("pair:Passenger_ML") !== -1);
+  check("dict leagues: pair item sits right after _big, label «имя без _big (все)»", leagueValues.indexOf("pair:Passenger_ML") === leagueValues.indexOf("Passenger_ML_big") + 1 && leagueValues.indexOf("pair:Cargo_ML") === leagueValues.indexOf("Cargo_ML_big") + 1 && dictLeagues.options.find((o) => o.value === "pair:Passenger_ML").label === "Passenger_ML (все)");
+  check("dict leagues: pair label keeps the raw base name (inactive suffix dropped)", dictLeagues.options.find((o) => o.value === "pair:Evacuation_ML").label === "Evacuation_ML (все)");
+  check("dict leagues: non-ML league untouched, _ML without _big → no pair", leagueValues.indexOf("Cargo_S_5_W1") !== -1 && leagueValues.indexOf("pair:Old_ML") === -1);
+  check("dict leagues: totalRecords fallback subtracts pair items", dictLeagues.totalRecords === 8);
 
   const codes = runAdapter("config/adapters/stats.users.execute.request.avito.js", { category: "sport", league: ["gold", "silver"] }).replacements;
   check("request: single category wrapped into IN", codes.CATEGORY_FILTER === "AND (bu.category_code IN ('sport'))");
@@ -202,6 +226,11 @@ async function main() {
   check("request: unassigned sentinel → IS NULL OR empty string", unassignedReq === "AND (bu.category_code IS NULL OR bu.category_code = '')");
   const mixed = runAdapter("config/adapters/stats.users.execute.request.avito.js", { league: ["gold", UNASSIGNED, ""] }).replacements.LEAGUE_FILTER;
   check("request: unassigned + codes in one OR-group", mixed === "AND (bu.league_code IN ('gold') OR bu.league_code IS NULL OR bu.league_code = '')");
+  const pairReq = runAdapter("config/adapters/stats.users.execute.request.avito.js", { league: "pair:Passenger_ML" }).replacements.LEAGUE_FILTER;
+  check("request: league pair pseudo-code → IN of both pair codes", pairReq === "AND (bu.league_code IN ('Passenger_ML', 'Passenger_ML_big'))");
+  const pairMixed = runAdapter("config/adapters/stats.users.execute.request.avito.js", { league: ["gold", "pair:Passenger_ML", UNASSIGNED] }).replacements.LEAGUE_FILTER;
+  check("request: pair + code + unassigned in one OR-group", pairMixed === "AND (bu.league_code IN ('gold', 'Passenger_ML', 'Passenger_ML_big') OR bu.league_code IS NULL OR bu.league_code = '')");
+  check("request: plain ML code not expanded", runAdapter("config/adapters/stats.users.execute.request.avito.js", { league: "Passenger_ML" }).replacements.LEAGUE_FILTER === "AND (bu.league_code IN ('Passenger_ML'))");
 
   const filtered = runAdapter("config/adapters/stats.users.execute.request.avito.js", {
     filters: [

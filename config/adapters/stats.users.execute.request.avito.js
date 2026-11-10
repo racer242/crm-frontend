@@ -44,7 +44,9 @@
  *     an OR-group of an IN fragment and the unassigned condition; the
  *     AVITO_UNASSIGNED_CODE sentinel («Не назначено», added to the options by
  *     dictionaries.response.avito.js) selects participants with no value
- *     assigned: (col IS NULL OR col = '');
+ *     assigned: (col IS NULL OR col = ''); the generalized league-pair
+ *     pseudo-code pair:<base> (leagues «*ML / *ML_big» share the rating
+ *     aggregation on the backend) expands into IN ('base', 'base_big');
  *   - sortField (whitelist) + sortOrder (1/-1) → {{ORDER_BY}}/{{ORDER_DIR}};
  *     no sort → the default "created_at" + "DESC".
  *
@@ -208,7 +210,12 @@ function optionsToIn(value, dbValues, column) {
 // («Не назначено», added to the options by dictionaries.response.avito.js)
 // selects participants with no category/league assigned — the column is NULL
 // or an empty string; combined with regular codes everything goes into one
-// OR-group.
+// OR-group. The generalized league-pair pseudo-code "pair:<base>"
+// (AVITO_ML_PAIR_PREFIX, injected into the leagues dictionary by
+// dictionaries.response.avito.js) expands syntactically into the two pair
+// codes: 'base' + 'base_big' (AVITO_ML_PAIR_SUFFIX) in the same IN list — if
+// the "_big" league does not exist in the DB, the extra element simply
+// matches nothing.
 function codesFragment(value, column) {
   const raw = Array.isArray(value) ? value : [value];
   const codes = [];
@@ -221,6 +228,13 @@ function codesFragment(value, column) {
     if (str === "") return;
     if (str === AVITO_UNASSIGNED_CODE) {
       unassigned = true;
+      return;
+    }
+    if (str.indexOf(AVITO_ML_PAIR_PREFIX) === 0) {
+      const base = str.slice(AVITO_ML_PAIR_PREFIX.length);
+      if (base) {
+        codes.push(sqlString(base), sqlString(base + AVITO_ML_PAIR_SUFFIX));
+      }
       return;
     }
     codes.push(sqlString(str));
