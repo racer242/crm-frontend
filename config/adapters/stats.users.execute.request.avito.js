@@ -33,8 +33,9 @@
  *   - status / participant_status — options boolean array aligned with opts →
  *     "AND u.status IN ('active', 'deleted')";
  *   - mailing — always "" (the UI filter is removed for the campaign);
- *   - registration_date — [from, to] instants → wall time of the API server
- *     timezone → "AND u.created_at >= '…'" / "<= '…'" (no CONVERT_TZ);
+ *   - registration_date — [from, to] → wall time of the API server timezone →
+ *     "AND u.created_at >= '…'" / "<= '…'" (no CONVERT_TZ); date-only values
+ *     ('YYYY-MM-DD') are calendar days: from → start of day, to → end of day;
  *   - balance — [min, max] → BETWEEN / >= / <=;
  *   - search — "AND (u.user_id LIKE '%…%' OR … OR bu.telegram_id LIKE '%…%')"
  *     over SEARCH_COLUMNS (standard registry fields + the bot fields) with
@@ -250,12 +251,19 @@ function codesFragment(value, column) {
   return "AND (" + parts.join(" OR ") + ")";
 }
 
-// period: [from, to] → "AND u.created_at >= '…'" / "<= '…'" in the API timezone
+// period: [from, to] → "AND u.created_at >= '…'" / "<= '…'" in the API
+// timezone; date-only values ('YYYY-MM-DD' — the FiltersPanel contract for
+// a Calendar without time) are calendar days: from → start of day,
+// to → end of day (the whole last day is included)
 function dateFragment(value, index, operator) {
   if (!Array.isArray(value)) return "";
-  const wall = toZonedDateTime(value[index], getApiTimezone());
-  if (!wall) return "";
-  return "AND u.created_at " + operator + " " + sqlString(wall);
+  const bound = toWallPeriodBound(
+    value[index],
+    operator === "<=" ? "to" : "from",
+    getApiTimezone(),
+  );
+  if (!bound) return "";
+  return "AND u.created_at " + operator + " " + sqlString(bound);
 }
 
 // balance: [min, max] → BETWEEN / >= / <=; bounds validated as numbers

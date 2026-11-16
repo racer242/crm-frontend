@@ -33,8 +33,10 @@
  *     decision 09.10.26): the key RETAIL_CHAIN_FILTER is still always sent
  *     (the macro exists in the report SQL — a missing key gives 422) and its
  *     value is always "";
- *   - registration_date / purchase_date — [from, to] instants → wall time of
- *     the API timezone → "AND r.created_at >= '…'" / "AND r.purchase_at <= '…'";
+ *   - registration_date / purchase_date — [from, to] → wall time of the API
+ *     timezone → "AND r.created_at >= '…'" / "AND r.purchase_at <= '…'";
+ *     date-only values ('YYYY-MM-DD', the FiltersPanel contract for a Calendar
+ *     without time) are calendar days: from → start of day, to → end of day;
  *   - promo_products_amount — [min, max] → "AND promo_products_amount BETWEEN
  *     min AND max" (>= / <= when one bound is missing; bounds validated as
  *     numbers); the column lives in the outer subquery alias — unqualified;
@@ -216,13 +218,20 @@ function optionsToIn(value, dbValues, column) {
 }
 
 // period: filter id → [from, to] → "AND {column} >= '…'" / "<= '…'" — the wall
-// time of the API timezone (no CONVERT_TZ, see the header)
+// time of the API timezone (no CONVERT_TZ, see the header). Date-only values
+// ('YYYY-MM-DD' — the FiltersPanel contract for a Calendar without time) are
+// calendar days: from → start of day, to → end of day (the whole last day
+// is included)
 function periodFragment(filters, id, index, operator) {
   const value = filterValue(filters, id);
   if (!Array.isArray(value)) return "";
-  const wall = toZonedDateTime(value[index], getApiTimezone());
-  if (!wall) return "";
-  return "AND " + PERIOD_COLUMNS[id] + " " + operator + " " + sqlString(wall);
+  const bound = toWallPeriodBound(
+    value[index],
+    operator === "<=" ? "to" : "from",
+    getApiTimezone(),
+  );
+  if (!bound) return "";
+  return "AND " + PERIOD_COLUMNS[id] + " " + operator + " " + sqlString(bound);
 }
 
 // range: [min, max] → BETWEEN / >= / <=; bounds validated as numbers; the

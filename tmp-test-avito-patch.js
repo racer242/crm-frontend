@@ -256,6 +256,19 @@ async function main() {
   check("request: sort full_name not whitelisted → default", JSON.stringify(sortCase("full_name", 1)) === JSON.stringify(["created_at", "DESC"]));
   check("request: sort injection → default", JSON.stringify(sortCase("u.email; DROP", 1)) === JSON.stringify(["created_at", "DESC"]));
 
+  // Период регистрации: date-only контракт FiltersPanel ('YYYY-MM-DD',
+  // wall-дата вне поясов) → from начало дня / to конец дня МСК; ISO-полночь
+  // (старые URL, предвыбор) — to снапится на конец дня
+  const regDays = runAdapter("config/adapters/stats.users.execute.request.avito.js", {
+    filters: [{ id: "registration_date", value: ["2026-11-16", "2026-11-16"] }],
+  }).replacements;
+  check("request: DATE_FROM date-only → начало дня МСК", regDays.DATE_FROM_FILTER === "AND u.created_at >= '2026-11-16 00:00:00'");
+  check("request: DATE_TO date-only → конец дня МСК", regDays.DATE_TO_FILTER === "AND u.created_at <= '2026-11-16 23:59:59'");
+  const regIso = runAdapter("config/adapters/stats.users.execute.request.avito.js", {
+    filters: [{ id: "registration_date", value: ["2026-11-15T21:00:00Z", "2026-11-15T21:00:00Z"] }],
+  }).replacements;
+  check("request: DATE_TO ISO-полночь МСК → конец дня", regIso.DATE_TO_FILTER === "AND u.created_at <= '2026-11-16 23:59:59'");
+
   // 6) Исполнение авито response-адаптера
   const meta = {
     status: "ok",

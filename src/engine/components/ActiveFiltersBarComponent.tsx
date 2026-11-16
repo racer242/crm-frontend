@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { FilterItem, FilterModel } from "@/types";
 import { isFilterActive } from "./filtersUtils";
 import { ComponentRendererProps } from "./types";
+import { parseDateOnly } from "@/utils/date";
 
 /**
  * ActiveFiltersBar — горизонтальная панель активных фильтров в виде чипов
@@ -210,6 +211,17 @@ export function renderActiveFiltersBar({
 function formatDate(value: any): string {
   if (!value) return "";
   try {
+    // Календарная дата 'YYYY-MM-DD' (контракт period) — показываем локальными
+    // частями: new Date('YYYY-MM-DD') читает строку как UTC-полночь и в поясах
+    // с отрицательным смещением показывал бы предыдущий день
+    if (typeof value === "string") {
+      const wall = parseDateOnly(value);
+      if (wall) {
+        return `${String(wall.getDate()).padStart(2, "0")}.${String(
+          wall.getMonth() + 1,
+        ).padStart(2, "0")}.${wall.getFullYear()}`;
+      }
+    }
     const date = new Date(value);
     if (isNaN(date.getTime())) return String(value);
     const day = String(date.getDate()).padStart(2, "0");

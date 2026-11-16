@@ -246,10 +246,23 @@ async function main() {
   check("trx request: segment all → empty", runAdapter(trxReqPath, { filters: [{ id: "segment", value: [true, true, true] }] }).replacements.SEGMENT_FILTER === "");
   check("trx request: unknown filter id ignored", runAdapter(trxReqPath, { filters: [{ id: "hacker", value: ["'"] }] }).replacements.SEARCH_FILTER === "");
 
-  // request transactions: период МСК→UTC через CONVERT_TZ; range баллов
+  // request transactions: период МСК→UTC через CONVERT_TZ; range баллов.
+  // Основной контракт FiltersPanel — date-only строки 'YYYY-MM-DD' (wall-дата
+  // вне поясов): from → начало дня, to → конец дня (все сутки конечного дня)
+  const periodDays = runAdapter(trxReqPath, { filters: [{ id: "processed_date", value: ["2026-11-16", "2026-11-16"] }] });
+  check("trx request: DATE_FROM date-only → начало дня МСК", periodDays.replacements.DATE_FROM_FILTER === "AND tl.processed_at >= CONVERT_TZ('2026-11-16 00:00:00', '+03:00', '+00:00')");
+  check("trx request: DATE_TO date-only → конец дня МСК", periodDays.replacements.DATE_TO_FILTER === "AND tl.processed_at <= CONVERT_TZ('2026-11-16 23:59:59', '+03:00', '+00:00')");
+  // ISO-полночь пояса (старые сохранённые URL, серверный предвыбор) — to снапится на конец дня
+  const periodIso = runAdapter(trxReqPath, { filters: [{ id: "processed_date", value: ["2026-11-15T21:00:00Z", "2026-11-15T21:00:00Z"] }] });
+  check("trx request: DATE_FROM ISO-полночь МСК → начало дня", periodIso.replacements.DATE_FROM_FILTER === "AND tl.processed_at >= CONVERT_TZ('2026-11-16 00:00:00', '+03:00', '+00:00')");
+  check("trx request: DATE_TO ISO-полночь МСК → конец дня", periodIso.replacements.DATE_TO_FILTER === "AND tl.processed_at <= CONVERT_TZ('2026-11-16 23:59:59', '+03:00', '+00:00')");
+  // Явное время (showTime / сервер) — границы как есть
   const period = runAdapter(trxReqPath, { filters: [{ id: "processed_date", value: ["2026-11-01T00:00:00Z", "2026-11-10T23:59:59Z"] }] });
   check("trx request: DATE_FROM CONVERT_TZ MSK wall", period.replacements.DATE_FROM_FILTER === "AND tl.processed_at >= CONVERT_TZ('2026-11-01 03:00:00', '+03:00', '+00:00')");
   check("trx request: DATE_TO CONVERT_TZ MSK wall", period.replacements.DATE_TO_FILTER === "AND tl.processed_at <= CONVERT_TZ('2026-11-11 02:59:59', '+03:00', '+00:00')");
+  // Одна граница: date-only from, to не задан
+  const periodFromOnly = runAdapter(trxReqPath, { filters: [{ id: "processed_date", value: ["2026-11-01", null] }] });
+  check("trx request: DATE_FROM только from (date-only), DATE_TO пуст", periodFromOnly.replacements.DATE_FROM_FILTER === "AND tl.processed_at >= CONVERT_TZ('2026-11-01 00:00:00', '+03:00', '+00:00')" && periodFromOnly.replacements.DATE_TO_FILTER === "");
   const range = runAdapter(trxReqPath, { filters: [{ id: "points", value: [10, null] }] });
   check("trx request: points range lower bound", range.replacements.POINTS_FILTER === "AND tl.points >= 10");
   const rangeBoth = runAdapter(trxReqPath, { filters: [{ id: "points", value: [10, 500] }] });

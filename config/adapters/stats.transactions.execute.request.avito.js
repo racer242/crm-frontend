@@ -25,7 +25,9 @@
  *     "AND tl.processed_at >= CONVERT_TZ('<wall MSK>', '+03:00', '+00:00')"
  *     (bot_* stores UTC; the filter panel sends MSK wall time — §5.2/§9.1;
  *     getApiTimezone() is Europe/Moscow, the '+03:00' offset in CONVERT_TZ
- *     is hardcoded per the spec);
+ *     is hardcoded per the spec); date-only values ('YYYY-MM-DD', the
+ *     FiltersPanel contract for a Calendar without time) are calendar days:
+ *     from → start of day, to → end of day — the whole last day is included;
  *   - POINTS_FILTER — range → "AND tl.points >= min / <= max" (bounds
  *     validated as numbers);
  *   - SEARCH_FILTER — 11 searchable fields (transaction_id, avito_id,
@@ -210,11 +212,14 @@ function optionsFragment(value, def) {
 }
 
 // period: [from, to] → wall MSK time wrapped into CONVERT_TZ — bot_* stores
-// UTC while the filter panel works with MSK wall time (§5.2/§9.1)
+// UTC while the filter panel works with MSK wall time (§5.2/§9.1). Date-only
+// values ('YYYY-MM-DD' — the FiltersPanel contract for a Calendar without
+// time) are calendar days: from → start of day, to → end of day (the whole
+// last day is included)
 function periodFragment(value) {
   if (!Array.isArray(value) || value.length !== 2) return { from: "", to: "" };
-  const from = toZonedDateTime(value[0], getApiTimezone());
-  const to = toZonedDateTime(value[1], getApiTimezone());
+  const from = toWallPeriodBound(value[0], "from", getApiTimezone());
+  const to = toWallPeriodBound(value[1], "to", getApiTimezone());
   return {
     from: from
       ? "AND tl.processed_at >= CONVERT_TZ(" + sqlString(from) + ", '+03:00', '+00:00')"

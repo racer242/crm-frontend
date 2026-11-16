@@ -18,11 +18,13 @@
  *     "AND u.status IN ('active', 'deleted')";
  *   - mailing — radio label («Принял»/«Не принял»/«Все», not chosen = «Все») →
  *     "AND u.mailing = 1" / "AND u.mailing = 0" / "";
- *   - registration_date — [from, to] instants → wall time of the API server
- *     timezone ("YYYY-MM-DD HH:mm:ss", toZonedDateTime/getApiTimezone) →
+ *   - registration_date — [from, to] → wall time of the API server timezone
+ *     ("YYYY-MM-DD HH:mm:ss", toWallPeriodBound/getApiTimezone) →
  *     "AND u.created_at >= '…'" / "<= '…'" — direct comparison in the data
  *     storage timezone, same as startDate/endDate of «Запросов» (no CONVERT_TZ,
- *     see CHANGELOG 07.10);
+ *     see CHANGELOG 07.10); date-only values ('YYYY-MM-DD', the FiltersPanel
+ *     contract for a Calendar without time) are calendar days: from → start
+ *     of day, to → end of day (23:59:59) — the whole last day is included;
  *   - balance — [min, max] → "AND u.balance BETWEEN min AND max" (>= / <= when
  *     one bound is missing; bounds validated as numbers);
  *   - search — "AND (u.email LIKE '%иван%' OR …)" with % _ \ escaped and single
@@ -174,12 +176,19 @@ function mailingFragment(value) {
   return db ? "AND u.mailing = " + db : "";
 }
 
-// period: [from, to] → "AND u.created_at >= '…'" / "<= '…'" in the API timezone
+// period: [from, to] → "AND u.created_at >= '…'" / "<= '…'" in the API
+// timezone; date-only values ('YYYY-MM-DD' — the FiltersPanel contract for
+// a Calendar without time) are calendar days: from → start of day,
+// to → end of day (the whole last day is included)
 function dateFragment(value, index, operator) {
   if (!Array.isArray(value)) return "";
-  const wall = toZonedDateTime(value[index], getApiTimezone());
-  if (!wall) return "";
-  return "AND u.created_at " + operator + " " + sqlString(wall);
+  const bound = toWallPeriodBound(
+    value[index],
+    operator === "<=" ? "to" : "from",
+    getApiTimezone(),
+  );
+  if (!bound) return "";
+  return "AND u.created_at " + operator + " " + sqlString(bound);
 }
 
 // balance: [min, max] → BETWEEN / >= / <=; bounds validated as numbers

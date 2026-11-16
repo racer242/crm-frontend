@@ -72,3 +72,34 @@ export function parseDateString(dateStr: string): Date | null {
 
   return null;
 }
+
+/**
+ * Форматирование Date в календарную дату 'YYYY-MM-DD' по локальным частям.
+ * Контракт period-фильтров: date-only выбор Calendar (у дня нет времени)
+ * хранится строкой wall-даты — вне поясов, пояс ОС оператора не влияет
+ * на границы периода.
+ */
+export function formatDateOnly(date: Date): string {
+  const pad = (n: number): string => n.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/**
+ * Разбор календарной даты 'YYYY-MM-DD' в локальный Date из частей.
+ * В отличие от new Date('YYYY-MM-DD') (парсит такую строку как UTC-полночь —
+ * в поясах с отрицательным смещением даёт предыдущий день) части берутся
+ * как есть; строка, не являющаяся реальной датой (напр. '2026-02-30'),
+ * отбрасывается — проверка обратным форматированием (new Date молча
+ * «прокручивает» избыток дней/месяцев).
+ */
+export function parseDateOnly(str: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str);
+  if (!match) return null;
+  const date = new Date(
+    parseInt(match[1], 10),
+    parseInt(match[2], 10) - 1,
+    parseInt(match[3], 10),
+  );
+  if (isNaN(date.getTime()) || formatDateOnly(date) !== str) return null;
+  return date;
+}

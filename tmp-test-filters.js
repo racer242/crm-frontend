@@ -117,6 +117,33 @@ check(
   "fragment=" + usersWith.replacements.MAILING_FILTER,
 );
 
+// 6. Период-фильтры: date-only контракт FiltersPanel ('YYYY-MM-DD',
+//    wall-дата вне поясов) → from начало дня / to конец дня (все сутки
+//    конечного дня включены; раньше to был полуночью и день выпадал)
+const receiptsPeriod = receiptsAdapter({
+  rows: "10",
+  filters: [{ id: "purchase_date", value: ["2026-11-16", "2026-11-16"] }],
+});
+check(
+  "receipts: PURCHASE_DATE_FROM date-only → начало дня",
+  receiptsPeriod.replacements.PURCHASE_DATE_FROM_FILTER,
+  "AND r.purchase_at >= '2026-11-16 00:00:00'",
+);
+check(
+  "receipts: PURCHASE_DATE_TO date-only → конец дня",
+  receiptsPeriod.replacements.PURCHASE_DATE_TO_FILTER,
+  "AND r.purchase_at <= '2026-11-16 23:59:59'",
+);
+const usersPeriod = usersAdapter({
+  rows: "10",
+  filters: [{ id: "registration_date", value: ["2026-11-16", null] }],
+});
+check(
+  "users: DATE_FROM date-only → начало дня",
+  usersPeriod.replacements.DATE_FROM_FILTER,
+  "AND u.created_at >= '2026-11-16 00:00:00'",
+);
+
 if (failed) {
   console.log("\nFAILED:", failed);
   process.exit(1);

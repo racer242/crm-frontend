@@ -20,6 +20,7 @@ import { Divider } from "primereact/divider";
 import { FilterItem, FilterModel } from "@/types";
 import { isFilterActive } from "./filtersUtils";
 import { ComponentRendererProps } from "./types";
+import { formatDateOnly, parseDateOnly } from "@/utils/date";
 
 /**
  * FiltersPanel — панель фильтров на основе Sidebar (Drawer)
@@ -284,9 +285,17 @@ export function renderFiltersPanel({
 
       case "period": {
         const periodValue = Array.isArray(value) ? value : [null, null];
-        // Восстанавливаем Date из строк для каждого Calendar
+        // Контракт period: значения — календарные даты 'YYYY-MM-DD' (wall-дата,
+        // вне поясов) или null. Для отображения date-only строки разбираем
+        // локальными частями (new Date('YYYY-MM-DD') читает их как UTC-полночь
+        // и в поясах с отрицательным смещением показывал бы предыдущий день);
+        // Date/ISO (старые сохранённые URL, серверные предвыборы) — как раньше
         const toDate = (v: any): Date | null => {
           if (v instanceof Date) return v;
+          if (typeof v === "string") {
+            const wall = parseDateOnly(v);
+            if (wall) return wall;
+          }
           if (typeof v === "string" || typeof v === "number") {
             const d = new Date(v);
             return isNaN(d.getTime()) ? null : d;
@@ -295,6 +304,10 @@ export function renderFiltersPanel({
         };
         const startDate = toDate(periodValue[0]);
         const endDate = toDate(periodValue[1]);
+        // Выбор Calendar (Date локальной полночи, у дня нет времени) пишем
+        // обратно календарной датой 'YYYY-MM-DD' — пояс ОС оператора
+        // не влияет на границы периода (адаптер строит from 00:00:00 /
+        // to 23:59:59 дня пояса хранения данных)
         return (
           <div key={id} className="mb-3">
             <label className="block mb-2 text-200 font-medium">{name}</label>
@@ -302,7 +315,10 @@ export function renderFiltersPanel({
               <Calendar
                 value={startDate}
                 onChange={(e) =>
-                  updateFilterValue(id, [e.value ?? null, endDate])
+                  updateFilterValue(id, [
+                    e.value ? formatDateOnly(e.value) : null,
+                    periodValue[1] ?? null,
+                  ])
                 }
                 dateFormat="dd.mm.yy"
                 showIcon
@@ -312,7 +328,10 @@ export function renderFiltersPanel({
               <Calendar
                 value={endDate}
                 onChange={(e) =>
-                  updateFilterValue(id, [startDate, e.value ?? null])
+                  updateFilterValue(id, [
+                    periodValue[0] ?? null,
+                    e.value ? formatDateOnly(e.value) : null,
+                  ])
                 }
                 dateFormat="dd.mm.yy"
                 showIcon

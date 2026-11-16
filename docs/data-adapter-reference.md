@@ -316,6 +316,7 @@ Response-адаптеры — это JS-скрипты в `config/adapters/`, к
 | `formatRubles(value)`              | Рубли с копейками → «590,30 ₽» (канал CRM-управления; деления на 100 нет)       |
 | `getApiTimezone()`                 | Пояс сервера API: `BITRIX_API_TIMEZONE` из `.env`, по умолчанию `Europe/Moscow` |
 | `toZonedDateTime(value, timeZone)` | Date/ISO (Z/offset) → настенное время пояса в формате `YYYY-MM-DD HH:mm:ss`     |
+| `toWallPeriodBound(value, edge, timeZone)` | Граница period-фильтра: `'YYYY-MM-DD'` → `'D 00:00:00'` (from) / `'D 23:59:59'` (to); Date/ISO — конверт `toZonedDateTime` (полночь пояса в to → конец дня) |
 | `sqlString(value)`                 | Значение → одинарные кавычки для подстановки в SQL текстом (апострофы удваиваются) |
 
 ### Конвертация дат в пояс сервера (request-адаптеры статистики)
@@ -343,6 +344,14 @@ if (start) {
   result.replacements.startDate = sqlString(start);
 }
 ```
+
+**Границы period-фильтров (`toWallPeriodBound`):**
+
+Фильтры типа `period` («Период регистрации»/«Период покупки»/«Период обработки») работают с календарными днями: FiltersPanel передаёт date-only выбор Calendar (без времени) строкой `'YYYY-MM-DD'` — календарная дата вне поясов, пояс ОС оператора на границы не влияет. Адаптеры `stats.users.execute.request[.avito].js`, `stats.receipts.execute.request.js` и `stats.transactions.execute.request.avito.js` строят границы через `toWallPeriodBound(value, edge, getApiTimezone())` (`edge` — `"from"` или `"to"`):
+
+1. `'YYYY-MM-DD'` → `from` → `'D 00:00:00'`, `to` → `'D 23:59:59'` — выбор «16.11 – 16.11» покрывает все сутки конечного дня (раньше to-граница была полуночью и весь последний день выпадал из выборки);
+2. Date/ISO (серверные предвыборы, сохранённые URL до этого контракта) → конвертация `toZonedDateTime` как есть; полночь пояса в `edge: "to"` снапится на `'D 23:59:59'`;
+3. явно выбранное время (showTime) уважается; пусто → `null` (ключ не включается); невалид → как есть.
 
 **Реализация в `_shared.js`:**
 
@@ -412,6 +421,37 @@ function toZonedDateTime(value, timeZone) {
     get("year") + "-" + get("month") + "-" + get("day") +
     " " + get("hour") + ":" + get("minute") + ":" + get("second")
   );
+}
+
+/**
+ * Граница period-фильтра в настенном времени пояса API. edge: "from" —
+ * нижняя граница, "to" — верхняя. Контракт FiltersPanel (period): date-only
+ * выбор Calendar без времени передаётся строкой 'YYYY-MM-DD' — календарная
+ * дата, вне поясов: from → 'D 00:00:00', to → 'D 23:59:59' (весь конечный
+ * день включается). Полные значения (Date/ISO — серверные предвыборы,
+ * сохранённые URL до этого контракта) конвертируются через toZonedDateTime
+ * как есть; полночь пояса в edge "to" снапится на конец дня. Явно выбранное
+ * время уважается. Пустое значение → null. Невалидная дата → как есть.
+ */
+function toWallPeriodBound(value, edge, timeZone) {
+  if (value === undefined || value === null || value === "") return null;
+
+  // Календарная дата 'YYYY-MM-DD' — без new Date (он читает такую строку
+  // как UTC-полночь): день в поясе хранения начинается в 00:00:00 и
+  // заканчивается в 23:59:59
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value + (edge === "to" ? " 23:59:59" : " 00:00:00");
+  }
+
+  const wall = toZonedDateTime(value, timeZone);
+  if (
+    edge === "to" &&
+    typeof wall === "string" &&
+    /^\d{4}-\d{2}-\d{2} 00:00:00$/.test(wall)
+  ) {
+    return wall.slice(0, 10) + " 23:59:59";
+  }
+  return wall;
 }
 
 /**
