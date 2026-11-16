@@ -43,6 +43,10 @@
     "type": "js",
     "script": "./config/adapters/stats.transactions.report.response.avito.js"
   },
+  "stats.user-transactions.report.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.user-transactions.report.response.avito.js"
+  },
   "stats.user-transactions.execute.request": {
     "type": "js",
     "script": "./config/adapters/stats.user-transactions.execute.request.avito.js"

@@ -103,14 +103,20 @@ async function main() {
   check("avito config is a patched clone", avito !== undefined && avito !== reference);
   check("shim resolved: no $ref literals in the avito config", !hasRefKey(avito));
 
-  // 2) navbar: дельта-ключ navbar патча → «Транзакции» в конец промо-группы
+  // 2) navbar: дельта-ключ navbar патча → «Транзакции» в конец промо-группы;
+  //    эталонный navbar: без заголовка «CRM-управление», «Модерация чеков»
+  //    сразу после «Участники»
   check("reference navbar untouched", !reference.navbar.items.some((i) => i.label === "Транзакции"));
+  check("reference navbar: no CRM-управление header", !reference.navbar.items.some((i) => i.header === "CRM-управление"));
+  const refModerationIndex = reference.navbar.items.findIndex((i) => i.label === "Модерация чеков");
+  check("reference navbar: Модерация чеков right after Участники", refModerationIndex === reference.navbar.items.findIndex((i) => i.label === "Участники") + 1);
   check("navbar: Транзакции appended", avito.navbar.items.some((i) => i.label === "Транзакции"));
   const trxItem = avito.navbar.items.find((i) => i.label === "Транзакции");
   check("navbar: item props", trxItem !== undefined && trxItem.icon === "pi pi-money-bill" && trxItem.route === "/ops/transactions");
   check("navbar: appended at the end of promo group", avito.navbar.items[avito.navbar.items.length - 1].label === "Транзакции");
   check("navbar: base items intact (+1 appended)", avito.navbar.items.length === reference.navbar.items.length + 1);
-  check("navbar: headers preserved", avito.navbar.items.some((i) => i.header === "Промо-инстанс") && avito.navbar.items.some((i) => i.header === "CRM-управление"));
+  check("navbar: Промо-инстанс header preserved", avito.navbar.items.some((i) => i.header === "Промо-инстанс"));
+  check("navbar: Модерация чеков stays after Участники", avito.navbar.items.findIndex((i) => i.label === "Модерация чеков") === avito.navbar.items.findIndex((i) => i.label === "Участники") + 1);
   check("navbar: Статистика before Транзакции", avito.navbar.items.findIndex((i) => i.label === "Статистика") < avito.navbar.items.findIndex((i) => i.label === "Транзакции"));
 
   // 3) меню карточки: дельта user-card.json подменяет props.model на camp-копию
@@ -190,7 +196,7 @@ async function main() {
   check("routes: 4 new routes present", routeGetTrx !== undefined && routePostTrx !== undefined && routeGetUtr !== undefined && routePostUtr !== undefined);
   check("route GET transactions: url + metadata adapter", routeGetTrx.url === "/api/v1/crm/stats/query/transactions" && routeGetTrx.adapter.response === "stats.transactions.report.response" && routeGetTrx.query === undefined);
   check("route POST transactions/execute: query:true + adapters", routePostTrx.url === "/api/v1/crm/stats/query/transactions/execute" && routePostTrx.query === true && routePostTrx.adapter.request === "stats.transactions.execute.request" && routePostTrx.adapter.response === "stats.transactions.execute.response");
-  check("route GET user-transactions: shared metadata adapter", routeGetUtr.url === "/api/v1/crm/stats/query/user-transactions" && routeGetUtr.adapter.response === "stats.transactions.report.response");
+  check("route GET user-transactions: own metadata adapter", routeGetUtr.url === "/api/v1/crm/stats/query/user-transactions" && routeGetUtr.adapter.response === "stats.user-transactions.report.response");
   check("route POST user-transactions/execute: adapters", routePostUtr.url === "/api/v1/crm/stats/query/user-transactions/execute" && routePostUtr.query === true && routePostUtr.adapter.request === "stats.user-transactions.execute.request" && routePostUtr.adapter.response === "stats.transactions.execute.response");
   check("reference routes untouched", reference.apiRoutes.find((r) => /transactions/.test(r.path)) === undefined);
   // Матринг: первый совпавший маршрут для каждого пути — наш
@@ -205,8 +211,8 @@ async function main() {
   check("matching: ops/tasks (эталонный маршрут) не перекрыт", firstMatch("ops/tasks", "GET").path === "ops/tasks");
 
   // 7) Реестр адаптеров
-  const TRX_ADAPTERS = ["stats.transactions.execute.request", "stats.transactions.execute.response", "stats.transactions.report.response", "stats.user-transactions.execute.request"];
-  check("adapters: 4 new keys with .avito.js scripts", TRX_ADAPTERS.every((k) => avito.adapters[k] && avito.adapters[k].script.endsWith(".avito.js")));
+  const TRX_ADAPTERS = ["stats.transactions.execute.request", "stats.transactions.execute.response", "stats.transactions.report.response", "stats.user-transactions.execute.request", "stats.user-transactions.report.response"];
+  check("adapters: 5 new keys with .avito.js scripts", TRX_ADAPTERS.every((k) => avito.adapters[k] && avito.adapters[k].script.endsWith(".avito.js")));
   check("adapters: reference registry untouched", !TRX_ADAPTERS.some((k) => reference.adapters[k]));
   check("adapters: previous avito keys intact", avito.adapters["stats.users.tasks.execute.request"] !== undefined && avito.adapters["stats.users.rating.execute.request"] !== undefined && avito.adapters["dictionaries.response.avito"] !== undefined);
 
@@ -282,25 +288,38 @@ async function main() {
   const utrEvent = runAdapter(utrReqPath, { event: { first: 30, rows: 30 } });
   check("utr request: event pagination", utrEvent.page === 2 && utrEvent.limit === 30);
 
-  // execute response: оба формата конверта + labels
+  // execute response: контракт фида — setStateField заменяет state-цель
+  // целиком, адаптер обязан вернуть {value, totalRecords, first, rows}
   const legacyRow = runAdapter(trxResPath, [
     { transaction_id: "t-1", type_code: "TASK", status: "success", type_code_label: "Начисление баллов", status_label: "Успешно", points: 100, processed_at_msk: "2026-11-01 12:00:00" },
   ]);
-  check("response: legacy array passthrough + labels", Array.isArray(legacyRow) && legacyRow.length === 1 && legacyRow[0].type_code === "Начисление баллов" && legacyRow[0].status === "Успешно" && legacyRow[0].points === 100);
+  check("response: legacy array → full state object", legacyRow.value.length === 1 && legacyRow.totalRecords === 1 && legacyRow.first === 0 && legacyRow.rows === 10);
+  check("response: legacy labels applied", legacyRow.value[0].type_code === "Начисление баллов" && legacyRow.value[0].status === "Успешно" && legacyRow.value[0].points === 100);
   const envelopeRow = runAdapter(trxResPath, {
     status: "ok",
     data: {
       rows: [{ id: "row-1", values: { transaction_id: "t-2", type_code: "LEAGUE", status: "error", type_code_label: "Назначение лиги", status_label: "Ошибка", points: 5 } }],
+      meta: { total_count: 37, first: 10, limit: 10 },
     },
   });
-  check("response: future envelope unwrapped (id + values merged)", Array.isArray(envelopeRow) && envelopeRow[0].id === "row-1" && envelopeRow[0].transaction_id === "t-2" && envelopeRow[0].values === undefined);
-  check("response: envelope labels applied", envelopeRow[0].type_code === "Назначение лиги" && envelopeRow[0].status === "Ошибка");
+  check("response: future envelope → value/totalRecords/first/rows из meta", envelopeRow.value.length === 1 && envelopeRow.totalRecords === 37 && envelopeRow.first === 10 && envelopeRow.rows === 10);
+  check("response: future envelope unwrapped (id + values merged)", envelopeRow.value[0].id === "row-1" && envelopeRow.value[0].transaction_id === "t-2" && envelopeRow.value[0].values === undefined);
+  check("response: envelope labels applied", envelopeRow.value[0].type_code === "Назначение лиги" && envelopeRow.value[0].status === "Ошибка");
+  const currentFmt = runAdapter(trxResPath, {
+    items: [{ transaction_id: "t-4", type_code: "TASK", status: "success" }],
+    pagination: { page: 3, limit: 25, total_items: 120 },
+  });
+  check("response: current {items, pagination} → value/totalRecords/first/rows", currentFmt.value.length === 1 && currentFmt.totalRecords === 120 && currentFmt.first === 50 && currentFmt.rows === 25);
   const rawRow = runAdapter(trxResPath, [{ transaction_id: "t-3", type_code: "TASK", status: "success" }]);
-  check("response: no labels yet → raw values kept (деградация)", rawRow[0].type_code === "TASK" && rawRow[0].status === "success");
-  check("response: garbage → empty array", Array.isArray(runAdapter(trxResPath, { foo: "bar" })) && runAdapter(trxResPath, null).length === 0);
-  check("response: non-object row passthrough", runAdapter(trxResPath, ["x"])[0] === "x");
+  check("response: no labels yet → raw values kept (деградация)", rawRow.value[0].type_code === "TASK" && rawRow.value[0].status === "success");
+  const emptyResp = runAdapter(trxResPath, { foo: "bar" });
+  check("response: garbage → empty state object (таблица чистая, не сломана)", Array.isArray(emptyResp.value) && emptyResp.value.length === 0 && emptyResp.totalRecords === 0 && emptyResp.rows === 10);
+  check("response: null → empty state object", runAdapter(trxResPath, null).totalRecords === 0);
+  check("response: non-object row passthrough", runAdapter(trxResPath, ["x"]).value[0] === "x");
 
-  // report response: passthrough метаданных
+
+  // metadata response: fallback-first — колонки/фильтры из спеки, пока сервер
+  // не отдаёт свои fields/filters
   const meta = runAdapter(trxMetaPath, {
     status: "ok",
     data: {
@@ -309,19 +328,46 @@ async function main() {
       fields: [
         { name: "transaction_id", title: "ID транзакции", type: "string", sortable: true },
         { name: "processed_at_msk", title: "Время (МСК)", type: "datetime", sortable: true },
+        { name: "full_name", title: "ФИО", type: "string", sortable: true },
         { name: "error_message", title: "Ошибка", type: "string", sortable: false },
       ],
       filters: [{ id: "type_code", type: "options", name: "Тип", opts: ["Начисление баллов", "Назначение лиги"] }],
     },
   });
   check("metadata: id/title passthrough", meta.id === "transactions" && meta.title === "Транзакции чат-бота");
-  check("metadata: columns from fields[]", meta.columns.length === 3 && meta.columns[0].field === "transaction_id" && meta.columns[0].header === "ID транзакции" && meta.columns[0].sortable === true);
+  check("metadata: server fields → columns", meta.columns.length === 4 && meta.columns[0].field === "transaction_id" && meta.columns[0].header === "ID транзакции");
   check("metadata: datetime → dataType date", meta.columns[1].dataType === "date");
-  check("metadata: server sortable flag kept", meta.columns[2].sortable === false);
-  check("metadata: filters passthrough", Array.isArray(meta.filters) && meta.filters.length === 1 && meta.filters[0].id === "type_code");
-  const metaEmpty = runAdapter(trxMetaPath, {});
-  check("metadata: empty → пустые columns/filters (деградация до регистрации query_id)", Array.isArray(metaEmpty.columns) && metaEmpty.columns.length === 0 && Array.isArray(metaEmpty.filters) && metaEmpty.filters.length === 0);
-  check("metadata: garbage passthrough", runAdapter(trxMetaPath, null) === null);
+  check("metadata: sortable по whitelist (full_name не сортируется, серверный sortable:true перекрыт)", meta.columns[2].sortable === false);
+  check("metadata: серверный sortable:false уважается", meta.columns[3].sortable === false);
+  check("metadata: серверные filters перекрывают фолбэк", meta.filters.length === 1 && meta.filters[0].id === "type_code");
+  const metaFallback = runAdapter(trxMetaPath, null);
+  check("metadata: ошибка GET → фолбэк колонок §3 (18, заголовки спеки)", metaFallback.columns.length === 18 && metaFallback.columns[0].header === "ID транзакции" && metaFallback.columns[1].header === "Дата обработки (МСК)" && metaFallback.columns[17].header === "Причина ошибки");
+  check("metadata: фолбэк dataType date для datetime", metaFallback.columns[1].dataType === "date");
+  check("metadata: фолбэк sortable по whitelist (16 из 18)", metaFallback.columns.filter((c) => c.sortable).length === 16 && metaFallback.columns.find((c) => c.field === "full_name").sortable === false && metaFallback.columns.find((c) => c.field === "error_message").sortable === false);
+  check("metadata: фолбэк фильтров §5.1 (6 штук с лейблами)", metaFallback.filters.length === 6 && metaFallback.filters[0].id === "type_code" && metaFallback.filters[0].opts[0] === "Начисление баллов" && metaFallback.filters.find((f) => f.id === "points").type === "range" && metaFallback.filters.find((f) => f.id === "points").opts === null && metaFallback.filters.find((f) => f.id === "league_code").opts.length === 9);
+  check("metadata: порядок фолбэк-opts лиг = порядок dbValues request-адаптера", JSON.stringify(metaFallback.filters.find((f) => f.id === "league_code").opts) === JSON.stringify(["Cargo_S", "Cargo_ML", "Cargo_ML_big", "Evacuation_S", "Evacuation_ML", "Evacuation_ML_big", "Passenger_S", "Passenger_ML", "Passenger_ML_big"]));
+  check("metadata: error envelope → fallback (не объект ошибки в state)", runAdapter(trxMetaPath, { status: "error", message: "query not found" }).columns.length === 18);
+  check("metadata: пустой объект → фолбэк (страница рабочая без метаданных)", runAdapter(trxMetaPath, {}).columns.length === 18 && runAdapter(trxMetaPath, {}).filters.length === 6);
+
+
+  // metadata участника: свой адаптер с фолбэком §3 (11 колонок), без фильтров
+  const utrMetaPath = "config/adapters/stats.user-transactions.report.response.avito.js";
+  const utrMetaFallback = runAdapter(utrMetaPath, null);
+  check("utr metadata: ошибка GET → фолбэк 11 колонок §3", utrMetaFallback.columns.length === 11 && utrMetaFallback.columns[0].header === "ID транзакции" && utrMetaFallback.columns[1].header === "Дата обработки (МСК)");
+  check("utr metadata: фолбэк sortable по whitelist (10 из 11)", utrMetaFallback.columns.filter((c) => c.sortable).length === 10 && utrMetaFallback.columns.find((c) => c.field === "error_message").sortable === false);
+  check("utr metadata: фильтров нет (у запроса 4 макроса)", Array.isArray(utrMetaFallback.filters) && utrMetaFallback.filters.length === 0);
+  const utrMetaServer = runAdapter(utrMetaPath, { status: "ok", data: { id: "user-transactions", title: "Транзакции участника", fields: [{ name: "league_name", title: "Лига", type: "string", sortable: true }] } });
+  check("utr metadata: серверные fields перекрывают фолбэк", utrMetaServer.columns.length === 1 && utrMetaServer.columns[0].field === "league_name" && utrMetaServer.title === "Транзакции участника");
+
+  // кросс-проверка: каждый sortable-алиас whitelist обрабатывается ORDER_MAP
+  // request-адаптера (не уходит в дефолт processed_at_msk), не-сортируемые —
+  // уходят в дефолт
+  const whitelistTrx = metaFallback.columns.filter((c) => c.sortable).map((c) => c.field);
+  check("whitelist↔ORDER_MAP: все sortable-алиасы списка дают не-дефолт", whitelistTrx.every((alias) => alias === "processed_at_msk" || runAdapter(trxReqPath, { sortField: alias, sortOrder: 1 }).replacements.ORDER_BY !== "tl.processed_at"));
+  check("whitelist↔ORDER_MAP: full_name/error_message → дефолт", runAdapter(trxReqPath, { sortField: "full_name" }).replacements.ORDER_BY === "tl.processed_at" && runAdapter(trxReqPath, { sortField: "error_message" }).replacements.ORDER_BY === "tl.processed_at");
+  const whitelistUtr = utrMetaFallback.columns.filter((c) => c.sortable).map((c) => c.field);
+  check("whitelist↔ORDER_MAP (участник): все sortable-алиасы не-дефолт", whitelistUtr.every((alias) => alias === "processed_at_msk" || runAdapter(utrReqPath, { sortField: alias, sortOrder: 1 }).replacements.ORDER_BY !== "tl.processed_at"));
+  check("whitelist↔ORDER_MAP (участник): error_message → дефолт", runAdapter(utrReqPath, { sortField: "error_message" }).replacements.ORDER_BY === "tl.processed_at");
 
   // Итог
   console.log(`\n${pass} passed, ${fail} failed`);

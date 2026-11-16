@@ -10,6 +10,12 @@
       "route": "/ops/users"
     },
     {
+      "label": "Модерация чеков",
+      "icon": "pi pi-check-square",
+      "route": "/mgmt/receipts",
+      "feature": "receipts"
+    },
+    {
       "label": "Чеки",
       "icon": "pi pi-receipt",
       "route": "/ops/receipts",
@@ -43,15 +49,6 @@
       "label": "Статистика",
       "icon": "pi pi-chart-bar",
       "route": "/ops/stats"
-    },
-    {
-      "header": "CRM-управление"
-    },
-    {
-      "label": "Модерация чеков",
-      "icon": "pi pi-check-square",
-      "route": "/mgmt/receipts",
-      "feature": "receipts"
     }
   ]
 }

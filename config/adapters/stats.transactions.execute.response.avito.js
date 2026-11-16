@@ -4,11 +4,15 @@
  * ops/user-transactions/execute — the adapter key is shared by both pages,
  * the payloads differ only in row fields).
  *
- * Contract (specs §8): the server may return either the legacy raw array
- * (rows as plain objects) or the future shape { status: "ok", data: { rows:
- * [{ id, values: {…}, … }], meta: {…} } } — both are converted to a plain
- * array of row objects assigned to the state by the page ("@result" handler
- * supports arrays only). values is merged with the row id wrapper fields.
+ * Contract (specs §8): the server may return the legacy raw array, the
+ * current statistics format {items, pagination} or the future shape
+ * {status: "ok", data: { rows: [{ id, values: {…}, … }], meta: {total_count,
+ * first, limit} } } — all are converted to the full table-state object
+ * {value, totalRecords, first, rows}: the feed target (setStateField)
+ * REPLACES the whole state field, so the adapter must return it entirely
+ * (same contract as the reference stats.users.execute.response.js — a bare
+ * array leaves state.value/totalRecords undefined and the table empty).
+ * values is merged with the row id wrapper fields.
  *
  * Row mapping: VARCHAR (enum) columns arrive together with their
  * human-readable counterparts — type_code_label (Начисление баллов /
@@ -25,25 +29,46 @@
  * through as is.
  */
 function transform(data) {
-  let rows = null;
+  // Legacy shape: raw array of rows (counters unknown — everything fits on
+  // one page). The array check goes FIRST: typeof [] === "object"
   if (Array.isArray(data)) {
-    // Legacy shape: raw array of rows
-    rows = data;
-  } else if (data && typeof data === "object" && Array.isArray(data.rows)) {
-    // Future shape: envelope with rows[{id, values}]
-    rows = data.rows;
-  } else if (
-    data &&
-    typeof data === "object" &&
-    data.status === "ok" &&
-    data.data &&
-    Array.isArray(data.data.rows)
-  ) {
-    // Future shape wrapped into the API status envelope
-    rows = data.data.rows;
+    return { value: data.map(mapRow), totalRecords: data.length, first: 0, rows: 10 };
   }
-  if (!rows) return [];
-  return rows.map(mapRow);
+
+  const payload = data && data.status === "ok" ? data.data : data;
+
+  // Feed target contract: setStateField REPLACES the whole state field, so
+  // the adapter must return the full table-state object (same as the
+  // reference stats.users.execute.response.js) — a bare array would leave
+  // state.value/totalRecords undefined and the table empty
+  const empty = { value: [], totalRecords: 0, first: 0, rows: 10 };
+  if (!payload || typeof payload !== "object") return empty;
+
+  // Future shape: rows[] with values{} + meta (counters from meta —
+  // total_count/first/limit, same as the users adapter)
+  if (Array.isArray(payload.rows)) {
+    const meta = payload.meta || {};
+    return {
+      value: payload.rows.map(mapRow),
+      totalRecords: Number(meta.total_count) || 0,
+      first: Number(meta.first) || 0,
+      rows: Number(meta.limit) || 10,
+    };
+  }
+
+  // Current format of the statistics API (§6.1): {items, pagination}
+  if (Array.isArray(payload.items)) {
+    const page = payload.pagination?.page || 1;
+    const limit = payload.pagination?.limit || 10;
+    return {
+      value: payload.items.map(mapRow),
+      totalRecords: payload.pagination?.total_items || 0,
+      first: (page - 1) * limit,
+      rows: limit,
+    };
+  }
+
+  return empty;
 }
 
 function mapRow(row) {

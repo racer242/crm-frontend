@@ -75,7 +75,7 @@
     "adapter": {
       "response": "stats.transactions.report.response"
     },
-    "note": "Авито: метаданные запроса «Транзакции» — transactions (.prompts/transactions.md): id/title + колонки из fields[] + фильтры (type_code/status/processed_date/points/league_code/segment) с лейблами; literal-маршрут вместо generic ops/users-v2/query/[query_id] (тот прибит к общим users-адаптерам) — по прецеденту чеков ops/receipts/query/[query_id]"
+    "note": "Авито: метаданные запроса «Транзакции» — transactions (.prompts/transactions.md): адаптер fallback-first — колонки §3 спеки и фильтры §5.1 зашиты в адаптер, пока сервер не отдаёт свои fields/filters (появятся — серверные перекрывают); literal-маршрут вместо generic ops/users-v2/query/[query_id] (тот прибит к общим users-адаптерам) — по прецеденту чеков ops/receipts/query/[query_id]"
   },
   {
     "path": "ops/transactions/execute",
@@ -95,9 +95,9 @@
     "url": "/api/v1/crm/stats/query/user-transactions",
     "channel": "instance",
     "adapter": {
-      "response": "stats.transactions.report.response"
+      "response": "stats.user-transactions.report.response"
     },
-    "note": "Авито: метаданные запроса «Транзакции участника» — user-transactions (.prompts/transactions-user.md), страница /ops/users/[user_id]/transactions; тот же passthrough-адаптер метаданных, что и у списка кампании"
+    "note": "Авито: метаданные запроса «Транзакции участника» — user-transactions (.prompts/transactions-user.md), страница /ops/users/[user_id]/transactions; адаптер с фолбэк-колонками §3 своей спеки (у запроса нет фильтров)"
   },
   {
     "path": "ops/user-transactions/execute",

@@ -563,14 +563,16 @@ dropdown-фильтры «Категория»/«Лига» из справоч�
 задания с 14 полями в трёх блоках и «Да»/«Нет» для длительных заданий;
 запросы `user-avito`/`user-avito-tasks` — `ops/users-v2/rating/execute`,
 `ops/users-v2/tasks[/execute]`); страницы «Транзакции» — список кампании
-`/ops/transactions` (поиск + FiltersPanel, метаданные запроса `transactions`,
+`/ops/transactions` (поиск + FiltersPanel с определениями фильтров из спеки,
+колонки из спеки пока сервер не отдаёт свои метаданные — fallback-first,
 ленивая таблица без клика по строке) и транзакции участника
 `/ops/users/[user_id]/transactions` (меню карточки, запрос
 `user-transactions`); 4 literal-маршрута `ops/transactions[/execute]` /
 `ops/user-transactions[/execute]` вместо generic users-query (по прецеденту
 чеков); пункт navbar «Транзакции» (дельта-ключ `navbar` патча, append в конец
 промо-группы) и пункт «Транзакции» в меню карточки («Достижения», camp-копия
-`menus/user.json`);
+`menus/user.json`); эталонный navbar переработан — заголовок «CRM-управление»
+убран, «Модерация чеков» стоит сразу после «Участники»;
 см. §10.5–10.7 дока «Дополнение. Система статистики»). Подробно —
 `docs/config-reference.md` (раздел «Конфигурации кампаний»).
 

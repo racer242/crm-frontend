@@ -772,8 +772,8 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 
 - `adapters.json` — объект записей реестра: замена `script` эталонных
   адаптеров users + новые адаптеры (`dictionaries.response.avito`, рейтинг и
-  задания карточки с отдельным response, транзакции — метаданные passthrough,
-  execute-response с лейблами и два request — 12 записей);
+  задания карточки с отдельным response, транзакции — два fallback-first
+  адаптера метаданных, execute-response с лейблами и два request — 13 записей);
 - `api-routes.json` — массив дельт маршрутов: статические справочники
   `dict_categories`/`dict_leagues` + перенос общего `ops/dictionaries/[name]`
   в конец, маршрут рейтинга `ops/users-v2/rating/execute` (запрос

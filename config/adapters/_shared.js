@@ -285,3 +285,65 @@ const USERS_AVITO_TASKS_SORTABLE_COLUMNS = [
 function isUsersAvitoTasksSortable(column) {
   return USERS_AVITO_TASKS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * users для кампании avito_to_the_top, запрос «Транзакции» (query_id
+ * transactions, .prompts/transactions.md §3/§4): алиасы колонок, которые
+ * умеет сортировать SQL отчёта (маппинг сортировки дока — 18 алиасов,
+ * full_name/error_message → null: вычисляемое CONCAT_WS и длинный текст без
+ * индекса не сортируются), единый белый список для трёх адаптеров:
+ *  - stats.transactions.execute.request.avito.js: ORDER_MAP (alias → SQL)
+ *    покрывает те же ключи;
+ *  - stats.transactions.report.response.avito.js: колонки метаданных получают
+ *    sortable по этому же списку (и серверные sortable:false уважается);
+ *  - фолбэк-колонки адаптера метаданных построены по §3 спеки с sortable из
+ *    этого списка.
+ */
+const TRANSACTIONS_SORTABLE_COLUMNS = [
+  "transaction_id",
+  "processed_at_msk",
+  "type_code",
+  "status",
+  "points",
+  "avito_id",
+  "telegram_id",
+  "participant_code",
+  "user_id",
+  "email",
+  "category_name",
+  "task_code",
+  "task_title",
+  "segment",
+  "league_code",
+  "league_name",
+];
+
+function isTransactionsSortable(column) {
+  return TRANSACTIONS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
+
+/**
+ * users для кампании avito_to_the_top, запрос «Транзакции участника» (query_id
+ * user-transactions, .prompts/transactions-user.md §3): 10 из 11 алиасов
+ * сортируемого списка (error_message → null = не сортируется). Единый список
+ * для stats.user-transactions.report.response.avito.js (метаданные + фолбэк
+ * колонок); request-адаптер валидирует своим ORDER_MAP (та же карта без
+ * full_name/avito_id/telegram_id/participant_code/user_id/email/category_name
+ * — у запроса участника этих колонок нет).
+ */
+const USER_TRANSACTIONS_SORTABLE_COLUMNS = [
+  "transaction_id",
+  "processed_at_msk",
+  "type_code",
+  "status",
+  "points",
+  "task_code",
+  "task_title",
+  "segment",
+  "league_code",
+  "league_name",
+];
+
+function isUserTransactionsSortable(column) {
+  return USER_TRANSACTIONS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}
