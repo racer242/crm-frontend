@@ -1,0 +1,334 @@
+/**
+ * Стенд: страницы «Транзакции» кампании avito_to_the_top (список кампании +
+ * транзакции участника) — новые файлы патча:
+ *   config/camps/avito_to_the_top/menus/navbar.json (дельта navbar),
+ *   config/camps/avito_to_the_top/menus/user.json (меню карточки + пункт),
+ *   config/camps/avito_to_the_top/pages/transactions-list.json,
+ *   config/camps/avito_to_the_top/pages/user-transactions.json,
+ *   config/camps/avito_to_the_top/api-routes.json (+4 маршрута),
+ *   config/camps/avito_to_the_top/adapters.json (+4 адаптера).
+ *
+ * 1) Эталон собирается через $RefParser (как initApp), реестр кампаний
+ *    реплицирует buildCampConfigs; проверяется отсутствие литералов $ref;
+ * 2) navbar: дельта по route — «Транзакции» аппендится в конец промо-группы
+ *    (mergeArray не вставляет в середину), эталон не задет;
+ * 3) меню карточки: дельта user-card.json (menuSection → props.model →
+ *    camp-копия user.json) — пункт «Транзакции» в «Достижениях», активный
+ *    пункт карточки остаётся profile; новая страница user-transactions
+ *    получает полное меню кампании (achievements/transactions активны);
+ * 4) структура обеих страниц (state/dataFeed/dataInit/shortcuts/секции;
+ *    таблицы без клика по строке и иконок), 4 маршрута + матринг;
+ * 5) исполнение 4 адаптеров через new Function с _shared.js (как
+ *    DataAdapterEngine): request transactions (10 макросов), request
+ *    user-transactions (4 макроса), execute-response (labels, конверты),
+ *    report-response (passthrough метаданных);
+ * 6) регресс: эталонный конфиг не задет.
+ */
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+
+// 1) Компиляция configMerge.ts (чистый модуль без импортов)
+execSync(
+  "npx tsc src/core/configMerge.ts --outDir tmp-merge-build-trx --module commonjs --target es2020 --lib es2020,dom --skipLibCheck",
+  { stdio: "pipe" },
+);
+const { applyConfigDelta } = require("./tmp-merge-build-trx/configMerge.js");
+fs.rmSync("tmp-merge-build-trx", { recursive: true, force: true });
+
+let pass = 0;
+let fail = 0;
+function check(name, cond) {
+  if (cond) {
+    pass++;
+    console.log("PASS " + name);
+  } else {
+    fail++;
+    console.log("FAIL " + name);
+  }
+}
+
+// _shared.js префиксуется к каждому адаптеру (как в DataAdapterEngine.applyJs)
+const SHARED = fs.readFileSync("config/adapters/_shared.js", "utf-8");
+function runAdapter(scriptPath, data) {
+  const script = fs.readFileSync(scriptPath, "utf-8");
+  const fn = new Function("data", `${SHARED}; ${script}; return transform(data);`);
+  return fn(data);
+}
+
+// В собранном конфиге не должно остаться литералов $ref
+function hasRefKey(value) {
+  if (Array.isArray(value)) return value.some(hasRefKey);
+  if (value && typeof value === "object") {
+    return Object.entries(value).some(([k, v]) => k === "$ref" || hasRefKey(v));
+  }
+  return false;
+}
+
+// Упрощённая реплика matchRoutePattern из src/app/api/[...route]/route.ts
+function matches(patternPath, requestPath, routeMethod, requestMethod) {
+  if (routeMethod !== requestMethod) return false;
+  const p = patternPath.split("/").filter(Boolean);
+  const r = requestPath.split("/").filter(Boolean);
+  if (p.length !== r.length) return false;
+  for (let i = 0; i < p.length; i++) {
+    if (/^\[.+\]$/.test(p[i])) continue;
+    if (p[i] !== r[i]) return false;
+  }
+  return true;
+}
+
+async function main() {
+  const refParserModule = await import("@apidevtools/json-schema-ref-parser");
+  const $RefParser = refParserModule.default || refParserModule;
+  const parser = new $RefParser();
+  const reference = await parser.dereference(path.resolve("config/crm-config.json"));
+
+  const registry = new Map();
+  for (const camp of reference.camps || []) {
+    const key = camp.code || String(camp.id);
+    if (camp.config_patch === undefined || camp.config_patch === null) {
+      registry.set(key, reference);
+      continue;
+    }
+    const patchPath = path.resolve("config", camp.config_patch);
+    const patchParser = new $RefParser();
+    const delta = await patchParser.dereference(patchPath);
+    const campConfig = structuredClone(reference);
+    applyConfigDelta(campConfig, delta);
+    registry.set(key, campConfig);
+  }
+
+  const avito = registry.get("avito_to_the_top");
+  check("avito config is a patched clone", avito !== undefined && avito !== reference);
+  check("shim resolved: no $ref literals in the avito config", !hasRefKey(avito));
+
+  // 2) navbar: дельта-ключ navbar патча → «Транзакции» в конец промо-группы
+  check("reference navbar untouched", !reference.navbar.items.some((i) => i.label === "Транзакции"));
+  check("navbar: Транзакции appended", avito.navbar.items.some((i) => i.label === "Транзакции"));
+  const trxItem = avito.navbar.items.find((i) => i.label === "Транзакции");
+  check("navbar: item props", trxItem !== undefined && trxItem.icon === "pi pi-money-bill" && trxItem.route === "/ops/transactions");
+  check("navbar: appended at the end of promo group", avito.navbar.items[avito.navbar.items.length - 1].label === "Транзакции");
+  check("navbar: base items intact (+1 appended)", avito.navbar.items.length === reference.navbar.items.length + 1);
+  check("navbar: headers preserved", avito.navbar.items.some((i) => i.header === "Промо-инстанс") && avito.navbar.items.some((i) => i.header === "CRM-управление"));
+  check("navbar: Статистика before Транзакции", avito.navbar.items.findIndex((i) => i.label === "Статистика") < avito.navbar.items.findIndex((i) => i.label === "Транзакции"));
+
+  // 3) меню карточки: дельта user-card.json подменяет props.model на camp-копию
+  const avitoCard = avito.pages.find((p) => p.id === "user");
+  const refCard = reference.pages.find((p) => p.id === "user");
+  const cardMenuProps = avitoCard.sections
+    .find((s) => s.id === "menuSection")
+    .blocks.find((b) => b.id === "menuBlock").components
+    .find((c) => c.id === "menubar").props;
+  check("card: activeItemId stays profile", cardMenuProps.activeItemId === "profile");
+  const cardModel = cardMenuProps.model;
+  check("card menu: model is array (sibling-$ref merge)", Array.isArray(cardModel));
+  check("card menu: achievements contains Транзакции", cardModel.find((g) => g.id === "achievements").items.some((i) => i.id === "transactions"));
+  const cardTrx = cardModel.find((g) => g.id === "achievements").items.find((i) => i.id === "transactions");
+  check("card menu: item props", cardTrx !== undefined && cardTrx.label === "Транзакции" && cardTrx.icon === "pi pi-money-bill" && cardTrx.route === "/ops/users/{@state.userData.id}/transactions");
+  check("card menu: no group duplication", cardModel.length === 6 && cardModel.filter((g) => g.id === "achievements").length === 1);
+  check("card menu: sibling route intact", cardModel.find((g) => g.id === "achievements").items.find((i) => i.id === "points").route === "/ops/users/{@state.userData.id}/points/history");
+  check("card menu: reference untouched", !refCard.sections.find((s) => s.id === "menuSection").blocks.find((b) => b.id === "menuBlock").components.find((c) => c.id === "menubar").props.model.some((g) => g.id === "achievements" && (g.items || []).some((i) => i.id === "transactions")));
+
+  // 4) Страница «Транзакции» (список кампании)
+  const trxPage = avito.pages.find((p) => p.id === "transactions");
+  check("transactions page added", trxPage !== undefined && trxPage.route === "/ops/transactions");
+  check("reference has no transactions page", reference.pages.find((p) => p.id === "transactions") === undefined);
+  check("trx state defaults", trxPage.state.transactions.value.length === 0 && trxPage.state.transactions.totalRecords === 0 && trxPage.state.transactions.rows === 10 && trxPage.state.transactions.first === 0);
+  check("trx query defaults (sortOrder -1 = отчётный DESC)", trxPage.state.transactionsQuery.sortField === "" && trxPage.state.transactionsQuery.sortOrder === -1 && trxPage.state.transactionsQuery.search === "");
+  check("trx report container", Array.isArray(trxPage.state.report.columns) && trxPage.state.report.columns.length === 0 && Array.isArray(trxPage.state.report.filters) && trxPage.state.report.filters.length === 0);
+  const trxMeta = trxPage.dataFeed.find((f) => f.url === "/api/ops/transactions");
+  check("trx metadata feed GET → state.report", trxMeta !== undefined && trxMeta.method === "GET" && trxMeta.target === "state.report");
+  const trxFeed = trxPage.dataFeed.find((f) => f.url === "/api/ops/transactions/execute");
+  check("trx execute feed POST → state.transactions (URL params)", trxFeed !== undefined && trxFeed.method === "POST" && trxFeed.target === "state.transactions" && trxFeed.data.first === "{$location.params.first}" && trxFeed.data.filters === "{$location.params.filters}");
+  const trxShort = trxPage.shortcuts.requestTransactions.params.commands;
+  const trxSend = trxShort.find((c) => c.type === "sendRequest").params;
+  check("trx shortcut sendRequest data", trxSend.data.first === "{$state.transactions.first}" && trxSend.data.search === "{$state.transactionsQuery.search}" && Array.isArray(trxSend.data.filters) === false);
+  check("trx shortcut format resolved (no $ref)", !JSON.stringify(trxSend.format).includes("$ref"));
+  const trxMerge = trxShort.find((c) => c.type === "mergeUrlParams").params.values;
+  check("trx shortcut mergeUrlParams", trxMerge.first === "{$state.transactions.first}" && trxMerge.search === "{$state.transactionsQuery.search}" && trxMerge.filters === "{$state.report.filters}");
+  check("trx dataInit: filters merged from URL", trxPage.dataInit.some((d) => d.target === "state.report.filters" && d.parse === "json" && d.priority === "feed" && d.method === "merge"));
+  check("trx header: title + refresh + save/load state", trxPage.sections.find((s) => s.id === "transactionsHeader") !== undefined && trxPage.sections.some((s) => s.blocks.some((b) => b.components.some((c) => c.id === "transactionsSaveStateButton"))) && trxPage.sections.some((s) => s.blocks.some((b) => b.components.some((c) => c.id === "transactionsLoadStateButton"))));
+  const trxFiltersSection = trxPage.sections.find((s) => s.id === "transactionsFilters");
+  const trxSearchComp = trxFiltersSection.blocks.find((b) => b.id === "transactionsSearchBlock").components;
+  check("trx filters: search + toggle + bar + panel", trxSearchComp.some((c) => c.componentType === "InputTextWithThrottle") && trxSearchComp.some((c) => c.id === "transactionsToggleFilters") && trxFiltersSection.blocks.some((b) => b.components.some((c) => c.componentType === "ActiveFiltersBar")) && trxFiltersSection.blocks.some((b) => b.components.some((c) => c.componentType === "FiltersPanel")));
+  check("trx search wired to shortcut", trxSearchComp.find((c) => c.componentType === "InputTextWithThrottle").events[0].commands.some((cmd) => cmd === "requestTransactions"));
+  const trxTable = trxPage.sections.find((s) => s.id === "transactionsTableSection").blocks[0].components[0];
+  check("trx table: lazy paginator + metadata columns", trxTable.componentType === "DataTable" && trxTable.props.lazy === true && trxTable.props.paginator === true && trxTable.props.columns === "@state.report.columns" && trxTable.props.value === "@state.transactions.value");
+  check("trx table: no row click / no selection / no custom columns", trxTable.props.selectionMode === undefined && trxTable.props.customColumns === undefined && !trxTable.events.some((e) => e.type === "onRowClick"));
+  check("trx table: onPage/onSort wired", trxTable.events.some((e) => e.type === "onPage" && e.commands[0] === "requestTransactions") && trxTable.events.some((e) => e.type === "onSort" && e.commands[2] === "requestTransactions"));
+
+  // 5) Страница «Транзакции участника»
+  const utrPage = avito.pages.find((p) => p.id === "user-transactions");
+  check("user-transactions page added", utrPage !== undefined && utrPage.route === "/ops/users/[user_id]/transactions");
+  check("utr state defaults", utrPage.state.userTransactions.rows === 10 && utrPage.state.userTransactions.first === 0 && utrPage.state.userTransactionsQuery.sortOrder === -1);
+  const utrUserData = utrPage.dataFeed.find((f) => f.target === "state.userData");
+  check("utr: card data feed for breadcrumb", utrUserData !== undefined && utrUserData.url === "/api/ops/users/{$location.routeParams.user_id}");
+  const utrMeta = utrPage.dataFeed.find((f) => f.url === "/api/ops/user-transactions");
+  check("utr metadata feed GET → state.report", utrMeta !== undefined && utrMeta.method === "GET" && utrMeta.target === "state.report");
+  const utrFeed = utrPage.dataFeed.find((f) => f.url === "/api/ops/user-transactions/execute");
+  check("utr execute feed POST with route user_id", utrFeed !== undefined && utrFeed.method === "POST" && utrFeed.target === "state.userTransactions" && utrFeed.data.user_id === "{$location.routeParams.user_id}");
+  const utrShort = utrPage.shortcuts.requestUserTransactions.params.commands;
+  const utrSend = utrShort.find((c) => c.type === "sendRequest").params;
+  check("utr shortcut sendRequest user_id from route", utrSend.data.user_id === "{$location.routeParams.user_id}" && utrSend.data.first === "{$state.userTransactions.first}");
+  const utrMerge = utrShort.find((c) => c.type === "mergeUrlParams").params.values;
+  check("utr shortcut: user_id NOT written to URL (он в роуте)", utrMerge.user_id === undefined && utrMerge.search === "{$state.userTransactionsQuery.search}");
+  const utrMenu = utrPage.sections.find((s) => s.id === "menuSection").blocks[0].components[0].props;
+  check("utr menu: camp model + achievements/transactions active", utrMenu.activeItemId === "achievements" && utrMenu.activeSubitemId === "transactions" && Array.isArray(utrMenu.model) && utrMenu.model.find((g) => g.id === "achievements").items.some((i) => i.id === "transactions"));
+  const utrCrumb = utrPage.sections.find((s) => s.id === "breadcrumbSection").blocks[0].components[0].props.model;
+  check("utr breadcrumb: Участники → имя → Транзакции", utrCrumb.length === 3 && utrCrumb[0].label === "Участники" && utrCrumb[1].label === "@state.userData.full_name" && utrCrumb[2].label === "Транзакции");
+  const utrSearchComp = utrPage.sections.find((s) => s.id === "transactionsSearchSection").blocks[0].components;
+  check("utr: search without FiltersPanel (у запроса нет фильтров)", utrSearchComp.some((c) => c.componentType === "InputTextWithThrottle") && !utrPage.sections.some((s) => s.blocks.some((b) => b.components.some((c) => c.componentType === "FiltersPanel"))));
+  const utrTable = utrPage.sections.find((s) => s.id === "transactionsTableSection").blocks[0].components[0];
+  check("utr table: lazy + no click/selection/icons", utrTable.props.lazy === true && utrTable.props.columns === "@state.report.columns" && utrTable.props.value === "@state.userTransactions.value" && utrTable.props.selectionMode === undefined && utrTable.props.customColumns === undefined && !utrTable.events.some((e) => e.type === "onRowClick"));
+
+  // 6) Маршруты и матринг
+  const routeGetTrx = avito.apiRoutes.find((r) => r.path === "ops/transactions");
+  const routePostTrx = avito.apiRoutes.find((r) => r.path === "ops/transactions/execute");
+  const routeGetUtr = avito.apiRoutes.find((r) => r.path === "ops/user-transactions");
+  const routePostUtr = avito.apiRoutes.find((r) => r.path === "ops/user-transactions/execute");
+  check("routes: 4 new routes present", routeGetTrx !== undefined && routePostTrx !== undefined && routeGetUtr !== undefined && routePostUtr !== undefined);
+  check("route GET transactions: url + metadata adapter", routeGetTrx.url === "/api/v1/crm/stats/query/transactions" && routeGetTrx.adapter.response === "stats.transactions.report.response" && routeGetTrx.query === undefined);
+  check("route POST transactions/execute: query:true + adapters", routePostTrx.url === "/api/v1/crm/stats/query/transactions/execute" && routePostTrx.query === true && routePostTrx.adapter.request === "stats.transactions.execute.request" && routePostTrx.adapter.response === "stats.transactions.execute.response");
+  check("route GET user-transactions: shared metadata adapter", routeGetUtr.url === "/api/v1/crm/stats/query/user-transactions" && routeGetUtr.adapter.response === "stats.transactions.report.response");
+  check("route POST user-transactions/execute: adapters", routePostUtr.url === "/api/v1/crm/stats/query/user-transactions/execute" && routePostUtr.query === true && routePostUtr.adapter.request === "stats.user-transactions.execute.request" && routePostUtr.adapter.response === "stats.transactions.execute.response");
+  check("reference routes untouched", reference.apiRoutes.find((r) => /transactions/.test(r.path)) === undefined);
+  // Матринг: первый совпавший маршрут для каждого пути — наш
+  const firstMatch = (requestPath, method) =>
+    avito.apiRoutes.find((r) => matches(r.path, requestPath, r.method, method));
+  check("matching: ops/transactions GET → metadata route", firstMatch("ops/transactions", "GET") === routeGetTrx);
+  check("matching: ops/transactions/execute POST → execute route", firstMatch("ops/transactions/execute", "POST") === routePostTrx);
+  check("matching: ops/user-transactions GET", firstMatch("ops/user-transactions", "GET") === routeGetUtr);
+  check("matching: ops/user-transactions/execute POST", firstMatch("ops/user-transactions/execute", "POST") === routePostUtr);
+  check("matching: generic users query route intact", firstMatch("ops/users-v2/query/users", "GET").path === "ops/users-v2/query/[query_id]");
+  check("matching: ops/transactions not shadowed by users pattern", firstMatch("ops/transactions", "GET").path !== "ops/users-v2/query/[query_id]");
+  check("matching: ops/tasks (эталонный маршрут) не перекрыт", firstMatch("ops/tasks", "GET").path === "ops/tasks");
+
+  // 7) Реестр адаптеров
+  const TRX_ADAPTERS = ["stats.transactions.execute.request", "stats.transactions.execute.response", "stats.transactions.report.response", "stats.user-transactions.execute.request"];
+  check("adapters: 4 new keys with .avito.js scripts", TRX_ADAPTERS.every((k) => avito.adapters[k] && avito.adapters[k].script.endsWith(".avito.js")));
+  check("adapters: reference registry untouched", !TRX_ADAPTERS.some((k) => reference.adapters[k]));
+  check("adapters: previous avito keys intact", avito.adapters["stats.users.tasks.execute.request"] !== undefined && avito.adapters["stats.users.rating.execute.request"] !== undefined && avito.adapters["dictionaries.response.avito"] !== undefined);
+
+  // 8) Исполнение адаптеров (как DataAdapterEngine: _shared.js + скрипт)
+  const trxReqPath = "config/adapters/stats.transactions.execute.request.avito.js";
+  const utrReqPath = "config/adapters/stats.user-transactions.execute.request.avito.js";
+  const trxResPath = "config/adapters/stats.transactions.execute.response.avito.js";
+  const trxMetaPath = "config/adapters/stats.transactions.report.response.avito.js";
+
+  // request transactions: пустой запрос — все 10 макросов присутствуют (422 без них)
+  const trxEmpty = runAdapter(trxReqPath, {});
+  const MACROS = ["TYPE_FILTER", "STATUS_FILTER", "DATE_FROM_FILTER", "DATE_TO_FILTER", "POINTS_FILTER", "LEAGUE_FILTER", "SEGMENT_FILTER", "SEARCH_FILTER", "ORDER_BY", "ORDER_DIR"];
+  check("trx request: page/limit defaults", trxEmpty.page === 1 && trxEmpty.limit === 10);
+  check("trx request: all 10 macro keys always present", MACROS.every((k) => k in trxEmpty.replacements) && Object.keys(trxEmpty.replacements).length === 10);
+  check("trx request: defaults ORDER_BY processed_at DESC", trxEmpty.replacements.ORDER_BY === "tl.processed_at" && trxEmpty.replacements.ORDER_DIR === "DESC");
+  check("trx request: unused macros are empty strings", MACROS.slice(0, 8).every((k) => trxEmpty.replacements[k] === ""));
+
+  // request transactions: event overrides + cap
+  const trxEvent = runAdapter(trxReqPath, { event: { first: 50, rows: 50, sortField: "points", sortOrder: 1 } });
+  check("trx request: event pagination + sort", trxEvent.page === 2 && trxEvent.limit === 50 && trxEvent.replacements.ORDER_BY === "tl.points" && trxEvent.replacements.ORDER_DIR === "ASC");
+  const trxCap = runAdapter(trxReqPath, { rows: 500, first: 0 });
+  check("trx request: limit capped at 100", trxCap.limit === 100);
+
+  // request transactions: options «ничего или всё → пусто», частичный выбор → IN
+  const optPartial = runAdapter(trxReqPath, { filters: [{ id: "type_code", value: [true, false] }] });
+  check("trx request: type_code partial → IN", optPartial.replacements.TYPE_FILTER === "AND tl.type_code IN ('TASK')");
+  check("trx request: type_code none → empty", runAdapter(trxReqPath, { filters: [{ id: "type_code", value: [false, false] }] }).replacements.TYPE_FILTER === "");
+  check("trx request: type_code all → empty (правило спеки)", runAdapter(trxReqPath, { filters: [{ id: "type_code", value: [true, true] }] }).replacements.TYPE_FILTER === "");
+  const leaguePartial = runAdapter(trxReqPath, { filters: [{ id: "league_code", value: [false, false, true, false, false, false, false, false, false] }] });
+  check("trx request: league partial → IN ('Cargo_ML_big')", leaguePartial.replacements.LEAGUE_FILTER === "AND tl.league_code IN ('Cargo_ML_big')");
+  check("trx request: segment all → empty", runAdapter(trxReqPath, { filters: [{ id: "segment", value: [true, true, true] }] }).replacements.SEGMENT_FILTER === "");
+  check("trx request: unknown filter id ignored", runAdapter(trxReqPath, { filters: [{ id: "hacker", value: ["'"] }] }).replacements.SEARCH_FILTER === "");
+
+  // request transactions: период МСК→UTC через CONVERT_TZ; range баллов
+  const period = runAdapter(trxReqPath, { filters: [{ id: "processed_date", value: ["2026-11-01T00:00:00Z", "2026-11-10T23:59:59Z"] }] });
+  check("trx request: DATE_FROM CONVERT_TZ MSK wall", period.replacements.DATE_FROM_FILTER === "AND tl.processed_at >= CONVERT_TZ('2026-11-01 03:00:00', '+03:00', '+00:00')");
+  check("trx request: DATE_TO CONVERT_TZ MSK wall", period.replacements.DATE_TO_FILTER === "AND tl.processed_at <= CONVERT_TZ('2026-11-11 02:59:59', '+03:00', '+00:00')");
+  const range = runAdapter(trxReqPath, { filters: [{ id: "points", value: [10, null] }] });
+  check("trx request: points range lower bound", range.replacements.POINTS_FILTER === "AND tl.points >= 10");
+  const rangeBoth = runAdapter(trxReqPath, { filters: [{ id: "points", value: [10, 500] }] });
+  check("trx request: points range both bounds", rangeBoth.replacements.POINTS_FILTER === "AND tl.points >= 10 AND tl.points <= 500");
+  check("trx request: points range empty → empty", runAdapter(trxReqPath, { filters: [{ id: "points", value: [] }] }).replacements.POINTS_FILTER === "");
+
+  // request transactions: поиск — 11 полей, экранирование % _ '
+  const trxSearch = runAdapter(trxReqPath, { search: "O'Brien%_x" });
+  check("trx request: search quote doubling", trxSearch.replacements.SEARCH_FILTER.includes("O''Brien"));
+  check("trx request: search % and _ escaped", trxSearch.replacements.SEARCH_FILTER.includes("Brien\\%\\_x"));
+  check("trx request: search 11 OR-подобий", (trxSearch.replacements.SEARCH_FILTER.match(/LIKE/g) || []).length === 11);
+  check("trx request: search wrapped in OR-group", trxSearch.replacements.SEARCH_FILTER.startsWith("AND (") && trxSearch.replacements.SEARCH_FILTER.endsWith(")"));
+  check("trx request: search UUID partial match allowed", trxSearch.replacements.SEARCH_FILTER.includes("BIN_TO_UUID(bu.user_id) LIKE"));
+
+  // request transactions: карта сортировки — алиасы и не-сортируемые
+  check("trx request: category_name alias", runAdapter(trxReqPath, { sortField: "category_name", sortOrder: 1 }).replacements.ORDER_BY === "category_name");
+  check("trx request: league_name alias DESC", runAdapter(trxReqPath, { sortField: "league_name", sortOrder: -1 }).replacements.ORDER_BY === "league_name");
+  check("trx request: full_name not sortable → default", runAdapter(trxReqPath, { sortField: "full_name", sortOrder: 1 }).replacements.ORDER_BY === "tl.processed_at" && runAdapter(trxReqPath, { sortField: "full_name", sortOrder: 1 }).replacements.ORDER_DIR === "DESC");
+  check("trx request: unknown alias → default", runAdapter(trxReqPath, { sortField: "DROP TABLE", sortOrder: 1 }).replacements.ORDER_BY === "tl.processed_at");
+
+  // request user-transactions: 4 макроса, USER_ID из роута, свой поиск
+  const utrEmpty = runAdapter(utrReqPath, {});
+  const UMACROS = ["USER_ID", "SEARCH_FILTER", "ORDER_BY", "ORDER_DIR"];
+  check("utr request: page/limit defaults", utrEmpty.page === 1 && utrEmpty.limit === 10);
+  check("utr request: all 4 macro keys always present", UMACROS.every((k) => k in utrEmpty.replacements) && Object.keys(utrEmpty.replacements).length === 4);
+  check("utr request: defaults ORDER_BY processed_at DESC", utrEmpty.replacements.ORDER_BY === "tl.processed_at" && utrEmpty.replacements.ORDER_DIR === "DESC");
+  const utrUser = runAdapter(utrReqPath, { user_id: "abc'def" });
+  check("utr request: USER_ID quoted + apostrophes doubled", utrUser.replacements.USER_ID === "'abc''def'");
+  check("utr request: missing user_id → empty key", utrEmpty.replacements.USER_ID === "");
+  const utrSearch = runAdapter(utrReqPath, { user_id: "u1", search: "50%" });
+  check("utr request: search % escaped", utrSearch.replacements.SEARCH_FILTER.includes("50\\%"));
+  check("utr request: search 7 полей транзакции", (utrSearch.replacements.SEARCH_FILTER.match(/LIKE/g) || []).length === 7);
+  check("utr request: search не ищет поля участника", !utrSearch.replacements.SEARCH_FILTER.includes("bu.telegram_id") && !utrSearch.replacements.SEARCH_FILTER.includes("u.email"));
+  check("utr request: task_title alias ASC", runAdapter(utrReqPath, { sortField: "task_title", sortOrder: 1 }).replacements.ORDER_BY === "tc.title" && runAdapter(utrReqPath, { sortField: "task_title", sortOrder: 1 }).replacements.ORDER_DIR === "ASC");
+  check("utr request: error_message not sortable → default", runAdapter(utrReqPath, { sortField: "error_message", sortOrder: 1 }).replacements.ORDER_BY === "tl.processed_at");
+  const utrEvent = runAdapter(utrReqPath, { event: { first: 30, rows: 30 } });
+  check("utr request: event pagination", utrEvent.page === 2 && utrEvent.limit === 30);
+
+  // execute response: оба формата конверта + labels
+  const legacyRow = runAdapter(trxResPath, [
+    { transaction_id: "t-1", type_code: "TASK", status: "success", type_code_label: "Начисление баллов", status_label: "Успешно", points: 100, processed_at_msk: "2026-11-01 12:00:00" },
+  ]);
+  check("response: legacy array passthrough + labels", Array.isArray(legacyRow) && legacyRow.length === 1 && legacyRow[0].type_code === "Начисление баллов" && legacyRow[0].status === "Успешно" && legacyRow[0].points === 100);
+  const envelopeRow = runAdapter(trxResPath, {
+    status: "ok",
+    data: {
+      rows: [{ id: "row-1", values: { transaction_id: "t-2", type_code: "LEAGUE", status: "error", type_code_label: "Назначение лиги", status_label: "Ошибка", points: 5 } }],
+    },
+  });
+  check("response: future envelope unwrapped (id + values merged)", Array.isArray(envelopeRow) && envelopeRow[0].id === "row-1" && envelopeRow[0].transaction_id === "t-2" && envelopeRow[0].values === undefined);
+  check("response: envelope labels applied", envelopeRow[0].type_code === "Назначение лиги" && envelopeRow[0].status === "Ошибка");
+  const rawRow = runAdapter(trxResPath, [{ transaction_id: "t-3", type_code: "TASK", status: "success" }]);
+  check("response: no labels yet → raw values kept (деградация)", rawRow[0].type_code === "TASK" && rawRow[0].status === "success");
+  check("response: garbage → empty array", Array.isArray(runAdapter(trxResPath, { foo: "bar" })) && runAdapter(trxResPath, null).length === 0);
+  check("response: non-object row passthrough", runAdapter(trxResPath, ["x"])[0] === "x");
+
+  // report response: passthrough метаданных
+  const meta = runAdapter(trxMetaPath, {
+    status: "ok",
+    data: {
+      id: "transactions",
+      title: "Транзакции чат-бота",
+      fields: [
+        { name: "transaction_id", title: "ID транзакции", type: "string", sortable: true },
+        { name: "processed_at_msk", title: "Время (МСК)", type: "datetime", sortable: true },
+        { name: "error_message", title: "Ошибка", type: "string", sortable: false },
+      ],
+      filters: [{ id: "type_code", type: "options", name: "Тип", opts: ["Начисление баллов", "Назначение лиги"] }],
+    },
+  });
+  check("metadata: id/title passthrough", meta.id === "transactions" && meta.title === "Транзакции чат-бота");
+  check("metadata: columns from fields[]", meta.columns.length === 3 && meta.columns[0].field === "transaction_id" && meta.columns[0].header === "ID транзакции" && meta.columns[0].sortable === true);
+  check("metadata: datetime → dataType date", meta.columns[1].dataType === "date");
+  check("metadata: server sortable flag kept", meta.columns[2].sortable === false);
+  check("metadata: filters passthrough", Array.isArray(meta.filters) && meta.filters.length === 1 && meta.filters[0].id === "type_code");
+  const metaEmpty = runAdapter(trxMetaPath, {});
+  check("metadata: empty → пустые columns/filters (деградация до регистрации query_id)", Array.isArray(metaEmpty.columns) && metaEmpty.columns.length === 0 && Array.isArray(metaEmpty.filters) && metaEmpty.filters.length === 0);
+  check("metadata: garbage passthrough", runAdapter(trxMetaPath, null) === null);
+
+  // Итог
+  console.log(`\n${pass} passed, ${fail} failed`);
+  if (fail > 0) process.exitCode = 1;
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

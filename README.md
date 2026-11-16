@@ -541,8 +541,10 @@ id → code → реестр) — без переключения общего �
 исключены; `$ref` в файле патча резолвятся относительно файла патча (тот же
 `$RefParser`, что и для эталона). Первый патченный камп — «Авито 2026»
 (`code: avito_to_the_top`; патч разбит на файлы через `$ref`-шим —
-`patch.json` → `adapters.json` / `api-routes.json` / `pages.json` →
-`pages/users-list.json` + `pages/user-card.json`, см. `docs/config-reference.md`
+`patch.json` → `adapters.json` / `api-routes.json` / `menus/navbar.json` /
+`pages.json` →
+`pages/users-list.json` + `pages/user-card.json` + `pages/transactions-list.json` +
+`pages/user-transactions.json`, см. `docs/config-reference.md`
 → «$ref-разделение патча»): страница «Участники» со своими адаптерами
 users (поиск по стандартным полям реестра + `avito_id`/`telegram_id`),
 dropdown-фильтры «Категория»/«Лига» из справочников с пунктом «Не назначено»
@@ -560,8 +562,16 @@ dropdown-фильтры «Категория»/«Лига» из справоч�
 последнем столбце — клик по строке или кнопке открывает попап деталей
 задания с 14 полями в трёх блоках и «Да»/«Нет» для длительных заданий;
 запросы `user-avito`/`user-avito-tasks` — `ops/users-v2/rating/execute`,
-`ops/users-v2/tasks[/execute]`);
-см. §10.5–10.6 дока «Дополнение. Система статистики»). Подробно —
+`ops/users-v2/tasks[/execute]`); страницы «Транзакции» — список кампании
+`/ops/transactions` (поиск + FiltersPanel, метаданные запроса `transactions`,
+ленивая таблица без клика по строке) и транзакции участника
+`/ops/users/[user_id]/transactions` (меню карточки, запрос
+`user-transactions`); 4 literal-маршрута `ops/transactions[/execute]` /
+`ops/user-transactions[/execute]` вместо generic users-query (по прецеденту
+чеков); пункт navbar «Транзакции» (дельта-ключ `navbar` патча, append в конец
+промо-группы) и пункт «Транзакции» в меню карточки («Достижения», camp-копия
+`menus/user.json`);
+см. §10.5–10.7 дока «Дополнение. Система статистики»). Подробно —
 `docs/config-reference.md` (раздел «Конфигурации кампаний»).
 
 → Полное описание: [docs/config-reference.md](docs/config-reference.md)

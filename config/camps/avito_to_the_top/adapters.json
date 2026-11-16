@@ -30,5 +30,21 @@
   "stats.users.tasks.execute.request": {
     "type": "js",
     "script": "./config/adapters/stats.users.tasks.execute.request.avito.js"
+  },
+  "stats.transactions.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.transactions.execute.request.avito.js"
+  },
+  "stats.transactions.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.transactions.execute.response.avito.js"
+  },
+  "stats.transactions.report.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.transactions.report.response.avito.js"
+  },
+  "stats.user-transactions.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.user-transactions.execute.request.avito.js"
   }
 }

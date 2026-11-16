@@ -1,4 +1,6 @@
 [
   { "$ref": "./pages/users-list.json" },
-  { "$ref": "./pages/user-card.json" }
+  { "$ref": "./pages/user-card.json" },
+  { "$ref": "./pages/transactions-list.json" },
+  { "$ref": "./pages/user-transactions.json" }
 ]

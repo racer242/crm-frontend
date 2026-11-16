@@ -1,0 +1,92 @@
+{
+  "model": [
+    {
+      "id": "profile",
+      "label": "Профиль",
+      "icon": "pi pi-user",
+      "route": "/ops/users/{@state.userData.id}"
+    },
+    {
+      "id": "docs",
+      "label": "Документы",
+      "icon": "pi pi-file",
+      "items": [
+        {
+          "id": "personal-docs",
+          "label": "Личные",
+          "icon": "pi pi-id-card",
+          "route": "/ops/users/{@state.userData.id}/docs",
+          "feature": "user_docs"
+        },
+        {
+          "id": "acts",
+          "label": "Акты",
+          "icon": "pi pi-verified",
+          "route": "/ops/users/{@state.userData.id}/acts",
+          "feature": "user_docs"
+        }
+      ]
+    },
+    {
+      "id": "production",
+      "label": "Продукция",
+      "icon": "pi pi-shopping-cart",
+      "items": [
+        {
+          "id": "receipts",
+          "label": "Чеки",
+          "icon": "pi pi-receipt",
+          "route": "/ops/users/{@state.userData.id}/receipts",
+          "feature": "receipts"
+        },
+        {
+          "id": "products",
+          "label": "Покупки",
+          "icon": "pi pi-shopping-bag",
+          "route": "/ops/users/{@state.userData.id}/products",
+          "feature": "products"
+        }
+      ]
+    },
+    {
+      "id": "achievements",
+      "label": "Достижения",
+      "icon": "pi pi-crown",
+      "items": [
+        {
+          "id": "prizes",
+          "label": "Призы",
+          "icon": "pi pi-gift",
+          "route": "/ops/users/{@state.userData.id}/prizes",
+          "feature": "prizes"
+        },
+        {
+          "id": "points",
+          "label": "Баллы",
+          "icon": "pi pi-wallet",
+          "route": "/ops/users/{@state.userData.id}/points/history",
+          "feature": "points"
+        },
+        {
+          "id": "transactions",
+          "label": "Транзакции",
+          "icon": "pi pi-money-bill",
+          "route": "/ops/users/{@state.userData.id}/transactions"
+        }
+      ]
+    },
+    {
+      "id": "communication",
+      "label": "Общение",
+      "icon": "pi pi-envelope",
+      "route": "/ops/users/{@state.userData.id}/messages",
+      "feature": "messages"
+    },
+    {
+      "id": "events",
+      "label": "Журнал",
+      "icon": "pi pi-history",
+      "route": "/ops/users/{@state.userData.id}/log"
+    }
+  ]
+}

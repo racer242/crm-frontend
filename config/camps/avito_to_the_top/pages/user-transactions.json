@@ -1,0 +1,339 @@
+{
+  "id": "user-transactions",
+  "type": "page",
+  "route": "/ops/users/[user_id]/transactions",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "userData": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "userTransactions": {
+      "value": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    },
+    "userTransactionsQuery": {
+      "sortField": "",
+      "sortOrder": -1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
+    }
+  },
+  "meta": {
+    "title": "Транзакции участника — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/users/{$location.routeParams.user_id}",
+      "method": "GET",
+      "target": "state.userData"
+    },
+    {
+      "url": "/api/ops/user-transactions",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/user-transactions/execute",
+      "method": "POST",
+      "target": "state.userTransactions",
+      "data": {
+        "user_id": "{$location.routeParams.user_id}",
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}"
+      }
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.userTransactionsQuery.search"
+    },
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.userTransactionsQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.userTransactionsQuery.sortOrder",
+      "parse": "json"
+    }
+  ],
+  "shortcuts": {
+    "requestUserTransactions": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/user-transactions/execute",
+              "method": "POST",
+              "target": "state.userTransactions",
+              "data": {
+                "event": "{$event}",
+                "user_id": "{$location.routeParams.user_id}",
+                "first": "{$state.userTransactions.first}",
+                "rows": "{$state.userTransactions.rows}",
+                "sortField": "{$state.userTransactionsQuery.sortField}",
+                "sortOrder": "{$state.userTransactionsQuery.sortOrder}",
+                "search": "{$state.userTransactionsQuery.search}"
+              },
+              "format": {
+                "$ref": "../../../system/list-request-format.json"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.userTransactions.first}",
+                "rows": "{$state.userTransactions.rows}",
+                "sortField": "{$state.userTransactionsQuery.sortField}",
+                "sortOrder": "{$state.userTransactionsQuery.sortOrder}",
+                "search": "{$state.userTransactionsQuery.search}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
+                "model": [
+                  {
+                    "label": "Участники",
+                    "route": "/ops/users"
+                  },
+                  {
+                    "label": "@state.userData.full_name",
+                    "route": "/ops/users/{@state.userData.id}"
+                  },
+                  {
+                    "label": "Транзакции"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "achievements",
+                "activeSubitemId": "transactions",
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transactionsHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "transactionsTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "transactionsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "Транзакции участника",
+                "level": 1
+              }
+            },
+            {
+              "id": "transactionsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transactionsSearchSection",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "transactionsSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "transactionsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.userTransactionsQuery.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.userTransactionsQuery.search"
+                      }
+                    },
+                    "requestUserTransactions"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transactionsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "transactionsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "transactionsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.userTransactions.value",
+                "columns": "@state.report.columns",
+                "totalRecords": "@state.userTransactions.totalRecords",
+                "rows": "@state.userTransactions.rows",
+                "first": "@state.userTransactions.first",
+                "sortField": "@state.userTransactionsQuery.sortField",
+                "sortOrder": "@state.userTransactionsQuery.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestUserTransactions"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.userTransactionsQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.userTransactionsQuery.sortOrder"
+                      }
+                    },
+                    "requestUserTransactions"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -705,6 +705,7 @@ merge-записи вливаются в результаты фидов (`build
 {
   "adapters": { "$ref": "./adapters.json" },
   "apiRoutes": { "$ref": "./api-routes.json" },
+  "navbar": { "$ref": "./menus/navbar.json" },
   "pages": { "$ref": "./pages.json" }
 }
 ```
@@ -724,7 +725,12 @@ merge-записи вливаются в результаты фидов (`build
 - пути `$ref` резолвятся относительно содержащего файла: в
   `pages/users-list.json` путь к общему формату — уже
   `../../../system/list-request-format.json` (три уровня вверх), не
-  `../../system/…`, как из папки кампании.
+  `../../system/…`, как из папки кампании;
+- `$ref` **сиблингом** среди других ключей объекта (как в `menubar.props`
+  страниц карточки — рядом с `activeItemId`/`pt`) — контент включения
+  мержится в сам содержащий объект: `props.model` получает массив групп
+  Menubar, соседние ключи сохраняются (объект `{model: {"$ref": …}}` дал бы
+  объект вместо массива и сломал бы меню).
 
 Семантика наложения дельты (`src/core/configMerge.ts → applyConfigDelta`):
 
@@ -759,21 +765,39 @@ api-routes, `url` — dataFeed (матч фида по адресу: можно 
 {
   "adapters": { "$ref": "./adapters.json" },
   "apiRoutes": { "$ref": "./api-routes.json" },
+  "navbar": { "$ref": "./menus/navbar.json" },
   "pages": { "$ref": "./pages.json" }
 }
 ```
 
 - `adapters.json` — объект записей реестра: замена `script` эталонных
   адаптеров users + новые адаптеры (`dictionaries.response.avito`, рейтинг и
-  задания карточки с отдельным response — 7 записей);
+  задания карточки с отдельным response, транзакции — метаданные passthrough,
+  execute-response с лейблами и два request — 12 записей);
 - `api-routes.json` — массив дельт маршрутов: статические справочники
   `dict_categories`/`dict_leagues` + перенос общего `ops/dictionaries/[name]`
   в конец, маршрут рейтинга `ops/users-v2/rating/execute` (запрос
-  `user-avito`) и задачи карточки `ops/users-v2/tasks` /
+  `user-avito`), задачи карточки `ops/users-v2/tasks` /
   `ops/users-v2/tasks/execute` (запрос `user-avito-tasks`; response —
-  авито-копия общего адаптера с маппингом `is_continuous` → «Да»/«Нет»);
+  авито-копия общего адаптера с маппингом `is_continuous` → «Да»/«Нет») и
+  транзакции `ops/transactions[/execute]` + `ops/user-transactions[/execute]`
+  (запросы `transactions` / `user-transactions`; literal-префиксы вместо
+  generic `ops/users-v2/query/[query_id]` — по прецеденту чеков);
+- `navbar` — дельта navbar кампании: `menus/navbar.json` — фрагмент
+  `{"items": [...]}` с одним пунктом «Транзакции» (`/ops/transactions`);
+  пункты navbar индексируются по `route` — совпадений нет, пункт добавляется
+  в конец промо-группы (механика mergeArray не вставляет в середину);
+- `menus/user.json` — camp-копия меню карточки участника (полная копия
+  эталона + пункт «Транзакции» в группе «Достижения»); подключается к
+  карточке дельтой `menuSection` в `user-card.json` — в `menubar.props` `$ref`
+  лежит сиблингом (контент мержится в сам объект props, `props.model`
+  остаётся массивом групп; merge обновляет совпавшие группы идентично и
+  аппендит пункт, активный пункт карточки остаётся `profile`) и используется
+  напрямую страницей транзакций участника;
 - `pages.json` — массив ссылок на файлы страниц: `[ { "$ref":
-  "./pages/users-list.json" }, { "$ref": "./pages/user-card.json" } ]`.
+  "./pages/users-list.json" }, { "$ref": "./pages/user-card.json" },
+  { "$ref": "./pages/transactions-list.json" },
+  { "$ref": "./pages/user-transactions.json" } ]`.
 
 Дельта страницы «Участники» (`pages/users-list.json`):
 

@@ -66,5 +66,49 @@
       "response": "stats.users.tasks.execute.response"
     },
     "note": "Авито: выполнение запроса заданий участника — user-avito-tasks (.prompts/user-page-sql2_1.md): USER_ID + ORDER_BY/ORDER_DIR (маппинг сортировки дока, дефолт assigned_at DESC); response — авито-копия stats.users.execute.response с маппингом is_continuous → «Да»/«Нет» (строки задач идут и в таблицу, и в попап деталей)"
+  },
+  {
+    "path": "ops/transactions",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/query/transactions",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.transactions.report.response"
+    },
+    "note": "Авито: метаданные запроса «Транзакции» — transactions (.prompts/transactions.md): id/title + колонки из fields[] + фильтры (type_code/status/processed_date/points/league_code/segment) с лейблами; literal-маршрут вместо generic ops/users-v2/query/[query_id] (тот прибит к общим users-адаптерам) — по прецеденту чеков ops/receipts/query/[query_id]"
+  },
+  {
+    "path": "ops/transactions/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/transactions/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.transactions.execute.request",
+      "response": "stats.transactions.execute.response"
+    },
+    "note": "Авито: выполнение запроса «Транзакции» — transactions (.prompts/transactions.md): 10 макросов (4 options-фильтра по правилу «ничего или всё → пусто», период МСК→UTC через CONVERT_TZ('+03:00','+00:00'), range баллов, поиск по 11 полям с экранированием, ORDER_BY/ORDER_DIR — карта дока §4, дефолт processed_at_msk DESC); response — общий конверт + type_code/status → *_label"
+  },
+  {
+    "path": "ops/user-transactions",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/query/user-transactions",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.transactions.report.response"
+    },
+    "note": "Авито: метаданные запроса «Транзакции участника» — user-transactions (.prompts/transactions-user.md), страница /ops/users/[user_id]/transactions; тот же passthrough-адаптер метаданных, что и у списка кампании"
+  },
+  {
+    "path": "ops/user-transactions/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/user-transactions/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.user-transactions.execute.request",
+      "response": "stats.transactions.execute.response"
+    },
+    "note": "Авито: выполнение запроса «Транзакции участника» — user-transactions (.prompts/transactions-user.md): USER_ID (UUID из роута страницы, sqlString) + поиск по 7 полям + ORDER_BY/ORDER_DIR (карта дока, дефолт processed_at_msk DESC); response — общий конверт с *_label"
   }
 ]

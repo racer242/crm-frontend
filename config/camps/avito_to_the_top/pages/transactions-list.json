@@ -1,0 +1,497 @@
+{
+  "id": "transactions",
+  "type": "page",
+  "route": "/ops/transactions",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "filtersVisible": false,
+    "transactions": {
+      "value": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0
+    },
+    "transactionsQuery": {
+      "sortField": "",
+      "sortOrder": -1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
+    },
+    "pageStateKey": "",
+    "savedQuery": ""
+  },
+  "meta": {
+    "title": "Транзакции — CRM Platform"
+  },
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "setProperty",
+          "params": {
+            "target": "state.pageStateKey",
+            "value": "pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}"
+          }
+        },
+        {
+          "type": "getFromLocalStorage",
+          "params": {
+            "key": "{$state.pageStateKey}",
+            "target": "state.savedQuery"
+          }
+        }
+      ]
+    }
+  ],
+  "dataFeed": [
+    {
+      "url": "/api/ops/transactions",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/transactions/execute",
+      "method": "POST",
+      "target": "state.transactions",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      }
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.transactionsQuery.search"
+    },
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.transactionsQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.transactionsQuery.sortOrder",
+      "parse": "json"
+    },
+    {
+      "source": "{$location.params.filters}",
+      "target": "state.report.filters",
+      "parse": "json",
+      "priority": "feed",
+      "method": "merge"
+    }
+  ],
+  "shortcuts": {
+    "requestTransactions": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/transactions/execute",
+              "method": "POST",
+              "target": "state.transactions",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.transactions.first}",
+                "rows": "{$state.transactions.rows}",
+                "sortField": "{$state.transactionsQuery.sortField}",
+                "sortOrder": "{$state.transactionsQuery.sortOrder}",
+                "search": "{$state.transactionsQuery.search}",
+                "filters": "{$state.report.filters}"
+              },
+              "format": {
+                "$ref": "../../../system/list-request-format.json"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.transactions.first}",
+                "rows": "{$state.transactions.rows}",
+                "sortField": "{$state.transactionsQuery.sortField}",
+                "sortOrder": "{$state.transactionsQuery.sortOrder}",
+                "search": "{$state.transactionsQuery.search}",
+                "filters": "{$state.report.filters}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "transactionsHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "transactionsTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "transactionsPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "Транзакции",
+                "level": 1
+              }
+            },
+            {
+              "id": "transactionsRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "transactionsSaveStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-save",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Сохранить состояние",
+                "tooltip": "Сохранить состояние",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setToLocalStorage",
+                            "params": {
+                              "key": "{$state.pageStateKey}",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "target": "state.savedQuery",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние сохранено",
+                              "severity": "success"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "transactionsLoadStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "visible": "@state.savedQuery",
+              "props": {
+                "icon": "pi pi-history",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Загрузить сохранённое состояние",
+                "tooltip": "Загрузить сохранённое",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setUrlQuery",
+                            "params": {
+                              "query": "{$state.savedQuery}"
+                            }
+                          },
+                          {
+                            "type": "refresh",
+                            "params": {}
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние восстановлено",
+                              "severity": "info"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transactionsFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "transactionsSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "transactionsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.transactionsQuery.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.transactionsQuery.search"
+                      }
+                    },
+                    "requestTransactions"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "transactionsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transactionsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "transactionsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    "requestTransactions"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "transactionsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestTransactions"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transactionsTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "transactionsTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "transactionsTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.transactions.value",
+                "columns": "@state.report.columns",
+                "totalRecords": "@state.transactions.totalRecords",
+                "rows": "@state.transactions.rows",
+                "first": "@state.transactions.first",
+                "sortField": "@state.transactionsQuery.sortField",
+                "sortOrder": "@state.transactionsQuery.sortOrder",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestTransactions"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.transactionsQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.transactionsQuery.sortOrder"
+                      }
+                    },
+                    "requestTransactions"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

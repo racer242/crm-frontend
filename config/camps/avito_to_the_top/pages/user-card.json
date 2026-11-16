@@ -102,6 +102,22 @@
   },
   "sections": [
     {
+      "id": "menuSection",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "components": [
+            {
+              "id": "menubar",
+              "props": {
+                "$ref": "../menus/user.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "mainLayout",
       "blocks": [
         {

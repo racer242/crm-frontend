@@ -1,5 +1,6 @@
 {
   "adapters": { "$ref": "./adapters.json" },
   "apiRoutes": { "$ref": "./api-routes.json" },
+  "navbar": { "$ref": "./menus/navbar.json" },
   "pages": { "$ref": "./pages.json" }
 }
