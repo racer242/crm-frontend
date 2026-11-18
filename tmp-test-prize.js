@@ -128,10 +128,10 @@ function main() {
   // 4) Исполнение адаптеров (как в DataAdapterEngine)
   // request: UUID в кавычках, page/limit=1, ключ присутствует всегда
   const req = runAdapter("config/adapters/stats.prize-card.execute.request.js", { instance_id: "ABCDEF00-1234-5678-9ABC-DEF012345678" });
-  check("adapter.request: UUID → page/limit=1 + кавычкованный макрос в нижнем регистре", req.page === 1 && req.limit === 1 && req.replacements.INSTANCE_ID_FILTER === "'abcdef00-1234-5678-9abc-def012345678'");
+  check("adapter.request: UUID → page/limit=1 + кавычкованный макрос INSTANCE_ID в нижнем регистре", req.page === 1 && req.limit === 1 && req.replacements.INSTANCE_ID === "'abcdef00-1234-5678-9abc-def012345678'" && Object.keys(req.replacements).length === 1);
   const reqBad = runAdapter("config/adapters/stats.prize-card.execute.request.js", { instance_id: "not-a-uuid" });
   const reqNone = runAdapter("config/adapters/stats.prize-card.execute.request.js", {});
-  check("adapter.request: не-UUID/пусто → пустой ключ (макрос всегда есть, сервер 422)", reqBad.replacements.INSTANCE_ID_FILTER === "" && reqNone.replacements.INSTANCE_ID_FILTER === "" && Object.keys(reqNone.replacements).length === 1);
+  check("adapter.request: не-UUID/пусто → пустой ключ (макрос INSTANCE_ID всегда есть, сервер 422)", reqBad.replacements.INSTANCE_ID === "" && reqNone.replacements.INSTANCE_ID === "" && Object.keys(reqNone.replacements).length === 1);
 
   // details response: полный конверт спеки
   const detRow = { id: "inst-1", values: { instance_id: "inst-1", prize_id: "p-1", prize_code: "PC-1", type_code: "gift", prize_title: "Ноутбук", catalog_description: "Описание", price_rub: 1500, points_cost: null, status: "RECEIVED", pool_status: "active", act_required: true, catalog_active: false, catalog_is_removed: null, catalog_target_count: 10, external_id: "ext-9", issued_at: "2026-01-02T03:04:05+03:00", created_at: "2026-01-01T00:00:00+03:00", catalog_image_source_url: "http://x/y.png", user_id: "u-1", participant_code: "U-1", full_name: "Иван", email: "i@x.ru", owner_phone: "+7 900", owner_status: "blocked", owner_participant_status: "ANKET_REQUIRED", owner_balance: 100, owner_total_earned: 250, owner_registered_at: "2025-05-05T10:00:00+03:00", status_label: "Получен (API)" } };

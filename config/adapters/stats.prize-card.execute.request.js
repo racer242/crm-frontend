@@ -6,9 +6,11 @@
  *
  * ONE request adapter for all three routes — the request contract of the
  * card queries is identical (precedent: prizes.get.request is shared by
- * two routes): a single macro INSTANCE_ID_FILTER = the instance UUID IN
+ * two routes): a single macro INSTANCE_ID = the instance UUID IN
  * QUOTES (the report SQL wraps the value in UUID_TO_BIN({{INSTANCE_ID}})
- * itself — the substituted value is the quoted string, §0 of the spec),
+ * itself — the substituted value is the quoted string, §0 of the spec; the
+ * macro name is exactly INSTANCE_ID — the server rejects any other key
+ * with VALIDATION_ERROR «Не переданы значения макросов»),
  * page = 1, limit = 1 always (§0: a card query, no pagination), no other
  * macros/search/sort.
  *
@@ -24,7 +26,7 @@
  * Output: { page: 1, limit: 1, replacements }. The routes are marked
  * query: true — the entire result goes into the query.
  */
-const INSTANCE_ID_KEY = "INSTANCE_ID_FILTER";
+const INSTANCE_ID_KEY = "INSTANCE_ID";
 const UUID_RE =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 

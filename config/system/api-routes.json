@@ -371,7 +371,7 @@
       "request": "stats.prize-card.execute.request",
       "response": "stats.prize-details.execute.response"
     },
-    "note": "Операционные данные: Карточка приза — выполнение запроса статистики prize-details (query_id prize-details; приз + каталог + владелец; payload page/limit/replacements; macro INSTANCE_ID_FILTER — routeParams.prize_id)"
+    "note": "Операционные данные: Карточка приза — выполнение запроса статистики prize-details (query_id prize-details; приз + каталог + владелец; payload page/limit/replacements; macro INSTANCE_ID — routeParams.prize_id)"
   },
   {
     "path": "ops/prizes-card/raffle/execute",
