@@ -1,0 +1,16 @@
+{
+  "model": [
+    {
+      "id": "prizes",
+      "label": "Призы",
+      "icon": "pi pi-gift",
+      "route": "/ops/prizes"
+    },
+    {
+      "id": "catalog",
+      "label": "Каталог призов",
+      "icon": "pi pi-list",
+      "route": "/ops/prize-catalog"
+    }
+  ]
+}

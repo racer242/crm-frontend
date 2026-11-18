@@ -388,3 +388,34 @@ const USER_TRANSACTIONS_SORTABLE_COLUMNS = [
 function isUserTransactionsSortable(column) {
   return USER_TRANSACTIONS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * Каталог призов (эталон, страница /ops/prize-catalog, query_id
+ * prize-catalog, .prompts/prize-catalog.md): алиасы колонок, которые умеет
+ * сортировать SQL отчёта — карта §4 спеки (null = не сортируется;
+ * price_rub сортируется по pc.price — копейки). Единый белый список для
+ * двух адаптеров:
+ *  - stats.prize-catalog.execute.request.js: ORDER_BY принимает только
+ *    алиас из списка (чужое значение → дефолт created_at + DESC);
+ *  - stats.prize-catalog.report.response.js: колонки вне списка получают
+ *    sortable: false — DataTable не предлагает сортировку, которую SQL
+ *    не применит (description/image/image_source_url).
+ */
+const PRIZE_CATALOG_SORTABLE_COLUMNS = [
+  "prize_id",
+  "code",
+  "type_code",
+  "title",
+  "price_rub",
+  "points_cost",
+  "act_required",
+  "active",
+  "is_removed",
+  "target_count",
+  "created_at",
+  "updated_at",
+];
+
+function isPrizeCatalogSortable(column) {
+  return PRIZE_CATALOG_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}

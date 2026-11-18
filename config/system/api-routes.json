@@ -351,6 +351,28 @@
     "note": "Операционные данные: Список призов (пул)"
   },
   {
+    "path": "ops/prize-catalog",
+    "method": "GET",
+    "url": "/api/v1/crm/stats/query/prize-catalog",
+    "channel": "instance",
+    "adapter": {
+      "response": "stats.prize-catalog.report.response"
+    },
+    "note": "Метаданные запроса «Каталог призов» — prize-catalog (.prompts/prize-catalog.md): адаптер fallback-first — колонки §3 и фильтры §5.1 зашиты в адаптер, пока сервер не отдаёт свои fields/filters (появятся — серверные перекрывают); literal-маршрут вместо generic ops/users-v2/query/[query_id] (тот прибит к общим users-адаптерам) — по прецеденту чеков и транзакций"
+  },
+  {
+    "path": "ops/prize-catalog/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/prize-catalog/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.prize-catalog.execute.request",
+      "response": "stats.prize-catalog.execute.response"
+    },
+    "note": "Выполнение запроса «Каталог призов» — prize-catalog (.prompts/prize-catalog.md): 5 макросов (2 options-фильтра с числовой картой 0/1 по правилу «ничего или всё → пусто», поиск по 5 полям с экранированием, ORDER_BY/ORDER_DIR — карта дока §4 с price_rub → pc.price, дефолт created_at DESC); top-level sort/direction/search/filters из §1.1 спеки не передаются — живой контракт исполнителя (users/receipts) ждёт только page/limit/replacements"
+  },
+  {
     "path": "ops/acts",
     "method": "GET",
     "url": "/api/v1/crm/acts",

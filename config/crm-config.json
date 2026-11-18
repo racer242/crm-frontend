@@ -86,6 +86,9 @@
       "$ref": "./pages/promo-instance/prizes.json"
     },
     {
+      "$ref": "./pages/promo-instance/prize-catalog.json"
+    },
+    {
       "$ref": "./pages/promo-instance/prize.json"
     },
     {

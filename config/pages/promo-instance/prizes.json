@@ -118,6 +118,33 @@
   },
   "sections": [
     {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "prizes",
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
+                "$ref": "../../menus/prizes.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "prizesHeader",
       "type": "section",
       "blocks": [
