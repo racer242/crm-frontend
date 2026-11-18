@@ -7,13 +7,23 @@
  * metadata adapters and the transactions ones): while the backend does not
  * return its own fields/filters for the query (or the GET fails until the
  * query_id is registered), the adapter builds the page from the SPEC —
- * columns §3 (15 columns with the spec titles, sortable per the shared
+ * table columns §3 (9 columns with the spec titles, sortable per the shared
  * PRIZE_CATALOG_SORTABLE_COLUMNS whitelist in _shared.js — the same map the
  * request adapter applies) and the two filter definitions §5.1 (options
  * «Видимость участнику» / «Наличие в плане CRM»; the DB 0/1 values behind
  * the opts positions live in PRIZE_CATALOG_FILTERS of the request adapter,
  * same order). When the server metadata carries fields/filters of its own —
  * the server ones are used.
+ *
+ * Popup-only fields: prize_id/description/image/image_source_url/
+ * created_at/updated_at are NOT rendered as table columns (the catalog
+ * table stays compact) — they are shown in the details dialog of the page,
+ * which binds them from the clicked row. The exclusion applies to BOTH the
+ * spec fallback and the server fields (same pattern as the avito users
+ * adapter filtering the `mailing` column out of server metadata), so the
+ * table shape does not change when the backend starts returning its own
+ * fields[]. The fields themselves keep flowing through the execute-response
+ * row mapping unchanged — the dialog reads raw values from the row.
  *
  * Passthrough mapping: columns come from fields[] (field ← name, header ←
  * title, dataType ← type date/datetime — the DataTable formats them in the
@@ -43,7 +53,8 @@ const PRIZE_CATALOG_FILTERS_FALLBACK = [
   },
 ];
 
-// Fallback columns of the spec §3 (titles of the task; sortable flags come
+// Fallback columns of the spec §3 (full list of the task — the popup-only
+// subset is excluded from the table at transform time; sortable flags come
 // from the shared whitelist)
 const PRIZE_CATALOG_COLUMNS_FALLBACK = [
   { field: "prize_id", header: "ID приза", type: "string" },
@@ -63,6 +74,18 @@ const PRIZE_CATALOG_COLUMNS_FALLBACK = [
   { field: "updated_at", header: "Дата обновления", type: "datetime" },
 ];
 
+// Fields shown only in the details dialog of the page (not in the table):
+// id/description/images/timestamps. Excluded from the table columns for
+// BOTH the spec fallback and the server metadata
+const PRIZE_CATALOG_POPUP_ONLY_FIELDS = [
+  "prize_id",
+  "description",
+  "image",
+  "image_source_url",
+  "created_at",
+  "updated_at",
+];
+
 function transform(data) {
   const meta = data && data.status === "ok" ? data.data : data;
   if (!meta || typeof meta !== "object") {
@@ -71,7 +94,9 @@ function transform(data) {
     return buildMeta(
       "",
       "",
-      PRIZE_CATALOG_COLUMNS_FALLBACK.map(mapFallbackColumn),
+      PRIZE_CATALOG_COLUMNS_FALLBACK.filter(notPopupOnly).map(
+        mapFallbackColumn,
+      ),
       PRIZE_CATALOG_FILTERS_FALLBACK,
     );
   }
@@ -82,10 +107,19 @@ function transform(data) {
     meta.id || "",
     meta.title || "",
     fields.length
-      ? fields.map(mapColumn)
-      : PRIZE_CATALOG_COLUMNS_FALLBACK.map(mapFallbackColumn),
+      ? fields.filter(notPopupOnly).map(mapColumn)
+      : PRIZE_CATALOG_COLUMNS_FALLBACK.filter(notPopupOnly).map(
+          mapFallbackColumn,
+        ),
     serverFilters || PRIZE_CATALOG_FILTERS_FALLBACK,
   );
+}
+
+// Popup-only fields are excluded from the table columns regardless of the
+// source; server entries carry `name`, fallback entries — `field`
+function notPopupOnly(entry) {
+  const key = (entry && (entry.name || entry.field)) || "";
+  return PRIZE_CATALOG_POPUP_ONLY_FIELDS.indexOf(String(key)) < 0;
 }
 
 function buildMeta(id, title, columns, filters) {

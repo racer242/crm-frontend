@@ -15,7 +15,9 @@
  *     массив; проверяется dereference $RefParser, как в initApp);
  *     prizes.json не задет кроме menuSection первой секцией;
  *  4) структура страницы каталога (state/dataFeed/dataInit/shortcuts/
- *     секции; ленивая таблица без onRowClick/selectionMode/customColumns);
+ *     секции; ленивая таблица с кнопкой-иконкой попапа: onRowClick только
+ *     заполняет state.prizeDialog, открывает — кнопка; попап Dialog со всеми
+ *     15 полями строки и Image из image_source_url);
  *  5) исполнение 3 адаптеров через new Function с _shared.js (как
  *     DataAdapterEngine): request — 5 макросов, карта 0/1, «ничего или всё →
  *     пусто», поиск с экранированием, ORDER_MAP + price_rub → pc.price,
@@ -129,8 +131,18 @@ async function main() {
   check("catalog: FiltersPanel/чипы привязаны к report.filters + запрос после применения", JSON.stringify(filtersSection).includes("@state.report.filters") && JSON.stringify(filtersSection).includes("requestPrizeCatalog"));
   const table = catalogDeref.sections.find((s) => s.id === "catalogTableSection").blocks[0].components[0];
   check("catalog: ленивая таблица на report.columns + value/totalRecords", table.componentType === "DataTable" && table.props.lazy === true && table.props.columns === "@state.report.columns" && table.props.value === "@state.prizeCatalog.value" && table.props.totalRecords === "@state.prizeCatalog.totalRecords");
-  check("catalog: таблица без клика/выделения/customColumns", table.props.onRowClick === undefined && table.props.selectionMode === undefined && table.props.customColumns === undefined);
+  const detailsCol = (table.props.customColumns || []).find((c) => c.field === "prizeDetails");
+  const detailsBtn = detailsCol && detailsCol.body && detailsCol.body[0];
+  check("catalog: кнопка-иконка попапа (последняя колонка, без заголовка)", detailsCol !== undefined && detailsCol.header === "" && !!detailsBtn && detailsBtn.componentType === "Button" && detailsBtn.props.icon === "pi pi-eye" && detailsBtn.events[0].commands[0].params.target === "state.prizeDialogVisible" && detailsBtn.events[0].commands[0].params.value === true);
+  const onRowClick = table.events.find((e) => e.type === "onRowClick");
+  check("catalog: onRowClick только заполняет попап (без открытия, без selectionMode)", table.props.selectionMode === undefined && onRowClick !== undefined && onRowClick.commands.length === 1 && onRowClick.commands[0].params.source === "event.data" && onRowClick.commands[0].params.target === "state.prizeDialog");
   check("catalog: onPage/onSort → requestPrizeCatalog", JSON.stringify(table.events).includes("onPage") && JSON.stringify(table.events).includes("onSort") && JSON.stringify(table.events).includes("requestPrizeCatalog"));
+  const dialog = catalogDeref.sections.find((s) => s.id === "prizeDialogSection").blocks[0].components[0];
+  check("catalog: попап — Dialog (visible/modal, onHide закрывает)", dialog.componentType === "Dialog" && dialog.props.visible === "@state.prizeDialogVisible" && dialog.props.modal === true && dialog.events[0].type === "onHide" && dialog.events[0].commands[0].params.value === false);
+  const dlgJson = JSON.stringify(dialog);
+  check("catalog: попап показывает все 15 полей строки", ["prize_id", "title", "code", "type_code", "description", "price_rub", "points_cost", "target_count", "act_required", "active", "is_removed", "image", "image_source_url", "created_at", "updated_at"].every((f) => dlgJson.includes("@state.prizeDialog." + f)));
+  check("catalog: картинка в попапе — Image из image_source_url (превью, ограничена, скрыта без URL)", dlgJson.includes('"componentType":"Image"') && dlgJson.includes('"preview":true') && dlgJson.includes('"width":"300"') && dlgJson.includes('"visible":"@state.prizeDialog.image_source_url"'));
+  check("catalog: даты в попапе — dataType date (создания и обновления)", dialog.props.components.some((c) => c.props && c.props.components && c.props.components.some((t) => t.props && t.props.value === "@state.prizeDialog.created_at" && t.props.dataType === "date")) && dialog.props.components.some((c) => c.props && c.props.components && c.props.components.some((t) => t.props && t.props.value === "@state.prizeDialog.updated_at" && t.props.dataType === "date")));
 
   // 5) Исполнение адаптеров
   const reqPath = "config/adapters/stats.prize-catalog.execute.request.js";
@@ -168,13 +180,14 @@ async function main() {
 
   // report-response: фолбэк-first метаданные
   const metaFallback = runAdapter(metaPath, null);
-  check("metadata: ошибка/пусто → фолбэк из спеки (15 колонок, 2 фильтра)", metaFallback.columns.length === 15 && metaFallback.filters.length === 2 && metaFallback.id === "" && metaFallback.title === "");
+  check("metadata: ошибка/пусто → фолбэк из спеки (9 колонок таблицы, 2 фильтра)", metaFallback.columns.length === 9 && metaFallback.filters.length === 2 && metaFallback.id === "" && metaFallback.title === "");
+  check("metadata: popup-only поля исключены из колонок (6 штук)", ["prize_id", "description", "image", "image_source_url", "created_at", "updated_at"].every((f) => !metaFallback.columns.some((c) => c.field === f)));
   check("metadata: фолбэк-фильтры §5.1 (id/type/opts)", JSON.stringify(metaFallback.filters.map((f) => [f.id, f.type, f.opts])) === JSON.stringify([["active", "options", ["Видимые", "Скрытые"]], ["is_removed", "options", ["В плане", "Вне плана"]]]));
   const metaCols = {};
   metaFallback.columns.forEach((c) => { metaCols[c.field] = c; });
-  check("metadata: заголовки §3", metaCols.title.header === "Название" && metaCols.price_rub.header === "Стоимость, ₽ (для акта)" && metaCols.is_removed.header === "Нет в плане CRM" && metaCols.prize_id.header === "ID приза");
-  check("metadata: sortable по whitelist (title да; description/image/image_source_url нет)", metaCols.title.sortable === true && metaCols.description.sortable === false && metaCols.image.sortable === false && metaCols.image_source_url.sortable === false && metaCols.created_at.sortable === true);
-  check("metadata: datetime → dataType date", metaCols.created_at.dataType === "date" && metaCols.updated_at.dataType === "date");
+  check("metadata: заголовки §3", metaCols.title.header === "Название" && metaCols.price_rub.header === "Стоимость, ₽ (для акта)" && metaCols.is_removed.header === "Нет в плане CRM");
+  check("metadata: sortable по whitelist (все 9 показанных колонок сортируемые)", metaFallback.columns.every((c) => c.sortable === true));
+  check("metadata: серверные popup-only поля тоже фильтруются", (() => { const r = runAdapter(metaPath, { status: "ok", data: { fields: [{ name: "code", title: "Код" }, { name: "image", title: "Картинка" }, { name: "created_at", title: "Дата" }] } }); return r.columns.length === 1 && r.columns[0].field === "code"; })());
   const metaServer = runAdapter(metaPath, { status: "ok", data: { id: "q9", title: "Каталог", fields: [{ name: "league_name", title: "Лига", sortable: true }], filters: [{ id: "x", name: "X", type: "text" }] } });
   check("metadata: серверные fields/filters перекрывают фолбэк", metaServer.columns.length === 1 && metaServer.columns[0].field === "league_name" && metaServer.id === "q9" && metaServer.filters.length === 1 && metaServer.filters[0].id === "x");
   check("metadata: серверная колонка вне whitelist → sortable false", metaServer.columns[0].sortable === false);

@@ -24,7 +24,9 @@
       "filters": []
     },
     "pageStateKey": "",
-    "savedQuery": ""
+    "savedQuery": "",
+    "prizeDialog": {},
+    "prizeDialogVisible": false
   },
   "meta": {
     "title": "Каталог призов — CRM Platform"
@@ -485,6 +487,38 @@
                   10,
                   25,
                   50
+                ],
+                "customColumns": [
+                  {
+                    "field": "prizeDetails",
+                    "header": "",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-eye",
+                          "severity": "secondary",
+                          "text": true,
+                          "rounded": true,
+                          "size": "large"
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "setProperty",
+                                "params": {
+                                  "target": "state.prizeDialogVisible",
+                                  "value": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 ]
               },
               "events": [
@@ -512,6 +546,452 @@
                       }
                     },
                     "requestPrizeCatalog"
+                  ]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.data",
+                        "target": "state.prizeDialog"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizeDialogSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "prizeDialogBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "prizeDialog",
+              "type": "component",
+              "componentType": "Dialog",
+              "props": {
+                "header": "@state.prizeDialog.title",
+                "visible": "@state.prizeDialogVisible",
+                "modal": true,
+                "closable": true,
+                "draggable": false,
+                "resizable": false,
+                "style": {
+                  "width": "560px"
+                },
+                "containerClassName": "flex flex-column gap-1",
+                "components": [
+                  {
+                    "id": "prizeDialogIdentityTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Идентификация"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogIdGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "ID приза",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogId",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 text-xs text-500",
+                          "props": {
+                            "value": "@state.prizeDialog.prize_id"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogCodeGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Код в CRM",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogCode",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.code"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogTypeGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Группа (тип)",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogType",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.type_code"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogDescriptionTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Описание"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogDescriptionGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Описание",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogDescription",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 white-space-pre-line",
+                          "props": {
+                            "value": "@state.prizeDialog.description"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogPricingTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Стоимость и план"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogPriceGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Стоимость, ₽ (для акта)",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogPrice",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.price_rub"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogPointsGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Цена в баллах",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogPoints",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.points_cost"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogTargetGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Плановое кол-во экземпляров",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogTarget",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.target_count"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogStatusesTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Статусы"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogActRequiredGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Нужен акт получения",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogActRequired",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.act_required"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogActiveGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Видимость участнику",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogActive",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.active"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogIsRemovedGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Наличие в плане CRM",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogIsRemoved",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.is_removed"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogDatesTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Даты"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogCreatedAtGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата создания",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogCreatedAt",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.created_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogUpdatedAtGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Дата обновления",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogUpdatedAt",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0",
+                          "props": {
+                            "value": "@state.prizeDialog.updated_at",
+                            "dataType": "date"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogImageTitle",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 text-sm font-semibold",
+                    "props": {
+                      "value": "Картинка"
+                    }
+                  },
+                  {
+                    "id": "prizeDialogImageGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Источник картинки",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogImage",
+                          "type": "component",
+                          "componentType": "Image",
+                          "visible": "@state.prizeDialog.image_source_url",
+                          "props": {
+                            "src": "@state.prizeDialog.image_source_url",
+                            "alt": "@state.prizeDialog.title",
+                            "preview": true,
+                            "width": "300"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogImagePathGroup",
+                    "type": "component",
+                    "componentType": "LabelledGroup",
+                    "className": "mb-3",
+                    "props": {
+                      "label": "Картинка (локальный адрес)",
+                      "labelClassName": "text-sm text-500",
+                      "components": [
+                        {
+                          "id": "prizeDialogImagePath",
+                          "type": "component",
+                          "componentType": "Text",
+                          "className": "m-0 text-xs text-500",
+                          "props": {
+                            "value": "@state.prizeDialog.image"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "prizeDialogActions",
+                    "type": "component",
+                    "componentType": "LayoutGroup",
+                    "className": "flex gap-2 justify-content-end",
+                    "props": {
+                      "components": [
+                        {
+                          "id": "prizeDialogCloseButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "props": {
+                            "label": "Закрыть",
+                            "icon": "pi pi-times",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "setProperty",
+                                  "params": {
+                                    "target": "state.prizeDialogVisible",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.prizeDialogVisible",
+                        "value": false
+                      }
+                    }
                   ]
                 }
               ]

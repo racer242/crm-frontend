@@ -13,7 +13,8 @@
       "prizes": true,
       "points": true,
       "messages": true,
-      "raffles": true
+      "raffles": true,
+      "moderation": true
     }
   },
   {
@@ -30,7 +31,8 @@
       "prizes": true,
       "points": true,
       "messages": true,
-      "raffles": true
+      "raffles": true,
+      "moderation": true
     }
   },
   {
@@ -47,7 +49,8 @@
       "prizes": true,
       "points": true,
       "messages": true,
-      "raffles": true
+      "raffles": true,
+      "moderation": true
     }
   },
   {
@@ -66,7 +69,8 @@
       "prizes": false,
       "points": true,
       "messages": false,
-      "raffles": true
+      "raffles": true,
+      "moderation": false
     }
   }
 ]

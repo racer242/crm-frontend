@@ -103,21 +103,67 @@ async function main() {
   check("avito config is a patched clone", avito !== undefined && avito !== reference);
   check("shim resolved: no $ref literals in the avito config", !hasRefKey(avito));
 
-  // 2) navbar: дельта-ключ navbar патча → «Транзакции» в конец промо-группы;
-  //    эталонный navbar: без заголовка «CRM-управление», «Модерация чеков»
-  //    сразу после «Участники»
+  // 2) navbar: дельта-ключ navbar патча → «Транзакции» в конец списка
+  //    (аппарат mergeArray аппендит в конец массива — секция «CRM-управление»
+  //    поэтому стоит В НАЧАЛЕ эталонного navbar: в хвосте заголовок после
+  //    фильтра фич приклеился бы к аппенденным пунктам);
+  //    эталонный navbar: «Модерация чеков» вынесена в отдельную секцию
+  //    «CRM-управление» первой, гейт — НОВЫЙ флаг moderation (camps.json;
+  //    раньше пункт стоял сразу после «Участники» с гейтом receipts — на
+  //    кампаниях с выключенными чеками терялась вся секция модерации)
   check("reference navbar untouched", !reference.navbar.items.some((i) => i.label === "Транзакции"));
-  check("reference navbar: no CRM-управление header", !reference.navbar.items.some((i) => i.header === "CRM-управление"));
+  const crmHeaderIndex = reference.navbar.items.findIndex((i) => i.header === "CRM-управление");
+  check("reference navbar: секция CRM-управление первая (append-безопасно)", crmHeaderIndex === 0);
   const refModerationIndex = reference.navbar.items.findIndex((i) => i.label === "Модерация чеков");
-  check("reference navbar: Модерация чеков right after Участники", refModerationIndex === reference.navbar.items.findIndex((i) => i.label === "Участники") + 1);
+  check("reference navbar: Модерация чеков под CRM-управление, гейт moderation", refModerationIndex === 1 && reference.navbar.items[refModerationIndex].feature === "moderation" && reference.navbar.items[refModerationIndex].route === "/mgmt/receipts");
   check("navbar: Транзакции appended", avito.navbar.items.some((i) => i.label === "Транзакции"));
   const trxItem = avito.navbar.items.find((i) => i.label === "Транзакции");
   check("navbar: item props", trxItem !== undefined && trxItem.icon === "pi pi-money-bill" && trxItem.route === "/ops/transactions");
-  check("navbar: appended at the end of promo group", avito.navbar.items[avito.navbar.items.length - 1].label === "Транзакции");
+  check("navbar: appended at the end", avito.navbar.items[avito.navbar.items.length - 1].label === "Транзакции");
   check("navbar: base items intact (+1 appended)", avito.navbar.items.length === reference.navbar.items.length + 1);
   check("navbar: Промо-инстанс header preserved", avito.navbar.items.some((i) => i.header === "Промо-инстанс"));
-  check("navbar: Модерация чеков stays after Участники", avito.navbar.items.findIndex((i) => i.label === "Модерация чеков") === avito.navbar.items.findIndex((i) => i.label === "Участники") + 1);
   check("navbar: Статистика before Транзакции", avito.navbar.items.findIndex((i) => i.label === "Статистика") < avito.navbar.items.findIndex((i) => i.label === "Транзакции"));
+
+  // Реплика filterNavItems (src/utils/campFeatures.ts): пункт скрывается по
+  // фича-гейту, header схлопывается, если под ним не уцелело ни одного пункта
+  function isFeatureOn(features, feature) {
+    if (!features || typeof features !== "object") return true;
+    if (!Object.prototype.hasOwnProperty.call(features, feature)) return true;
+    return Boolean(features[feature]);
+  }
+  function gatePasses(features, gate) {
+    if (gate === undefined || gate === null) return true;
+    if (Array.isArray(gate)) {
+      return gate.length === 0 || gate.some((f) => isFeatureOn(features, f));
+    }
+    return typeof gate === "string" ? isFeatureOn(features, gate) : true;
+  }
+  function filterNavReplica(items, features) {
+    const result = [];
+    let pendingHeader = null;
+    for (const item of items) {
+      if (typeof item.header === "string") {
+        pendingHeader = item;
+        continue;
+      }
+      if (!gatePasses(features, item.feature)) continue;
+      if (pendingHeader) {
+        result.push(pendingHeader);
+        pendingHeader = null;
+      }
+      result.push(item);
+    }
+    return result;
+  }
+  const campsRegistry = JSON.parse(fs.readFileSync("config/system/camps.json", "utf8"));
+  const avitoCamp = campsRegistry.find((c) => c.id === 31);
+  const refCamp = campsRegistry.find((c) => c.id === 21);
+  check("camps: флаг moderation — true у эталонных (1/21/22), false у avito", campsRegistry.filter((c) => c.features && c.features.moderation === true).length === 3 && avitoCamp.features.moderation === false);
+  const avitoNav = filterNavReplica(avito.navbar.items, avitoCamp.features);
+  check("navbar filter: на avito секция CRM-управление скрыта целиком, Транзакции последний", !avitoNav.some((i) => i.header === "CRM-управление") && !avitoNav.some((i) => i.label === "Модерация чеков") && avitoNav[avitoNav.length - 1].label === "Транзакции");
+  const refNav = filterNavReplica(reference.navbar.items, refCamp.features);
+  check("navbar filter: у эталонной кампании секция CRM-управление на месте (первая)", refNav[0].header === "CRM-управление" && refNav[1].label === "Модерация чеков" && refNav[2].header === "Промо-инстанс");
+  check("navbar filter: заголовок без уцелевших пунктов отбрасывается", filterNavReplica([{ header: "X" }, { label: "A", feature: "off" }], { off: false }).length === 0);
 
   // 3) меню карточки: дельта user-card.json подменяет props.model на camp-копию
   const avitoCard = avito.pages.find((p) => p.id === "user");
