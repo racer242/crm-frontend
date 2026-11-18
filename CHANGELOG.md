@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Таблица «Каталога призов» без курсора-поинтера на строках** (`config/pages/promo-instance/prize-catalog.json`; доки §12 / README; стенд `tmp-test-prize-catalog.js` — 67): у таблицы не было `selectionMode: "single"` — PrimeReact даёт строкам класс `p-selectable-row` (курсор-поинтер, подсветка выбора) только при заданном `selectionMode`, поэтому строки каталога выглядели неактивными на фоне остальных списков (users/receipts/messages/tasks/… — все активные таблицы с кликом по строке имеют `selectionMode: "single"`). Ошибочная проверка стенда «без selectionMode» заменена на проверку `selectionMode === "single"`.
+
 ### Added
 
 - **«Каталог призов»: попап открывается и кликом по строке; секция «CRM-управление» перенесена в конец navbar** (`config/pages/promo-instance/prize-catalog.json` — второй `setProperty` в `onRowClick`; `config/menus/navbar.json`; `src/utils/campFeatures.ts` — `filterNavItems` учитывает фича-гейт заголовка; доки §12 «Дополнение. Система статистики» / config-reference / README; стенды `tmp-test-prize-catalog.js` — 67, `tmp-test-transactions-avito.js` — 140 (+1 проверка гейта заголовка), `tsc --noEmit` exit 0). (1) Клик по строке каталога заполняет `state.prizeDialog` (`event.data`) и сразу открывает попап (`state.prizeDialogVisible = true`, образец — tasks/messages); кнопка-иконка `pi pi-eye` дублирует открытие. (2) Секция «CRM-управление» стоит после пунктов промо-группы: `mergeArray` патчей аппендит unmatched-пункты в конец массива, поэтому заголовку секции задан СОБСТВЕННЫЙ гейт `moderation` — `filterNavItems` не собирает заголовок с непройденной фичей (иначе на avito заголовок после фильтра приклеился бы к аппенденным «Транзакциям»); заголовки без фичи ведут себя как раньше.
