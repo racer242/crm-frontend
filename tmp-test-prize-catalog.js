@@ -15,8 +15,9 @@
  *     массив; проверяется dereference $RefParser, как в initApp);
  *     prizes.json не задет кроме menuSection первой секцией;
  *  4) структура страницы каталога (state/dataFeed/dataInit/shortcuts/
- *     секции; ленивая таблица с кнопкой-иконкой попапа: onRowClick только
- *     заполняет state.prizeDialog, открывает — кнопка; попап Dialog со всеми
+ *     секции; ленивая таблица с кнопкой-иконкой попапа: onRowClick заполняет
+ *     и открывает попап (state.prizeDialog + visible=true; кнопка-иконка
+ *     дублирует открытие); попап Dialog со всеми
  *     15 полями строки и Image из image_source_url);
  *  5) исполнение 3 адаптеров через new Function с _shared.js (как
  *     DataAdapterEngine): request — 5 макросов, карта 0/1, «ничего или всё →
@@ -135,7 +136,7 @@ async function main() {
   const detailsBtn = detailsCol && detailsCol.body && detailsCol.body[0];
   check("catalog: кнопка-иконка попапа (последняя колонка, без заголовка)", detailsCol !== undefined && detailsCol.header === "" && !!detailsBtn && detailsBtn.componentType === "Button" && detailsBtn.props.icon === "pi pi-eye" && detailsBtn.events[0].commands[0].params.target === "state.prizeDialogVisible" && detailsBtn.events[0].commands[0].params.value === true);
   const onRowClick = table.events.find((e) => e.type === "onRowClick");
-  check("catalog: onRowClick только заполняет попап (без открытия, без selectionMode)", table.props.selectionMode === undefined && onRowClick !== undefined && onRowClick.commands.length === 1 && onRowClick.commands[0].params.source === "event.data" && onRowClick.commands[0].params.target === "state.prizeDialog");
+  check("catalog: onRowClick заполняет и открывает попап (без selectionMode)", table.props.selectionMode === undefined && onRowClick !== undefined && onRowClick.commands.length === 2 && onRowClick.commands[0].params.source === "event.data" && onRowClick.commands[0].params.target === "state.prizeDialog" && onRowClick.commands[1].params.target === "state.prizeDialogVisible" && onRowClick.commands[1].params.value === true);
   check("catalog: onPage/onSort → requestPrizeCatalog", JSON.stringify(table.events).includes("onPage") && JSON.stringify(table.events).includes("onSort") && JSON.stringify(table.events).includes("requestPrizeCatalog"));
   const dialog = catalogDeref.sections.find((s) => s.id === "prizeDialogSection").blocks[0].components[0];
   check("catalog: попап — Dialog (visible/modal, onHide закрывает)", dialog.componentType === "Dialog" && dialog.props.visible === "@state.prizeDialogVisible" && dialog.props.modal === true && dialog.events[0].type === "onHide" && dialog.events[0].commands[0].params.value === false);

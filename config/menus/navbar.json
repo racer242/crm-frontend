@@ -2,15 +2,6 @@
   "id": "mainNavbar",
   "items": [
     {
-      "header": "CRM-управление"
-    },
-    {
-      "label": "Модерация чеков",
-      "icon": "pi pi-check-square",
-      "route": "/mgmt/receipts",
-      "feature": "moderation"
-    },
-    {
       "header": "Промо-инстанс"
     },
     {
@@ -52,6 +43,16 @@
       "label": "Статистика",
       "icon": "pi pi-chart-bar",
       "route": "/ops/stats"
+    },
+    {
+      "header": "CRM-управление",
+      "feature": "moderation"
+    },
+    {
+      "label": "Модерация чеков",
+      "icon": "pi pi-check-square",
+      "route": "/mgmt/receipts",
+      "feature": "moderation"
     }
   ]
 }

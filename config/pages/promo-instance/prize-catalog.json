@@ -557,6 +557,13 @@
                         "source": "event.data",
                         "target": "state.prizeDialog"
                       }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "target": "state.prizeDialogVisible",
+                        "value": true
+                      }
                     }
                   ]
                 }

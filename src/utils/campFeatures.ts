@@ -50,7 +50,11 @@ export function matchesFeatureGate(
 /**
  * Фильтр пунктов бокового меню (navbar): пункт скрывается, если его
  * фича-гейт не пройден; header-подзаголовок схлопывается, если все
- * пункты его секции скрыты. Сепараторы и пункты без фичи проходят как есть.
+ * пункты его секции скрыты. Заголовок с собственным фича-гейтом не
+ * собирается при непройденном гейте — иначе секция с выключенной фичей
+ * «приклеилась» бы к следующему прошедшему пункту (например,
+ * аппенденному патчем кампании в конец массива). Сепараторы и пункты
+ * без фичи проходят как есть.
  */
 export function filterNavItems<
   T extends { header?: string; separator?: boolean; feature?: FeatureGate },
@@ -64,7 +68,13 @@ export function filterNavItems<
   for (const item of items) {
     if (typeof item.header === "string") {
       flushHeader(false);
-      pendingHeader = item;
+      // Заголовок с собственным фича-гейтом не собирается, если гейт не
+      // пройден: иначе секция с выключенной фичей «приклеилась» бы к
+      // следующему прошедшему пункту (например, аппенденному патчем
+      // кампании в конец массива — mergeArray не вставляет в середину)
+      if (matchesFeatureGate(features, item.feature)) {
+        pendingHeader = item;
+      }
       continue;
     }
     if (!matchesFeatureGate(features, item.feature)) continue;
