@@ -1,0 +1,457 @@
+{
+  "id": "prizes",
+  "type": "page",
+  "route": "/ops/prizes",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "prizes": {
+      "value": [],
+      "columns": [],
+      "totalRecords": 0,
+      "rows": 10,
+      "first": 0,
+      "statuses": []
+    },
+    "search": "",
+    "status": "",
+    "act_required": "",
+    "actRequiredOptions": [
+      {
+        "label": "Требуют акта",
+        "value": "1"
+      },
+      {
+        "label": "Не требуют акта",
+        "value": "0"
+      }
+    ],
+    "owner": "",
+    "ownerOptions": [
+      {
+        "label": "Выданные (есть владелец)",
+        "value": "1"
+      },
+      {
+        "label": "Свободные (владельца нет)",
+        "value": "0"
+      }
+    ]
+  },
+  "meta": {
+    "title": "Призы — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/prizes",
+      "data": {
+        "first": "{$location.params.first}",
+        "rows": "{$location.params.rows}",
+        "search": "{$location.params.search}",
+        "status": "{$location.params.status}",
+        "act_required": "{$location.params.act_required}",
+        "owner": "{$location.params.owner}"
+      },
+      "method": "GET",
+      "target": "state.prizes"
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.search"
+    },
+    {
+      "source": "{$location.params.status}",
+      "target": "state.status"
+    },
+    {
+      "source": "{$location.params.act_required}",
+      "target": "state.act_required"
+    },
+    {
+      "source": "{$location.params.owner}",
+      "target": "state.owner"
+    }
+  ],
+  "shortcuts": {
+    "requestPrizes": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "sendRequest",
+            "params": {
+              "url": "/api/ops/prizes",
+              "method": "GET",
+              "target": "state.prizes",
+              "data": {
+                "event": "{$event}",
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "act_required": "{$state.act_required}",
+                "owner": "{$state.owner}"
+              },
+              "format": {
+                "$ref": "../../system/list-request-format.json"
+              }
+            }
+          },
+          {
+            "type": "mergeUrlParams",
+            "params": {
+              "values": {
+                "first": "{$state.prizes.first}",
+                "rows": "{$state.prizes.rows}",
+                "search": "{$state.search}",
+                "status": "{$state.status}",
+                "act_required": "{$state.act_required}",
+                "owner": "{$state.owner}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "menuSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "menuBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "menubar",
+              "type": "component",
+              "componentType": "Menubar",
+              "props": {
+                "activeItemId": "prizes",
+                "pt": {
+                  "menu": {
+                    "className": "gap-1"
+                  }
+                },
+                "$ref": "../../menus/prizes.json"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesHeader",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "prizesTitle",
+          "type": "block",
+          "className": "w-full flex gap-3 align-items-center",
+          "components": [
+            {
+              "id": "prizesPageTitle",
+              "type": "component",
+              "componentType": "Text",
+              "className": "w-full",
+              "props": {
+                "value": "Призы",
+                "level": 1
+              }
+            },
+            {
+              "id": "prizesRefreshButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-refresh",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Обновить",
+                "tooltip": "Обновить",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "refresh",
+                      "params": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "prizesSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "prizesSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.search"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesStatusFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.prizes.statuses",
+                "value": "@state.status",
+                "optionLabel": "name",
+                "optionValue": "value",
+                "placeholder": "Статус...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.status"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesActRequiredFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.actRequiredOptions",
+                "value": "@state.act_required",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Требует акта...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.act_required"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesOwnerFilter",
+              "type": "component",
+              "componentType": "Dropdown",
+              "className": "min-w-max flex-grow-0 mb-0",
+              "props": {
+                "options": "@state.ownerOptions",
+                "value": "@state.owner",
+                "optionLabel": "label",
+                "optionValue": "value",
+                "placeholder": "Владелец...",
+                "showClear": true,
+                "inline": "yes"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.owner"
+                      }
+                    },
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prizesTableSection",
+      "type": "section",
+      "blocks": [
+        {
+          "id": "prizesTableBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "prizesTable",
+              "type": "component",
+              "componentType": "DataTable",
+              "props": {
+                "value": "@state.prizes.value",
+                "columns": "@state.prizes.columns",
+                "totalRecords": "@state.prizes.totalRecords",
+                "rows": "@state.prizes.rows",
+                "first": "@state.prizes.first",
+                "paginator": true,
+                "lazy": true,
+                "size": "normal",
+                "stripedRows": true,
+                "selectionMode": "single",
+                "rowsPerPageOptions": [
+                  5,
+                  10,
+                  25,
+                  50
+                ],
+                "customColumns": [
+                  {
+                    "field": "user_id",
+                    "header": "",
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "visibleRow": "{#row.user_id}",
+                        "props": {
+                          "icon": "pi pi-user",
+                          "link": true,
+                          "size": "small",
+                          "aria-label": "Перейти к участнику",
+                          "tooltip": "Перейти к участнику",
+                          "tooltipOptions": {
+                            "position": "left"
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/users/{#row.user_id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "field": "button",
+                    "order": -1,
+                    "body": [
+                      {
+                        "componentType": "Button",
+                        "props": {
+                          "icon": "pi pi-arrow-right",
+                          "link": true,
+                          "size": "small",
+                          "pt": {
+                            "label": {
+                              "className": "font-normal"
+                            }
+                          }
+                        },
+                        "events": [
+                          {
+                            "type": "onClick",
+                            "commands": [
+                              {
+                                "type": "navigate",
+                                "params": {
+                                  "url": "/ops/prizes/{#row.id}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "events": [
+                {
+                  "type": "onPage",
+                  "commands": [
+                    "requestPrizes"
+                  ]
+                },
+                {
+                  "type": "onSort",
+                  "commands": [
+                    "requestPrizes"
+                  ]
+                },
+                {
+                  "type": "onRowClick",
+                  "commands": [
+                    {
+                      "type": "navigate",
+                      "params": {
+                        "url": "/ops/prizes/{$event.data.id}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

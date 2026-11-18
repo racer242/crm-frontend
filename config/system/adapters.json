@@ -123,9 +123,17 @@
     "type": "js",
     "script": "./config/adapters/prizes.get.response.js"
   },
-  "prizes.response": {
+  "stats.prizes.report.response": {
     "type": "js",
-    "script": "./config/adapters/prizes.response.js"
+    "script": "./config/adapters/stats.prizes.report.response.js"
+  },
+  "stats.prizes.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.prizes.execute.request.js"
+  },
+  "stats.prizes.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.prizes.execute.response.js"
   },
   "stats.prize-catalog.report.response": {
     "type": "js",

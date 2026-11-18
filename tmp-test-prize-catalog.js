@@ -116,7 +116,7 @@ async function main() {
   check("catalog: activeItemId catalog + props.model из меню (2 пункта)", catalogMenubar.props.activeItemId === "catalog" && Array.isArray(catalogMenubar.props.model) && catalogMenubar.props.model.length === 2 && catalogMenubar.props.model[1].id === "catalog");
   check("catalog: после dereference в menubar нет литералов $ref", !JSON.stringify(catalogMenubar).includes("$ref"));
   check("prizes: menuSection первая секция + activeItemId prizes", prizesDeref.sections[0].id === "menuSection" && prizesMenubar.props.activeItemId === "prizes" && Array.isArray(prizesMenubar.props.model) && prizesMenubar.props.model.length === 2 && prizesMenubar.props.model[0].id === "prizes");
-  check("prizes: структура не задета (шапка/фиды/таблица на месте)", prizesDeref.sections[1].id === "prizesHeader" && prizesDeref.dataFeed[0].url === "/api/ops/prizes" && JSON.stringify(prizesDeref).includes("prizesTable"));
+  check("prizes: страница переведена на execute (metadata feed → state.report)", prizesDeref.sections[1].id === "prizesHeader" && prizesDeref.dataFeed[0].url === "/api/ops/prizes" && prizesDeref.dataFeed[0].target === "state.report" && prizesDeref.dataFeed[1].url === "/api/ops/prizes/execute" && prizesDeref.dataFeed[1].method === "POST" && JSON.stringify(prizesDeref).includes("prizesTable"));
 
   // 4) Структура страницы каталога
   check("catalog: route/id/title", catalog.route === "/ops/prize-catalog" && catalog.id === "prize-catalog" && catalog.meta.title.indexOf("Каталог призов") === 0);

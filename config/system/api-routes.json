@@ -342,13 +342,24 @@
   {
     "path": "ops/prizes",
     "method": "GET",
-    "url": "/api/v1/crm/prizes",
+    "url": "/api/v1/crm/stats/query/prizes",
     "channel": "instance",
     "adapter": {
-      "request": "prizes.get.request",
-      "response": "prizes.response"
+      "response": "stats.prizes.report.response"
     },
-    "note": "Операционные данные: Список призов (пул)"
+    "note": "Операционные данные: Призы — метаданные запроса статистики prizes (колонки/фильтры; query_id prizes; фолбэк спеки .prompts/prizes.md)"
+  },
+  {
+    "path": "ops/prizes/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/prizes/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.prizes.execute.request",
+      "response": "stats.prizes.execute.response"
+    },
+    "note": "Операционные данные: Призы — выполнение запроса статистики prizes (query_id prizes; payload page/limit/replacements)"
   },
   {
     "path": "ops/prize-catalog",

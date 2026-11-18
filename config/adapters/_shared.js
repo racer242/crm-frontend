@@ -419,3 +419,44 @@ const PRIZE_CATALOG_SORTABLE_COLUMNS = [
 function isPrizeCatalogSortable(column) {
   return PRIZE_CATALOG_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * Страница «Призы» (эталон, /ops/prizes, query_id prizes,
+ * .prompts/prizes.md): алиасы колонок, которые умеет сортировать SQL
+ * отчёта — 22 алиаса §3/§4 спеки (full_name — склейка TRIM(CONCAT_WS)
+ * по u.first_name/u.last_name — и act_scan_original_name — имя файла —
+ * не сортируются). Единый белый список для двух адаптеров:
+ *  - stats.prizes.execute.request.js: ORDER_BY принимает только алиас из
+ *    списка (чужое значение → дефолт created_at + DESC);
+ *  - stats.prizes.report.response.js: колонки вне списка получают
+ *    sortable: false — DataTable не предлагает сортировку, которую SQL
+ *    не применит.
+ */
+const PRIZES_SORTABLE_COLUMNS = [
+  "instance_id",
+  "prize_code",
+  "prize_title",
+  "type_code",
+  "price_rub",
+  "points_cost",
+  "act_required",
+  "user_id",
+  "participant_code",
+  "email",
+  "issued_at",
+  "pool_status",
+  "status",
+  "act_status",
+  "act_scan_uploaded_at",
+  "raffle_name",
+  "raffle_type",
+  "raffle_status",
+  "drawn_at",
+  "place",
+  "external_id",
+  "created_at",
+];
+
+function isPrizesSortable(column) {
+  return PRIZES_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}

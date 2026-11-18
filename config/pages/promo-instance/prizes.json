@@ -5,73 +5,91 @@
   "state": {
     "loading": false,
     "initialized": true,
+    "filtersVisible": false,
     "prizes": {
       "value": [],
-      "columns": [],
       "totalRecords": 0,
       "rows": 10,
-      "first": 0,
-      "statuses": []
+      "first": 0
     },
-    "search": "",
-    "status": "",
-    "act_required": "",
-    "actRequiredOptions": [
-      {
-        "label": "Требуют акта",
-        "value": "1"
-      },
-      {
-        "label": "Не требуют акта",
-        "value": "0"
-      }
-    ],
-    "owner": "",
-    "ownerOptions": [
-      {
-        "label": "Выданные (есть владелец)",
-        "value": "1"
-      },
-      {
-        "label": "Свободные (владельца нет)",
-        "value": "0"
-      }
-    ]
+    "prizesQuery": {
+      "sortField": "",
+      "sortOrder": -1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
+    },
+    "pageStateKey": "",
+    "savedQuery": ""
   },
   "meta": {
     "title": "Призы — CRM Platform"
   },
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "setProperty",
+          "params": {
+            "target": "state.pageStateKey",
+            "value": "pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}"
+          }
+        },
+        {
+          "type": "getFromLocalStorage",
+          "params": {
+            "key": "{$state.pageStateKey}",
+            "target": "state.savedQuery"
+          }
+        }
+      ]
+    }
+  ],
   "dataFeed": [
     {
       "url": "/api/ops/prizes",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/prizes/execute",
+      "method": "POST",
+      "target": "state.prizes",
       "data": {
         "first": "{$location.params.first}",
         "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
         "search": "{$location.params.search}",
-        "status": "{$location.params.status}",
-        "act_required": "{$location.params.act_required}",
-        "owner": "{$location.params.owner}"
-      },
-      "method": "GET",
-      "target": "state.prizes"
+        "filters": "{$location.params.filters}"
+      }
     }
   ],
   "dataInit": [
     {
       "source": "{$location.params.search}",
-      "target": "state.search"
+      "target": "state.prizesQuery.search"
     },
     {
-      "source": "{$location.params.status}",
-      "target": "state.status"
+      "source": "{$location.params.sortField}",
+      "target": "state.prizesQuery.sortField"
     },
     {
-      "source": "{$location.params.act_required}",
-      "target": "state.act_required"
+      "source": "{$location.params.sortOrder}",
+      "target": "state.prizesQuery.sortOrder",
+      "parse": "json"
     },
     {
-      "source": "{$location.params.owner}",
-      "target": "state.owner"
+      "source": "{$location.params.filters}",
+      "target": "state.report.filters",
+      "parse": "json",
+      "priority": "feed",
+      "method": "merge"
     }
   ],
   "shortcuts": {
@@ -82,17 +100,17 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/prizes",
-              "method": "GET",
+              "url": "/api/ops/prizes/execute",
+              "method": "POST",
               "target": "state.prizes",
               "data": {
                 "event": "{$event}",
                 "first": "{$state.prizes.first}",
                 "rows": "{$state.prizes.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}",
-                "act_required": "{$state.act_required}",
-                "owner": "{$state.owner}"
+                "sortField": "{$state.prizesQuery.sortField}",
+                "sortOrder": "{$state.prizesQuery.sortOrder}",
+                "search": "{$state.prizesQuery.search}",
+                "filters": "{$state.report.filters}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -105,10 +123,10 @@
               "values": {
                 "first": "{$state.prizes.first}",
                 "rows": "{$state.prizes.rows}",
-                "search": "{$state.search}",
-                "status": "{$state.status}",
-                "act_required": "{$state.act_required}",
-                "owner": "{$state.owner}"
+                "sortField": "{$state.prizesQuery.sortField}",
+                "sortOrder": "{$state.prizesQuery.sortOrder}",
+                "search": "{$state.prizesQuery.search}",
+                "filters": "{$state.report.filters}"
               }
             }
           }
@@ -183,9 +201,107 @@
                 {
                   "type": "onClick",
                   "commands": [
+                    "requestPrizes"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesSaveStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-save",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Сохранить состояние",
+                "tooltip": "Сохранить состояние",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
                     {
-                      "type": "refresh",
-                      "params": {}
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setToLocalStorage",
+                            "params": {
+                              "key": "{$state.pageStateKey}",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "target": "state.savedQuery",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние сохранено",
+                              "severity": "success"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "prizesLoadStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "visible": "@state.savedQuery",
+              "props": {
+                "icon": "pi pi-history",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Загрузить сохранённое состояние",
+                "tooltip": "Загрузить сохранённое",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setUrlQuery",
+                            "params": {
+                              "query": "{$state.savedQuery}"
+                            }
+                          },
+                          {
+                            "type": "refresh",
+                            "params": {}
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние восстановлено",
+                              "severity": "info"
+                            }
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -213,7 +329,7 @@
               "props": {
                 "placeholder": "Быстрый поиск...",
                 "throttleDelay": 500,
-                "value": "@state.search"
+                "value": "@state.prizesQuery.search"
               },
               "events": [
                 {
@@ -223,7 +339,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.search"
+                        "target": "state.prizesQuery.search"
                       }
                     },
                     "requestPrizes"
@@ -232,18 +348,46 @@
               ]
             },
             {
-              "id": "prizesStatusFilter",
+              "id": "prizesToggleFilters",
               "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
               "props": {
-                "options": "@state.prizes.statuses",
-                "value": "@state.status",
-                "optionLabel": "name",
-                "optionValue": "value",
-                "placeholder": "Статус...",
-                "showClear": true,
-                "inline": "yes"
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "prizesActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "prizesActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
               },
               "events": [
                 {
@@ -253,7 +397,7 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.status"
+                        "target": "state.report.filters"
                       }
                     },
                     "requestPrizes"
@@ -262,18 +406,14 @@
               ]
             },
             {
-              "id": "prizesActRequiredFilter",
+              "id": "prizesFilterDrawer",
               "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
+              "componentType": "FiltersPanel",
               "props": {
-                "options": "@state.actRequiredOptions",
-                "value": "@state.act_required",
-                "optionLabel": "label",
-                "optionValue": "value",
-                "placeholder": "Требует акта...",
-                "showClear": true,
-                "inline": "yes"
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
               },
               "events": [
                 {
@@ -283,40 +423,27 @@
                       "type": "setProperty",
                       "params": {
                         "source": "event.value",
-                        "target": "state.act_required"
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
                       }
                     },
                     "requestPrizes"
                   ]
-                }
-              ]
-            },
-            {
-              "id": "prizesOwnerFilter",
-              "type": "component",
-              "componentType": "Dropdown",
-              "className": "min-w-max flex-grow-0 mb-0",
-              "props": {
-                "options": "@state.ownerOptions",
-                "value": "@state.owner",
-                "optionLabel": "label",
-                "optionValue": "value",
-                "placeholder": "Владелец...",
-                "showClear": true,
-                "inline": "yes"
-              },
-              "events": [
+                },
                 {
-                  "type": "onChange",
+                  "type": "onHide",
                   "commands": [
                     {
-                      "type": "setProperty",
+                      "type": "toggleProperty",
                       "params": {
-                        "source": "event.value",
-                        "target": "state.owner"
+                        "target": "state.filtersVisible"
                       }
-                    },
-                    "requestPrizes"
+                    }
                   ]
                 }
               ]
@@ -340,10 +467,12 @@
               "componentType": "DataTable",
               "props": {
                 "value": "@state.prizes.value",
-                "columns": "@state.prizes.columns",
+                "columns": "@state.report.columns",
                 "totalRecords": "@state.prizes.totalRecords",
                 "rows": "@state.prizes.rows",
                 "first": "@state.prizes.first",
+                "sortField": "@state.prizesQuery.sortField",
+                "sortOrder": "@state.prizesQuery.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -390,7 +519,7 @@
                     ]
                   },
                   {
-                    "field": "button",
+                    "field": "nav",
                     "order": -1,
                     "body": [
                       {
@@ -412,7 +541,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/prizes/{#row.id}"
+                                  "url": "/ops/prizes/{#row.instance_id}"
                                 }
                               }
                             ]
@@ -433,6 +562,20 @@
                 {
                   "type": "onSort",
                   "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.prizesQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.prizesQuery.sortOrder"
+                      }
+                    },
                     "requestPrizes"
                   ]
                 },
@@ -442,7 +585,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/prizes/{$event.data.id}"
+                        "url": "/ops/prizes/{$event.data.instance_id}"
                       }
                     }
                   ]
