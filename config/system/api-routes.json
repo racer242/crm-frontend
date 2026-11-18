@@ -362,6 +362,42 @@
     "note": "Операционные данные: Призы — выполнение запроса статистики prizes (query_id prizes; payload page/limit/replacements)"
   },
   {
+    "path": "ops/prizes-card/details/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/prize-details/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.prize-card.execute.request",
+      "response": "stats.prize-details.execute.response"
+    },
+    "note": "Операционные данные: Карточка приза — выполнение запроса статистики prize-details (query_id prize-details; приз + каталог + владелец; payload page/limit/replacements; macro INSTANCE_ID_FILTER — routeParams.prize_id)"
+  },
+  {
+    "path": "ops/prizes-card/raffle/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/prize-raffle/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.prize-card.execute.request",
+      "response": "stats.prize-raffle.execute.response"
+    },
+    "note": "Операционные данные: Карточка приза — выполнение запроса статистики prize-raffle (query_id prize-raffle; шанс + розыгрыш; payload page/limit/replacements)"
+  },
+  {
+    "path": "ops/prizes-card/act/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/prize-act/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.prize-card.execute.request",
+      "response": "stats.prize-act.execute.response"
+    },
+    "note": "Операционные данные: Карточка приза — выполнение запроса статистики prize-act (query_id prize-act; акт; payload page/limit/replacements)"
+  },
+  {
     "path": "ops/prize-catalog",
     "method": "GET",
     "url": "/api/v1/crm/stats/query/prize-catalog",

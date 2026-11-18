@@ -8,31 +8,89 @@
     "prizeData": {
       "id": "",
       "prize_id": "",
-      "user_id": "",
-      "user_id_label": "",
-      "user_feed_id": "-",
+      "prize_code": "—",
+      "type_code": "—",
       "title": "",
-      "price": "",
+      "description": "",
+      "price_rub": "—",
+      "points_cost": "—",
       "status": "",
       "status_label": "",
       "status_severity": "secondary",
-      "is_active": false,
-      "is_active_label": "",
-      "act_required": false,
-      "act_required_label": "",
-      "missing_data_text": "—",
-      "raffle_id": "",
-      "raffle_name": "",
-      "raffle_name_label": "—",
-      "raffle_status_label": "—",
-      "raffle_go_disabled": true,
-      "user_go_disabled": true,
-      "statuses": []
+      "pool_status_label": "—",
+      "act_required_label": "—",
+      "catalog_active_label": "—",
+      "catalog_is_removed_label": "—",
+      "catalog_target_count": "—",
+      "external_id_label": "—",
+      "issued_at": null,
+      "created_at": null,
+      "image_url": "",
+      "user_id": "",
+      "user_id_label": "—",
+      "participant_code": "—",
+      "full_name": "—",
+      "email": "—",
+      "owner_phone": "—",
+      "owner_status_label": "—",
+      "owner_participant_status_label": "—",
+      "owner_balance": "—",
+      "owner_total_earned": "—",
+      "owner_registered_at": null,
+      "user_go_disabled": true
     },
-    "prizeUser": {
-      "id": "",
-      "full_name": "",
-      "email": ""
+    "statusOptions": [
+      { "value": "FREE", "name": "Свободен" },
+      { "value": "DATA_NEEDED", "name": "Нужны данные" },
+      { "value": "RECEIVED", "name": "Получен" },
+      { "value": "SENDING", "name": "Отправляется" },
+      { "value": "SENT", "name": "Отправлен" },
+      { "value": "ERROR", "name": "Ошибка" },
+      { "value": "DOWNLOAD", "name": "Скачивается" },
+      { "value": "PROCESSING", "name": "В обработке" },
+      { "value": "READY_FOR_DELIVERY", "name": "Готов к выдаче" },
+      { "value": "NEED_CODE", "name": "Нужен код" },
+      { "value": "DELETED", "name": "Удалён" },
+      { "value": "PENDING", "name": "Ожидает" },
+      { "value": "ACT_UPLOADED", "name": "Акт загружен" },
+      { "value": "REJECTED", "name": "Отклонён" }
+    ],
+    "prizeRaffle": {
+      "raffle_id": "",
+      "raffle_name": "—",
+      "raffle_type": "—",
+      "raffle_status_label": "—",
+      "chance_source_label": "—",
+      "chance_status_label": "—",
+      "chance_occurred_at": null,
+      "place": "—",
+      "chance_payload_prize_code": "—",
+      "chances_linked_count": "—",
+      "raffle_collection_from": null,
+      "raffle_collection_to": null,
+      "raffle_start_at": null,
+      "raffle_end_at": null,
+      "raffle_publish_at": null,
+      "drawn_at": null,
+      "raffle_started_at": null,
+      "raffle_finished_at": null,
+      "raffle_initiated_by_name": "—",
+      "raffle_initiated_by_email": "—",
+      "raffle_annul_reason": "—",
+      "raffle_result_chunks_total": "—",
+      "raffle_chunks_received": "—",
+      "raffle_winners_declared": "—",
+      "raffle_last_chunk_at": null
+    },
+    "prizeAct": {
+      "act_state_label": "—",
+      "act_status_label": "—",
+      "act_required_label": "—",
+      "act_scan_original_name": "—",
+      "act_scan_mime": "—",
+      "act_scan_size_text": "—",
+      "act_scan_uploaded_at": null,
+      "act_file_present_label": "—"
     },
     "saveResult": null
   },
@@ -41,14 +99,28 @@
   },
   "dataFeed": [
     {
-      "url": "/api/ops/prizes/{$location.routeParams.prize_id}",
-      "method": "GET",
-      "target": "state.prizeData"
+      "url": "/api/ops/prizes-card/details/execute",
+      "method": "POST",
+      "target": "state.prizeData",
+      "data": {
+        "instance_id": "{$location.routeParams.prize_id}"
+      }
     },
     {
-      "url": "/api/ops/users/{$state.prizeData.user_feed_id}",
-      "method": "GET",
-      "target": "state.prizeUser"
+      "url": "/api/ops/prizes-card/raffle/execute",
+      "method": "POST",
+      "target": "state.prizeRaffle",
+      "data": {
+        "instance_id": "{$location.routeParams.prize_id}"
+      }
+    },
+    {
+      "url": "/api/ops/prizes-card/act/execute",
+      "method": "POST",
+      "target": "state.prizeAct",
+      "data": {
+        "instance_id": "{$location.routeParams.prize_id}"
+      }
     }
   ],
   "shortcuts": {
@@ -154,200 +226,1211 @@
       },
       "blocks": [
         {
-          "id": "prizeDetailsBlock",
+          "id": "leftColumnBlock",
           "type": "block",
-          "wrapper": {
-            "component": "Panel",
-            "props": {
-              "header": "Информация о призе",
-              "headerComponents": [
-                {
-                  "id": "prizeRefreshButton",
-                  "type": "component",
-                  "componentType": "Button",
-                  "className": "-m-3",
-                  "props": {
-                    "icon": "pi pi-refresh",
-                    "rounded": true,
-                    "text": true,
-                    "severity": "secondary",
-                    "size": "small",
-                    "aria-label": "Обновить",
-                    "tooltip": "Обновить",
-                    "tooltipOptions": {
-                      "position": "left"
-                    }
-                  },
-                  "events": [
-                    {
-                      "type": "onClick",
-                      "commands": [
+          "className": "w-full",
+          "components": [
+            {
+              "id": "leftColumnLayout",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "components": [
+                  {
+                    "id": "prizePanel",
+                    "type": "component",
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "props": {
+                      "header": "Информация о призе",
+                      "headerComponents": [
                         {
-                          "type": "refresh",
-                          "params": {}
+                          "id": "prizeRefreshButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "-m-3",
+                          "props": {
+                            "icon": "pi pi-refresh",
+                            "rounded": true,
+                            "text": true,
+                            "severity": "secondary",
+                            "size": "small",
+                            "aria-label": "Обновить",
+                            "tooltip": "Обновить",
+                            "tooltipOptions": {
+                              "position": "left"
+                            }
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "refresh",
+                                  "params": {}
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "components": [
+                        {
+                          "id": "prizeIdGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "ID приза",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "prizeIdText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "style": {
+                                  "wordBreak": "break-all"
+                                },
+                                "props": {
+                                  "value": "@state.prizeData.id"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "prizeCodeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Код приза",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "prizeCodeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "props": {
+                                  "value": "@state.prizeData.prize_code"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "titleGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Название",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "titleText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "props": {
+                                  "value": "@state.prizeData.title"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "typeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Группа",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "typeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.type_code"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "descriptionGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Описание",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "descriptionText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.description"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "priceGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Стоимость, ₽",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "priceText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "props": {
+                                  "value": "@state.prizeData.price_rub"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "pointsGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Цена в баллах",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "pointsText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-bold text-lg",
+                                "props": {
+                                  "value": "@state.prizeData.points_cost"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "statusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "statusTag",
+                                "type": "component",
+                                "componentType": "Tag",
+                                "className": "text-sm px-2 py-1",
+                                "props": {
+                                  "value": "@state.prizeData.status_label",
+                                  "severity": "@state.prizeData.status_severity"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "poolStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус в пуле",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "poolStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.pool_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actRequiredGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Требуется акт",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actRequiredText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.act_required_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "catalogActiveGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Виден участнику",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "catalogActiveText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.catalog_active_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "catalogRemovedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Нет в плане CRM",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "catalogRemovedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.catalog_is_removed_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "targetCountGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Плановое количество",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "targetCountText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.catalog_target_count"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "externalIdGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "ID во внешней системе",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "externalIdText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "style": {
+                                  "wordBreak": "break-all"
+                                },
+                                "props": {
+                                  "value": "@state.prizeData.external_id_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "issuedAtGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата выдачи",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "issuedAtText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.issued_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "createdAtGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата создания",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "createdAtText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.created_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "imageGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Картинка",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "prizeImage",
+                                "type": "component",
+                                "componentType": "Image",
+                                "visible": "@state.prizeData.image_url",
+                                "props": {
+                                  "src": "@state.prizeData.image_url",
+                                  "alt": "@state.prizeData.title",
+                                  "preview": true,
+                                  "width": "300"
+                                }
+                              }
+                            ]
+                          }
                         }
                       ]
                     }
-                  ]
-                }
-              ]
-            }
-          },
-          "className": "flex flex-column gap-3",
-          "components": [
-            {
-              "id": "prizeIdGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "ID приза",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                  },
                   {
-                    "id": "prizeIdText",
+                    "id": "rafflePanel",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "style": {
-                      "wordBreak": "break-all"
-                    },
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "visible": "@state.prizeRaffle.raffle_id",
                     "props": {
-                      "value": "@state.prizeData.id"
+                      "header": "Розыгрыш",
+                      "components": [
+                        {
+                          "id": "chanceSourceGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Источник шанса",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chanceSourceText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.chance_source_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chanceOccurredGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата события шанса",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chanceOccurredText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.chance_occurred_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chanceStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус шанса",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chanceStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.chance_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chancePlaceGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Место",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chancePlaceText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.place"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chancePayloadGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Код приза из payload",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chancePayloadText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.chance_payload_prize_code"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chancesLinkedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Связанных шансов",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chancesLinkedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.chances_linked_count"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleNameGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Название",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleNameText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_name"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleTypeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Тип",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleTypeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_type"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleCollectionFromGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Сбор шансов с",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleCollectionFromText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_collection_from",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleCollectionToGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Сбор шансов по",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleCollectionToText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_collection_to",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleStartGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Плановый старт",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleStartText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_start_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleEndGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Плановый финиш",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleEndText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_end_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "rafflePublishGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Публикация",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "rafflePublishText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_publish_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "drawnAtGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата розыгрыша",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "drawnAtText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.drawn_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleStartedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Фактический старт",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleStartedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_started_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleFinishedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Фактический финиш",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleFinishedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_finished_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleInitiatedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Инициатор",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleInitiatedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_initiated_by_name"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleInitiatedEmailGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Email инициатора",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleInitiatedEmailText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_initiated_by_email"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleAnnulGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Причина аннулирования",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleAnnulText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_annul_reason"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chunksTotalGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Порций всего",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chunksTotalText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_result_chunks_total"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "chunksReceivedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Порций получено",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "chunksReceivedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_chunks_received"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "lastChunkGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Последняя порция",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "lastChunkText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_last_chunk_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "winnersDeclaredGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Победителей заявлено",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "winnersDeclaredText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeRaffle.raffle_winners_declared"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleGoButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "mt-2",
+                          "props": {
+                            "label": "Перейти",
+                            "icon": "pi pi-arrow-right",
+                            "iconPos": "right",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/ops/raffles/{$state.prizeRaffle.raffle_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "titleGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Название",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
+                  },
                   {
-                    "id": "titleText",
+                    "id": "actPanel",
                     "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
+                    "componentType": "Panel",
+                    "className": "w-full",
                     "props": {
-                      "value": "@state.prizeData.title"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "priceGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Стоимость",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "priceText",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.price"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "statusGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Статус",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "statusTag",
-                    "type": "component",
-                    "componentType": "Tag",
-                    "className": "text-sm px-2 py-1",
-                    "props": {
-                      "value": "@state.prizeData.status_label",
-                      "severity": "@state.prizeData.status_severity"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "actRequiredGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Требуется акт",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "actRequiredText",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.act_required_label"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "isActiveGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Активен",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "isActiveText",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.is_active_label"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "id": "missingDataGroup",
-              "type": "component",
-              "componentType": "LabelledGroup",
-              "className": "w-full grid align-items-center mb-2",
-              "props": {
-                "label": "Недостающие данные",
-                "labelClassName": "text-sm col-4 text-right",
-                "containerClassName": "col-8",
-                "components": [
-                  {
-                    "id": "missingDataText",
-                    "type": "component",
-                    "componentType": "Text",
-                    "className": "m-0 font-bold text-lg",
-                    "props": {
-                      "value": "@state.prizeData.missing_data_text"
+                      "header": "Акт",
+                      "components": [
+                        {
+                          "id": "actStateGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Состояние акта",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actStateText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeAct.act_state_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус акта (legacy)",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actRequiredGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Требуется акт",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actRequiredText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_required_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actFileGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Файл акта",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actFileText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "style": {
+                                  "wordBreak": "break-all"
+                                },
+                                "props": {
+                                  "value": "@state.prizeAct.act_scan_original_name"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actMimeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "MIME-тип файла",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actMimeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_scan_mime"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actSizeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Размер файла",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actSizeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_scan_size_text"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actUploadedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата загрузки акта",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actUploadedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_scan_uploaded_at",
+                                  "dataType": "date"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "actPresentGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Файл загружен",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "actPresentText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeAct.act_file_present_label"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
                     }
                   }
                 ]
@@ -401,6 +1484,28 @@
                           }
                         },
                         {
+                          "id": "participantCodeGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Код участника",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantCodeText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.participant_code"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
                           "id": "participantNameGroup",
                           "type": "component",
                           "componentType": "LabelledGroup",
@@ -416,7 +1521,7 @@
                                 "componentType": "Text",
                                 "className": "m-0 font-semibold",
                                 "props": {
-                                  "value": "@state.prizeUser.full_name"
+                                  "value": "@state.prizeData.full_name"
                                 }
                               }
                             ]
@@ -438,7 +1543,140 @@
                                 "componentType": "Text",
                                 "className": "m-0",
                                 "props": {
-                                  "value": "@state.prizeUser.email"
+                                  "value": "@state.prizeData.email"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "participantPhoneGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Телефон",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantPhoneText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_phone"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "ownerStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус учётной записи",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "ownerStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "participantStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус анкеты",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_participant_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "ownerBalanceGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Баланс",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "ownerBalanceText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_balance"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "ownerEarnedGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Всего начислено",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "ownerEarnedText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_total_earned"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "ownerRegisteredGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Дата регистрации",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "ownerRegisteredText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeData.owner_registered_at",
+                                  "dataType": "date"
                                 }
                               }
                             ]
@@ -465,90 +1703,7 @@
                                 {
                                   "type": "navigate",
                                   "params": {
-                                    "url": "/ops/users/{@state.prizeData.user_id}"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "id": "rafflePanel",
-                    "type": "component",
-                    "componentType": "Panel",
-                    "className": "w-full",
-                    "props": {
-                      "header": "Розыгрыш",
-                      "components": [
-                        {
-                          "id": "raffleNameGroup",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "className": "w-full grid align-items-center mb-2",
-                          "props": {
-                            "label": "Название",
-                            "labelClassName": "text-sm col-4 text-right",
-                            "containerClassName": "col-8",
-                            "components": [
-                              {
-                                "id": "raffleNameText",
-                                "type": "component",
-                                "componentType": "Text",
-                                "className": "m-0 font-semibold",
-                                "props": {
-                                  "value": "@state.prizeData.raffle_name_label"
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "id": "raffleStatusGroup",
-                          "type": "component",
-                          "componentType": "LabelledGroup",
-                          "className": "w-full grid align-items-center mb-2",
-                          "props": {
-                            "label": "Статус",
-                            "labelClassName": "text-sm col-4 text-right",
-                            "containerClassName": "col-8",
-                            "components": [
-                              {
-                                "id": "raffleStatusText",
-                                "type": "component",
-                                "componentType": "Text",
-                                "className": "m-0 font-semibold",
-                                "props": {
-                                  "value": "@state.prizeData.raffle_status_label"
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "id": "raffleGoButton",
-                          "type": "component",
-                          "componentType": "Button",
-                          "className": "mt-2",
-                          "props": {
-                            "label": "Перейти",
-                            "icon": "pi pi-arrow-right",
-                            "iconPos": "right",
-                            "severity": "secondary",
-                            "outlined": true,
-                            "size": "small",
-                            "disabled": "@state.prizeData.raffle_go_disabled"
-                          },
-                          "events": [
-                            {
-                              "type": "onClick",
-                              "commands": [
-                                {
-                                  "type": "navigate",
-                                  "params": {
-                                    "url": "/ops/raffles/{$state.prizeData.raffle_id}"
+                                    "url": "/ops/users/{$state.prizeData.user_id}"
                                   }
                                 }
                               ]
@@ -580,7 +1735,7 @@
                                 "type": "component",
                                 "componentType": "Dropdown",
                                 "props": {
-                                  "options": "@state.prizeData.statuses",
+                                  "options": "@state.statusOptions",
                                   "value": "@state.prizeData.status",
                                   "optionLabel": "name",
                                   "optionValue": "value",

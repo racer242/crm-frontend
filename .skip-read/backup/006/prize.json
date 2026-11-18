@@ -1,0 +1,639 @@
+{
+  "id": "prize",
+  "type": "page",
+  "route": "/ops/prizes/[prize_id]",
+  "state": {
+    "loading": false,
+    "initialized": true,
+    "prizeData": {
+      "id": "",
+      "prize_id": "",
+      "user_id": "",
+      "user_id_label": "",
+      "user_feed_id": "-",
+      "title": "",
+      "price": "",
+      "status": "",
+      "status_label": "",
+      "status_severity": "secondary",
+      "is_active": false,
+      "is_active_label": "",
+      "act_required": false,
+      "act_required_label": "",
+      "missing_data_text": "—",
+      "raffle_id": "",
+      "raffle_name": "",
+      "raffle_name_label": "—",
+      "raffle_status_label": "—",
+      "raffle_go_disabled": true,
+      "user_go_disabled": true,
+      "statuses": []
+    },
+    "prizeUser": {
+      "id": "",
+      "full_name": "",
+      "email": ""
+    },
+    "saveResult": null
+  },
+  "meta": {
+    "title": "Приз — CRM Platform"
+  },
+  "dataFeed": [
+    {
+      "url": "/api/ops/prizes/{$location.routeParams.prize_id}",
+      "method": "GET",
+      "target": "state.prizeData"
+    },
+    {
+      "url": "/api/ops/users/{$state.prizeData.user_feed_id}",
+      "method": "GET",
+      "target": "state.prizeUser"
+    }
+  ],
+  "shortcuts": {
+    "changePrizeStatus": {
+      "type": "sequence",
+      "params": {
+        "commands": [
+          {
+            "type": "confirm",
+            "params": {
+              "message": "Изменить статус выдачи приза?",
+              "onConfirm": [
+                {
+                  "type": "sendRequest",
+                  "params": {
+                    "url": "/api/ops/prizes/{$location.routeParams.prize_id}/status",
+                    "method": "POST",
+                    "target": "state.saveResult",
+                    "data": {
+                      "status": "{$state.prizeData.status}"
+                    },
+                    "onSuccess": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "success",
+                          "summary": "Успешно",
+                          "message": "Статус приза изменён"
+                        }
+                      },
+                      {
+                        "type": "refresh"
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "showToast",
+                        "params": {
+                          "severity": "error",
+                          "summary": "Ошибка",
+                          "message": "Не удалось изменить статус приза"
+                        }
+                      },
+                      {
+                        "type": "refresh"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "onCancel": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "breadcrumbSection",
+      "type": "section",
+      "className": "",
+      "blocks": [
+        {
+          "id": "breadcrumbBlock",
+          "type": "block",
+          "components": [
+            {
+              "id": "breadcrumb",
+              "type": "component",
+              "componentType": "Breadcrumb",
+              "className": "border-none p-0",
+              "props": {
+                "home": {
+                  "icon": "pi pi-home",
+                  "url": "/"
+                },
+                "model": [
+                  {
+                    "label": "Призы",
+                    "route": "/ops/prizes"
+                  },
+                  {
+                    "label": "@state.prizeData.title"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mainLayout",
+      "type": "section",
+      "className": "flex mb-5",
+      "grid": {
+        "cols": [
+          "col-12 lg:col-8",
+          "col-12 lg:col-4"
+        ],
+        "padding": "p-2"
+      },
+      "blocks": [
+        {
+          "id": "prizeDetailsBlock",
+          "type": "block",
+          "wrapper": {
+            "component": "Panel",
+            "props": {
+              "header": "Информация о призе",
+              "headerComponents": [
+                {
+                  "id": "prizeRefreshButton",
+                  "type": "component",
+                  "componentType": "Button",
+                  "className": "-m-3",
+                  "props": {
+                    "icon": "pi pi-refresh",
+                    "rounded": true,
+                    "text": true,
+                    "severity": "secondary",
+                    "size": "small",
+                    "aria-label": "Обновить",
+                    "tooltip": "Обновить",
+                    "tooltipOptions": {
+                      "position": "left"
+                    }
+                  },
+                  "events": [
+                    {
+                      "type": "onClick",
+                      "commands": [
+                        {
+                          "type": "refresh",
+                          "params": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "className": "flex flex-column gap-3",
+          "components": [
+            {
+              "id": "prizeIdGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "ID приза",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "prizeIdText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "style": {
+                      "wordBreak": "break-all"
+                    },
+                    "props": {
+                      "value": "@state.prizeData.id"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "titleGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Название",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "titleText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.title"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "priceGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Стоимость",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "priceText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.price"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "statusGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Статус",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "statusTag",
+                    "type": "component",
+                    "componentType": "Tag",
+                    "className": "text-sm px-2 py-1",
+                    "props": {
+                      "value": "@state.prizeData.status_label",
+                      "severity": "@state.prizeData.status_severity"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "actRequiredGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Требуется акт",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "actRequiredText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.act_required_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "isActiveGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Активен",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "isActiveText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.is_active_label"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "missingDataGroup",
+              "type": "component",
+              "componentType": "LabelledGroup",
+              "className": "w-full grid align-items-center mb-2",
+              "props": {
+                "label": "Недостающие данные",
+                "labelClassName": "text-sm col-4 text-right",
+                "containerClassName": "col-8",
+                "components": [
+                  {
+                    "id": "missingDataText",
+                    "type": "component",
+                    "componentType": "Text",
+                    "className": "m-0 font-bold text-lg",
+                    "props": {
+                      "value": "@state.prizeData.missing_data_text"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "rightColumnBlock",
+          "type": "block",
+          "className": "w-full",
+          "components": [
+            {
+              "id": "rightColumnLayout",
+              "type": "component",
+              "componentType": "LayoutGroup",
+              "className": "flex flex-column gap-3",
+              "props": {
+                "components": [
+                  {
+                    "id": "participantPanel",
+                    "type": "component",
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "props": {
+                      "header": "Владелец",
+                      "components": [
+                        {
+                          "id": "participantGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "ID участника",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "style": {
+                                  "wordBreak": "break-all"
+                                },
+                                "props": {
+                                  "value": "@state.prizeData.user_id_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "participantNameGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Имя",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantNameText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeUser.full_name"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "participantEmailGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Email",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "participantEmailText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0",
+                                "props": {
+                                  "value": "@state.prizeUser.email"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "participantGoButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "mt-2",
+                          "props": {
+                            "label": "Перейти",
+                            "icon": "pi pi-arrow-right",
+                            "iconPos": "right",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small",
+                            "disabled": "@state.prizeData.user_go_disabled"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/ops/users/{@state.prizeData.user_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "rafflePanel",
+                    "type": "component",
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "props": {
+                      "header": "Розыгрыш",
+                      "components": [
+                        {
+                          "id": "raffleNameGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Название",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleNameText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeData.raffle_name_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "w-full grid align-items-center mb-2",
+                          "props": {
+                            "label": "Статус",
+                            "labelClassName": "text-sm col-4 text-right",
+                            "containerClassName": "col-8",
+                            "components": [
+                              {
+                                "id": "raffleStatusText",
+                                "type": "component",
+                                "componentType": "Text",
+                                "className": "m-0 font-semibold",
+                                "props": {
+                                  "value": "@state.prizeData.raffle_status_label"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "raffleGoButton",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "mt-2",
+                          "props": {
+                            "label": "Перейти",
+                            "icon": "pi pi-arrow-right",
+                            "iconPos": "right",
+                            "severity": "secondary",
+                            "outlined": true,
+                            "size": "small",
+                            "disabled": "@state.prizeData.raffle_go_disabled"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                {
+                                  "type": "navigate",
+                                  "params": {
+                                    "url": "/ops/raffles/{$state.prizeData.raffle_id}"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "controlPanel",
+                    "type": "component",
+                    "componentType": "Panel",
+                    "className": "w-full",
+                    "props": {
+                      "header": "Статус приза",
+                      "components": [
+                        {
+                          "id": "prizeStatusGroup",
+                          "type": "component",
+                          "componentType": "LabelledGroup",
+                          "className": "flex flex-column gap-1 mb-2",
+                          "props": {
+                            "label": "Статус выдачи",
+                            "labelClassName": "font-bold text-sm",
+                            "components": [
+                              {
+                                "id": "prizeStatusDropdown",
+                                "type": "component",
+                                "componentType": "Dropdown",
+                                "props": {
+                                  "options": "@state.prizeData.statuses",
+                                  "value": "@state.prizeData.status",
+                                  "optionLabel": "name",
+                                  "optionValue": "value",
+                                  "placeholder": "Выберите статус",
+                                  "className": "w-full"
+                                },
+                                "events": [
+                                  {
+                                    "type": "onChange",
+                                    "commands": [
+                                      {
+                                        "type": "setProperty",
+                                        "params": {
+                                          "source": "event.value",
+                                          "target": "state.prizeData.status"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "applyStatusBtn",
+                          "type": "component",
+                          "componentType": "Button",
+                          "className": "w-full",
+                          "props": {
+                            "icon": "pi pi-check",
+                            "label": "Применить",
+                            "size": "small",
+                            "severity": "success"
+                          },
+                          "events": [
+                            {
+                              "type": "onClick",
+                              "commands": [
+                                "changePrizeStatus"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

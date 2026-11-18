@@ -147,6 +147,22 @@
     "type": "js",
     "script": "./config/adapters/stats.prize-catalog.execute.response.js"
   },
+  "stats.prize-card.execute.request": {
+    "type": "js",
+    "script": "./config/adapters/stats.prize-card.execute.request.js"
+  },
+  "stats.prize-details.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.prize-details.execute.response.js"
+  },
+  "stats.prize-raffle.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.prize-raffle.execute.response.js"
+  },
+  "stats.prize-act.execute.response": {
+    "type": "js",
+    "script": "./config/adapters/stats.prize-act.execute.response.js"
+  },
   "prize.get.response": {
     "type": "js",
     "script": "./config/adapters/prize.get.response.js"
