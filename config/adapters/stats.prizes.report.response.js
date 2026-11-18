@@ -22,6 +22,14 @@
  * pi.issued_at. When the server metadata carries fields/filters of its
  * own — the server ones are used.
  *
+ * Table exclusion: instance_id is NOT rendered as a table column (the raw
+ * UUID is of no use in the list) — it is filtered out of BOTH the spec
+ * fallback and the server fields (same pattern as the prize-catalog
+ * popup-only fields), so the table shape does not change when the backend
+ * starts returning its own fields[]. The value itself keeps flowing
+ * through the execute-response row mapping unchanged — the page navigates
+ * to /ops/prizes/{instance_id} by the arrow column and the row click.
+ *
  * Passthrough mapping: columns come from fields[] (field ← name, header ←
  * title, dataType ← type date/datetime/uuid); SQL never leaves the
  * backend; an invalid payload (error object) falls back to the spec set —
@@ -30,6 +38,14 @@
 // Filter definitions of the spec §5.1 with UI labels (name is rendered by
 // FiltersPanel and ActiveFiltersBar)
 const PRIZES_FILTERS_FALLBACK = [
+  { id: "has_owner", name: "Выдан участнику", type: "checkbox", value: null },
+  {
+    id: "has_raffle",
+    name: "Выигран в розыгрыше",
+    type: "checkbox",
+    value: null,
+  },
+
   {
     id: "pool_status",
     name: "Статус в пуле",
@@ -66,14 +82,7 @@ const PRIZES_FILTERS_FALLBACK = [
     opts: ["Ожидает", "Акт загружен", "Подтверждён", "Отклонён"],
     value: null,
   },
-  { id: "has_owner", name: "Выдан участнику", type: "checkbox", value: null },
-  {
-    id: "has_raffle",
-    name: "Выигран в розыгрыше",
-    type: "checkbox",
-    value: null,
-  },
-  { id: "raffle", name: "Розыгрыш", type: "options", opts: [], value: null },
+
   {
     id: "raffle_status",
     name: "Статус розыгрыша",
@@ -123,6 +132,16 @@ const PRIZES_COLUMNS_FALLBACK = [
   { field: "created_at", header: "Дата создания", type: "datetime" },
 ];
 
+// Fields NOT rendered as table columns: instance_id — the raw UUID is of
+// no use in the list (the row carries it for navigation: the arrow column
+// and the row click navigate to /ops/prizes/{instance_id}); excluded from
+// BOTH the spec fallback and the server metadata (same pattern as the
+// prize-catalog popup-only fields / the avito `mailing` column), so the
+// table shape does not change when the backend starts returning its own
+// fields[]. The value itself keeps flowing through the execute-response
+// row mapping unchanged
+const PRIZES_HIDDEN_FIELDS = ["instance_id"];
+
 function transform(data) {
   const meta = data && data.status === "ok" ? data.data : data;
   if (!meta || typeof meta !== "object") {
@@ -131,7 +150,7 @@ function transform(data) {
     return buildMeta(
       "",
       "",
-      PRIZES_COLUMNS_FALLBACK.map(mapFallbackColumn),
+      PRIZES_COLUMNS_FALLBACK.filter(notHidden).map(mapFallbackColumn),
       PRIZES_FILTERS_FALLBACK,
     );
   }
@@ -142,10 +161,17 @@ function transform(data) {
     meta.id || "",
     meta.title || "",
     fields.length
-      ? fields.map(mapColumn)
-      : PRIZES_COLUMNS_FALLBACK.map(mapFallbackColumn),
+      ? fields.filter(notHidden).map(mapColumn)
+      : PRIZES_COLUMNS_FALLBACK.filter(notHidden).map(mapFallbackColumn),
     serverFilters || PRIZES_FILTERS_FALLBACK,
   );
+}
+
+// Hidden fields are excluded from the table columns regardless of the
+// source; server entries carry `name`, fallback entries — `field`
+function notHidden(entry) {
+  const key = (entry && (entry.name || entry.field)) || "";
+  return PRIZES_HIDDEN_FIELDS.indexOf(String(key)) < 0;
 }
 
 function buildMeta(id, title, columns, filters) {

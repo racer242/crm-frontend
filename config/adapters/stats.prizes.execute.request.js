@@ -50,7 +50,12 @@
  *     sorts by pc.price — копейки; full_name/act_scan_original_name are
  *     null = not sortable — the shared PRIZES_SORTABLE_COLUMNS whitelist
  *     in _shared.js is the same list); a value outside the map (or null)
- *     falls back to the report default "pi.created_at" + DESC.
+ *     falls back to the page default "pi.issued_at" + DESC
+ *     (DEFAULT_ORDER_BY = issued_at — the same as the state default
+ *     prizesQuery.sortField, so the table sort indicator and the first
+ *     SSR request — which comes from the URL-less dataFeed, not the
+ *     shortcut — agree; the spec §7 report default created_at is only the
+ *     SQL fallback on the backend side).
  *
  * The spec §7 also shows top-level sort/direction/search/filters fields —
  * they are NOT sent: the live executor contract (users/receipts reports,
@@ -80,7 +85,7 @@ const MACRO_KEYS = [
   "ORDER_BY",
   "ORDER_DIR",
 ];
-const DEFAULT_ORDER_BY = "created_at";
+const DEFAULT_ORDER_BY = "issued_at";
 
 // Sorting map of the spec §4 (alias → SQL expression; null = not sortable)
 const ORDER_MAP = {
