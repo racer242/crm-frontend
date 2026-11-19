@@ -271,9 +271,12 @@ const CampMenuSection = React.memo(function CampMenuSection({
   const [expanded, setExpanded] = useState(false);
 
   const handleCampChange = useCallback((campId: number) => {
-    // Set cookie and reload
+    // Set cookie and go to the root page: URLs of the previous campaign
+    // (entity cards with stale ids, list query params, feature-gated pages)
+    // are invalid under the new camp_id. replace() swaps the history entry,
+    // so Back does not return to the other campaign's URL.
     document.cookie = `camp_id=${campId}; path=/; max-age=31536000; SameSite=Lax`;
-    window.location.reload();
+    window.location.replace("/");
   }, []);
 
   const campMenuModel = useMemo(() => {
