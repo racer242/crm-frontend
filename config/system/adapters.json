@@ -27,17 +27,17 @@
     "type": "js",
     "script": "./config/adapters/user-docs-edit.patch.request.js"
   },
-  "acts.get.request": {
+  "stats.acts.execute.request": {
     "type": "js",
-    "script": "./config/adapters/acts.get.request.js"
+    "script": "./config/adapters/stats.acts.execute.request.js"
   },
-  "acts.get.response": {
+  "stats.acts.report.response": {
     "type": "js",
-    "script": "./config/adapters/acts.get.response.js"
+    "script": "./config/adapters/stats.acts.report.response.js"
   },
-  "acts.response": {
+  "stats.acts.execute.response": {
     "type": "js",
-    "script": "./config/adapters/acts.response.js"
+    "script": "./config/adapters/stats.acts.execute.response.js"
   },
   "raffles.get.request": {
     "type": "js",

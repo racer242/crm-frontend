@@ -5,26 +5,91 @@
   "state": {
     "loading": false,
     "initialized": true,
+    "filtersVisible": false,
     "acts": {
       "value": [],
-      "columns": [],
       "totalRecords": 0,
       "rows": 10,
       "first": 0
-    }
+    },
+    "actsQuery": {
+      "sortField": "act_scan_uploaded_at",
+      "sortOrder": -1,
+      "search": ""
+    },
+    "report": {
+      "id": "",
+      "title": "",
+      "columns": [],
+      "filters": []
+    },
+    "pageStateKey": "",
+    "savedQuery": ""
   },
   "meta": {
     "title": "Акты — CRM Platform"
   },
+  "events": [
+    {
+      "type": "onLoad",
+      "commands": [
+        {
+          "type": "setProperty",
+          "params": {
+            "target": "state.pageStateKey",
+            "value": "pageState_{$location.pathname}_{$cookie.camp_id}_{$cookie.user_data.id}"
+          }
+        },
+        {
+          "type": "getFromLocalStorage",
+          "params": {
+            "key": "{$state.pageStateKey}",
+            "target": "state.savedQuery"
+          }
+        }
+      ]
+    }
+  ],
   "dataFeed": [
     {
       "url": "/api/ops/acts",
+      "method": "GET",
+      "target": "state.report"
+    },
+    {
+      "url": "/api/ops/acts/execute",
+      "method": "POST",
+      "target": "state.acts",
       "data": {
         "first": "{$location.params.first}",
-        "rows": "{$location.params.rows}"
-      },
-      "method": "GET",
-      "target": "state.acts"
+        "rows": "{$location.params.rows}",
+        "sortField": "{$location.params.sortField}",
+        "sortOrder": "{$location.params.sortOrder}",
+        "search": "{$location.params.search}",
+        "filters": "{$location.params.filters}"
+      }
+    }
+  ],
+  "dataInit": [
+    {
+      "source": "{$location.params.search}",
+      "target": "state.actsQuery.search"
+    },
+    {
+      "source": "{$location.params.sortField}",
+      "target": "state.actsQuery.sortField"
+    },
+    {
+      "source": "{$location.params.sortOrder}",
+      "target": "state.actsQuery.sortOrder",
+      "parse": "json"
+    },
+    {
+      "source": "{$location.params.filters}",
+      "target": "state.report.filters",
+      "parse": "json",
+      "priority": "feed",
+      "method": "merge"
     }
   ],
   "shortcuts": {
@@ -35,13 +100,17 @@
           {
             "type": "sendRequest",
             "params": {
-              "url": "/api/ops/acts",
-              "method": "GET",
+              "url": "/api/ops/acts/execute",
+              "method": "POST",
               "target": "state.acts",
               "data": {
                 "event": "{$event}",
                 "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}"
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.actsQuery.sortField}",
+                "sortOrder": "{$state.actsQuery.sortOrder}",
+                "search": "{$state.actsQuery.search}",
+                "filters": "{$state.report.filters}"
               },
               "format": {
                 "$ref": "../../system/list-request-format.json"
@@ -53,7 +122,11 @@
             "params": {
               "values": {
                 "first": "{$state.acts.first}",
-                "rows": "{$state.acts.rows}"
+                "rows": "{$state.acts.rows}",
+                "sortField": "{$state.actsQuery.sortField}",
+                "sortOrder": "{$state.actsQuery.sortOrder}",
+                "search": "{$state.actsQuery.search}",
+                "filters": "{$state.report.filters}"
               }
             }
           }
@@ -101,9 +174,248 @@
                 {
                   "type": "onClick",
                   "commands": [
+                    "requestActs"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsSaveStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "props": {
+                "icon": "pi pi-save",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Сохранить состояние",
+                "tooltip": "Сохранить состояние",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
                     {
-                      "type": "refresh",
-                      "params": {}
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setToLocalStorage",
+                            "params": {
+                              "key": "{$state.pageStateKey}",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "setProperty",
+                            "params": {
+                              "target": "state.savedQuery",
+                              "value": "{$location.search}"
+                            }
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние сохранено",
+                              "severity": "success"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsLoadStateButton",
+              "type": "component",
+              "componentType": "Button",
+              "visible": "@state.savedQuery",
+              "props": {
+                "icon": "pi pi-history",
+                "rounded": true,
+                "text": true,
+                "severity": "secondary",
+                "size": "small",
+                "aria-label": "Загрузить сохранённое состояние",
+                "tooltip": "Загрузить сохранённое",
+                "tooltipOptions": {
+                  "position": "left"
+                }
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "sequence",
+                      "params": {
+                        "commands": [
+                          {
+                            "type": "setUrlQuery",
+                            "params": {
+                              "query": "{$state.savedQuery}"
+                            }
+                          },
+                          {
+                            "type": "refresh",
+                            "params": {}
+                          },
+                          {
+                            "type": "showToast",
+                            "params": {
+                              "message": "Состояние восстановлено",
+                              "severity": "info"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actsFilters",
+      "type": "section",
+      "className": "flex flex-column gap-3 mb-3",
+      "blocks": [
+        {
+          "id": "actsSearchBlock",
+          "type": "block",
+          "className": "w-full flex gap-3",
+          "components": [
+            {
+              "id": "actsSearchInput",
+              "type": "component",
+              "className": "w-full p-inputtext-sm mb-0",
+              "componentType": "InputTextWithThrottle",
+              "props": {
+                "placeholder": "Быстрый поиск...",
+                "throttleDelay": 500,
+                "value": "@state.actsQuery.search"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.actsQuery.search"
+                      }
+                    },
+                    "requestActs"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsToggleFilters",
+              "type": "component",
+              "componentType": "Button",
+              "className": "min-w-max flex-grow-0 px-3",
+              "props": {
+                "icon": "pi pi-filter",
+                "severity": "primary",
+                "outlined": true,
+                "size": "small",
+                "label": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onClick",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "actsActiveFilterBlock",
+          "type": "block",
+          "wrapper": {
+            "className": "w-full"
+          },
+          "components": [
+            {
+              "id": "actsActiveFilterChips",
+              "type": "component",
+              "componentType": "ActiveFiltersBar",
+              "props": {
+                "value": "@state.report.filters"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    "requestActs"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "actsFilterDrawer",
+              "type": "component",
+              "componentType": "FiltersPanel",
+              "props": {
+                "value": "@state.report.filters",
+                "visible": "@state.filtersVisible",
+                "position": "right",
+                "header": "Фильтры"
+              },
+              "events": [
+                {
+                  "type": "onChange",
+                  "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.value",
+                        "target": "state.report.filters"
+                      }
+                    },
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
+                    },
+                    "requestActs"
+                  ]
+                },
+                {
+                  "type": "onHide",
+                  "commands": [
+                    {
+                      "type": "toggleProperty",
+                      "params": {
+                        "target": "state.filtersVisible"
+                      }
                     }
                   ]
                 }
@@ -128,10 +440,12 @@
               "componentType": "DataTable",
               "props": {
                 "value": "@state.acts.value",
-                "columns": "@state.acts.columns",
+                "columns": "@state.report.columns",
                 "totalRecords": "@state.acts.totalRecords",
                 "rows": "@state.acts.rows",
                 "first": "@state.acts.first",
+                "sortField": "@state.actsQuery.sortField",
+                "sortOrder": "@state.actsQuery.sortOrder",
                 "paginator": true,
                 "lazy": true,
                 "size": "normal",
@@ -194,7 +508,7 @@
                               {
                                 "type": "navigate",
                                 "params": {
-                                  "url": "/ops/acts/{#row.id}"
+                                  "url": "/ops/acts/{#row.instance_id}"
                                 }
                               }
                             ]
@@ -215,6 +529,20 @@
                 {
                   "type": "onSort",
                   "commands": [
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortField",
+                        "target": "state.actsQuery.sortField"
+                      }
+                    },
+                    {
+                      "type": "setProperty",
+                      "params": {
+                        "source": "event.sortOrder",
+                        "target": "state.actsQuery.sortOrder"
+                      }
+                    },
                     "requestActs"
                   ]
                 },
@@ -224,7 +552,7 @@
                     {
                       "type": "navigate",
                       "params": {
-                        "url": "/ops/acts/{$event.data.id}"
+                        "url": "/ops/acts/{$event.data.instance_id}"
                       }
                     }
                   ]

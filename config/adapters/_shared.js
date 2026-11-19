@@ -460,3 +460,55 @@ const PRIZES_SORTABLE_COLUMNS = [
 function isPrizesSortable(column) {
   return PRIZES_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
 }
+
+/**
+ * Акты (страница «Акты», /ops/acts, query_id acts, .prompts/acts.md):
+ * алиасы колонок, которые умеет сортировать SQL отчёта — карта §4 спеки
+ * (null = не сортируется: act_scan_original_name/act_scan_mime/
+ * act_scan_stored_name — поля файла, full_name — склейка
+ * TRIM(CONCAT_WS(...))); act_state/days_on_review/act_file_present/has_*
+ * сортируются по алиасам SELECT (значения всегда 0/1). Единый белый список
+ * для двух адаптеров:
+ *  - stats.acts.execute.request.js: ORDER_BY принимает только алиас из
+ *    списка (чужое значение → дефолт act_scan_uploaded_at + DESC);
+ *  - stats.acts.report.response.js: колонки вне списка получают
+ *    sortable: false — DataTable не предлагает сортировку, которую SQL
+ *    не применит.
+ */
+const ACTS_SORTABLE_COLUMNS = [
+  "instance_id",
+  "act_status",
+  "act_state",
+  "act_scan_uploaded_at",
+  "days_on_review",
+  "act_file_present",
+  "act_scan_size",
+  "act_required",
+  "prize_code",
+  "prize_title",
+  "type_code",
+  "price_rub",
+  "user_id",
+  "participant_code",
+  "email",
+  "has_passport",
+  "has_passport_issue_date",
+  "has_passport_issued_by",
+  "has_address",
+  "has_inn",
+  "has_snils",
+  "has_agreement",
+  "has_passport_main_scan",
+  "has_passport_reg_scan",
+  "has_inn_scan",
+  "has_snils_scan",
+  "issued_at",
+  "status",
+  "pool_status",
+  "external_id",
+  "created_at",
+];
+
+function isActsSortable(column) {
+  return ACTS_SORTABLE_COLUMNS.indexOf(String(column || "")) >= 0;
+}

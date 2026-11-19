@@ -422,13 +422,24 @@
   {
     "path": "ops/acts",
     "method": "GET",
-    "url": "/api/v1/crm/acts",
+    "url": "/api/v1/crm/stats/query/acts",
     "channel": "instance",
     "adapter": {
-      "request": "users.get.request",
-      "response": "acts.response"
+      "response": "stats.acts.report.response"
     },
-    "note": "Операционные данные: Список актов"
+    "note": "Операционные данные: Акты — метаданные запроса статистики acts (колонки/фильтры; query_id acts; фолбэк спеки .prompts/acts.md)"
+  },
+  {
+    "path": "ops/acts/execute",
+    "method": "POST",
+    "url": "/api/v1/crm/stats/query/acts/execute",
+    "channel": "instance",
+    "query": true,
+    "adapter": {
+      "request": "stats.acts.execute.request",
+      "response": "stats.acts.execute.response"
+    },
+    "note": "Выполнение запроса «Акты получения призов» — acts (.prompts/acts.md): 23 макроса (act_status — options строковых кодов; act_required — options числовых 1/0 без кавычек; 12 checkbox признаков анкеты/сканов, has_agreement — COALESCE; prize — options по кодам каталога, opts динамические; price — range pc.price рубли→копейки; 2 периода act_uploaded_date/issued_date через toWallPeriodBound; поиск по 10 полям §6.1 — документы не включаются; ORDER_BY/ORDER_DIR — карта §4, дефолт act_scan_uploaded_at DESC); top-level sort/direction/search/filters из §1.1 спеки не передаются — живой контракт исполнителя (users/receipts/prizes) ждёт только page/limit/replacements"
   },
   {
     "path": "ops/tasks",
