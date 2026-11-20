@@ -23,12 +23,15 @@
  *   - act_status (pi.act_status): PENDING/ACT_UPLOADED/APPROVED/REJECTED;
  *   - act_state (сводное состояние §2): WAITING_UPLOAD/ON_REVIEW/APPROVED/
  *     REJECTED/NOT_REQUIRED — производная колонка, отдельная от act_status
- *     (NOT_REQUIRED = акт не требуется, но файл загружен — аномалия §9.10);
- *   - act_required (boolean §8) is displayed «Да»/«Нет» the same way.
- * The has_* / act_file_present flags stay raw booleans (boolean columns of
- * the table). Everything else (numbers, ISO dates — formatted by DataTable
- * dataType:date in the viewer timezone, uuid strings, nulls) goes through
- * as is.
+ *     (NOT_REQUIRED = акт не требуется, но файл загружен — аномалия §9.10).
+ * All 13 boolean columns of §3 (act_required, act_file_present and the 11
+ * has_* document flags) are displayed «Да»/«Нет»: the SQL yields 0/1 from
+ * the IS NOT NULL/COALESCE expressions (the spec §8 allows true/false as
+ * well), null/absent («нет записи» — §9.2) displays «Нет», the backend
+ * <field>_label wins when present. Only the rendered row changes — the
+ * server-side ORDER BY sorts the raw columns. Everything else (numbers,
+ * ISO dates — formatted by DataTable dataType:date in the viewer timezone,
+ * uuid strings, nulls) goes through as is.
  */
 // Spec §5.1: filter opts ↔ mapping — the same pairs as the labels of the
 // response (the backend *_label wins when it arrives)
@@ -114,6 +117,32 @@ function transform(data) {
   return empty;
 }
 
+// All 13 boolean columns of the spec §3 (act_required, act_file_present and
+// the 11 has_* document flags): the SQL yields 0/1 from the IS NOT NULL /
+// COALESCE expressions (the spec §8 allows true/false as well)
+const BOOLEAN_LABEL_KEYS = [
+  "act_required",
+  "act_file_present",
+  "has_passport",
+  "has_passport_issue_date",
+  "has_passport_issued_by",
+  "has_address",
+  "has_inn",
+  "has_snils",
+  "has_agreement",
+  "has_passport_main_scan",
+  "has_passport_reg_scan",
+  "has_inn_scan",
+  "has_snils_scan",
+];
+
+// Boolean/0-1 raw value → «Да»/«Нет»; null/undefined («нет записи» —
+// spec §9.2: флаг false) and 0/false display «Нет»
+function booleanLabel(value) {
+  if (value === true || value === "true" || Number(value) === 1) return "Да";
+  return "Нет";
+}
+
 function mapRow(row) {
   if (!row || typeof row !== "object") return row;
   // Merge the row wrapper (id + …) with the values payload
@@ -130,13 +159,16 @@ function mapRow(row) {
       out[key] = enums[key][out[key]];
     }
   });
-  // Boolean flag column: display label — an explicit act_required_label
-  // from the backend wins, otherwise true/false → «Да»/«Нет»
-  const actLabel = out.act_required_label;
-  if (typeof actLabel === "string" && actLabel !== "") {
-    out.act_required = actLabel;
-  } else if (out.act_required === true || out.act_required === false) {
-    out.act_required = out.act_required ? "Да" : "Нет";
-  }
+  // Boolean flag columns of §3 (13 keys): display label — an explicit
+  // <field>_label from the backend wins, otherwise the raw value maps to
+  // «Да»/«Нет»; null/absent («нет записи» — §9.2) displays «Нет». Only the
+  // rendered row changes — the server-side ORDER BY sorts the raw columns
+  BOOLEAN_LABEL_KEYS.forEach((key) => {
+    const label = out[key + "_label"];
+    out[key] =
+      typeof label === "string" && label !== ""
+        ? label
+        : booleanLabel(out[key]);
+  });
   return out;
 }

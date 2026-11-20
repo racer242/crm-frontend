@@ -11,15 +11,19 @@
  * §3 (with the spec titles; sortable per the shared ACTS_SORTABLE_COLUMNS
  * whitelist in _shared.js — the same list the request adapter applies;
  * act_scan_original_name/act_scan_mime/act_scan_stored_name/full_name are
- * not sortable) and the 18 filter definitions §5.1: act_status/act_required
- * options (the DB values behind the opts positions live in ACTS_FILTERS of
- * the request adapter, same order; act_required carries its own numeric
- * mapping {"0": 1, "1": 0}), has_file + 11 document checkboxes, prize
- * options with EMPTY opts until the server metadata carries the dynamic
- * prize list (spec §5.1: «opts заполняются динамически»), the price range
- * over pc.price and the act_uploaded_date/issued_date periods. When the
- * server metadata carries fields/filters of its own — the server ones are
- * used.
+ * not sortable) and the 17 filter definitions §5.1: act_status options
+ * (the DB values behind the opts positions live in ACTS_FILTERS of the
+ * request adapter, same order), has_file checkbox, 11 document flags in
+ * the «Есть»/«Нет» options format (tri-state: only «Есть» → the IS NOT
+ * NULL fragment, only «Нет» → IS NULL, both/neither → no restriction; the
+ * fragments live in ACTS_FILTERS of the request adapter, same order;
+ * «Акт требуется» is NOT a filter by the user's decision — the key
+ * ACT_REQUIRED_FILTER stays in the request replacements and is always
+ * empty), prize options with EMPTY opts until the server metadata carries
+ * the dynamic prize list (spec §5.1: «opts заполняются динамически»), the
+ * price range over pc.price and the act_uploaded_date/issued_date periods.
+ * When the server metadata carries fields/filters of its own — the server
+ * ones are used.
  *
  * Table exclusion: instance_id is NOT rendered as a table column (the raw
  * UUID is of no use in the list — the row carries it for navigation: the
@@ -48,59 +52,92 @@ const ACTS_FILTERS_FALLBACK = [
     value: null,
   },
   {
-    id: "act_required",
-    name: "Акт требуется",
-    type: "options",
-    opts: ["Требуется", "Не требуется"],
-    value: null,
-  },
-  {
     id: "has_file",
     name: "Файл акта загружен",
     type: "checkbox",
     value: null,
   },
+  // Document flags §5.1 → «Есть»/«Нет» options (renames by the user's
+  // feedback): the value is a boolean array aligned with opts — only
+  // «Есть» selected → trueSql of ACTS_FILTERS (request adapter), only
+  // «Нет» → falseSql, both/neither → no restriction
   {
     id: "has_passport",
     name: "Паспорт: серия и номер",
-    type: "checkbox",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
   {
     id: "has_passport_issue_date",
     name: "Паспорт: дата выдачи",
-    type: "checkbox",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
   {
     id: "has_passport_issued_by",
     name: "Паспорт: кем выдан",
-    type: "checkbox",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
   {
     id: "has_address",
-    name: "Адрес регистрации",
-    type: "checkbox",
+    name: "Паспорт: Адрес регистрации",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
-  { id: "has_inn", name: "ИНН", type: "checkbox", value: null },
-  { id: "has_snils", name: "СНИЛС", type: "checkbox", value: null },
-  { id: "has_agreement", name: "Согласие", type: "checkbox", value: null },
+  {
+    id: "has_inn",
+    name: "ИНН",
+    type: "options",
+    opts: ["Есть", "Нет"],
+    value: null,
+  },
+  {
+    id: "has_snils",
+    name: "СНИЛС",
+    type: "options",
+    opts: ["Есть", "Нет"],
+    value: null,
+  },
+  {
+    id: "has_agreement",
+    name: "Согласие",
+    type: "options",
+    opts: ["Есть", "Нет"],
+    value: null,
+  },
   {
     id: "has_passport_main_scan",
-    name: "Скан паспорта (основной)",
-    type: "checkbox",
+    name: "Паспорт: скан основной",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
   {
     id: "has_passport_reg_scan",
-    name: "Скан паспорта (регистрация)",
-    type: "checkbox",
+    name: "Паспорт: скан регистрации",
+    type: "options",
+    opts: ["Есть", "Нет"],
     value: null,
   },
-  { id: "has_inn_scan", name: "Скан ИНН", type: "checkbox", value: null },
-  { id: "has_snils_scan", name: "Скан СНИЛС", type: "checkbox", value: null },
+  {
+    id: "has_inn_scan",
+    name: "ИНН: скан",
+    type: "options",
+    opts: ["Есть", "Нет"],
+    value: null,
+  },
+  {
+    id: "has_snils_scan",
+    name: "СНИЛС: скан",
+    type: "options",
+    opts: ["Есть", "Нет"],
+    value: null,
+  },
   {
     id: "prize",
     name: "Приз",

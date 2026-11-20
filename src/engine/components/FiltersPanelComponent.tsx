@@ -165,7 +165,7 @@ export function renderFiltersPanel({
             : [min, max];
         return (
           <div key={id} className="mb-3 px-1">
-            <label className="block mb-3 text-200 font-medium">{name}</label>
+            <label className="block mb-3 text-400 font-medium">{name}</label>
             {bounded && (
               <Slider
                 value={[
@@ -221,7 +221,7 @@ export function renderFiltersPanel({
         const sliderValue = typeof value === "number" ? value : min;
         return (
           <div key={id} className="mb-3 px-1">
-            <label className="block mb-2 text-200 font-medium">
+            <label className="block mb-2 text-400 font-medium">
               {name}: {sliderValue}
             </label>
             <Slider
@@ -238,7 +238,7 @@ export function renderFiltersPanel({
       case "text":
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-2 text-400 font-medium">{name}</label>
             <InputText
               value={value ?? ""}
               onChange={(e) => updateFilterValue(id, e.target.value)}
@@ -250,7 +250,7 @@ export function renderFiltersPanel({
       case "number":
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-2 text-400 font-medium">{name}</label>
             <InputNumber
               value={value ?? null}
               onChange={(e) => updateFilterValue(id, e.value ?? null)}
@@ -269,7 +269,7 @@ export function renderFiltersPanel({
               : null;
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-2 text-400 font-medium">{name}</label>
             <Calendar
               value={
                 dateValue && !isNaN(dateValue.getTime()) ? dateValue : null
@@ -310,7 +310,7 @@ export function renderFiltersPanel({
         // to 23:59:59 дня пояса хранения данных)
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-2 text-200 font-medium">{name}</label>
+            <label className="block mb-2 text-400 font-medium">{name}</label>
             <div className="flex gap-2">
               <Calendar
                 value={startDate}
@@ -350,7 +350,7 @@ export function renderFiltersPanel({
           : optionsList.map(() => false);
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-3 text-200 font-medium">{name}</label>
+            <label className="block mb-3 text-400 font-medium">{name}</label>
             <div className="flex flex-column gap-2">
               {optionsList.map((opt: string, i: number) => (
                 <div
@@ -381,7 +381,7 @@ export function renderFiltersPanel({
         const optionsList = Array.isArray(opts) ? opts : [];
         return (
           <div key={id} className="mb-3">
-            <label className="block mb-3 text-200 font-medium">{name}</label>
+            <label className="block mb-3 text-400 font-medium">{name}</label>
             <div className="flex flex-column gap-2">
               {optionsList.map((opt: string, i: number) => (
                 <div

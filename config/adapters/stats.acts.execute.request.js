@@ -23,21 +23,26 @@
  *     of stats.acts.report.response.js); when the server metadata carries
  *     its own mapping dict ({"0": "PENDING", …}), its values win — the
  *     server may reorder opts;
- *   - ACT_REQUIRED_FILTER — the same options shape, but the mapped values
- *     are numbers (1/0) → substituted WITHOUT quotes (§5.2 «числовые
- *     значения — без кавычек»);
+ *   - ACT_REQUIRED_FILTER — «Акт требуется» is NOT a filter by the user's
+ *     decision (the key stays: the report SQL contains the macro and the
+ *     server validates every macro of the report) — always "";
  *   - PRIZE_FILTER — options over the catalog codes pc.code; the fallback
  *     opts are empty (§5.1 «opts заполняются динамически») until the server
  *     metadata carries the dynamic mapping;
- *   - HAS_FILE_FILTER + 11 document-flag checkboxes (HAS_PASSPORT_FILTER /
+ *   - HAS_FILE_FILTER — checkbox (§5.2): true → the IS NOT NULL fragment,
+ *     false → IS NULL, unset → "";
+ *   - 11 document-flag filters (HAS_PASSPORT_FILTER /
  *     HAS_PASSPORT_ISSUE_DATE_FILTER / HAS_PASSPORT_ISSUED_BY_FILTER /
  *     HAS_ADDRESS_FILTER / HAS_INN_FILTER / HAS_SNILS_FILTER /
  *     HAS_AGREEMENT_FILTER / HAS_PASSPORT_MAIN_SCAN_FILTER /
  *     HAS_PASSPORT_REG_SCAN_FILTER / HAS_INN_SCAN_FILTER /
- *     HAS_SNILS_SCAN_FILTER) — checkbox (§5.2): true → the IS NOT NULL (or
- *     <> '') fragment over the joined field, false → the IS NULL (or = '')
- *     counterpart, unset → ""; has_agreement builds COALESCE(ue.agreement,0)
- *     (the only flag where ue.agreement = 1 would give NULL);
+ *     HAS_SNILS_SCAN_FILTER) — «Есть»/«Нет» options (existence, §5.2): the
+ *     value is a boolean array aligned with the opts — only «Есть» → the
+ *     IS NOT NULL (or <> '') fragment over the joined field, only «Нет» →
+ *     the IS NULL (or = '') counterpart, both/neither → ""; the fragments
+ *     are ready SQL in ACTS_FILTERS (existence: true);
+ *     has_agreement builds COALESCE(ue.agreement,0) (the only flag where
+ *     ue.agreement = 1 would give NULL);
  *   - PRICE_FILTER — range over pc.price (копейки): the boundaries come in
  *     rubles and are multiplied by 100 (Math.round) per §5.2;
  *   - ACT_UPLOADED_FROM/TO_FILTER, ISSUED_FROM/TO_FILTER — periods
@@ -152,24 +157,23 @@ const ORDER_MAP = {
 // Filter defs of the spec §5.1: id → macro key + SQL column + DB values
 // aligned with the fallback opts order (the FiltersPanel value for
 // "options" filters is a boolean array aligned with opts). String codes are
-// substituted quoted (sqlString), numeric (act_required 1/0) — raw (§5.2
-// «без кавычек»); checkboxes carry the ready SQL fragments; periods carry
-// their own from/to macro keys (§5.2: ACT_UPLOADED_FROM/TO_FILTER,
-// ISSUED_FROM/TO_FILTER); price is a range over pc.price in копейки. When
-// the server metadata carries its own mapping dict ({"0": "PENDING", …}),
-// its values win
+// substituted quoted (sqlString); has_file carries the ready SQL fragments
+// (checkbox §5.2); the 11 document flags carry the ready fragments too,
+// flagged existence: true — the «Есть»/«Нет» tri-state of the existence
+// options (only «Есть» → trueSql, only «Нет» → falseSql, both/neither →
+// ""); periods carry their own from/to macro keys (§5.2:
+// ACT_UPLOADED_FROM/TO_FILTER, ISSUED_FROM/TO_FILTER); price is a range
+// over pc.price in копейки. When the server metadata carries its own
+// mapping dict ({"0": "PENDING", …}), its values win
 const ACTS_FILTERS = {
   act_status: {
     macro: "ACT_STATUS_FILTER",
     column: "pi.act_status",
     dbValues: ["PENDING", "ACT_UPLOADED", "APPROVED", "REJECTED"],
   },
-  act_required: {
-    macro: "ACT_REQUIRED_FILTER",
-    column: "pc.act_required",
-    dbValues: [1, 0],
-    numeric: true,
-  },
+  // «Акт требуется» is NOT a filter by the user's decision; the key
+  // ACT_REQUIRED_FILTER stays in MACRO_KEYS and is always "" (the report
+  // SQL contains the macro, the server validates every macro of the report)
   has_file: {
     macro: "HAS_FILE_FILTER",
     trueSql: "AND pi.act_scan_stored_name IS NOT NULL",
@@ -177,6 +181,7 @@ const ACTS_FILTERS = {
   },
   has_passport: {
     macro: "HAS_PASSPORT_FILTER",
+    existence: true,
     trueSql:
       "AND (ue.passport_series_number IS NOT NULL AND ue.passport_series_number <> '')",
     falseSql:
@@ -184,11 +189,13 @@ const ACTS_FILTERS = {
   },
   has_passport_issue_date: {
     macro: "HAS_PASSPORT_ISSUE_DATE_FILTER",
+    existence: true,
     trueSql: "AND ue.passport_issue_date IS NOT NULL",
     falseSql: "AND ue.passport_issue_date IS NULL",
   },
   has_passport_issued_by: {
     macro: "HAS_PASSPORT_ISSUED_BY_FILTER",
+    existence: true,
     trueSql:
       "AND (ue.passport_issued_by IS NOT NULL AND ue.passport_issued_by <> '')",
     falseSql:
@@ -196,42 +203,50 @@ const ACTS_FILTERS = {
   },
   has_address: {
     macro: "HAS_ADDRESS_FILTER",
+    existence: true,
     trueSql:
       "AND (ue.passport_address IS NOT NULL AND ue.passport_address <> '')",
     falseSql: "AND (ue.passport_address IS NULL OR ue.passport_address = '')",
   },
   has_inn: {
     macro: "HAS_INN_FILTER",
+    existence: true,
     trueSql: "AND (ue.inn IS NOT NULL AND ue.inn <> '')",
     falseSql: "AND (ue.inn IS NULL OR ue.inn = '')",
   },
   has_snils: {
     macro: "HAS_SNILS_FILTER",
+    existence: true,
     trueSql: "AND (ue.snils IS NOT NULL AND ue.snils <> '')",
     falseSql: "AND (ue.snils IS NULL OR ue.snils = '')",
   },
   has_agreement: {
     macro: "HAS_AGREEMENT_FILTER",
+    existence: true,
     trueSql: "AND COALESCE(ue.agreement, 0) = 1",
     falseSql: "AND COALESCE(ue.agreement, 0) = 0",
   },
   has_passport_main_scan: {
     macro: "HAS_PASSPORT_MAIN_SCAN_FILTER",
+    existence: true,
     trueSql: "AND ud_pm.id IS NOT NULL",
     falseSql: "AND ud_pm.id IS NULL",
   },
   has_passport_reg_scan: {
     macro: "HAS_PASSPORT_REG_SCAN_FILTER",
+    existence: true,
     trueSql: "AND ud_pr.id IS NOT NULL",
     falseSql: "AND ud_pr.id IS NULL",
   },
   has_inn_scan: {
     macro: "HAS_INN_SCAN_FILTER",
+    existence: true,
     trueSql: "AND ud_inn.id IS NOT NULL",
     falseSql: "AND ud_inn.id IS NULL",
   },
   has_snils_scan: {
     macro: "HAS_SNILS_SCAN_FILTER",
+    existence: true,
     trueSql: "AND ud_snils.id IS NOT NULL",
     falseSql: "AND ud_snils.id IS NULL",
   },
@@ -286,7 +301,9 @@ function transform(params = {}) {
     const def = ACTS_FILTERS[filter.id];
     if (!def) return;
     if (def.trueSql) {
-      replacements[def.macro] = checkboxFragment(filter.value, def);
+      replacements[def.macro] = def.existence
+        ? existenceFragment(filter.value, def)
+        : checkboxFragment(filter.value, def);
     } else if (def.periodColumn) {
       const bounds = periodBounds(filter.value, def.periodColumn);
       replacements[def.fromMacro] = bounds.from;
@@ -325,7 +342,7 @@ function transform(params = {}) {
 // DB values behind the boolean array: the server mapping dict wins
 // ({"0": "PENDING", …} → values by the numeric key order), otherwise the
 // fallback dbValues aligned with the fallback opts order. String values are
-// quoted (sqlString), numeric (act_required 1/0) — raw, §5.2
+// quoted (sqlString)
 function optionsFragment(filter, def) {
   const dbValues = dbValuesFor(filter, def);
   if (!dbValues.length || !Array.isArray(filter.value)) return "";
@@ -333,9 +350,7 @@ function optionsFragment(filter, def) {
     .map((on, index) => (on ? dbValues[index] : null))
     .filter((v) => v !== null && v !== undefined && v !== "");
   if (picked.length === 0 || picked.length === dbValues.length) return "";
-  const literals = picked
-    .map(def.numeric ? numericLiteral : sqlString)
-    .filter((v) => v !== "");
+  const literals = picked.map(sqlString).filter((v) => v !== "");
   if (literals.length === 0) return "";
   return "AND " + def.column + " IN (" + literals.join(", ") + ")";
 }
@@ -360,6 +375,20 @@ function checkboxFragment(value, def) {
   if (value === true) return def.trueSql;
   if (value === false) return def.falseSql;
   return "";
+}
+
+// «Есть»/«Нет» options (existence: true, the value is a boolean array
+// aligned with the opts): only «Есть» → the trueSql fragment, only «Нет» →
+// the falseSql counterpart, both or neither → "" (no restriction) — the
+// same tri-state contract as options, but over ready SQL fragments.
+// Non-array values (legacy saved states of the former checkboxes) degrade
+// to "" — no restriction, no error
+function existenceFragment(value, def) {
+  if (!Array.isArray(value)) return "";
+  const has = value[0] === true;
+  const missing = value[1] === true;
+  if (has === missing) return "";
+  return has ? def.trueSql : def.falseSql;
 }
 
 // range price: the boundaries come in rubles, the column is in копейки —
@@ -406,14 +435,6 @@ function likePattern(value) {
 // String value for a quoted SQL literal (single quotes doubled)
 function sqlString(value) {
   return "'" + String(value).replace(/'/g, "''") + "'";
-}
-
-// Numeric value for an unquoted SQL literal (act_required 1/0 — §5.2);
-// non-numeric garbage is dropped — the substituted text is never trusted
-function numericLiteral(value) {
-  const n = Number(value);
-  if (!isFinite(n)) return "";
-  return String(n);
 }
 
 // search: 10 fields of the spec §6.1 (документы в поиск не включаются —

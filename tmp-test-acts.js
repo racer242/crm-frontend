@@ -18,9 +18,13 @@
  * 3) исполнение request-адаптера как в DataAdapterEngine (все 23 макроса,
  * фрагменты SQL по §5.2/§6.2, дефолт сортировки §1.2, экранирование,
  * рубли→копейки, wall-границы периодов);
- * 4) response-адаптеры (метаданные: фолбэк спеки/серверные fields с
- * отсечением popup-only полей; execute: полный state-объект, лейблы
- * act_status/act_state, Да/Нет, legacy-формы).
+ * 4) response-адаптеры (метаданные: фолбэк спеки — 17 фильтров, 11 флагов
+ * документов options «Есть»/«Нет» —/серверные fields с отсечением
+ * popup-only полей; execute: полный state-объект, лейблы act_status/
+ * act_state, 13 булевых колонок §3 → Да/Нет, legacy-формы).
+ *
+ * Вне стенда: правка FiltersPanelComponent (подписи фильтров text-200 →
+ * text-400) — общий компонент движка, покрывается tsc и регрессом.
  *
  * Запуск: node tmp-test-acts.js
  */
@@ -355,7 +359,8 @@ check(
     empty.replacements.ACT_STATUS_FILTER === "" &&
     empty.replacements.PRICE_FILTER === "" &&
     empty.replacements.SEARCH_FILTER === "" &&
-    empty.replacements.ISSUED_FROM_FILTER === "",
+    empty.replacements.ISSUED_FROM_FILTER === "" &&
+    empty.replacements.ACT_REQUIRED_FILTER === "",
 );
 check(
   "request: пагинация first/rows → page = floor(first/limit)+1, limit cap 100",
@@ -383,13 +388,16 @@ check(
     }).replacements.ACT_STATUS_FILTER === "AND pi.act_status IN ('APPROVED')",
 );
 check(
-  "request: act_required — числовые 1/0 БЕЗ кавычек (§5.2)",
+  "request: фильтр «Акт требуется» удалён — объект с таким id игнорируется, ACT_REQUIRED_FILTER всегда пуст (макрос остаётся: сервер валидирует все макросы отчёта)",
   t({ filters: [{ id: "act_required", value: [true, false] }] })
-    .replacements.ACT_REQUIRED_FILTER === "AND pc.act_required IN (1)" &&
+    .replacements.ACT_REQUIRED_FILTER === "" &&
     t({ filters: [{ id: "act_required", value: [false, true] }] })
-      .replacements.ACT_REQUIRED_FILTER === "AND pc.act_required IN (0)" &&
+      .replacements.ACT_REQUIRED_FILTER === "" &&
     t({ filters: [{ id: "act_required", value: [true, true] }] })
-      .replacements.ACT_REQUIRED_FILTER === "",
+      .replacements.ACT_REQUIRED_FILTER === "" &&
+    Object.keys(
+      t({ filters: [{ id: "act_required", value: [true] }] }).replacements,
+    ).length === 23,
 );
 check(
   "request: has_file — true/false/unset → IS NOT NULL / IS NULL / пусто",
@@ -400,24 +408,40 @@ check(
     t({ filters: [{ id: "has_file" }] }).replacements.HAS_FILE_FILTER === "",
 );
 check(
-  "request: checkbox анкеты — текстовые поля с <> '', has_agreement с COALESCE, сканы по ud_* алиасам",
-  t({ filters: [{ id: "has_passport", value: true }] }).replacements
+  "request: флаги документов — options «Есть»/«Нет» (existence): только «Есть» → trueSql, только «Нет» → falseSql (текстовые поля с <> '', has_agreement с COALESCE, сканы по ud_* алиасам)",
+  t({ filters: [{ id: "has_passport", value: [true, false] }] }).replacements
     .HAS_PASSPORT_FILTER ===
     "AND (ue.passport_series_number IS NOT NULL AND ue.passport_series_number <> '')" &&
-    t({ filters: [{ id: "has_passport", value: false }] }).replacements
+    t({ filters: [{ id: "has_passport", value: [false, true] }] }).replacements
       .HAS_PASSPORT_FILTER ===
       "AND (ue.passport_series_number IS NULL OR ue.passport_series_number = '')" &&
-    t({ filters: [{ id: "has_passport_issue_date", value: true }] }).replacements
-      .HAS_PASSPORT_ISSUE_DATE_FILTER ===
+    t({
+      filters: [{ id: "has_passport_issue_date", value: [true, false] }],
+    }).replacements.HAS_PASSPORT_ISSUE_DATE_FILTER ===
       "AND ue.passport_issue_date IS NOT NULL" &&
-    t({ filters: [{ id: "has_agreement", value: true }] }).replacements
+    t({ filters: [{ id: "has_agreement", value: [true, false] }] }).replacements
       .HAS_AGREEMENT_FILTER === "AND COALESCE(ue.agreement, 0) = 1" &&
-    t({ filters: [{ id: "has_agreement", value: false }] }).replacements
+    t({ filters: [{ id: "has_agreement", value: [false, true] }] }).replacements
       .HAS_AGREEMENT_FILTER === "AND COALESCE(ue.agreement, 0) = 0" &&
-    t({ filters: [{ id: "has_passport_main_scan", value: true }] }).replacements
-      .HAS_PASSPORT_MAIN_SCAN_FILTER === "AND ud_pm.id IS NOT NULL" &&
-    t({ filters: [{ id: "has_snils_scan", value: false }] }).replacements
+    t({
+      filters: [{ id: "has_passport_main_scan", value: [true, false] }],
+    }).replacements.HAS_PASSPORT_MAIN_SCAN_FILTER ===
+      "AND ud_pm.id IS NOT NULL" &&
+    t({ filters: [{ id: "has_snils_scan", value: [false, true] }] }).replacements
       .HAS_SNILS_SCAN_FILTER === "AND ud_snils.id IS NULL",
+);
+check(
+  "request: tri-state existence — оба/ни одного пункта, пустое значение и legacy-скаляр → без ограничения",
+  t({ filters: [{ id: "has_passport", value: [true, true] }] }).replacements
+    .HAS_PASSPORT_FILTER === "" &&
+    t({ filters: [{ id: "has_passport", value: [false, false] }] }).replacements
+      .HAS_PASSPORT_FILTER === "" &&
+    t({ filters: [{ id: "has_passport" }] }).replacements.HAS_PASSPORT_FILTER ===
+      "" &&
+    t({ filters: [{ id: "has_passport", value: true }] }).replacements
+      .HAS_PASSPORT_FILTER === "" &&
+    t({ filters: [{ id: "has_inn", value: null }] }).replacements
+      .HAS_INN_FILTER === "",
 );
 check(
   "request: prize — fallback пуст (динамический список), серверный mapping → IN ('GIFT')",
@@ -497,7 +521,7 @@ check(
     const out = t({
       filters: [
         { id: "act_status", value: [false, true, false, false] },
-        { id: "has_inn", value: true },
+        { id: "has_inn", value: [true, false] },
         { id: "has_file", value: false },
       ],
       search: "иван",
@@ -561,11 +585,11 @@ const ACTS_FALLBACK_EXPECTED_COLUMNS = [
 const fallback = r({ error: "query_id not registered" });
 const fallbackFields = fallback.columns.map((c) => c.field);
 check(
-  "report: битый payload → фолбэк спеки: 32 колонки без instance_id/act_scan_mime/act_scan_stored_name, 18 фильтров",
+  "report: битый payload → фолбэк спеки: 32 колонки без instance_id/act_scan_mime/act_scan_stored_name, 17 фильтров (без «Акт требуется»)",
   fallback.id === "" &&
     fallback.columns.length === 32 &&
     fallbackFields.join(",") === ACTS_FALLBACK_EXPECTED_COLUMNS.join(",") &&
-    fallback.filters.length === 18,
+    fallback.filters.length === 17,
 );
 check(
   "report: сортируемость по белому списку _shared.js — act_state да, full_name/файл нет; dataType date/uuid",
@@ -584,25 +608,30 @@ check(
   })(),
 );
 check(
-  "report: фильтры §5.1 — options/checkbox/prize (opts пустые)/price/периоды в порядке спеки",
+  "report: фильтры §5.1 — act_status options, has_file checkbox, 11 флагов options «Есть»/«Нет» с переименованиями, prize (opts пустые)/price/периоды",
   (() => {
     const ids = fallback.filters.map((f) => f.id);
+    const existenceOpts = fallback.filters.filter(
+      (f) => f.type === "options" && f.opts && f.opts.join("|") === "Есть|Нет",
+    );
     return (
-      ids[0] === "act_status" &&
-      ids[1] === "act_required" &&
-      ids[2] === "has_file" &&
-      ids[13] === "has_snils_scan" &&
-      ids[14] === "prize" &&
-      ids[15] === "price" &&
-      ids[16] === "act_uploaded_date" &&
-      ids[17] === "issued_date" &&
+      ids.join(",") ===
+        "act_status,has_file,has_passport,has_passport_issue_date,has_passport_issued_by,has_address,has_inn,has_snils,has_agreement,has_passport_main_scan,has_passport_reg_scan,has_inn_scan,has_snils_scan,prize,price,act_uploaded_date,issued_date" &&
+      fallback.filters[1].type === "checkbox" &&
+      fallback.filters[2].type === "options" &&
+      fallback.filters[2].name === "Паспорт: серия и номер" &&
+      fallback.filters[5].name === "Паспорт: Адрес регистрации" &&
+      fallback.filters[9].name === "Паспорт: скан основной" &&
+      fallback.filters[10].name === "Паспорт: скан регистрации" &&
+      fallback.filters[11].name === "ИНН: скан" &&
+      fallback.filters[12].name === "СНИЛС: скан" &&
       fallback.filters[0].opts.join("|") ===
         "Ожидает загрузки|Акт загружен|Подтверждён|Отклонён" &&
-      fallback.filters[1].opts.join("|") === "Требуется|Не требуется" &&
-      fallback.filters[14].opts.length === 0 &&
-      fallback.filters[15].opts.join("|") === "0|500000" &&
-      fallback.filters[16].column === "pi.act_scan_uploaded_at" &&
-      fallback.filters[17].column === "pi.issued_at"
+      fallback.filters[13].opts.length === 0 &&
+      fallback.filters[14].opts.join("|") === "0|500000" &&
+      fallback.filters[15].column === "pi.act_scan_uploaded_at" &&
+      fallback.filters[16].column === "pi.issued_at" &&
+      existenceOpts.length === 11
     );
   })(),
 );
@@ -651,7 +680,11 @@ const rowsShape = e({
         act_status: "PENDING",
         act_state: "WAITING_UPLOAD",
         act_required: true,
+        act_file_present: 1,
         has_passport: false,
+        has_passport_issue_date: null,
+        has_inn: 0,
+        has_snils_scan: true,
         price_rub: 590.3,
         participant_code: "PART-1",
       },
@@ -670,22 +703,44 @@ check(
     rowsShape.value[0].price_rub === 590.3,
 );
 check(
-  "execute: лейблы act_status/act_state §5.1, act_required Да/Нет, has_* остаются boolean",
+  "execute: лейблы act_status/act_state §5.1; 13 булевых колонок §3 → «Да»/«Нет» (true/false, 0/1 числа, null и отсутствующий ключ → «Нет»)",
   rowsShape.value[0].act_status === "Ожидает" &&
     rowsShape.value[0].act_state === "Ожидает загрузки" &&
     rowsShape.value[0].act_required === "Да" &&
-    rowsShape.value[0].has_passport === false,
+    rowsShape.value[0].act_file_present === "Да" &&
+    rowsShape.value[0].has_passport === "Нет" &&
+    rowsShape.value[0].has_passport_issue_date === "Нет" &&
+    rowsShape.value[0].has_inn === "Нет" &&
+    rowsShape.value[0].has_snils_scan === "Да" &&
+    rowsShape.value[0].has_agreement === "Нет",
 );
 check(
-  "execute: явный *_label побеждает, неизвестный код остаётся сырым",
-  e({
-    rows: [{ values: { act_state: "WEIRD", act_state_label: "Своё состояние" } }],
-    meta: { total_count: 1, limit: 10 },
-  }).value[0].act_state === "Своё состояние" &&
-    e({
-      rows: [{ values: { act_state: "WEIRD" } }],
+  "execute: явный *_label побеждает (enum и булевы), неизвестный код остаётся сырым",
+  (() => {
+    const labeled = e({
+      rows: [
+        {
+          values: {
+            act_state: "WEIRD",
+            act_state_label: "Своё состояние",
+            has_inn: 0,
+            has_inn_label: "Свой флаг",
+          },
+        },
+      ],
       meta: { total_count: 1, limit: 10 },
-    }).value[0].act_state === "WEIRD",
+    }).value[0];
+    const raw = e({
+      rows: [{ values: { act_state: "WEIRD", has_inn: 1 } }],
+      meta: { total_count: 1, limit: 10 },
+    }).value[0];
+    return (
+      labeled.act_state === "Своё состояние" &&
+      labeled.has_inn === "Свой флаг" &&
+      raw.act_state === "WEIRD" &&
+      raw.has_inn === "Да"
+    );
+  })(),
 );
 check(
   "execute: обёртка {status:'ok',data:{rows…}}, items/pagination и сырой массив обрабатываются",
